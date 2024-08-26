@@ -1,0 +1,26 @@
+
+@extends('mains.layout.app')
+@section('business-content')
+<div class="main">
+    <x-mains.components.intro-section-one />
+    <div class="mb-7 mb-lg-11"></div>
+    <x-mains.components.featured-one />
+    <div class="mb-7 mb-lg-11"></div><!-- End .mb-7 -->
+    <x-mains.components.cta-banner-one />
+    <x-mains.components.deal-time-one />
+    <x-mains.components.brand-slider-one />
+    <div class="container">
+        <hr class="mt-3 mb-6">
+    </div><!-- End .container -->
+    <x-mains.components.trending-product-one />
+    <div class="container">
+        <hr class="mt-5 mb-6">
+    </div><!-- End .container -->
+    <x-mains.components.top-selling-one />
+    <div class="container">
+        <hr class="mt-5 mb-0">
+    </div><!-- End .container -->
+    <x-mains.components.service-view-one />
+    <x-mains.components.cta-coupon-one />
+</div>
+@endsection
