@@ -72,7 +72,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a wire:navigate href="#" class="nav-link" data-key="t-product">{{__('Products')}}</a>
+                                <a wire:navigate href="{{ route('super.product.create', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-product">{{__('Products')}}</a>
                             </li>
                         </ul>
                     </div>
