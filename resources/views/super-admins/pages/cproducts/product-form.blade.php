@@ -1,19 +1,43 @@
-
 <div class="page-content">
-<script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="{{asset('texteditor/summernote-bs5.css')}}">
-<script src="{{asset('texteditor/summernote-bs5.js')}}"></script>
-<link rel="stylesheet" href="{{asset('texteditor/summernote-lite.css')}}">
-<script src="{{asset('texteditor/summernote-lite.js')}}"></script>
-<script src="{{asset('texteditor/lang/summernote-en-US.min.js')}}"></script>
-<link rel="stylesheet" href="{{asset('dashboard/css/select2.css')}}">
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<style>
-    .note-frame {
-        color: #222 !important;
-        background-color: #ccc !important;
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{asset('texteditor/summernote-bs5.css')}}">
+    <script src="{{asset('texteditor/summernote-bs5.js')}}"></script>
+    <link rel="stylesheet" href="{{asset('texteditor/summernote-lite.css')}}">
+    <script src="{{asset('texteditor/summernote-lite.js')}}"></script>
+    <script src="{{asset('texteditor/lang/summernote-en-US.min.js')}}"></script>
+    <link rel="stylesheet" href="{{asset('dashboard/css/select2.css')}}">
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {{-- File Upload --}}
+    <!-- Include FilePond CSS -->
+    <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.css" rel="stylesheet">
+
+    <!-- Include FilePond JS -->
+    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.min.js"></script>
+    <script src="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.js"></script>
+
+
+    <style>
+        .note-frame {
+            color: #222 !important;
+            background-color: #ccc !important;
+        }
+        .filepond--item {
+        width: calc(25% - 0.5em);
     }
-</style>
+    @media (max-width: 450px) {
+        .filepond--item {
+            width: calc(50% - 0.5em);
+        }
+    }
+    </style>
     <div class="container-fluid">
 
         <!-- start page title -->
@@ -54,8 +78,6 @@
                                 @endforeach
                             </ul>
                         </div>
-                        <!-- end card header -->
-                        
                         <div class="card-body" >
                             <div class="tab-content" >
                                 @foreach ($filteredLocales as $locale)
@@ -78,10 +100,22 @@
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
-                        
-                                    <div class="mb-3" wire:ignore>
-                                        <label for="product_content_{{ $locale }}">In {{ $locale }} Language</label>
-                                        <div 
+                                    <div class="mb-3">
+                                        <label for="contents.{{ $locale }}">In {{ $locale }} Language</label>
+                                        <div class="form-floating">
+                                            <textarea 
+                                            class="form-control @error('contents.' . $locale) is-invalid @enderror
+                                            @if(!$errors->has('contents.' . $locale) && !empty($contents[$locale])) is-valid @endif" 
+                                            placeholder="Description"  
+                                            style="height: 100px;"
+                                            wire:model="contents.{{$locale}}"></textarea>
+                                            <label for="floatingTextarea2">Description</label>
+                                          </div>
+                                            @error('contents.' . $locale)
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        
+                                        {{-- <div 
                                             class="summernote" 
                                             id="product_content_{{ $locale }}"
                                         >
@@ -89,7 +123,7 @@
                                         </div>
                                         @error('contents.' . $locale)
                                             <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                                        @enderror --}}
                                     </div>
                                 </div>
                                 @endforeach
@@ -99,6 +133,34 @@
                         </div>
                         <!-- end card body -->
                     </div>
+                    <!-- end card -->
+                    <div class="card">
+                        <div class="card-header" wire:ignore>
+                            <h5 class="card-title mb-0">Image Uploader</h5>
+                        </div>
+                        <!-- end card header -->
+                        <div class="card-body" wire:ignore>
+                            <input type="file" wire:model="images" multiple id="imageUploader" accept="image/*">
+
+                            @if ($images)
+                                <div class="preview-container">
+                                    @foreach ($images as $key => $image)
+                                        <div class="image-preview">
+                                            <img src="{{ $image->temporaryUrl() }}" alt="Image preview">
+                                            <button type="button" wire:click="removeImage({{ $key }})">Remove</button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <button wire:click="upload">Upload Images</button>
+                            @endif
+                        
+                            @if (session()->has('message'))
+                                <div>{{ session('message') }}</div>
+                            @endif
+                        </div>
+                        <!-- end card body -->
+                    </div>
+                    
                     <!-- end card -->
                     <div class="card">
                         <div class="card-header" wire:ignore>
@@ -333,7 +395,7 @@
                                         <div class="col-lg-6">
                                             <div class="mb-3">
                                                 <label class="form-label" for="meta-keywords-input">Meta Keywords</label>
-                                                <input type="text" class="form-control" placeholder="Enter meta keywords" id="meta-keywords-input">
+                                                <input type="text" class="form-control" placeholder="Enter meta keywords" wire:model="seoKeywords" id="meta-keywords-input">
                                             </div>
                                         </div>
                                         <!-- end col -->
@@ -354,124 +416,25 @@
 
                     <div class="card">
                         <div class="card-header" wire:ignore>
-                            <h5 class="card-title mb-0">Meta Properties</h5>
-                        </div>
-                        <!-- end card header -->
-                        
-                        <div class="card-body" >
-
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="meta-title-input">Meta title</label>
-                                        <input type="text" class="form-control" placeholder="Enter meta title" id="meta-title-input">
-                                    </div>
-                                </div>
-                                <!-- end col -->
-
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label" for="meta-keywords-input">Meta Keywords</label>
-                                        <input type="text" class="form-control" placeholder="Enter meta keywords" id="meta-keywords-input">
-                                    </div>
-                                </div>
-                                <!-- end col -->
-                            </div>
-                            <!-- end row -->
-
-                            <div>
-                                <label class="form-label" for="meta-description-input">Meta Description</label>
-                                <textarea class="form-control" id="meta-description-input" placeholder="Enter meta description" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <!-- end card body -->
-                    </div>
-                    {{-- <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Product Gallery</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-4">
-                                <h5 class="fs-13 mb-1">Product Image</h5>
-                                <p class="text-muted">Add Product main Image.</p>
-                                <div class="text-center">
-                                    <div class="position-relative d-inline-block">
-                                        <div class="position-absolute top-100 start-100 translate-middle">
-                                            <label for="product-image-input" class="mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="Select Image">
-                                                <div class="avatar-xs">
-                                                    <div class="avatar-title bg-light border rounded-circle text-muted cursor-pointer">
-                                                        <i class="ri-image-fill"></i>
-                                                    </div>
-                                                </div>
-                                            </label>
-                                            <input class="form-control d-none" value="" id="product-image-input" type="file" accept="image/png, image/gif, image/jpeg">
-                                        </div>
-                                        <div class="avatar-lg">
-                                            <div class="avatar-title bg-light rounded">
-                                                <img src="#" id="product-img" class="avatar-md h-auto" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <h5 class="fs-13 mb-1">Product Gallery</h5>
-                                <p class="text-muted">Add Product Gallery Images.</p>
-
-                                <div class="dropzone">
-                                    <div class="fallback">
-                                        <input name="file" type="file" multiple="multiple">
-                                    </div>
-                                    <div class="dz-message needsclick">
-                                        <div class="mb-3">
-                                            <i class="display-4 text-muted ri-upload-cloud-2-fill"></i>
-                                        </div>
-
-                                        <h5>Drop files here or click to upload.</h5>
-                                    </div>
-                                </div>
-
-                                <ul class="list-unstyled mb-0" id="dropzone-preview">
-                                    <li class="mt-2" id="dropzone-preview-list">
-                                        <!-- This is used as the file preview template -->
-                                        <div class="border rounded">
-                                            <div class="d-flex p-2">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <div class="avatar-sm bg-light rounded">
-                                                        <img data-dz-thumbnail class="img-fluid rounded d-block" src="#" alt="Product-Image" />
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="pt-1">
-                                                        <h5 class="fs-13 mb-1" data-dz-name>&nbsp;</h5>
-                                                        <p class="fs-13 text-muted mb-0" data-dz-size></p>
-                                                        <strong class="error text-danger" data-dz-errormessage></strong>
-                                                    </div>
-                                                </div>
-                                                <div class="flex-shrink-0 ms-3">
-                                                    <button data-dz-remove class="btn btn-sm btn-danger">Delete</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                                <!-- end dropzon-preview -->
-                            </div>
-                        </div>
-                    </div> --}}
-                    <!-- end card -->
-
-                    {{-- <div class="card">
-                        <div class="card-header">
                             <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#addproduct-general-info" role="tab">
-                                        General Info
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#product-description" role="tab">
+                                        Description
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#addproduct-metadata" role="tab">
-                                        Meta Data
+                                    <a class="nav-link" data-bs-toggle="tab" href="#product-information" role="tab">
+                                        Additionally Information
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#product-ship" role="tab">
+                                        Shipping & Returns
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#product-faq" role="tab">
+                                        FAQ
                                     </a>
                                 </li>
                             </ul>
@@ -479,95 +442,102 @@
                         <!-- end card header -->
                         <div class="card-body">
                             <div class="tab-content">
-                                <div class="tab-pane active" id="addproduct-general-info" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="manufacturer-name-input">Manufacturer Name</label>
-                                                <input type="text" class="form-control" id="manufacturer-name-input" placeholder="Enter manufacturer name">
-                                            </div>
+                                <div wire:ignore.self class="tab-pane active" id="product-description" role="tabpanel">
+                                    <div class="mb-3" wire:ignore>
+                                        @foreach ($filteredLocales as $locale)
+                                        <label for="product-description{{ $locale }}">In {{ $locale }} Language</label>
+                                        <div 
+                                            class="summernote" 
+                                            id="product-description{{ $locale }}"
+                                        >
+                                            {{ $productDescriptions[$locale] }}
                                         </div>
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="manufacturer-brand-input">Manufacturer Brand</label>
-                                                <input type="text" class="form-control" id="manufacturer-brand-input" placeholder="Enter manufacturer brand">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- end row -->
-
-                                    <div class="row">
-                                        <div class="col-lg-3 col-sm-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="stocks-input">Stocks</label>
-                                                <input type="text" class="form-control" id="stocks-input" placeholder="Stocks" required>
-                                                <div class="invalid-feedback">Please Enter a product stocks.</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-sm-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="product-price-input">Price</label>
-                                                <div class="input-group has-validation mb-3">
-                                                    <span class="input-group-text" id="product-price-addon">$</span>
-                                                    <input type="text" class="form-control" id="product-price-input" placeholder="Enter price" aria-label="Price" aria-describedby="product-price-addon" required>
-                                                    <div class="invalid-feedback">Please Enter a product price.</div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-sm-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="product-discount-input">Discount</label>
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text" id="product-discount-addon">%</span>
-                                                    <input type="text" class="form-control" id="product-discount-input" placeholder="Enter discount" aria-label="discount" aria-describedby="product-discount-addon">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-sm-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="orders-input">Orders</label>
-                                                <input type="text" class="form-control" id="orders-input" placeholder="Orders" required>
-                                                <div class="invalid-feedback">Please Enter a product orders.</div>
-                                            </div>
-                                        </div>
-                                        <!-- end col -->
-                                    </div>
-                                    <!-- end row -->
-                                </div>
-                                <!-- end tab-pane -->
-
-                                <div class="tab-pane" id="addproduct-metadata" role="tabpanel">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="meta-title-input">Meta title</label>
-                                                <input type="text" class="form-control" placeholder="Enter meta title" id="meta-title-input">
-                                            </div>
-                                        </div>
-                                        <!-- end col -->
-
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="meta-keywords-input">Meta Keywords</label>
-                                                <input type="text" class="form-control" placeholder="Enter meta keywords" id="meta-keywords-input">
-                                            </div>
-                                        </div>
-                                        <!-- end col -->
-                                    </div>
-                                    <!-- end row -->
-
-                                    <div>
-                                        <label class="form-label" for="meta-description-input">Meta Description</label>
-                                        <textarea class="form-control" id="meta-description-input" placeholder="Enter meta description" rows="3"></textarea>
+                                        @endforeach
                                     </div>
                                 </div>
-                                <!-- end tab pane -->
+
+                                <div wire:ignore.self class="tab-pane" id="product-information" role="tabpanel">
+                                    <div class="mb-3" wire:ignore>
+                                        @foreach ($filteredLocales as $locale)
+                                        <label for="product-information{{ $locale }}">In {{ $locale }} Language</label>
+                                        <div 
+                                            class="summernote" 
+                                            id="product-information{{ $locale }}"
+                                        >
+                                            {{ $productInformations[$locale] }}
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <div wire:ignore.self class="tab-pane" id="product-ship" role="tabpanel">
+                                    <div class="mb-3" wire:ignore>
+                                        @foreach ($filteredLocales as $locale)
+                                        <label for="product-ship{{ $locale }}">In {{ $locale }} Language</label>
+                                        <div 
+                                            class="summernote" 
+                                            id="product-ship{{ $locale }}"
+                                        >
+                                            {{ $productShip[$locale] }}
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+
+                                <div wire:ignore.self class="tab-pane" id="product-faq" role="tabpanel">
+                                    <button type="button" class="btn btn-success mb-3" wire:click="addFaq">Add FAQ</button>
+
+                                    <div class="accordion" id="faqAccordion">
+                                        @foreach ($faqs as $faqIndex => $faq)
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading-{{ $faqIndex }}">
+                                                <button class="accordion-button {{ $faqIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $faqIndex }}" aria-expanded="{{ $faqIndex === 0 ? 'true' : 'false' }}" aria-controls="collapse-{{ $faqIndex }}">
+                                                    FAQ {{ $faqIndex + 1 }}
+                                                </button>
+                                            </h2>
+                                            <div id="collapse-{{ $faqIndex }}" class="accordion-collapse collapse {{ $faqIndex === 0 ? 'show' : '' }}" aria-labelledby="heading-{{ $faqIndex }}" data-bs-parent="#faqAccordion">
+                                                <div class="accordion-body">
+                                                    @foreach ($filteredLocales as $locale)
+                                                    <div class="mb-3">
+                                                        <label for="question-{{ $faqIndex }}-{{ $locale }}" class="form-label">Question ({{ $locale }})</label><br>
+                                                        @error('faqs.' . $faqIndex . '.' . $locale . '.question')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                        <input type="text" 
+                                                        class="form-control
+                                                        @error('faqs.' . $faqIndex . '.' . $locale . '.question') is-invalid @enderror
+                                                        @if(!$errors->has('faqs.' . $faqIndex . '.' . $locale . '.question') && !empty($faqs[$faqIndex][$locale]['question'])) is-valid @endif" 
+                                                        id="question-{{ $faqIndex }}-{{ $locale }}" wire:model="faqs.{{ $faqIndex }}.{{ $locale }}.question" placeholder="Enter the question">
+                                                    </div>
+
+                                
+                                                    <div class="mb-3">
+                                                        <label for="answer-{{ $faqIndex }}-{{ $locale }}" class="form-label">Answer ({{ $locale }})</label><br>
+                                                        @error('faqs.' . $faqIndex . '.' . $locale . '.answer')
+                                                            <span class="text-danger">{{ $message }}</span>
+                                                        @enderror
+                                                        <textarea 
+                                                        class="form-control
+                                                        @error('faqs.' . $faqIndex . '.' . $locale . '.answer') is-invalid @enderror
+                                                        @if(!$errors->has('faqs.' . $faqIndex . '.' . $locale . '.answer') && !empty($faqs[$faqIndex][$locale]['answer'])) is-valid @endif" 
+                                                        id="question-{{ $faqIndex }}-{{ $locale }}" wire:model="faqs.{{ $faqIndex }}.{{ $locale }}.answer" placeholder="Enter the question" rows="3" placeholder="Enter the answer"></textarea>
+                                                    </div>
+
+                                                    @endforeach
+                                                    <br>
+                                                    <button type="button" class="btn btn-danger" wire:click="removeFaq({{ $faqIndex }})">Remove FAQ</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                             <!-- end tab content -->
                         </div>
                         <!-- end card body -->
-                    </div> --}}
+                    </div>
                     <!-- end card -->
                     <div class="text-end mb-3">
                         <button type="submit" class="btn btn-success w-sm">Submit</button>
@@ -583,24 +553,23 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" style="margin-bottom: 1rem;">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Spare Part</label>
+                                    <input class="form-check-input" type="checkbox" id="onStockSwitch" wire:model="is_on_stock">
+                                    <label class="form-check-label" for="onStockSwitch">On Stock</label>
                                 </div>
+
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">On Stock</label>
+                                    <input class="form-check-input" type="checkbox" id="sparePartSwitch" wire:model="is_spare_part" style="margin-bottom: 1rem;">
+                                    <label class="form-check-label" for="sparePartSwitch">Spare Part</label>
                                 </div>
+                                
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">On Sale</label>
+                                    <input class="form-check-input" type="checkbox" id="featuredSwitch" wire:model="is_featured">
+                                    <label class="form-check-label" for="featuredSwitch">Featured</label>
                                 </div>
+                                
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Featured</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">Status</label>
+                                    <input class="form-check-input" type="checkbox" id="statusSwitch" wire:model="status">
+                                    <label class="form-check-label" for="statusSwitch">Status</label>
                                 </div>
                             </div>
                         </div>
@@ -614,13 +583,42 @@
                         <!-- end card body -->
                         <div class="card-body">
                             <div class="mb-3">
-                                <label for="datepicker-publish-input" class="form-label">Orginal Price</label>
-                                <input type="text" id="datepicker-publish-input" class="form-control" placeholder="Enter publish date" data-provider="flatpickr" data-date-format="d.m.y" data-enable-time>
+                                <label for="original-price-input" class="form-label">Original Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">$</span>
+                                    <input type="number"
+                                    class="form-control
+                                    @error('originalPrice') is-invalid @enderror
+                                    @if(!$errors->has('originalPrice') && !empty($originalPrice)) is-valid @endif"
+                                    wire:model.debounce.500ms="originalPrice" placeholder="0.00">
+                                </div>
+                                @error('originalPrice')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
+                        
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="onSaleSwitch" wire:model="is_on_sale">
+                                <label class="form-check-label" for="onSaleSwitch">On Sale</label>
+                            </div>
+                        
+                            @if ($is_on_sale)
                             <div>
-                                <label for="datepicker-publish-input" class="form-label">Discount Price</label>
-                                <input type="text" id="datepicker-publish-input" class="form-control" placeholder="Enter publish date" data-provider="flatpickr" data-date-format="d.m.y" data-enable-time>
+                                <label for="discount-price-input" class="form-label">Discount Percentage</label>
+                                <div class="input-group">
+                                    <input type="number" 
+                                    class="form-control
+                                    @error('discountPrice') is-invalid @enderror
+                                    @if(!$errors->has('discountPrice') && !empty($discountPrice)) is-valid @endif"
+                                    wire:model.debounce.500ms="discountPrice" wire:change="updateDiscountValue" placeholder="0.00">
+                                    <span class="input-group-text" id="basic-addon1">%</span>
+                                </div>
+                                @error('discountPrice')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                                <small class="text-info">Discounted by {{ number_format($discountPercentage, 0) }}% from the original price.</small>
                             </div>
+                            @endif
                         </div>
                     </div>
                     <!-- end card -->
@@ -630,12 +628,19 @@
                         </div>
                         <div class="card-body">
                             <p class="text-muted mb-2"> <a href="#" class="float-end text-decoration-underline">Add
-                                    New</a>Select product category</p>
-                            <select class="form-select" id="choices-category-input" name="choices-category-input" data-choices data-choices-search-false>
+                                    New</a>Select product nrand</p>
+                                <select class="form-select
+                                    @error('selectedBrand') is-invalid @enderror
+                                    @if(!$errors->has('selectedBrand') && !empty($selectedBrand)) is-valid @endif" 
+                                wire:model="selectedBrand" data-choices data-choices-search-true>
+                                <option value="" selected>{{__('Select a Brand')}}</option>
                                 @foreach($brands as $brand)
                                     <option value="{{ $brand->id }}">{{ $brand->brandtranslation->name ?? 'unKnown' }}</option>
                                 @endforeach
                             </select>
+                            @error('selectedBrand')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <!-- end card body -->
                     </div>
@@ -646,28 +651,42 @@
                         </div>
                         <!-- end card body -->
                         <div class="card-body">
-                            @foreach($categoriesData as $category)
-                            <div class="form-group">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="{{ $category->id }}" id="category{{ $category->id }}">
-                                    <label class="form-check-label" for="category{{ $category->id }}">
-                                        {{ $category->categoryTranslation->name ?? $category->name }}
-                                    </label>
+                            @error('selectedCategories')<span class="text-danger">{{ $message }}</span>@enderror
+                            @error('selectedSubCategories')<span class="text-danger">{{ $message }}</span>@enderror
+                            {{-- <div wire:ignore> --}}
+                                @foreach($categoriesData as $category)
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <input 
+                                            class="form-check-input main-category-checkbox" 
+                                            type="checkbox" 
+                                            value="{{ $category->id }}" 
+                                            id="category{{ $category->id }}"
+                                        >
+                                        <label class="form-check-label" for="category{{ $category->id }}">
+                                            {{ $category->categoryTranslation->name ?? $category->name }}
+                                        </label>
+                                    </div>
+                        
+                                    <!-- Subcategories for the current category -->
+                                    <div class="ms-4">
+                                        @foreach($category->subCategory as $subcategory)
+                                            <div class="form-check">
+                                                <input 
+                                                    class="form-check-input subcategory-checkbox" 
+                                                    type="checkbox" 
+                                                    value="{{ $subcategory->id }}" 
+                                                    id="subcategory{{ $subcategory->id }}"
+                                                >
+                                                <label class="form-check-label" for="subcategory{{ $subcategory->id }}">
+                                                    {{ $subcategory->subCategoryTranslation->name ?? $subcategory->name }}
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                    
-                                <!-- Subcategories for the current category -->
-                                <div class="ms-4">
-                                    @foreach($category->subCategory as $subcategory)
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="{{ $subcategory->id }}" id="subcategory{{ $subcategory->id }}">
-                                            <label class="form-check-label" for="subcategory{{ $subcategory->id }}">
-                                                {{ $subcategory->subCategoryTranslation->name ?? $subcategory->name }}
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                            {{-- </div> --}}
                         </div>
                     </div>
 
@@ -679,23 +698,30 @@
                             <p class="text-muted mb-2">
                                 <a href="#" class="float-end text-decoration-underline">Add New</a>Select product category
                             </p>
-
-                            <select class="js-example-basic-multiple form-select" name="states[]" multiple="multiple">
+                    
+                            <!-- Bind the select element to Livewire property -->
+                            <select class="js-example-basic-multiple form-select" name="selectedTags[]" multiple="multiple" wire:model="selectedTags">
                                 @foreach($tags as $tag)
                                     <option value="{{ $tag->id }}">{{ $tag->tagtranslation->name ?? $tag->name }}</option>
                                 @endforeach
-                              </select>
+                            </select>
                         </div>
                         <!-- end card body -->
                     </div>
 
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Product Short Description</h5>
+                            <h5 class="card-title mb-0">Meta Keywords</h5>
                         </div>
                         <div class="card-body">
-                            <p class="text-muted mb-2">Add short description for product</p>
-                            <textarea class="form-control" placeholder="Must enter minimum of a 100 characters" rows="3"></textarea>
+                            <p class="text-muted mb-2">{{__('Add a short Keywords for the product (Multi Langage if needed)')}}</p>
+                            <textarea 
+                                class="form-control" 
+                                placeholder="Must enter a minimum of 100 characters" 
+                                rows="3" 
+                                wire:model.lazy="seoKeywords"
+                            ></textarea>
+                            <small class="text-info">coffee beans, coffee machine, حبوب البن, آلة القهوة</small>
                         </div>
                         <!-- end card body -->
                     </div>
@@ -712,6 +738,7 @@
     <!-- container-fluid -->
 </div>
 
+
 @push('tproductscript')
 <!-- jQuery is required -->
 <script>
@@ -720,7 +747,27 @@
 const locales = ['en', 'ar', 'ku'];
 
 locales.forEach(locale => {
-    $(`#product_content_${locale}`).summernote({
+    // $(`#product_content_${locale}`).summernote({
+    //     toolbar: [
+    //         ['style', ['style']],
+    //         ['font', ['bold', 'underline', 'clear']],
+    //         ['fontname', ['fontname']],
+    //         ['color', ['color']],
+    //         ['para', ['ul', 'ol', 'paragraph']],
+    //         ['table', ['table']],
+    //         ['insert', ['link', 'picture', 'video']],
+    //         ['view', ['codeview', 'help']],
+    //     ],
+    //     height: 200,
+    //     callbacks: {
+    //         onChange: function(contents) {
+    //             // Dynamically set the content in Livewire property
+    //             @this.set(`contents.${locale}`, contents);
+    //         }
+    //     }
+    // });
+
+    $(`#product-description${locale}`).summernote({
         toolbar: [
             ['style', ['style']],
             ['font', ['bold', 'underline', 'clear']],
@@ -735,14 +782,125 @@ locales.forEach(locale => {
         callbacks: {
             onChange: function(contents) {
                 // Dynamically set the content in Livewire property
-                @this.set(`contents.${locale}`, contents);
+                @this.set(`productDescriptions.${locale}`, contents);
+            }
+        }
+    });
+
+    $(`#product-information${locale}`).summernote({
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['codeview', 'help']],
+        ],
+        height: 200,
+        callbacks: {
+            onChange: function(contents) {
+                // Dynamically set the content in Livewire property
+                @this.set(`productInformations.${locale}`, contents);
+            }
+        }
+    });
+
+    $(`#product-ship${locale}`).summernote({
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['codeview', 'help']],
+        ],
+        height: 200,
+        callbacks: {
+            onChange: function(contents) {
+                // Dynamically set the content in Livewire property
+                @this.set(`productShip.${locale}`, contents);
             }
         }
     });
 });
 
+    FilePond.registerPlugin(
+        FilePondPluginImagePreview,
+        FilePondPluginImageCrop,
+        FilePondPluginImageTransform,
+        FilePondPluginFileValidateSize,
+        FilePondPluginFileValidateType,
+        FilePondPluginImageExifOrientation
+    );
 
+    // Initialize FilePond
+    const inputElement = document.querySelector('#imageUploader');
+        const pond = FilePond.create(inputElement, {
+            allowMultiple: true,
+            allowImageCrop: true,
+            // imagePreviewMaxHeight: 40,
+            imagePreviewMaxFileSize: '3MB',
+            imageCropAspectRatio: '1:1',
+            imagePreviewTransparencyIndicator: 'grid',
+            allowImageExifOrientation: true,
+            allowReorder: true,
+        });
+
+        pond.setOptions({
+            server: {
+                process: (fieldName, file, metadata, load, error, progress, abort) => {
+                    @this.upload('images', file, load, error, progress);
+                },
+            },
+        });
+
+        pond.on('processfile', function (error, file) {
+            if (error) {
+                console.error('File upload error:', error);
+            } else {
+                console.log('File uploaded:', file);
+            }
+        });
+
+        document.querySelectorAll('.main-category-checkbox').forEach(mainCheckbox => {
+        mainCheckbox.addEventListener('change', function () {
+            const subCheckboxes = this.closest('.form-group').querySelectorAll('.subcategory-checkbox');
+            subCheckboxes.forEach(subCheckbox => subCheckbox.checked = this.checked);
+            // Manually emit events or handle logic as needed
+        });
+    });
+
+    document.querySelectorAll('.subcategory-checkbox').forEach(subCheckbox => {
+        subCheckbox.addEventListener('change', function () {
+            const mainCheckbox = this.closest('.form-group').querySelector('.main-category-checkbox');
+            if (this.checked) {
+                mainCheckbox.checked = true;
+            } else {
+                const allUnchecked = Array.from(this.closest('.ms-4').querySelectorAll('.subcategory-checkbox')).every(sub => !sub.checked);
+                if (allUnchecked) {
+                    mainCheckbox.checked = false;
+                }
+            }
+        });
+    });
+
+    
     $('.js-example-basic-multiple').select2();
+
+    // Bind change event to update Livewire data
+    $('.js-example-basic-multiple').on('change', function (e) {
+        var selectedTags = $(this).val(); // Get selected values
+        @this.set('selectedTags', selectedTags); // Update Livewire property
+    });
+
+    // Reinitialize Select2 after each Livewire update
+    Livewire.hook('message.processed', () => {
+        $('.js-example-basic-multiple').select2();
+    });
 
 </script>
 

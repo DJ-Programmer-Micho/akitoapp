@@ -6,13 +6,18 @@ use App\Models\Tag;
 use App\Models\Brand;
 use Livewire\Component;
 use App\Models\Category;
-use App\Models\VariationCapacity;
-use App\Models\VariationColor;
-use App\Models\VariationMaterial;
+use App\Models\SubCategory;
 use App\Models\VariationSize;
+use Livewire\WithFileUploads;
+use App\Models\VariationColor;
+use App\Models\VariationCapacity;
+use App\Models\VariationMaterial;
 
 class CProductLivewire extends Component
 {
+    use WithFileUploads;
+
+
     // Pre-INT
     public $brands;
     public $categoriesData;
@@ -21,27 +26,156 @@ class CProductLivewire extends Component
     public $sizes;
     public $materials;
     public $capacities;
+    public $currentValidation = "store";
     // INT
     public $filteredLocales;
     public $glang;
-    public $products = [];
-    public $contents = [];
-    public $selectedCategories = [];
-    public $selectedColors = [];
-    public $selectedMaterials = [];
-    public $selectedSizes = [];
-    public $selectedCapacities = [];
+    public $selectedBrand;
+    public $products = []; // Product Name
+    public $contents = []; // Product Description
+    public $productDescriptions = []; // Long Description
+    public $productInformations = []; // Addition Description
+    public $productShip = []; // Shipping Description
+    public $faqs = []; // faqs
+    public $selectedCategories = []; // Categories Selected
+    public $selectedSubCategories = [];
+    public $selectedColors = []; // Colors Selected
+    public $selectedMaterials = []; // Materials Selected
+    public $selectedSizes = []; // Sizes Selected
+    public $selectedCapacities = []; // Capacities Selected
+    public $selectedTags = [];
+    public $images = []; // Cropped Imgeas
+    public $sku; // Cropped Imgeas
+    // Sub Form INT
+    public $is_spare_part = 0;
+    public $is_on_stock = 1;
+    public $is_on_sale = 0;
+    public $is_featured = 0;
+    public $status = 1;
+    public $originalPrice;
+    public $discountPrice;
+    public $discountPercentage;
+    public $seoKeywords;
+
 
     // On Load
     public function mount(){
         $this->glang = app()->getLocale();
         $this->filteredLocales = app('glocales');
-
         foreach ($this->filteredLocales as $locale) {
+            $this->products[$locale] = ''; // or any default value
             $this->contents[$locale] = ''; // or any default value
+            $this->productDescriptions[$locale] = ''; // or any default value
+            $this->productInformations[$locale] = ''; // or any default value
+            $this->productShip[$locale] = ''; // or any default value
         }
     }
 
+    protected function rules()
+    {
+        //Keep It Empty
+    }
+
+    protected function rulesForSaveProduct()
+    {
+        $rules = [];
+        foreach ($this->filteredLocales as $locale) {
+            $rules['products.' . $locale] = 'required|string|min:3';
+            $rules['contents.' . $locale] = 'required|string|min:15';
+            if (!empty($this->faqs)) {
+                foreach ($this->faqs as $faqIndex => $faq) {
+                    $rules["faqs.$faqIndex.$locale.question"] = 'required|string|min:10';
+                    $rules["faqs.$faqIndex.$locale.answer"] = 'required|string|min:10';
+                }
+            }
+        }
+        $rules['selectedBrand'] = 'required';
+        $rules['originalPrice'] = 'required|numeric|min:0';
+        $rules['selectedCategories'] = 'required';
+        $rules['selectedSubCategories'] = 'required';
+        if ($this->is_on_sale) {
+            $rules['discountPrice'] = 'required|numeric|min:0';
+        }
+        // $rules['priority'] = ['required'];
+        // $rules['status'] = ['required'];
+        return $rules;
+    }
+
+    protected function rulesForUpdateProduct()
+    {
+        $rules = [];
+        foreach ($this->filteredLocales as $locale) {
+            $rules['brandsEdit.' . $locale] = 'required|string|min:1';
+        }
+        $rules['priorityEdit'] = ['required'];
+        $rules['statusEdit'] = ['required'];
+        return $rules;
+    }
+
+    public function updated($propertyName)
+    {
+    // Validate only the changed property
+    if ($this->currentValidation == 'store') {
+        $this->validateOnly($propertyName, $this->rulesForSaveProduct());
+    } else {
+        $this->validateOnly($propertyName, $this->rulesForUpdateProduct());
+    }
+
+    // Update discount value when prices change
+    if ($propertyName == 'originalPrice' || $propertyName == 'discountPrice') {
+        $this->updateDiscountValue();
+    }
+    }
+
+    public function updateDiscountValue()
+    {
+        // Cast values to float for accurate calculations
+        $originalPrice = (float) $this->originalPrice;
+        $discountPrice = (float) $this->discountPrice;
+
+        if ($originalPrice > 0) {
+            $this->discountPercentage = (($originalPrice - $discountPrice) / $originalPrice) * 100;
+        } else {
+            $this->discountPercentage = 0;
+        }
+    }
+    public function toggleCategory($categoryId)
+    {
+        if (in_array($categoryId, $this->selectedCategories)) {
+            // Uncheck category and its subcategories
+            $this->selectedCategories = array_filter($this->selectedCategories, fn($id) => $id != $categoryId);
+            // Remove all subcategories of this category from the selected subcategories
+            $this->selectedSubCategories = array_filter($this->selectedSubCategories, function ($id) use ($categoryId) {
+                return !SubCategory::where('category_id', $categoryId)->where('id', $id)->exists();
+            });
+        } else {
+            // Check category and all its subcategories
+            $this->selectedCategories[] = $categoryId;
+            $subCategories = SubCategory::where('category_id', $categoryId)->pluck('id')->toArray();
+            $this->selectedSubCategories = array_merge($this->selectedSubCategories, $subCategories);
+        }
+    }
+
+    public function toggleSubCategory($subCategoryId, $categoryId)
+    {
+        if (in_array($subCategoryId, $this->selectedSubCategories)) {
+            // Uncheck subcategory
+            $this->selectedSubCategories = array_filter($this->selectedSubCategories, fn($id) => $id != $subCategoryId);
+            // If no subcategories are left checked, uncheck the main category
+            $hasUnchecked = SubCategory::where('category_id', $categoryId)
+                ->whereIn('id', $this->selectedSubCategories)
+                ->exists();
+            if (!$hasUnchecked) {
+                $this->selectedCategories = array_filter($this->selectedCategories, fn($id) => $id != $categoryId);
+            }
+        } else {
+            // Check subcategory
+            $this->selectedSubCategories[] = $subCategoryId;
+            if (!in_array($categoryId, $this->selectedCategories)) {
+                $this->selectedCategories[] = $categoryId;
+            }
+        }
+    }
     public function initialLoad(){
         $this->brands = Brand::with(['brandtranslation' => function ($query) {
             $query->where('locale', app()->getLocale());
@@ -77,15 +211,6 @@ class CProductLivewire extends Component
         $this->capacities = VariationCapacity::with(['variationCapacityTranslation' => function ($query) {
             $query->where('locale', app()->getLocale());
         }])->get();
-    }
-    public function productSave(){
-
-        dd($this->products, $this->contents);
-    }
-
-    public function updatedSelectedCategories($value)
-    {
-        // Optional: Handle updates or emit events if needed
     }
 
      // CRUD Handler
@@ -129,6 +254,50 @@ class CProductLivewire extends Component
          unset($this->selectedCapacities[$index]); // Remove the specific row
          $this->selectedCapacities = array_values($this->selectedCapacities); // Re-index the array
      }
+
+    // Add a new FAQ entry
+    public function addFaq()
+    {
+        // Initialize an empty FAQ for each locale
+        $newFaq = [];
+        foreach ($this->filteredLocales as $locale) {
+            $newFaq[$locale] = ['question' => '', 'answer' => ''];
+        }
+        $this->faqs[] = $newFaq; // Add the new FAQ with localized fields
+    }
+    // Remove an FAQ entry
+    public function removeFaq($index)
+    {
+        unset($this->faqs[$index]); // Remove the specific FAQ
+        $this->faqs = array_values($this->faqs); // Re-index the array
+    }
+
+    public function upload()
+    {
+        foreach ($this->images as $image) {
+            $path = $image->store('uploads', 'public');
+            // Here you can process the image, like cropping
+        }
+
+        // Clear the images after upload
+        $this->reset('images');
+
+        session()->flash('message', 'Images successfully uploaded.');
+    }
+
+    public function removeImage($index)
+    {
+        unset($this->images[$index]);
+    }
+
+    
+    public function productSave(){
+        dd($this->faqs, $this->productInformations, $this->productShip);
+        $this->currentValidation = 'store';
+        $validatedData = $this->validate($this->rulesForSave());
+    }
+
+
      // Render
      public function render(){ 
         $this->initialLoad();

@@ -27,6 +27,8 @@ class Product extends Model
     
     protected $casts = [
         'tag_id'=>'array',
+        'category_id'=>'array',
+        'sub_category_id'=>'array',
     ];
 
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
