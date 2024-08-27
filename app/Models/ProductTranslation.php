@@ -11,9 +11,10 @@ class ProductTranslation extends Model
     protected $table = 'product_translations';
     protected $fillable = [
         'product_id',
+        'locale',
         'name',
         'description',
-        'lang',
+        'slug',
     ];
     public function product() { return $this->belongsTo(Product::class,'product_id'); }
 }

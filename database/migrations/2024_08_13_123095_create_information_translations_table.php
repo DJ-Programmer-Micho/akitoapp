@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('locale',5);
             $table->longText('description')->nullable();
             $table->longText('addition')->nullable();
+            $table->longText('shipping')->nullable();
             $table->json('question_and_answer')->nullable();
             $table->timestamps();
         });

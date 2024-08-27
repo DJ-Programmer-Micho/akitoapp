@@ -11,10 +11,11 @@ class InformationTranslation extends Model
     protected $table = 'information_translations';
     protected $fillable = [
         'information_id',
+        'locale',
         'description',
         'addition',
+        'shipping',
         'question_and_answer',
-        'locale',
     ];
     protected $casts = [
         // 'options'=>'array',

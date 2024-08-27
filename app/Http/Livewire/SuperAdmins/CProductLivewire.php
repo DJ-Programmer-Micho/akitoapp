@@ -4,14 +4,21 @@ namespace App\Http\Livewire\SuperAdmins;
 
 use App\Models\Tag;
 use App\Models\Brand;
+use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
+use App\Models\Information;
 use App\Models\SubCategory;
+use Illuminate\Support\Str;
+use App\Models\ProductImage;
 use App\Models\VariationSize;
 use Livewire\WithFileUploads;
 use App\Models\VariationColor;
+use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
+use App\Models\ProductTranslation;
+use App\Models\InformationTranslation;
 
 class CProductLivewire extends Component
 {
@@ -292,9 +299,80 @@ class CProductLivewire extends Component
 
     
     public function productSave(){
-        dd($this->faqs, $this->productInformations, $this->productShip);
+
         $this->currentValidation = 'store';
-        $validatedData = $this->validate($this->rulesForSave());
+        $validatedData = $this->validate($this->rulesForSaveProduct());
+
+
+        $Information = Information::create([
+            'created_by_id' => 1,
+            'updated_by_id' => 1,
+        ]);
+    
+        foreach ($this->filteredLocales as $locale) {
+            InformationTranslation::create([
+                'product_id' => $Information->id,
+                'locale' => $locale,
+                'description' => $this->productDescriptions[$locale],
+                'addition' => $this->productInformations[$locale],
+                'shipping' => $this->productShip[$locale],
+                'question_and_answer' => $this->faqs[$locale],
+            ]);
+        }
+
+
+        $variation = ProductVariation::create([
+            // 'product_id' => $this->status ?? 1,
+            'color_id' => $this->selectedColors ?? null,
+            'size_id' => $this->selectedSizes ?? null,
+            'material_id' => $this->selectedMaterials ?? null,
+            'capacity_id' => $this->status ?? null,
+            'sku' => $this->sku ?? null,
+            'price' => $this->originalPrice ?? null,
+            'discount_price' => $this->discountPrice ?? null,
+            'on_stock' => $this->is_on_stock ?? 1,
+            'on_sale' => $this->is_on_sale ?? 0,
+            'featured' => $this->is_featured ?? 0,
+            'status' => $this->status ?? 1,
+            'priority' => $this->status ?? 3,
+        ]);
+
+        $product = Product::create([
+            'created_by_id' => 1,
+            'updated_by_id' => 1,
+            'brand_id' => $validatedData['selectedBrand'],
+            'category_id' => $validatedData['selectedCategories'],
+            'sub_category_id' => $validatedData['selectedSubCategories'],
+            // 'slug_id' => $validatedData['brand'],
+            'tag_id' => $validatedData['selectedTags'],
+            'variation_id' => $variation->id,
+            'information_id' => $Information->id,
+            'is_spare_part' => $this->is_spare_part ?? 0,
+            'priority' => 1,
+            'status' => $this->status ?? 1,
+        ]);
+    
+        foreach ($this->filteredLocales as $locale) {
+            ProductTranslation::create([
+                'product_id' => $product->id,
+                'locale' => $locale,
+                'name' => $this->products[$locale],
+                'description' => $this->contents[$locale],
+                'slug' => Str::slug($this->products[$locale], '-', ''),
+            ]);
+        }
+
+
+
+
+    
+        $product = ProductImage::create([
+            'variation_id' => $this->selectedColors ?? null,
+            'image_path' => $this->selectedSizes ?? null,
+            'is_primary' => $this->selectedMaterials ?? null,
+            'is_secondary' => $this->status ?? null,
+            'priority' => $this->sku ?? null,
+        ]);
     }
 
 
