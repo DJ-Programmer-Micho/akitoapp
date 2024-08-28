@@ -18,7 +18,9 @@ class InformationTranslation extends Model
         'question_and_answer',
     ];
     protected $casts = [
-        // 'options'=>'array',
+        'description'=>'array',
+        'addition'=>'array',
+        'shipping'=>'array',
         'question_and_answer'=>'array',
     ];
 

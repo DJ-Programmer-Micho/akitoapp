@@ -18,7 +18,9 @@ use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use App\Models\ProductTranslation;
+use Illuminate\Support\Facades\DB;
 use App\Models\InformationTranslation;
+use Illuminate\Support\Facades\Storage;
 
 class CProductLivewire extends Component
 {
@@ -96,6 +98,7 @@ class CProductLivewire extends Component
                 }
             }
         }
+        $rules['images'] = 'required';
         $rules['selectedBrand'] = 'required';
         $rules['originalPrice'] = 'required|numeric|min:0';
         $rules['selectedCategories'] = 'required';
@@ -297,84 +300,150 @@ class CProductLivewire extends Component
         unset($this->images[$index]);
     }
 
-    
-    public function productSave(){
+    public function productSave()
+    {
 
         $this->currentValidation = 'store';
         $validatedData = $this->validate($this->rulesForSaveProduct());
-
-
-        $Information = Information::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
-        ]);
+        // Start database transaction
+        DB::beginTransaction();
     
-        foreach ($this->filteredLocales as $locale) {
-            InformationTranslation::create([
-                'product_id' => $Information->id,
-                'locale' => $locale,
-                'description' => $this->productDescriptions[$locale],
-                'addition' => $this->productInformations[$locale],
-                'shipping' => $this->productShip[$locale],
-                'question_and_answer' => $this->faqs[$locale],
+        try {
+            // Create Information entry
+            if($this->productDescriptions || $this->productInformations || $this->productShip || $this->faqs) {
+
+                
+                $information = Information::create([
+                    'created_by_id' => 1,
+                    'updated_by_id' => 1,
+                ]);
+
+        
+                foreach ($this->filteredLocales as $locale) {
+                    InformationTranslation::create([
+                        'information_id' => $information->id,
+                        'locale' => $locale,
+                        'description' => $this->productDescriptions[$locale],
+                        'addition' => $this->productInformations[$locale],
+                        'shipping' => $this->productShip[$locale],
+                        'question_and_answer' => $this->faqs[$locale] ?? null,
+                    ]);
+                }
+            }
+
+            // Create Variation entry
+            $variation = ProductVariation::create([
+                'sku' => $this->sku ?? null,
+                'price' => $this->originalPrice ?? null,
+                'discount' => $this->discountPrice ?? null,
+                'on_stock' => $this->is_on_stock ?? 1,
+                'on_sale' => $this->is_on_sale ?? 0,
+                'featured' => $this->is_featured ?? 0,
+            ]);
+
+            // Attach colors if any are selected
+            if (!empty($this->selectedColors)) {
+                $variation->colors()->attach(array_column($this->selectedColors, 'color_id'));
+            }
+
+            // Attach sizes if any are selected
+            if (!empty($this->selectedSizes)) {
+                $variation->sizes()->attach(array_column($this->selectedSizes, 'size_id'));
+            }
+
+            // Attach materials if any are selected
+            if (!empty($this->selectedMaterials)) {
+                $variation->materials()->attach(array_column($this->selectedMaterials, 'material_id'));
+            }
+
+            // Attach capacities if any are selected
+            if (!empty($this->selectedCapacities)) {
+                $variation->capacities()->attach(array_column($this->selectedCapacities, 'capacity_id'));
+            }
+    
+          
+            // Create Product entry
+            $product = Product::create([
+                'created_by_id' => 1,
+                'updated_by_id' => 1,
+                'brand_id' => $validatedData['selectedBrand'],
+                'variation_id' => $variation->id,
+                'information_id' => $information->id ?? null,
+                'is_spare_part' => $this->is_spare_part ?? 0,
+                'priority' => 1,
+                'status' => $this->status ?? 1,
+            ]);
+
+            if (!empty($validatedData['selectedCategories'])) {
+                $product->categories()->attach($validatedData['selectedCategories']);
+            }
+
+            if (!empty($validatedData['selectedSubCategories'])) {
+                $product->subCategories()->attach($validatedData['selectedSubCategories']);
+            }
+
+            if (!empty($this->selectedTags)) {
+                $product->tags()->attach($this->selectedTags);
+            }
+
+            foreach ($this->filteredLocales as $locale) {
+                ProductTranslation::create([
+                    'product_id' => $product->id,
+                    'locale' => $locale,
+                    'name' => $this->products[$locale],
+                    'description' => $this->contents[$locale],
+                    'slug' => Str::slug($this->products[$locale], '-', ''),
+                ]);
+            }
+    
+            // Upload images to S3 and create ProductImage entries
+            foreach ($this->images as $index => $image) {
+                // Generate a unique name for each image
+                $microtime = str_replace('.', '', microtime(true));
+                $fileName = 'products/' . ($this->products['en'] ?? 'products') . '_product_' . date('Ydm') . $microtime . '.' . $image->extension();
+    
+                try {
+                    // Store the image to S3
+                    $imagePath = $image->storeAs('products', $fileName, 's3');
+                    
+                    // Store image data in the database
+                    ProductImage::create([
+                        'variation_id' => $variation->id,
+                        'image_path' => $imagePath, // S3 image path
+                        'is_primary' => $index === 0 ? true : false, // Set first image as primary
+                        'is_secondary' => $index === 1 ? true : false, // Set second image as secondary
+                        'priority' => $index, // Store the index as priority
+                    ]);
+                } catch (\Exception $e) {
+                    // Rollback transaction if an error occurs
+                    DB::rollBack();
+    
+                    $this->dispatchBrowserEvent('alert', [
+                        'type' => 'error',
+                        'message' => __('Failed to upload image to S3: ' . $fileName . ' - ' . $e->getMessage())
+                    ]);
+    
+                    return;
+                }
+            }
+    
+            // Commit transaction
+            DB::commit();
+    
+            // Clear the images after upload
+            $this->reset('images');
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Rollback transaction if an error occurs
+    
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Failed to save product: ' . $e->getMessage())
             ]);
         }
-
-
-        $variation = ProductVariation::create([
-            // 'product_id' => $this->status ?? 1,
-            'color_id' => $this->selectedColors ?? null,
-            'size_id' => $this->selectedSizes ?? null,
-            'material_id' => $this->selectedMaterials ?? null,
-            'capacity_id' => $this->status ?? null,
-            'sku' => $this->sku ?? null,
-            'price' => $this->originalPrice ?? null,
-            'discount_price' => $this->discountPrice ?? null,
-            'on_stock' => $this->is_on_stock ?? 1,
-            'on_sale' => $this->is_on_sale ?? 0,
-            'featured' => $this->is_featured ?? 0,
-            'status' => $this->status ?? 1,
-            'priority' => $this->status ?? 3,
-        ]);
-
-        $product = Product::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
-            'brand_id' => $validatedData['selectedBrand'],
-            'category_id' => $validatedData['selectedCategories'],
-            'sub_category_id' => $validatedData['selectedSubCategories'],
-            // 'slug_id' => $validatedData['brand'],
-            'tag_id' => $validatedData['selectedTags'],
-            'variation_id' => $variation->id,
-            'information_id' => $Information->id,
-            'is_spare_part' => $this->is_spare_part ?? 0,
-            'priority' => 1,
-            'status' => $this->status ?? 1,
-        ]);
-    
-        foreach ($this->filteredLocales as $locale) {
-            ProductTranslation::create([
-                'product_id' => $product->id,
-                'locale' => $locale,
-                'name' => $this->products[$locale],
-                'description' => $this->contents[$locale],
-                'slug' => Str::slug($this->products[$locale], '-', ''),
-            ]);
-        }
-
-
-
-
-    
-        $product = ProductImage::create([
-            'variation_id' => $this->selectedColors ?? null,
-            'image_path' => $this->selectedSizes ?? null,
-            'is_primary' => $this->selectedMaterials ?? null,
-            'is_secondary' => $this->status ?? null,
-            'priority' => $this->sku ?? null,
-        ]);
     }
-
+    
 
      // Render
      public function render(){ 

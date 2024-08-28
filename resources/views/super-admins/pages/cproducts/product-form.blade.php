@@ -662,6 +662,7 @@
                                             type="checkbox" 
                                             value="{{ $category->id }}" 
                                             id="category{{ $category->id }}"
+                                            wire:model="selectedCategories"
                                         >
                                         <label class="form-check-label" for="category{{ $category->id }}">
                                             {{ $category->categoryTranslation->name ?? $category->name }}
@@ -677,6 +678,7 @@
                                                     type="checkbox" 
                                                     value="{{ $subcategory->id }}" 
                                                     id="subcategory{{ $subcategory->id }}"
+                                                    wire:model="selectedSubCategories"
                                                 >
                                                 <label class="form-check-label" for="subcategory{{ $subcategory->id }}">
                                                     {{ $subcategory->subCategoryTranslation->name ?? $subcategory->name }}

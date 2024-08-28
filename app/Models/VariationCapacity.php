@@ -17,7 +17,8 @@ class VariationCapacity extends Model
         'status',
     ];
 
-    public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
+    public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }    
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
+    public function productVariations() { return $this->belongsToMany(ProductVariation::class, 'product_variation_capacity'); }
     public function variationCapacityTranslation() { return $this->hasone(VariationCapacityTranslation::class,'variation_capacity_id'); }
 }

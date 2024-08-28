@@ -19,5 +19,6 @@ class VariationSize extends Model
 
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
+    public function productVariations() { return $this->belongsToMany(ProductVariation::class, 'product_variation_size'); }
     public function variationSizeTranslation() { return $this->hasone(VariationSizeTranslation::class,'variation_size_id'); }
 }

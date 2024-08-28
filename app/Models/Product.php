@@ -13,22 +13,11 @@ class Product extends Model
         'created_by_id',
         'updated_by_id',
         'brand_id',
-        'category_id',
-        'sub_category_id',
-        'slug_id',
-        'tag_id',
         'variation_id',
         'information_id',
         'is_spare_part',
         'priority',
         'status',
-    ];
-
-    
-    protected $casts = [
-        'tag_id'=>'array',
-        'category_id'=>'array',
-        'sub_category_id'=>'array',
     ];
 
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
@@ -37,8 +26,8 @@ class Product extends Model
     public function information() { return $this->hasone(Information::class,'information_id'); }
     public function variation() { return $this->hasone(ProductVariation::class,'variation_id'); }
     public function brand() { return $this->belongsTo(Category::class, 'brand_id'); }
-    public function category() { return $this->belongsTo(Category::class, 'category_id'); }
-    public function subCategory() { return $this->belongsTo(SubCategory::class, 'sub_category_id'); }
-    public function slug() { return $this->hasone(Slug::class,'slug_id'); }
-    public function tag() { return $this->hasMany(Tag::class,'tag_id'); }
+    public function categories() { return $this->belongsToMany(Category::class, 'product_category'); }
+    public function subCategories() { return $this->belongsToMany(SubCategory::class, 'product_sub_category'); }
+    public function tags() { return $this->belongsToMany(Tag::class,'product_tag'); }
+    // public function slug() { return $this->hasone(Slug::class,'slug_id'); }
 }

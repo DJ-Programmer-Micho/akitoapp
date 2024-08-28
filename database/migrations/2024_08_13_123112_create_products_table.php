@@ -16,10 +16,6 @@ return new class extends Migration
             $table->foreignId('created_by_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('updated_by_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('brand_id')->references('id')->on('brands')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('sub_category_id')->references('id')->on('sub_categories')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('slug_id')->references('id')->on('slugs')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('tag_id')->references('id')->on('tags')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('variation_id')->references('id')->on('product_variations')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('information_id')->references('id')->on('informations')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('priority')->default(0);

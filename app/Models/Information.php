@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Information extends Model
 {
     use HasFactory;
-    protected $table = 'categories';
+    protected $table = 'informations';
     protected $fillable = [
         'created_by_id',
         'updated_by_id',

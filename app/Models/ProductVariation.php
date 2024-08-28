@@ -8,24 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class ProductVariation extends Model
 {
     use HasFactory;
-    protected $table = 'products_variations';
+    protected $table = 'product_variations';
     protected $fillable = [
-        'product_id',
-        'color_id',
-        'size_id',
-        'material_id',
-        'capacity_id',
         'sku',
         'price',
-        'discount_price',
+        'discount',
         'on_stock',
         'on_sale',
         'featured',
-        'status',
-        'priority',
     ];
+
 
     public function product() { return $this->hasOne(Product::class, 'variation_id'); }
     public function image() { return $this->hasOne(ProductImage::class, 'id'); }
+    public function colors() { return $this->belongsToMany(VariationColor::class, 'product_variation_color'); }
+    public function sizes() { return $this->belongsToMany(VariationSize::class, 'product_variation_size'); }
+    public function materials() { return $this->belongsToMany(VariationMaterial::class, 'product_variation_material'); }
+    public function capacities() { return $this->belongsToMany(VariationCapacity::class, 'product_variation_capacity'); }
+
 
 }
