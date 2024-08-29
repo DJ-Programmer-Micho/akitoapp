@@ -19,8 +19,8 @@ class ProductVariation extends Model
     ];
 
 
-    public function product() { return $this->hasOne(Product::class, 'variation_id'); }
-    public function image() { return $this->hasOne(ProductImage::class, 'id'); }
+    public function product() { return $this->hasMany(Product::class, 'variation_id'); }
+    public function images() { return $this->hasMany(ProductImage::class, 'variation_id'); }
     public function colors() { return $this->belongsToMany(VariationColor::class, 'product_variation_color'); }
     public function sizes() { return $this->belongsToMany(VariationSize::class, 'product_variation_size'); }
     public function materials() { return $this->belongsToMany(VariationMaterial::class, 'product_variation_material'); }

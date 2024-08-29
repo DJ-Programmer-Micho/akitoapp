@@ -19,6 +19,6 @@ class Brand extends Model
 
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
-    public function brandtranslation() { return $this->hasOne(BrandTranslation::class,'brand_id'); }
+    public function brandtranslation() { return $this->hasOne(BrandTranslation::class, 'brand_id'); }
     public function product() { return $this->hasMany(Product::class, 'brand_id'); }
 }

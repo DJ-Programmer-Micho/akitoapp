@@ -62,6 +62,7 @@
     @stack('materialsScripts')
     @stack('capacitiesScripts')
     @stack('super_script')
+    @stack('asideFilter')
     @livewireScripts
     <form id="languageForm" action="{{ route('setLocale') }}" method="post">
         @csrf

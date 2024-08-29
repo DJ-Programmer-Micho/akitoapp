@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/owl-carousel/owl.carousel.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/magnific-popup/magnific-popup.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/jquery.countdown.css')}}">
+        <link rel="stylesheet" href="{{asset('main/assets/css/plugins/nouislider/nouislider.css')}}">
         {{-- Main CSS File --}}
         <link rel="stylesheet" href="{{asset('main/assets/css/style.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/skins/skin-demo-3.css')}}">
@@ -38,6 +39,7 @@
         <script src="{{asset('main/assets/js/jquery.plugin.min.js')}}"></script>
         <script src="{{asset('main/assets/js/jquery.magnific-popup.min.js')}}"></script>
         <script src="{{asset('main/assets/js/jquery.countdown.min.js')}}"></script>
+        <script src="{{asset('main/assets/js/nouislider.min.js')}}"></script>
         <!-- Main JS File -->
         <script src="{{asset('main/assets/js/main.js')}}"></script>
         <script src="{{asset('main/assets/js/demos/demo-3.js')}}"></script>

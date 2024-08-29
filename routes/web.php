@@ -36,5 +36,12 @@ Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->na
         Route::get('/product-table', [SuperAdminController::class, 'tProduct'])->name('super.product.table');
         Route::get('/product-create', [SuperAdminController::class, 'cProduct'])->name('super.product.create');
     });
-    Route::get('/', [BusinessController::class, 'home'])->name('business.home');
+
+    Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
+        Route::get('/', [BusinessController::class, 'home'])->name('business.home');
+        Route::get('shop/', [BusinessController::class, 'productShop'])->name('business.productShop');
+        Route::get('product/{slug}', [BusinessController::class, 'productDetail'])->name('business.productDetail');
+    });
+
+   
 // });

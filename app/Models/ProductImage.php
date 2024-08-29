@@ -17,6 +17,6 @@ class ProductImage extends Model
         'priority',
     ];
 
-    public function product() { return $this->hasOne(ProductVariation::class, 'id'); }
+    public function product() { return $this->belongsTo(ProductVariation::class, 'variation_id'); }
 
 }

@@ -1,17 +1,6 @@
 <div class="header-middle">
     <div class="container">
         <div class="header-left">
-            <button class="mobile-menu-toggler">
-                <span class="sr-only">Toggle mobile menu</span>
-                <i class="icon-bars"></i>
-            </button>
-            
-            <a href="index.html" class="logo">
-                <img src="assets/images/demos/demo-3/logo.png" alt="Molla Logo" width="105" height="25">
-            </a>
-        </div><!-- End .header-left -->
-
-        <div class="header-center">
             <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                 <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
                 <form action="#" method="get">
@@ -23,52 +12,24 @@
                 </form>
             </div><!-- End .header-search -->
         </div>
+        <div class="header-center">
+            <a href="index.html" class="logo">
+                <img src="assets/images/demos/demo-6/logo.png" alt="Molla Logo" width="82" height="20">
+            </a>
+        </div><!-- End .header-left -->
 
         <div class="header-right">
-            <div class="dropdown compare-dropdown">
-                <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
-                    <div class="icon">
-                        <i class="icon-random"></i>
-                    </div>
-                    <p>Compare</p>
-                </a>
-
-                <div class="dropdown-menu dropdown-menu-right">
-                    <ul class="compare-products">
-                        <li class="compare-product">
-                            <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                            <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a></h4>
-                        </li>
-                        <li class="compare-product">
-                            <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                            <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a></h4>
-                        </li>
-                    </ul>
-
-                    <div class="compare-actions">
-                        <a href="#" class="action-link">Clear All</a>
-                        <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
-                    </div>
-                </div><!-- End .dropdown-menu -->
-            </div><!-- End .compare-dropdown -->
-
-            <div class="wishlist">
-                <a href="wishlist.html" title="Wishlist">
-                    <div class="icon">
-                        <i class="icon-heart-o"></i>
-                        <span class="wishlist-count badge">3</span>
-                    </div>
-                    <p>Wishlist</p>
-                </a>
-            </div><!-- End .compare-dropdown -->
+            <a href="wishlist.html" class="wishlist-link">
+                <i class="icon-heart-o"></i>
+                <span class="wishlist-count">3</span>
+                <span class="wishlist-txt">My Wishlist</span>
+            </a>
 
             <div class="dropdown cart-dropdown">
                 <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-                    <div class="icon">
-                        <i class="icon-shopping-cart"></i>
-                        <span class="cart-count">2</span>
-                    </div>
-                    <p>Cart</p>
+                    <i class="icon-shopping-cart"></i>
+                    <span class="cart-count">2</span>
+                    <span class="cart-txt">$ 164,00</span>
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-right">
@@ -126,6 +87,6 @@
                     </div><!-- End .dropdown-cart-total -->
                 </div><!-- End .dropdown-menu -->
             </div><!-- End .cart-dropdown -->
-        </div><!-- End .header-right -->
+        </div>
     </div><!-- End .container -->
 </div><!-- End .header-middle -->
