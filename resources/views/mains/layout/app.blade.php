@@ -10,8 +10,10 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/magnific-popup/magnific-popup.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/jquery.countdown.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/nouislider/nouislider.css')}}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
         {{-- Main CSS File --}}
         <link rel="stylesheet" href="{{asset('main/assets/css/style.css')}}">
+        <link rel="stylesheet" href="{{asset('main/assets/css/custom.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/skins/skin-demo-3.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/demos/demo-3.css')}}">
         <title>{{ $title ?? 'Page Title' }}</title>
@@ -19,7 +21,7 @@
     </head>
     <body>
         <div class="page-wrapper">
-            <x-mains.mappings.header-one />
+            <x-mains.mappings.header-one/>
             @yield('business-content')
             <x-mains.mappings.footer-one />
         </div><!-- End .page-wrapper -->
@@ -40,9 +42,22 @@
         <script src="{{asset('main/assets/js/jquery.magnific-popup.min.js')}}"></script>
         <script src="{{asset('main/assets/js/jquery.countdown.min.js')}}"></script>
         <script src="{{asset('main/assets/js/nouislider.min.js')}}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
         <!-- Main JS File -->
         <script src="{{asset('main/assets/js/main.js')}}"></script>
         <script src="{{asset('main/assets/js/demos/demo-3.js')}}"></script>
+        @stack("productView")
         @livewireScripts
+        <form id="languageForm" action="{{ route('setLocale') }}" method="post">
+            @csrf
+            <input type="hidden" name="locale" id="selectedLocale" value="{{ app()->getLocale() }}">
+        </form>
+        
+        <script>
+            function changeLanguage(locale) {
+                document.getElementById('selectedLocale').value = locale;
+                document.getElementById('languageForm').submit();
+            }
+        </script>
     </body>
 </html>

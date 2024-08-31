@@ -1,24 +1,25 @@
 <?php
 
-namespace App\View\Components\Mains\Mappings;
+namespace App\View\Components\Mains\Components\Brands;
 
 use Closure;
 use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 
-class NavOne extends Component
+class GridOne extends Component
 {
-    public $brands;
     /**
      * Create a new component instance.
      */
+    public $brands;
     public function __construct()
     {
-        // $this->brands = Cache::remember('active_brands', 60, function () {
-        //     return Brand::where('status', 1)->get();
-        // });
+        $this->brands = Cache::remember('active_brands', 60, function () {
+            return Brand::where('status', 1)->get();
+        });  
     }
 
     /**
@@ -26,6 +27,8 @@ class NavOne extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('mains.mappings.nav-one');
+        return view('mains.components.brands.grid-one',[
+            "brands" => $this->brands,
+        ]);
     }
 }

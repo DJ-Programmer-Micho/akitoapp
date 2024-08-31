@@ -2,9 +2,18 @@
 <div class="sidebar sidebar-shop">
     <div class="widget widget-clean">
         <label>Filters:</label>
+        @if(request()->is('*/shop'))
         <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">Clean All</a>
+        @else
+        <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">Clean All</a>
+        @endif
     </div><!-- End .widget widget-clean -->
+    @if(request()->is('*/shop'))
     <form id="filtersForm" method="GET" action="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">
+    @else
+    <form id="filtersForm" method="GET" action="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">
+    @endif
+    {{-- <form id="filtersForm" method="GET" action="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}"> --}}
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-cat" role="button" aria-expanded="true" aria-controls="widget-cat">
@@ -214,7 +223,6 @@
     // Get the global min and max price range
     var globalMinPrice = @json($minPrice);
     var globalMaxPrice = @json($maxPrice);
-
     // Initialize the noUiSlider
     noUiSlider.create(priceSlider, {
         start: [minPrice, maxPrice],

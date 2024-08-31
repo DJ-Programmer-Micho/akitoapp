@@ -1,0 +1,14 @@
+.text-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product.product-list {
+    box-shadow: none;
+    padding-bottom: 1rem;
+    border-bottom: .1rem solid #003465;
+    margin-bottom: 1rem;
+}

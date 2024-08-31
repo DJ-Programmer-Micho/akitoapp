@@ -1,3 +1,4 @@
+{{--file path: resources/views/mains/mappings/Components/top-one.blade.php --}}
 <div class="header-top">
     <div class="container">
         <div class="header-left">
@@ -5,7 +6,7 @@
                 <li>
                     <a href="#">Links</a>
                     <ul>
-                        <li><a href="tel:#"><i class="icon-phone"></i>Call: +0123 456 789</a></li>
+                        <li><a href="tel:009647507747742"><i class="icon-phone"></i>Call: +964 750 774 7742</a></li>
                     </ul>
                 </li>
             </ul><!-- End .top-menu -->
@@ -27,7 +28,7 @@
                 </li>
             </ul><!-- End .top-menu -->
 
-            <div class="header-dropdown">
+            {{-- <div class="header-dropdown">
                 <a href="#">USD</a>
                 <div class="header-menu">
                     <ul>
@@ -35,15 +36,19 @@
                         <li><a href="#">Usd</a></li>
                     </ul>
                 </div><!-- End .header-menu -->
-            </div><!-- End .header-dropdown -->
+            </div><!-- End .header-dropdown --> --}}
 
             <div class="header-dropdown">
-                <a href="#">Eng</a>
+                <div>{{ str_replace('_', '-', app()->getLocale()) }}</div>
                 <div class="header-menu">
                     <ul>
-                        <li><a href="#">English</a></li>
-                        <li><a href="#">French</a></li>
-                        <li><a href="#">Spanish</a></li>
+                        @foreach (config('app.locales') as $locale)
+                        <li>
+                            <a class="dropdown-item" onclick="changeLanguage('{{ $locale }}')">
+                                <img src="{{ asset('/assets/general/flags/'.$locale.'.png') }}" width="20" alt="{{ $locale }}"> {{ __(strtoupper($locale)) }}
+                            </a>
+                        </li>
+                        @endforeach
                     </ul>
                 </div><!-- End .header-menu -->
             </div><!-- End .header-dropdown -->

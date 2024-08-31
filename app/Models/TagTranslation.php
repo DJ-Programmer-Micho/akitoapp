@@ -15,5 +15,5 @@ class TagTranslation extends Model
         'locale',
     ];
 
-    public function tag() { return $this->belongsTo(Tag::class, 'id'); }
+    public function tag() { return $this->belongsTo(Tag::class, 'tag_id'); }
 }

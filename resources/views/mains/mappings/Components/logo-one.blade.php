@@ -13,8 +13,8 @@
             </div><!-- End .header-search -->
         </div>
         <div class="header-center">
-            <a href="index.html" class="logo">
-                <img src="assets/images/demos/demo-6/logo.png" alt="Molla Logo" width="82" height="20">
+            <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo">
+                <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" width="82" height="20">
             </a>
         </div><!-- End .header-left -->
 

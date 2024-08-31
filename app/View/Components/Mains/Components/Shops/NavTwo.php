@@ -6,15 +6,13 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class ProductNavigateOne extends Component
+class NavTwo extends Component
 {
-    public $products;
     /**
      * Create a new component instance.
      */
-    public function __construct($products)
+    public function __construct()
     {
-        $this->products = $products;
     }
 
     /**
@@ -22,8 +20,8 @@ class ProductNavigateOne extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('mains.components.shops.product-navigate-one',[
-            "products" => $this->products
+        return view('mains.components.shops.nav-two',[
+
         ]);
     }
 }

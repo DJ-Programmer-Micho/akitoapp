@@ -1,29 +1,50 @@
 <div class="product-details-top">
     <div class="row">
         <div class="col-md-6">
-            <div class="product-gallery product-gallery-vertical">
-                <div class="row">
-                    <figure class="product-main-image">
-                        
-                        <img id="product-zoom" src="{{app('cloudfront').$productDetail->variation->images[0]->image_path ?? "sdf"}}" data-zoom-image="assets/images/products/single/1-big.jpg" alt="product image">
-
-                        <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                            <i class="icon-arrows"></i>
+            <div class="product-gallery">
+                <!-- Main Image with Fancybox -->
+                <div class="product-main-image mb-3">
+                    <a id="main-image-fancybox" data-fancybox="gallery" href="{{ app('cloudfront').$productDetail->variation->images[0]->image_path ?? 'default.jpg' }}">
+                        <img id="product-zoom" src="{{ app('cloudfront').$productDetail->variation->images[0]->image_path ?? 'default.jpg' }}" alt="product image">
+                    </a>
+                </div>
+        
+                <!-- Thumbnails Carousel -->
+                @if ($productDetail->variation->images->count() > 1)
+                <div class="owl-carousel owl-theme product-image-gallery" id="product-zoom-gallery"
+                     data-toggle="owl"
+                     data-owl-options='{
+                         "nav": false,
+                         "dots": true,
+                         "margin": 10,
+                         "loop": false,
+                         "responsive": {
+                             "0": {
+                                 "items": 2
+                             },
+                             "600": {
+                                 "items": 3
+                             },
+                             "992": {
+                                 "items": 4
+                             },
+                             "1200": {
+                                 "items": 5
+                             }
+                         }
+                     }'>
+                    @foreach ($productDetail->variation->images as $index => $image)
+                    <div class="item">
+                        <a href="#" data-image="{{ app('cloudfront').$image->image_path ?? 'default.jpg' }}" data-fancybox="gallery">
+                            <img src="{{ app('cloudfront').$image->image_path ?? 'default.jpg' }}" alt="product side">
                         </a>
-                    </figure><!-- End .product-main-image -->
-
-                    @if ($productDetail->variation->images->count() > 1)
-                    <div id="product-zoom-gallery" class="product-image-gallery">
-                        @foreach ($productDetail->variation->images as $index => $image)
-                        <a class="product-gallery-item active" href="#" data-image="assets/images/products/single/1.jpg" data-zoom-image="assets/images/products/single/1-big.jpg">
-                            <img src="{{app('cloudfront').$image->image_path ?? "sdf"}}" alt="product side">
-                        </a>
-                        @endforeach
-                    </div><!-- End .product-image-gallery -->
-                    @endif
-                </div><!-- End .row -->
-            </div><!-- End .product-gallery -->
-        </div><!-- End .col-md-6 -->
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+        
+            </div>
+        </div>
 
         <div class="col-md-6">
             <div class="product-details">
@@ -36,9 +57,20 @@
                     <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
                 </div><!-- End .rating-container -->
 
+                @if ($productDetail->variation->discount)
+                <div class="product-price">
+                    $ {{$productDetail->variation->discount}}
+                    <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                        $ {{$productDetail->variation->price}}
+                    </span>
+                </div><!-- End .product-price -->
+            @else
                 <div class="product-price">
                     $ {{$productDetail->variation->price}}
                 </div><!-- End .product-price -->
+            @endif
+            
+
 
                 <div class="product-content">
                     <p>{{$productDetail->productTranslation->description}}</p>
@@ -58,7 +90,7 @@
                 </div><!-- End .details-filter-row -->
                 @endif
 
-                @if ($productDetail->variation->sizes->count() > 1)
+                @if ($productDetail->variation->sizes->count() >= 1)
                 <div class="details-filter-row details-row-size">
                     <label for="size">Size:</label>
                     <div class="select-custom">
@@ -73,34 +105,19 @@
                     {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
                 </div><!-- End .details-filter-row -->
                 @endif
-                @if ($productDetail->variation->sizes->count() > 1)
+                @if ($productDetail->variation->capacities->count() >= 1)
                 <div class="details-filter-row details-row-size">
-                    <label for="size">Size:</label>
+                    <label for="size">Capacity:</label>
                     <div class="select-custom">
-                        <select name="size" id="size" class="form-control">
-                            <option value="#" selected="selected">Select a size</option>
-                            @foreach ($productDetail->variation->sizes as $index => $size)
-                            <option value="{{$size->id}}">{{$size->variationSizeTranslation->name}}</option>
+                        <select name="capacity" id="size" class="form-control">
+                            <option value="#" selected="selected">Select a Capacity</option>
+                            @foreach ($productDetail->variation->capacities as $index => $capacity)
+                            <option value="{{$capacity->id}}">{{$capacity->variationCapacityTranslation->name}}</option>
                             @endforeach
                         </select>
                     </div><!-- End .select-custom -->
 
-                    <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a>
-                </div><!-- End .details-filter-row -->
-                @endif
-                @if ($productDetail->variation->sizes->count() > 1)
-                <div class="details-filter-row details-row-size">
-                    <label for="size">Size:</label>
-                    <div class="select-custom">
-                        <select name="size" id="size" class="form-control">
-                            <option value="#" selected="selected">Select a size</option>
-                            @foreach ($productDetail->variation->sizes as $index => $size)
-                            <option value="{{$size->id}}">{{$size->variationSizeTranslation->name}}</option>
-                            @endforeach
-                        </select>
-                    </div><!-- End .select-custom -->
-
-                    <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a>
+                    {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
                 </div><!-- End .details-filter-row -->
                 @endif
                 <div class="details-filter-row details-row-size">
@@ -150,3 +167,41 @@
         </div><!-- End .col-md-6 -->
     </div><!-- End .row -->
 </div><!-- End .product-details-top -->
+
+@push('productView')
+    
+
+<script>
+$(document).ready(function(){
+    // Initialize Owl Carousel
+    $("#product-zoom-gallery").owlCarousel({
+        nav: true,
+        dots: false,
+        margin: 10,
+        items: 4,
+        loop: false
+    });
+
+    // Change Main Image on Thumbnail Click
+    $("#product-zoom-gallery .item a").on("click", function(event) {
+        event.preventDefault();  // Prevent default link behavior
+        var newImage = $(this).data("image");  // Get the image URL from data attribute
+        $("#product-zoom").attr("src", newImage);  // Update the main image source
+        $("#main-image-fancybox").attr("href", newImage);  // Update the Fancybox link href
+    });
+
+    // Initialize Fancybox for image zoom
+    $('[data-fancybox="gallery"]').fancybox({
+        loop: true,
+        buttons: [
+            'slideShow',
+            'thumbs',
+            'close'
+        ],
+        thumbs: {
+            autoStart: true
+        }
+    });
+});
+</script>
+@endpush

@@ -12,6 +12,7 @@ class LocalizationMainMiddleware
 
     public function handle(Request $request, Closure $next)
     {
+
         $locale = $request->route('locale') ?? $request->session()->get('applocale', config('app.locale'));
 
         if (in_array($locale, $this->selectedLanguages)) {
@@ -40,18 +41,41 @@ class LocalizationMainMiddleware
         return redirect()->to($this->addLocaleToUrl($url, $selectedLocale));
     }
 
-    protected function addLocaleToUrl($url, $locale)
-    {
-        $parsedUrl = parse_url($url);
+protected function addLocaleToUrl($url, $locale)
+{
+    $parsedUrl = parse_url($url);
 
-        // Ensure the URL does not already have a locale prefix
-        if (preg_match('/\/(en|ar|ku)\//', $parsedUrl['path'] ?? '', $matches)) {
-            $url = str_replace($matches[0], "/$locale/", $url);
+    // Extract path and query
+    $path = $parsedUrl['path'] ?? '';
+    $query = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
+
+    // Normalize the path (remove leading and trailing slashes)
+    $path = trim($path, '/');
+
+    // Check if the path starts with a locale and if it’s the only segment
+    if (preg_match('/^(en|ar|ku)(\/|$)/', $path, $matches)) {
+        // If the path only has a single locale segment
+        if ($matches[1] === $path) {
+            // Replace the existing locale prefix with the new one
+            $path = $locale;
         } else {
-            $url = preg_replace('/^(\/.*?)(\/.*)?$/', "/$locale$1$2", $url);
+            // Replace the existing locale prefix with the new one
+            $path = preg_replace('/^(en|ar|ku)\//', "$locale/", $path);
         }
-
-        return $url;
+    } else {
+        // Add the new locale prefix
+        $path = "$locale/$path";
     }
+
+    // Rebuild the URL with the new path and existing query parameters
+    $result = $parsedUrl['scheme'] . '://' . $parsedUrl['host'] .
+              (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '') .
+              '/' . $path . $query;
+
+    return $result;
+}
+
+    
+    
 }
 

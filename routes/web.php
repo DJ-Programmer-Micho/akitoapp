@@ -24,6 +24,7 @@ Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->na
 
 
 // Route::middleware([LocaleRedirectMiddleware::class])->group(function () {
+// ADMIN
     Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware'])->group(function () {
         Route::get('/', [SuperAdminController::class, 'dashboard'])->name('super.dashboard');
         Route::get('/brands-managements', [SuperAdminController::class, 'brand'])->name('super.brand');
@@ -36,12 +37,16 @@ Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->na
         Route::get('/product-table', [SuperAdminController::class, 'tProduct'])->name('super.product.table');
         Route::get('/product-create', [SuperAdminController::class, 'cProduct'])->name('super.product.create');
     });
-
+// HOME
     Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
         Route::get('/', [BusinessController::class, 'home'])->name('business.home');
-        Route::get('shop/', [BusinessController::class, 'productShop'])->name('business.productShop');
+        Route::get('shop', [BusinessController::class, 'productShop'])->name('business.productShop');
+        Route::get('categories', [BusinessController::class, 'productCategory'])->name('business.category');
+        Route::get('brands', [BusinessController::class, 'productBrand'])->name('business.brand');
+        Route::get('spare', [BusinessController::class, 'productShopSpare'])->name('business.productShopSpare');
         Route::get('product/{slug}', [BusinessController::class, 'productDetail'])->name('business.productDetail');
     });
+    
 
    
 // });

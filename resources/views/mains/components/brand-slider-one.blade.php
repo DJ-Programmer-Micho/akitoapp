@@ -4,7 +4,7 @@
                 "nav": false, 
                 "dots": false,
                 "margin": 30,
-                "loop": false,
+                "loop": true,
                 "responsive": {
                     "0": {
                         "items":2
@@ -23,28 +23,10 @@
                     }
                 }
             }'>
+            @foreach($brands as $brand)
             <a href="#" class="brand">
-                <img src="assets/images/brands/1.png" alt="Brand Name">
+                <img src="{{ app('cloudfront').$brand->image }}" alt="{{ $brand->brandtranslation->name }}">
             </a>
-
-            <a href="#" class="brand">
-                <img src="assets/images/brands/2.png" alt="Brand Name">
-            </a>
-
-            <a href="#" class="brand">
-                <img src="assets/images/brands/3.png" alt="Brand Name">
-            </a>
-
-            <a href="#" class="brand">
-                <img src="assets/images/brands/4.png" alt="Brand Name">
-            </a>
-
-            <a href="#" class="brand">
-                <img src="assets/images/brands/5.png" alt="Brand Name">
-            </a>
-
-            <a href="#" class="brand">
-                <img src="assets/images/brands/6.png" alt="Brand Name">
-            </a>
+            @endforeach
         </div><!-- End .owl-carousel -->
 </div><!-- End .container -->

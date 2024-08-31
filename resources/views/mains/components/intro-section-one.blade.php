@@ -78,7 +78,7 @@
                 <div class="intro-banners">
                     <div class="banner mb-lg-1 mb-xl-2" style="min-height: 120px;">
                         <a href="#" >
-                            <img src="{{asset('main/assets/images/demos/demo-3/banners/banner-1.jpg')}}" alt="Banner">
+                            <img src="{{ app('cloudfront').'web-setting/banner-1.jpg' }}" alt="Banner">
                         </a>
 
                         {{-- <div class="banner-content">
@@ -90,7 +90,7 @@
 
                     <div class="banner mb-lg-1 mb-xl-2" style="min-height: 120px;">
                         <a href="#">
-                            <img src="{{asset('main/assets/images/demos/demo-3/banners/banner-2.jpg')}}" alt="Banner">
+                            <img src="{{ app('cloudfront').'web-setting/banner-2.jpg' }}" alt="Banner">
                         </a>
 
                         {{-- <div class="banner-content">
@@ -102,14 +102,14 @@
 
                     <div class="banner mb-0" style="min-height: 120px;">
                         <a href="#">
-                            <img src="{{asset('main/assets/images/demos/demo-3/banners/banner3.jpg')}}" alt="Banner">
+                            <img src="{{ app('cloudfront').'web-setting/banner-3.jpg' }}" alt="Banner">
                         </a>
 
-                        <div class="banner-content">
+                        {{-- <div class="banner-content">
                             <h4 class="banner-subtitle d-lg-none d-xl-block"><a href="#">Featured</a></h4><!-- End .banner-subtitle -->
                             <h3 class="banner-title"><a href="#">Apple Watch 4 <span>Our Hottest Deals</span></a></h3><!-- End .banner-title -->
                             <a href="#" class="banner-link">Shop Now<i class="icon-long-arrow-right"></i></a>
-                        </div><!-- End .banner-content -->
+                        </div><!-- End .banner-content --> --}}
                     </div><!-- End .banner -->
                 </div><!-- End .intro-banners -->
             </div><!-- End .col-lg-4 -->

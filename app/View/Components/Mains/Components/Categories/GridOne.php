@@ -1,26 +1,21 @@
 <?php
 
-namespace App\View\Components\Mains\Mappings;
+namespace App\View\Components\Mains\Components\Categories;
 
 use Closure;
-use App\Models\Brand;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\Cache;
 
-class HeaderOne extends Component
+class GridOne extends Component
 {
-    public $brands;
-    public $categories;
     /**
      * Create a new component instance.
      */
+    public $categories;
     public function __construct()
     {
-        $this->brands = Cache::remember('active_brands', 60, function () {
-            return Brand::where('status', 1)->get();
-        });  
         $this->categories = Cache::remember('active_categories', 60, function () {
             return Category::where('status', 1)->get();
         });  
@@ -31,9 +26,8 @@ class HeaderOne extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('mains.mappings.header-one',[
-            "brands" => $this->brands,
-            "categories" => $this->categories
+        return view('mains.components.categories.grid-one',[
+            "categories" => $this->categories,
         ]);
     }
 }

@@ -24,7 +24,7 @@
     </head>
     <body>
         <x-super-admins.components.header-one />
-        <x-super-admins.components.navbar-one />
+        <x-super-admins.components.navbar-one/>
         <div class="vertical-overlay"></div>
          <div class="main-content">{{-- style="margin-top: 90px;" --}}
             @yield('super-admin-content')

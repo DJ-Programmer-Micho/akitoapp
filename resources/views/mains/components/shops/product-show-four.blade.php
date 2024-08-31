@@ -4,27 +4,33 @@
         <div class="col-6 col-md-4 col-lg-4 col-xl-3">
             <div class="product product-7 text-center">
                 <figure class="product-media">
-                    <span class="product-label label-new">New</span>
-                    <a href="{{ route('business.productDetail', ['locale' => 'en','slug' => $product->productTranslation->slug])}}">
+                    <div class="label-wrapper">
+                        @if ($product->tags)
+                        @foreach ($product->tags as $tag)
+                            <span class="product-label col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                        @endforeach
+                        @endif
+                    </div>
+                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}">
                         <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->name[0]}}" class="product-image">
                     </a>
 
                     <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                        <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                        <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
                     </div><!-- End .product-action-vertical -->
 
                     <div class="product-action">
-                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product btn-cart"><span>add to cart</span></a>
                     </div><!-- End .product-action -->
                 </figure><!-- End .product-media -->
 
                 <div class="product-body">
                     <div class="product-cat">
-                        <a href="#">{{$product->categories[0]->categoryTranslation->name}}</a>
+                        <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $product->categories[0]->id]) }}">{{$product->categories[0]->categoryTranslation->name}}</a>
                     </div><!-- End .product-cat -->
-                    <h3 class="product-title"><a href="{{ route('business.productDetail', ['locale' => 'en','slug' => $product->productTranslation->slug])}}">{{$product->productTranslation->name}}</a></h3><!-- End .product-title -->
+                    <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}">{{$product->productTranslation->name}}</a></h3><!-- End .product-title -->
                     <div class="product-price">
                         $ {{$product->variation->price}}
                     </div><!-- End .product-price -->
