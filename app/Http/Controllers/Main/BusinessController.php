@@ -18,37 +18,102 @@ use Illuminate\Support\Facades\Cache;
 
 class BusinessController extends Controller
 {
-    public function home(){
-        $productsCat1 = Cache::remember('active_products_category_1', 60, function () {
-            return Product::where('status', 1)
-                           ->whereHas('categories', function ($query) {
-                               // Specify which table's `id` column you are referring to
-                               $query->where('categories.id', 4);
-                           })
-                           ->get();
+    public function home() {
+        $locale = app()->getLocale();  // Get the current locale
+    
+        // Fetch products for the first category
+        $productsCat1 = Cache::remember("active_products_category_1_$locale", 60, function () use ($locale) {
+            return Product::with([
+                'productTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'variation.colors',
+                'variation.sizes',
+                'variation.materials',
+                'variation.capacities',
+                'variation.images',
+                'brand.brandTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'categories.categoryTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'tags.tagTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->whereHas('categories', function ($query) {
+                $query->where('categories.id', 7);
+            })
+            ->get();
         });
+    
+        // $productsCat1Title = $productsCat1->first()->categories->first()->categoryTranslation->title ?? __("messages.category_1_title");
         $productsCat1Title = "Coffee Makers";
-
-        $productsCat2 = Cache::remember('active_products_category_2', 60, function () {
-            return Product::where('status', 1)
-                           ->whereHas('categories', function ($query) {
-                               // Specify which table's `id` column you are referring to
-                               $query->where('categories.id', 1);
-                           })
-                           ->get();
+    
+        // Fetch products for the second category
+        $productsCat2 = Cache::remember("active_products_category_2_$locale", 60, function () use ($locale) {
+            return Product::with([
+                'productTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'variation.colors',
+                'variation.sizes',
+                'variation.materials',
+                'variation.capacities',
+                'variation.images',
+                'brand.brandTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'categories.categoryTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'tags.tagTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->whereHas('categories', function ($query) {
+                $query->where('categories.id', 9);
+            })
+            ->get();
         });
-        $productsCat2Title = "cat1";
-
-        $productsCat3 = Cache::remember('active_products_category_3', 60, function () {
-            return Product::where('status', 1)
-                           ->whereHas('categories', function ($query) {
-                               // Specify which table's `id` column you are referring to
-                               $query->where('categories.id', 3);
-                           })
-                           ->get();
+    
+        // $productsCat2Title = $productsCat2->first()->categories->first()->categoryTranslation->title ?? __("messages.category_2_title");
+        $productsCat2Title = "Coffee Beans";
+    
+        // Fetch products for the third category
+        $productsCat3 = Cache::remember("active_products_category_3_$locale", 60, function () use ($locale) {
+            return Product::with([
+                'productTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'variation.colors',
+                'variation.sizes',
+                'variation.materials',
+                'variation.capacities',
+                'variation.images',
+                'brand.brandTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'categories.categoryTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                },
+                'tags.tagTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->whereHas('categories', function ($query) {
+                $query->where('categories.id', 11);
+            })
+            ->get();
         });
-        $productsCat3Title = "BREW";
-
+    
+        // $productsCat3Title = $productsCat3->first()->categories->first()->categoryTranslation->title ?? __("messages.category_3_title");
+        $productsCat3Title = "Syrup";
+    
         return view('mains.pages.home-page-one', [
             'productsCat1' => $productsCat1,
             'productsCat1Title' => $productsCat1Title,
@@ -58,6 +123,7 @@ class BusinessController extends Controller
             'productsCat3Title' => $productsCat3Title,
         ]);
     }
+    
 
     public function productCategory(){
         return view('mains.pages.category-page-one', [
@@ -71,29 +137,45 @@ class BusinessController extends Controller
         ]);
     }
 
-    public function productDetail($locale,$slug){
-        $product = Product::with([
-            'productTranslation', 
-            'variation.colors', 
-            'variation.sizes.variationSizeTranslation', 
-            'variation.materials', 
-            'variation.capacities',
-            'variation.images',
-            'brand.brandTranslation', 
-            'categories.categoryTranslation', 
-            'tags.tagTranslation',
-            'information.informationTranslation'
-        ])
-        ->whereHas('productTranslation', function($query) use ($locale, $slug) {
-            $query->where('slug', $slug)
-                  ->where('locale', $locale);
-        })
-        ->first();
+public function productDetail($locale, $slug)
+{
+    // Attempt to fetch the product
+    $product = Product::with([
+        'productTranslation' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        },
+        'variation.colors',
+        'variation.sizes.variationSizeTranslation' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        },
+        'variation.materials',
+        'variation.capacities',
+        'variation.images',
+        'brand.brandTranslation' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        },
+        'categories.categoryTranslation' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        },
+        'tags.tagTranslation' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        },
+        'information.informationTranslation' => function ($query) use ($locale) {
+            $query->where('locale', $locale);
+        }
+    ])
+    ->whereHas('productTranslation', function ($query) use ($locale, $slug) {
+        $query->where('slug', $slug)
+              ->where('locale', $locale);
+    })
+    ->first();
 
-        return view('mains.pages.product-page-one',[
-            'product' => $product,
-        ]);
-    }
+    return view('mains.pages.product-page-one', [
+        'product' => $product,
+    ]);
+}
+
+
 
     public function productShop(Request $request)
     {

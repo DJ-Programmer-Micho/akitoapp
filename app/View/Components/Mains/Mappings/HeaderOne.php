@@ -18,12 +18,26 @@ class HeaderOne extends Component
      */
     public function __construct()
     {
-        $this->brands = Cache::remember('active_brands', 60, function () {
-            return Brand::where('status', 1)->get();
-        });  
-        $this->categories = Cache::remember('active_categories', 60, function () {
-            return Category::where('status', 1)->get();
-        });  
+        $locale = app()->getLocale();  // Get the current locale
+
+        $this->brands = Cache::remember("active_brands_$locale", 60, function () use ($locale) {
+            return Brand::with([
+                'brandTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->get();
+        });
+        $this->categories = Cache::remember("active_categories_$locale", 60, function () use ($locale) {
+            return Category::with([
+                'categoryTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->get();
+        });
     }
 
     /**

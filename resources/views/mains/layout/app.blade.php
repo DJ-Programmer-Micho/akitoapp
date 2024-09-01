@@ -48,16 +48,16 @@
         <script src="{{asset('main/assets/js/demos/demo-3.js')}}"></script>
         @stack("productView")
         @livewireScripts
-        <form id="languageForm" action="{{ route('setLocale') }}" method="post">
-            @csrf
-            <input type="hidden" name="locale" id="selectedLocale" value="{{ app()->getLocale() }}">
-        </form>
-        
-        <script>
-            function changeLanguage(locale) {
-                document.getElementById('selectedLocale').value = locale;
-                document.getElementById('languageForm').submit();
-            }
-        </script>
+<form id="languageForm" action="{{ route('setLocale') }}" method="post">
+    @csrf
+    <input type="hidden" name="locale" id="selectedLocale" value="{{ app()->getLocale() }}">
+</form>
+
+<script>
+    function changeLanguage(locale) {
+        document.getElementById('selectedLocale').value = locale;
+        document.getElementById('languageForm').submit();
+    }
+</script>
     </body>
 </html>

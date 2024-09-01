@@ -17,6 +17,8 @@
                 data-owl-options='{
                     "nav": true, 
                     "dots": true,
+                    "rtl": {{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'true' : 'false' }},
+                    "lazyLoad": true,
                     "margin": 20,
                     "loop": false,
                     "responsive": {
@@ -56,15 +58,110 @@
                             <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
                         </div><!-- End .product-cat -->
                         <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
-                        <div class="product-price">
-                            $ {{$item->variation->price}}
-                        </div><!-- End .product-price -->
-                        <div class="ratings-container">
+                        @if ($item->variation->discount)
+                            <div class="product-price">
+                                $ {{$item->variation->discount}}
+                                <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                                    $ {{$item->variation->price}}
+                                </span>
+                            </div><!-- End .product-price -->
+                        @else
+                            <div class="product-price">
+                                $ {{$item->variation->price}}
+                            </div><!-- End .product-price -->
+                        @endif
+                        {{-- <div class="ratings-container">
                             <div class="ratings">
                                 <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
                             </div><!-- End .ratings -->
                             <span class="ratings-text">( 2 Reviews )</span>
-                        </div><!-- End .rating-container -->
+                        </div><!-- End .rating-container --> --}}
+                    </div><!-- End .product-body -->
+                </div><!-- End .product -->
+                @endforeach
+                @foreach ($featured_products as $item)
+                <div class="product product-2">
+                    <figure class="product-media">
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
+                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
+                        </a>
+
+                        <div class="product-action-vertical">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        </div><!-- End .product-action -->
+
+                        <div class="product-action product-action-dark">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                        </div><!-- End .product-action -->
+                    </figure><!-- End .product-media -->
+
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
+                        </div><!-- End .product-cat -->
+                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
+                        @if ($item->variation->discount)
+                            <div class="product-price">
+                                $ {{$item->variation->discount}}
+                                <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                                    $ {{$item->variation->price}}
+                                </span>
+                            </div><!-- End .product-price -->
+                        @else
+                            <div class="product-price">
+                                $ {{$item->variation->price}}
+                            </div><!-- End .product-price -->
+                        @endif
+                        {{-- <div class="ratings-container">
+                            <div class="ratings">
+                                <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
+                            </div><!-- End .ratings -->
+                            <span class="ratings-text">( 2 Reviews )</span>
+                        </div><!-- End .rating-container --> --}}
+                    </div><!-- End .product-body -->
+                </div><!-- End .product -->
+                @endforeach
+                @foreach ($featured_products as $item)
+                <div class="product product-2">
+                    <figure class="product-media">
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
+                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
+                        </a>
+
+                        <div class="product-action-vertical">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        </div><!-- End .product-action -->
+
+                        <div class="product-action product-action-dark">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                        </div><!-- End .product-action -->
+                    </figure><!-- End .product-media -->
+
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
+                        </div><!-- End .product-cat -->
+                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
+                        @if ($item->variation->discount)
+                            <div class="product-price">
+                                $ {{$item->variation->discount}}
+                                <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                                    $ {{$item->variation->price}}
+                                </span>
+                            </div><!-- End .product-price -->
+                        @else
+                            <div class="product-price">
+                                $ {{$item->variation->price}}
+                            </div><!-- End .product-price -->
+                        @endif
+                        {{-- <div class="ratings-container">
+                            <div class="ratings">
+                                <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
+                            </div><!-- End .ratings -->
+                            <span class="ratings-text">( 2 Reviews )</span>
+                        </div><!-- End .rating-container --> --}}
                     </div><!-- End .product-body -->
                 </div><!-- End .product -->
                 @endforeach
@@ -75,6 +172,8 @@
                 data-owl-options='{
                     "nav": true, 
                     "dots": true,
+                    "rtl": {{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'true' : 'false' }},
+                    "lazyLoad": true,
                     "margin": 20,
                     "loop": false,
                     "responsive": {
@@ -114,15 +213,110 @@
                             <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
                         </div><!-- End .product-cat -->
                         <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
-                        <div class="product-price">
-                            {{$item->variation->price}}
-                        </div><!-- End .product-price -->
-                        <div class="ratings-container">
+                        @if ($item->variation->discount)
+                            <div class="product-price">
+                                $ {{$item->variation->discount}}
+                                <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                                    $ {{$item->variation->price}}
+                                </span>
+                            </div><!-- End .product-price -->
+                        @else
+                            <div class="product-price">
+                                $ {{$item->variation->price}}
+                            </div><!-- End .product-price -->
+                        @endif
+                        {{-- <div class="ratings-container">
                             <div class="ratings">
                                 <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
                             </div><!-- End .ratings -->
                             <span class="ratings-text">( 2 Reviews )</span>
-                        </div><!-- End .rating-container -->
+                        </div><!-- End .rating-container --> --}}
+                    </div><!-- End .product-body -->
+                </div><!-- End .product -->
+                @endforeach
+                @foreach ($on_sale as $item)
+                <div class="product product-2">
+                    <figure class="product-media">
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
+                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
+                        </a>
+
+                        <div class="product-action-vertical">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        </div><!-- End .product-action -->
+
+                        <div class="product-action product-action-dark">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                        </div><!-- End .product-action -->
+                    </figure><!-- End .product-media -->
+
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
+                        </div><!-- End .product-cat -->
+                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
+                        @if ($item->variation->discount)
+                            <div class="product-price">
+                                $ {{$item->variation->discount}}
+                                <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                                    $ {{$item->variation->price}}
+                                </span>
+                            </div><!-- End .product-price -->
+                        @else
+                            <div class="product-price">
+                                $ {{$item->variation->price}}
+                            </div><!-- End .product-price -->
+                        @endif
+                        {{-- <div class="ratings-container">
+                            <div class="ratings">
+                                <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
+                            </div><!-- End .ratings -->
+                            <span class="ratings-text">( 2 Reviews )</span>
+                        </div><!-- End .rating-container --> --}}
+                    </div><!-- End .product-body -->
+                </div><!-- End .product -->
+                @endforeach
+                @foreach ($on_sale as $item)
+                <div class="product product-2">
+                    <figure class="product-media">
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
+                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
+                        </a>
+
+                        <div class="product-action-vertical">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                        </div><!-- End .product-action -->
+
+                        <div class="product-action product-action-dark">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                        </div><!-- End .product-action -->
+                    </figure><!-- End .product-media -->
+
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
+                        </div><!-- End .product-cat -->
+                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
+                        @if ($item->variation->discount)
+                            <div class="product-price">
+                                $ {{$item->variation->discount}}
+                                <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                                    $ {{$item->variation->price}}
+                                </span>
+                            </div><!-- End .product-price -->
+                        @else
+                            <div class="product-price">
+                                $ {{$item->variation->price}}
+                            </div><!-- End .product-price -->
+                        @endif
+                        {{-- <div class="ratings-container">
+                            <div class="ratings">
+                                <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
+                            </div><!-- End .ratings -->
+                            <span class="ratings-text">( 2 Reviews )</span>
+                        </div><!-- End .rating-container --> --}}
                     </div><!-- End .product-body -->
                 </div><!-- End .product -->
                 @endforeach

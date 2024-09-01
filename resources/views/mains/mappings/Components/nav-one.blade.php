@@ -12,7 +12,7 @@
                     </li>
                     <li class="megamenu-container {{ request()->is(app()->getLocale() . '/categories') ? 'active' : '' }}">
                         <a href="{{ route('business.category', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Categories') }}</a>
-
+                    
                         <div class="megamenu demo">
                             <div class="menu-col">
                                 <div class="menu-title">{{ __('Choose Your Category') }}</div><!-- End .menu-title -->
@@ -20,7 +20,9 @@
                                     @foreach($categories as $category)
                                     <div class="demo-item">
                                         <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $category->id]) }}">
-                                            <span class="demo-bg" style="background-image: url('{{ app('cloudfront').$category->image }}');" alt="{{ $category->image }}"></span>
+                                            <div class="image-wrapper-100">
+                                                <span class="demo-bg-100" style="background-image: url('{{ app('cloudfront').$category->image }}');" alt="{{ $category->image }}"></span>
+                                            </div>
                                             <span class="demo-title">{{ $category->categoryTranslation->name }}</span>
                                         </a>
                                     </div><!-- End .demo-item -->
@@ -29,9 +31,10 @@
                             </div><!-- End .menu-col -->
                         </div><!-- End .megamenu -->
                     </li>
+                    
                     <li class="megamenu-container {{ request()->is(app()->getLocale() . '/brands') ? 'active' : '' }}">
                         <a href="{{ route('business.brand', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Brands') }}</a>
-
+                    
                         <div class="megamenu demo">
                             <div class="menu-col">
                                 <div class="menu-title">{{ __('Choose Your Brand') }}</div><!-- End .menu-title -->
@@ -39,7 +42,9 @@
                                     @foreach($brands as $brand)
                                     <div class="demo-item">
                                         <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $brand->id]) }}">
-                                            <span class="demo-bg" style="background-image: url('{{ app('cloudfront').$brand->image }}');" alt="{{ $brand->image }}"></span>
+                                            <div class="image-wrapper-100">
+                                                <span class="demo-bg-100" style="background-image: url('{{ app('cloudfront').$brand->image }}');" alt="{{ $brand->image }}"></span>
+                                            </div>
                                             <span class="demo-title">{{ $brand->brandTranslation->name }}</span>
                                         </a>
                                     </div><!-- End .demo-item -->
@@ -48,6 +53,7 @@
                             </div><!-- End .menu-col -->
                         </div><!-- End .megamenu -->
                     </li>
+                    
                     <li class="{{ request()->is(app()->getLocale() . '/spare') ? 'active' : '' }}">
                         <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">{{ __('Spare Parts') }}</a>
                     </li>
@@ -65,3 +71,38 @@
         </div> --}}
     </div><!-- End .container -->
 </div><!-- End .header-bottom -->
+
+<style>
+.image-wrapper-100 {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* This ensures the wrapper maintains a square aspect ratio */
+    overflow: hidden;
+    transition: transform 0.3s ease; /* Smooth transition for scaling */
+}
+
+.demo-bg-100 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover; /* Ensure the image covers the entire container */
+    background-position: center; /* Center the image */
+    transition: transform 0.3s ease; /* Smooth transition for scaling */
+}
+
+/* Zoom effect on hover */
+.image-wrapper-100:hover .demo-bg-100 {
+    transform: scale(1.1); /* Scale up the image by 10% */
+}
+
+
+/* Optional: Adjust size for responsiveness */
+@media (max-width: 767px) {
+    .image-wrapper-100 {
+        padding-top: 75%; /* Adjust padding for smaller screens if needed */
+    }
+}
+
+</style>

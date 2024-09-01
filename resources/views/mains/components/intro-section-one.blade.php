@@ -16,11 +16,11 @@
                         <div class="intro-slide">
                             <figure class="slide-image">
                                 <picture>
-                                    <source media="(max-width: 480px)" srcset="assets/images/demos/demo-3/slider/slide-1-480w.jpg">
-                                    <img src="assets/images/demos/demo-3/slider/slide-1.jpg" alt="Image Desc">
+                                    <source media="(max-width: 480px)" srcset="{{ app('cloudfront').'web-setting/slide-1.jpg' }}">
+                                    <img src="{{ app('cloudfront').'web-setting/slide-1.jpg' }}" alt="Image Desc">
                                 </picture>
                             </figure><!-- End .slide-image -->
-
+{{-- 
                             <div class="intro-content">
                                 <h3 class="intro-subtitle text-primary">Daily Deals</h3><!-- End .h3 intro-subtitle -->
                                 <h1 class="intro-title">
@@ -38,18 +38,18 @@
                                     <span>Click Here</span>
                                     <i class="icon-long-arrow-right"></i>
                                 </a>
-                            </div><!-- End .intro-content -->
+                            </div><!-- End .intro-content --> --}}
                         </div><!-- End .intro-slide -->
 
                         <div class="intro-slide">
                             <figure class="slide-image">
                                 <picture>
-                                    <source media="(max-width: 480px)" srcset="assets/images/demos/demo-3/slider/slide-2-480w.jpg">
-                                    <img src="assets/images/demos/demo-3/slider/slide-2.jpg" alt="Image Desc">
+                                    <source media="(max-width: 480px)" srcset="{{ app('cloudfront').'web-setting/slide-2.jpg' }}">
+                                    <img src="{{ app('cloudfront').'web-setting/slide-2.jpg' }}" alt="Image Desc">
                                 </picture>
                             </figure><!-- End .slide-image -->
 
-                            <div class="intro-content">
+                            {{-- <div class="intro-content">
                                 <h3 class="intro-subtitle text-primary">Deals and Promotions</h3><!-- End .h3 intro-subtitle -->
                                 <h1 class="intro-title">
                                     Echo Dot <br>3rd Gen
@@ -66,7 +66,7 @@
                                     <span>Click Here</span>
                                     <i class="icon-long-arrow-right"></i>
                                 </a>
-                            </div><!-- End .intro-content -->
+                            </div><!-- End .intro-content --> --}}
                         </div><!-- End .intro-slide -->
                     </div><!-- End .intro-slider owl-carousel owl-simple -->
                     

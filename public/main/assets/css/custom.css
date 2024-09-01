@@ -12,3 +12,37 @@
     border-bottom: .1rem solid #003465;
     margin-bottom: 1rem;
 }
+
+.megamenu-container ul {
+    columns: 2; /* For modern browsers */
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    column-gap: 4px; /* Adjust the gap between the columns */
+}
+
+.megamenu-container ul li {
+    break-inside: avoid; /* Prevents items from breaking inside columns */
+    margin-bottom: 10px; /* Adjust spacing between items */
+}
+
+[lang="ar"] .product-cat,
+[lang="ku"] .product-cat {
+    text-align: right;
+    direction: rtl;
+}
+[lang="ar"] .product-title,
+[lang="ku"] .product-title {
+    text-align: right;
+    direction: rtl;
+}
+
+[lang="ar"] .product-price,
+[lang="ku"] .product-price {
+    text-align: right;
+    direction: rtl;
+}
+[lang="ar"] .heading-left .title,
+[lang="ku"] .heading-left .title{
+    text-align: right;
+    direction: rtl;
+}

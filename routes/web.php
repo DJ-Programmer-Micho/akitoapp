@@ -45,6 +45,7 @@ Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->na
         Route::get('brands', [BusinessController::class, 'productBrand'])->name('business.brand');
         Route::get('spare', [BusinessController::class, 'productShopSpare'])->name('business.productShopSpare');
         Route::get('product/{slug}', [BusinessController::class, 'productDetail'])->name('business.productDetail');
+        // ->middleware('update.product.slug')
     });
     
 

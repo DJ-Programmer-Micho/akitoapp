@@ -11,31 +11,10 @@
         
                 <!-- Thumbnails Carousel -->
                 @if ($productDetail->variation->images->count() > 1)
-                <div class="owl-carousel owl-theme product-image-gallery" id="product-zoom-gallery"
-                     data-toggle="owl"
-                     data-owl-options='{
-                         "nav": false,
-                         "dots": true,
-                         "margin": 10,
-                         "loop": false,
-                         "responsive": {
-                             "0": {
-                                 "items": 2
-                             },
-                             "600": {
-                                 "items": 3
-                             },
-                             "992": {
-                                 "items": 4
-                             },
-                             "1200": {
-                                 "items": 5
-                             }
-                         }
-                     }'>
-                    @foreach ($productDetail->variation->images as $index => $image)
+                <div class="owl-carousel owl-theme product-image-gallery" id="product-zoom-gallery">
+                    @foreach ($productDetail->variation->images as $image)
                     <div class="item">
-                        <a href="#" data-image="{{ app('cloudfront').$image->image_path ?? 'default.jpg' }}" data-fancybox="gallery">
+                        <a href="{{ app('cloudfront').$image->image_path ?? 'default.jpg' }}" data-fancybox="gallery" data-image="{{ app('cloudfront').$image->image_path ?? 'default.jpg' }}">
                             <img src="{{ app('cloudfront').$image->image_path ?? 'default.jpg' }}" alt="product side">
                         </a>
                     </div>
@@ -58,17 +37,17 @@
                 </div><!-- End .rating-container -->
 
                 @if ($productDetail->variation->discount)
-                <div class="product-price">
-                    $ {{$productDetail->variation->discount}}
-                    <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                    <div class="product-price">
+                        $ {{$productDetail->variation->discount}}
+                        <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                            $ {{$productDetail->variation->price}}
+                        </span>
+                    </div><!-- End .product-price -->
+                @else
+                    <div class="product-price">
                         $ {{$productDetail->variation->price}}
-                    </span>
-                </div><!-- End .product-price -->
-            @else
-                <div class="product-price">
-                    $ {{$productDetail->variation->price}}
-                </div><!-- End .product-price -->
-            @endif
+                    </div><!-- End .product-price -->
+                @endif
             
 
 
@@ -81,8 +60,8 @@
                     <label>Color:</label>
 
                     <div class="product-nav product-nav-thumbs">
-                        @foreach ($productDetail->variation->colors as $index => $color)
-                        <a>
+                        @foreach ($productDetail->variation->colors as $color)
+                        <a href="#">
                             <div style="height: 100%; width: 100%; background-color: {{$color->code}};"></div>
                         </a>
                         @endforeach
@@ -96,7 +75,7 @@
                     <div class="select-custom">
                         <select name="size" id="size" class="form-control">
                             <option value="#" selected="selected">Select a size</option>
-                            @foreach ($productDetail->variation->sizes as $index => $size)
+                            @foreach ($productDetail->variation->sizes as $size)
                             <option value="{{$size->id}}">{{$size->variationSizeTranslation->name}}</option>
                             @endforeach
                         </select>
@@ -109,9 +88,9 @@
                 <div class="details-filter-row details-row-size">
                     <label for="size">Capacity:</label>
                     <div class="select-custom">
-                        <select name="capacity" id="size" class="form-control">
+                        <select name="capacity" id="capacity" class="form-control">
                             <option value="#" selected="selected">Select a Capacity</option>
-                            @foreach ($productDetail->variation->capacities as $index => $capacity)
+                            @foreach ($productDetail->variation->capacities as $capacity)
                             <option value="{{$capacity->id}}">{{$capacity->variationCapacityTranslation->name}}</option>
                             @endforeach
                         </select>
@@ -140,7 +119,7 @@
                     @if ($productDetail->variation->materials->count() > 1)
                     <div class="product-cat">
                         <span>Materials:</span>
-                        @foreach ($productDetail->variation->materials as $index => $material)
+                        @foreach ($productDetail->variation->materials as $material)
                         <a href="#">{{$material->variationMaterialeTranslation->name}}</a>,
                         @endforeach
                     </div><!-- End .product-cat -->
@@ -149,7 +128,7 @@
                     @if ($productDetail->variation->capacities->count() > 1)
                     <div class="product-cat">
                         <span>Capacities:</span>
-                        @foreach ($productDetail->variation->capacities as $index => $capacity)
+                        @foreach ($productDetail->variation->capacities as $capacity)
                         <a href="#">{{$capacity->variationCapacityTranslation->name}}</a>,
                         @endforeach
                     </div><!-- End .product-cat -->
@@ -169,8 +148,6 @@
 </div><!-- End .product-details-top -->
 
 @push('productView')
-    
-
 <script>
 $(document).ready(function(){
     // Initialize Owl Carousel
@@ -197,10 +174,7 @@ $(document).ready(function(){
             'slideShow',
             'thumbs',
             'close'
-        ],
-        thumbs: {
-            autoStart: true
-        }
+        ]
     });
 });
 </script>

@@ -26,7 +26,11 @@
             @endif
 
             <!-- Current Page Breadcrumb Item -->
-            <li class="breadcrumb-item active" aria-current="page">Grid 4 Columns</li>
+            @if(request()->is('*/shop'))
+            <li class="breadcrumb-item active" aria-current="page">{{__('Products')}}</li>
+            @else
+            <li class="breadcrumb-item active" aria-current="page">{{__('Items')}}</li>
+            @endif
         </ol>
     </div><!-- End .container -->
 </nav><!-- End .breadcrumb-nav -->

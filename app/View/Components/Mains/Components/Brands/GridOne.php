@@ -17,9 +17,17 @@ class GridOne extends Component
     public $brands;
     public function __construct()
     {
-        $this->brands = Cache::remember('active_brands', 60, function () {
-            return Brand::where('status', 1)->get();
-        });  
+        $locale = app()->getLocale();  // Get the current locale
+
+        $this->brands = Cache::remember("active_brands_$locale", 60, function () use ($locale) {
+            return Brand::with([
+                'brandTranslation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->get();
+        });
     }
 
     /**

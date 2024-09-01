@@ -45,7 +45,7 @@
                         @foreach (config('app.locales') as $locale)
                         <li>
                             <a class="dropdown-item" onclick="changeLanguage('{{ $locale }}')">
-                                <img src="{{ asset('/assets/general/flags/'.$locale.'.png') }}" width="20" alt="{{ $locale }}"> {{ __(strtoupper($locale)) }}
+                                <img src="{{ asset('lang/'.$locale.'.png') }}" width="20" alt="{{ $locale }}"> {{ __(strtoupper($locale)) }}
                             </a>
                         </li>
                         @endforeach
