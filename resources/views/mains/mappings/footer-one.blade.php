@@ -1,11 +1,11 @@
-<footer class="footer">
+<footer class="footer" style="background-color: #003465; color: white;">
     <div class="footer-middle">
         <div class="container">
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
                         <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" class="footer-logo" width="105" height="25">
-                        <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
+                        <p style="color: white">Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
                         <div class="widget-call">
                             <i class="icon-phone"></i>
@@ -63,7 +63,7 @@
 
     <div class="footer-bottom">
         <div class="container">
-            <p class="footer-copyright">Copyright © 2024 Akito Store. All Rights Reserved.</p><!-- End .footer-copyright -->
+            <p class="footer-copyright" style="color: white">Copyright © 2024 Akito Store. All Rights Reserved.</p><!-- End .footer-copyright -->
             <figure class="footer-payments">
                 <img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
             </figure><!-- End .footer-payments -->

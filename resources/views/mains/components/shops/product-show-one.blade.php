@@ -34,7 +34,7 @@
 
                 <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn btn-primary text-white"><span>add to cart</span></a>
                 <div class="my-3"></div>
-                @if ($product->variation->images->count() > 1)
+                {{-- @if ($product->variation->images->count() > 1)
                 <div class="product-nav product-nav-thumbs">
                     @foreach ($product->variation->images->take(3) as $index => $image)
                     <a href="#" class="active">
@@ -53,7 +53,7 @@
                     </a>
                     @endforeach
                 </div><!-- End .product-nav -->
-                @endif
+                @endif --}}
             </div><!-- End .product-list-action -->
         </div><!-- End .col-sm-6 col-lg-3 -->
 

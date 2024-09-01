@@ -11,10 +11,9 @@
     <div class="mb-7 mb-lg-11"></div>
     <x-mains.components.featured-one />
     <div class="mb-7 mb-lg-11"></div><!-- End .mb-7 -->
-    <x-mains.components.cta-banner-one />
+    {{-- <x-mains.components.cta-banner-one /> --}}
     {{-- <x-mains.components.deal-time-one /> --}}
     <div class="bg-light py-4">
-
         <x-mains.components.brand-slider-one/>
     </div>
     {{-- <div class="container">

@@ -4,14 +4,14 @@
         <div class="header-left">
             <nav class="main-nav">
                 <ul class="menu sf-arrows">
-                    <li class="{{ request()->is(app()->getLocale() . '/') || request()->is(app()->getLocale()) ? 'active' : '' }}">
+                    {{-- <li class="{{ request()->is(app()->getLocale() . '/') || request()->is(app()->getLocale()) ? 'active' : '' }}">
                         <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}">{{ __('Home') }}</a>
-                    </li>
+                    </li> --}}
                     <li class="{{ request()->is(app()->getLocale() . '/shop') ? 'active' : '' }}">
-                        <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">{{ __('Shop') }}</a>
+                        <a class="nav-font" href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">{{ __('Shop') }}</a>
                     </li>
                     <li class="megamenu-container {{ request()->is(app()->getLocale() . '/categories') ? 'active' : '' }}">
-                        <a href="{{ route('business.category', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Categories') }}</a>
+                        <a class="nav-font" href="{{ route('business.category', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Categories') }}</a>
                     
                         <div class="megamenu demo">
                             <div class="menu-col">
@@ -33,7 +33,7 @@
                     </li>
                     
                     <li class="megamenu-container {{ request()->is(app()->getLocale() . '/brands') ? 'active' : '' }}">
-                        <a href="{{ route('business.brand', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Brands') }}</a>
+                        <a class="nav-font" href="{{ route('business.brand', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Brands') }}</a>
                     
                         <div class="megamenu demo">
                             <div class="menu-col">
@@ -55,7 +55,7 @@
                     </li>
                     
                     <li class="{{ request()->is(app()->getLocale() . '/spare') ? 'active' : '' }}">
-                        <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">{{ __('Spare Parts') }}</a>
+                        <a class="nav-font" href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">{{ __('Spare Parts') }}</a>
                     </li>
                 </ul><!-- End .menu -->
             </nav><!-- End .main-nav -->

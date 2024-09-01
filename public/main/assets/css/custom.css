@@ -46,3 +46,7 @@
     text-align: right;
     direction: rtl;
 }
+.menu>li>a {
+    font-size: 20px;
+    font-weight: 100;
+}

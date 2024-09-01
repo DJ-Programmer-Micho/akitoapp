@@ -1,35 +1,42 @@
 <div class="header-middle">
     <div class="container">
         <div class="header-left">
-            <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                <form action="#" method="get">
-                    <div class="header-search-wrapper search-wrapper-wide">
-                        <label for="q" class="sr-only">Search</label>
-                        <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                        <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
-                    </div><!-- End .header-search-wrapper -->
-                </form>
-            </div><!-- End .header-search -->
+            <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}">
+                <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" width="120" height="20">
+            </a>
+
         </div>
         <div class="header-center">
-            <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo">
-                <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" width="82" height="20">
+            <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo d-lg-none">
+                <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" width="120" height="20">
             </a>
         </div><!-- End .header-left -->
 
         <div class="header-right">
+            <div class="header-search header-search-extended header-search-visible d-none d-lg-block mx-0 px-0">
+                <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                <form action="#" method="get" class="border rounded-pill p-3">
+                    <div class="header-search-wrapper search-wrapper-wide ">
+                        <label for="q" class="sr-only">Search</label>
+                        <input type="text" class="form-control p-2" name="q" id="q" placeholder="Search product ..." required>
+                        <button class="btn btn-primary w-25" type="submit"><i class="icon-search"></i></button>
+                    </div><!-- End .header-search-wrapper -->
+                </form>
+            </div><!-- End .header-search -->
             <a href="wishlist.html" class="wishlist-link">
                 <i class="icon-heart-o"></i>
                 <span class="wishlist-count">3</span>
-                <span class="wishlist-txt">My Wishlist</span>
             </a>
 
             <div class="dropdown cart-dropdown">
                 <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                     <i class="icon-shopping-cart"></i>
                     <span class="cart-count">2</span>
-                    <span class="cart-txt">$ 164,00</span>
+                </a>
+
+                <a href="" class="wishlist-link">
+                    <i class="icon-user"></i>
+                    <p class="flex-grow-1">Furat Hariri</p>
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-right">

@@ -11,6 +11,8 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/jquery.countdown.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/nouislider/nouislider.css')}}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+
         {{-- Main CSS File --}}
         <link rel="stylesheet" href="{{asset('main/assets/css/style.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/custom.css')}}">
@@ -43,10 +45,12 @@
         <script src="{{asset('main/assets/js/jquery.countdown.min.js')}}"></script>
         <script src="{{asset('main/assets/js/nouislider.min.js')}}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
         <!-- Main JS File -->
         <script src="{{asset('main/assets/js/main.js')}}"></script>
         <script src="{{asset('main/assets/js/demos/demo-3.js')}}"></script>
         @stack("productView")
+        @stack("brandSlider")
         @livewireScripts
 <form id="languageForm" action="{{ route('setLocale') }}" method="post">
     @csrf
@@ -58,6 +62,11 @@
         document.getElementById('selectedLocale').value = locale;
         document.getElementById('languageForm').submit();
     }
+    $(document).ready(function() {
+    // This should be triggered when your data is fully loaded
+    $('.featured-products-loader').hide();
+    $('.featured-products-content').show();
+});
 </script>
     </body>
 </html>
