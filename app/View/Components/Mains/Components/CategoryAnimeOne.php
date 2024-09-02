@@ -6,15 +6,16 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class IntroSectionOne extends Component
+class CategoryAnimeOne extends Component
 {
-    public $sliders;
     /**
      * Create a new component instance.
      */
-    public function __construct($sliders)
+    public $categoiresData;
+
+    public function __construct($categoiresData)
     {
-        $this->sliders = $sliders;
+        $this->categoiresData = $categoiresData;
     }
 
     /**
@@ -22,8 +23,8 @@ class IntroSectionOne extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('mains.components.intro-section-one',[
-            "sliders" => $this->sliders
+        return view('mains.components.category-anime-one',[
+            "categoiresData" => $this->categoiresData,
         ]);
     }
 }

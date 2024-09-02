@@ -1,3 +1,4 @@
+{{-- file path: resources/views/super-admins/pages/brands/brand-form.blade.php --}}
 <div>
     <div wire:ignore.self class="modal fade overflow-auto" id="updateBrandModal" tabindex="-1" aria-labelledby="updateBrandModalLabel"
     aria-hidden="true" data-backdrop="static" data-keyboard="false">

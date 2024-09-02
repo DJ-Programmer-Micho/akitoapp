@@ -3,27 +3,28 @@
 namespace App\View\Components\Mains\Components;
 
 use Closure;
+use App\Models\Brand;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Support\Facades\Cache;
 
-class IntroSectionOne extends Component
+class BannerWidthOne extends Component
 {
-    public $sliders;
+    public $image;
     /**
      * Create a new component instance.
      */
-    public function __construct($sliders)
+    public function __construct($image)
     {
-        $this->sliders = $sliders;
+        $this->image = $image;
     }
-
     /**
      * Get the view / contents that represent the component.
      */
     public function render(): View|Closure|string
     {
-        return view('mains.components.intro-section-one',[
-            "sliders" => $this->sliders
+        return view('mains.components.banner-width-one',[
+            "image" => $this->image
         ]);
     }
 }

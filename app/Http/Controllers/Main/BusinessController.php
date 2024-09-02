@@ -113,7 +113,27 @@ class BusinessController extends Controller
     
         // $productsCat3Title = $productsCat3->first()->categories->first()->categoryTranslation->title ?? __("messages.category_3_title");
         $productsCat3Title = "Syrup";
-    
+
+        $categoiresData = Category::where('status', 1)->with(['categoryTranslation' => function ($query) {
+            $query->where('locale', app()->getLocale());
+        }])
+        ->get();
+        
+        $sliders = [];
+        $sliders = [
+            app('cloudfront') . 'web-setting/sliders/slide1.jpg',
+            app('cloudfront') . 'web-setting/sliders/slide2.jpg',
+            app('cloudfront') . 'web-setting/sliders/slide3.jpg',
+        ];
+        
+
+        $imagesBanner = [];
+        $imagesBanner = [
+            app('cloudfront') . 'web-setting/banners/banner4.png',
+            app('cloudfront') . 'web-setting/banners/banner6.png',
+            app('cloudfront') . 'web-setting/banners/banner5.png',
+        ];
+
         return view('mains.pages.home-page-one', [
             'productsCat1' => $productsCat1,
             'productsCat1Title' => $productsCat1Title,
@@ -121,6 +141,9 @@ class BusinessController extends Controller
             'productsCat2Title' => $productsCat2Title,
             'productsCat3' => $productsCat3,
             'productsCat3Title' => $productsCat3Title,
+            'categoiresData' => $categoiresData,
+            'imageBanner' => $imagesBanner,
+            'sliders' => $sliders,
         ]);
     }
     

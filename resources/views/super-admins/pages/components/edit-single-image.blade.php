@@ -116,7 +116,7 @@
             class="file-uploader"
             type="file"
             id="brandImgUpdate"
-            accept="image/*"
+          accept="image/png, image/jpeg, image/jpg"
             />
         </div>
     </div>
@@ -211,7 +211,9 @@
 
             const canvasUpdate = cropperUpdate.getCroppedCanvas({
                 width: 512,
-                height: 512
+                    height: 512,
+                    // png
+                    fillColor: 'rgba(0, 0, 0, 0)',
             });
 
             canvasUpdate.toBlob(function (blob) {
@@ -237,13 +239,13 @@
                 reader.readAsDataURL(blob);
 
                 // Optional: Handle file input update
-                const fileInput = document.getElementById('croppedbrandImgUpdate');
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' }));
-                fileInput.files = dataTransfer.files;
+                // const fileInput = document.getElementById('croppedbrandImgUpdate');
+                // const dataTransfer = new DataTransfer();
+                // dataTransfer.items.add(new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' }));
+                // fileInput.files = dataTransfer.files;
 
                 modalUpdate.hide();
-            }, 'image/jpeg');
+            }, 'image/png');
         });
     }
 

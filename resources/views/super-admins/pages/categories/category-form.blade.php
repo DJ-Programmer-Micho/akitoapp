@@ -129,7 +129,6 @@
                                 <div class="filter-choices-input">
                                     @include('super-admins.pages.components.edit-single-image',[$title = "Category Image"])
                                 </div>
-                                </div>
                             </div>
                         </div>
                     </div>

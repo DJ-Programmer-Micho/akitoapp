@@ -327,7 +327,7 @@ class BrandLivewire extends Component
         if ($base64data){
             $microtime = str_replace('.', '', microtime(true));
             $this->objectData = $base64data;
-            $this->objectName = 'brands/' . ($this->brands[app()->getLocale()] ?? $this->brandsEdit[app()->getLocale()] ?? 'brandname') . '_brand_'.date('Ydm') . $microtime . '.jpeg';
+            $this->objectName = 'brands/' . ($this->brands[app()->getLocale()] ?? $this->brandsEdit[app()->getLocale()] ?? 'brandname') . '_brand_'.date('Ydm') . $microtime . '.png';
         } else {
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Image did not crop!!!')]);
             return;

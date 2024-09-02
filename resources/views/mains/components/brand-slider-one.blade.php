@@ -4,7 +4,7 @@
 </div><!-- End .heading -->
 
 <!-- Skeleton Loader -->
-<div class="slick-carousel mt-5 mb-5 skeleton-carousel justify-content-center">
+<div class="slick-carousel skeleton-carousel justify-content-center">
     <!-- Skeleton Slide -->
     <div class="skeleton-slide"></div>
     <div class="skeleton-slide"></div>
@@ -17,7 +17,7 @@
 </div>
 
 <!-- Actual Slides -->
-<div class="slick-carousel mt-5 mb-5 d-none">
+<div class="slick-carousel d-none">
     @foreach($brands as $brand)
     <div>
         <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $brand->id]) }}">
@@ -83,7 +83,7 @@
 <script>
  $(document).ready(function() {
     $('.slick-carousel').slick({
-        slidesToShow: 8,
+        slidesToShow: 12,
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 0,
@@ -93,7 +93,13 @@
         centerMode: false,
         responsive: [
             {
-                breakpoint: 1024,
+                breakpoint: 1400,
+                settings: {
+                    slidesToShow: 12
+                }
+            },
+            {
+                breakpoint: 1200,
                 settings: {
                     slidesToShow: 8
                 }
@@ -101,7 +107,7 @@
             {
                 breakpoint: 900,
                 settings: {
-                    slidesToShow: 7
+                    slidesToShow: 6
                 }
             },
             {

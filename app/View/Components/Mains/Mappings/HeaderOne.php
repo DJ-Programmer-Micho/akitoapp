@@ -27,6 +27,7 @@ class HeaderOne extends Component
                 }
             ])
             ->where('status', 1)
+            ->orderBy('priority', 'asc')
             ->get();
         });
         $this->categories = Cache::remember("active_categories_$locale", 60, function () use ($locale) {

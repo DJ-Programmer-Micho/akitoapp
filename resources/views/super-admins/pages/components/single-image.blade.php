@@ -1,3 +1,4 @@
+{{-- file path: resources/views/super-admins/pages/components/single-image.blade.php --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.css" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js"></script>
@@ -76,7 +77,7 @@
           class="file-uploader"
           type="file"
             id="brandImg"
-          accept="image/*"
+          accept="image/png, image/jpeg, image/jpg"
         />
     </div>
     <small class="text-info">1080x1080</small>
@@ -165,7 +166,9 @@
             $('.crop-btn').off('click').on('click', function () {
                 const canvas = cropper.getCroppedCanvas({
                     width: 512,
-                    height: 512
+                    height: 512,
+                    // png
+                    fillColor: 'rgba(0, 0, 0, 0)',
                 });
     
                 canvas.toBlob(function (blob) {
@@ -189,14 +192,14 @@
                     };
                     reader.readAsDataURL(blob);
     
-                    const file = new File([blob], 'met_about.jpg', { type: 'image/jpeg' });
-                    const fileInput = document.getElementById('croppedBrandImg');
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    fileInput.files = dataTransfer.files;
+                    // const file = new File([blob], 'met_about.jpg', { type: 'image/jpeg' });
+                    // const fileInput = document.getElementById('croppedBrandImg');
+                    // const dataTransfer = new DataTransfer();
+                    // dataTransfer.items.add(file);
+                    // fileInput.files = dataTransfer.files;
     
                     modal.hide();
-                }, 'image/jpeg');
+                }, 'image/png');
             });
         }
     });

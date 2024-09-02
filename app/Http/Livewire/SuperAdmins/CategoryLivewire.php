@@ -444,6 +444,10 @@ class CategoryLivewire extends Component
         }
     }
     
+    public function sadImage () { 
+        $this->de = 1;
+    }
+
 
     // CRUD HANDLERS
     public function handleCroppedImage($base64data)
@@ -452,7 +456,7 @@ class CategoryLivewire extends Component
         if ($base64data){
             $microtime = str_replace('.', '', microtime(true));
             $this->objectData = $base64data;
-            $this->objectName = 'categories/' . ($this->names[app()->getLocale()] ?? $this->namesEdit[app()->getLocale()] ?? 'categories') . '_category_'.date('Ydm') . $microtime . '.jpeg';
+            $this->objectName = 'categories/' . ($this->names[app()->getLocale()] ?? $this->namesEdit[app()->getLocale()] ?? 'categories') . '_category_'.date('Ydm') . $microtime . '.png';
         } else {
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Image did not crop!!!')]);
             return;

@@ -4,7 +4,13 @@
             <div class="col-sm-6 col-lg-3">
                 <div class="icon-box icon-box-side">
                     <span class="icon-box-icon text-dark">
-                        <i class="icon-rocket"></i>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/zzjjvkam.json"
+                            trigger="loop"
+                            state="loop-ride"
+                            colors="primary:#3080e8,secondary:#000000"
+                            style="width:50px;height:50px">
+                        </lord-icon>
                     </span>
                     <div class="icon-box-content">
                         <h3 class="icon-box-title">Free Shipping</h3><!-- End .icon-box-title -->
@@ -16,7 +22,12 @@
             <div class="col-sm-6 col-lg-3">
                 <div class="icon-box icon-box-side">
                     <span class="icon-box-icon text-dark">
-                        <i class="icon-rotate-left"></i>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/rqptwppx.json"
+                            trigger="loop"
+                            colors="primary:#3080e8,secondary:#000000"
+                            style="width:50px;height:50px">
+                        </lord-icon>
                     </span>
 
                     <div class="icon-box-content">
@@ -29,7 +40,12 @@
             <div class="col-sm-6 col-lg-3">
                 <div class="icon-box icon-box-side">
                     <span class="icon-box-icon text-dark">
-                        <i class="icon-info-circle"></i>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/ibydboev.json"
+                            trigger="loop"
+                            colors="primary:#3080e8,secondary:#000000"
+                            style="width:50px;height:50px">
+                        </lord-icon>
                     </span>
 
                     <div class="icon-box-content">
@@ -42,7 +58,12 @@
             <div class="col-sm-6 col-lg-3">
                 <div class="icon-box icon-box-side">
                     <span class="icon-box-icon text-dark">
-                        <i class="icon-life-ring"></i>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/wzrwaorf.json"
+                            trigger="loop"
+                            colors="primary:#3080e8,secondary:#000000"
+                            style="width:50px;height:50px">
+                        </lord-icon>
                     </span>
 
                     <div class="icon-box-content">

@@ -47,33 +47,32 @@
                     "loop": false,
                     "responsive": {
                         "0": {
-                            "items":2
-                        },
-                        "600": {
                             "items":3
                         },
-                        "992": {
+                        "600": {
                             "items":4
                         },
-                        "1200": {
+                        "992": {
                             "items":5
+                        },
+                        "1200": {
+                            "items":6
                         }
                     }
                 }'>
                 @foreach ($featured_products as $item)
-                <div class="product product-2">
+                <div class="product product-7">
                     <figure class="product-media">
                         <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
                             <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
                         </a>
 
-                        <div class="product-action-vertical">
-                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                        </div><!-- End .product-action -->
-
-                        <div class="product-action product-action-dark">
-                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                        <div class="heart-icon">
+                            <i class="fa-regular fa-heart"></i>
+                            {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
+                        </div><!-- End .product-action-vertical -->
+                        <div class="product-action">
+                            <a href="#" class="btn-product btn-cart"><span>Add to cart</span></a>
                         </div><!-- End .product-action -->
                     </figure><!-- End .product-media -->
 
@@ -109,7 +108,7 @@
             <div class="row featured-products-loader">
                 @for ($i = 0; $i < 4; $i++)
                 <div class="col-3">
-                    <div class="product product-2">
+                    <div class="product product-7">
                         <div class="card" aria-hidden="true">
                             <img src="https://placehold.co/600x400?text=Loading..." class="card-img-top" alt="...">
                             <div class="card-body">
@@ -140,16 +139,16 @@
                     "loop": false,
                     "responsive": {
                         "0": {
-                            "items":2
-                        },
-                        "600": {
                             "items":3
                         },
-                        "992": {
+                        "600": {
                             "items":4
                         },
-                        "1200": {
+                        "992": {
                             "items":5
+                        },
+                        "1200": {
+                            "items":6
                         }
                     }
                 }'>
@@ -159,14 +158,12 @@
                         <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
                             <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
                         </a>
-
-                        <div class="product-action-vertical">
-                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                        </div><!-- End .product-action -->
-
-                        <div class="product-action product-action-dark">
-                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                        <div class="heart-icon">
+                            <i class="fa-regular fa-heart"></i>
+                            {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
+                        </div><!-- End .product-action-vertical -->
+                        <div class="product-action">
+                            <a href="#" class="btn-product btn-cart"><span>Add to cart</span></a>
                         </div><!-- End .product-action -->
                     </figure><!-- End .product-media -->
 

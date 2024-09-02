@@ -12,7 +12,8 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/nouislider/nouislider.css')}}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
         {{-- Main CSS File --}}
         <link rel="stylesheet" href="{{asset('main/assets/css/style.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/custom.css')}}">
@@ -46,6 +47,7 @@
         <script src="{{asset('main/assets/js/nouislider.min.js')}}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <!-- Main JS File -->
         <script src="{{asset('main/assets/js/main.js')}}"></script>
         <script src="{{asset('main/assets/js/demos/demo-3.js')}}"></script>
@@ -65,6 +67,7 @@
     $(document).ready(function() {
     // This should be triggered when your data is fully loaded
     $('.featured-products-loader').hide();
+    $('.carousel-laods').hide();
     $('.featured-products-content').show();
 });
 </script>

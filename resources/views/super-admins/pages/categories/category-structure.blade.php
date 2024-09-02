@@ -36,7 +36,7 @@
                             @forelse($categoriesData as $category)
                                 <tr wire:key="category-{{ $category->id }}" data-id="{{ $category->id }}" class="category-row text-white">
                                     <td class="text-center">
-                                        <img src="{{ app('cloudfront').$category->image }}" alt="{{$category->categoryTranslation->name}}" width="50" height="50" class="mx-auto">
+                                        <img src="{{ app('cloudfront').$category->image }}" alt="{{$category->categoryTranslation->name}}" width="50" height="50" class="mx-auto" style="background-color: #f8d7da;">
                                     </td>
                                     <td>
                                         <strong>{{ $category->categoryTranslation->name }}</strong>

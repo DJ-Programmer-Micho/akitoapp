@@ -1,8 +1,6 @@
 <div class="container top">
-    <div class="heading heading-flex mb-3">
-        <div class="heading-left">
-            <h2 class="title">{{__($title)}}</h2><!-- End .title -->
-        </div><!-- End .heading-left -->
+    <div class="heading my-5">
+        <h2 class="title text-center">{{__($title)}}</h2><!-- End .title -->
     </div><!-- End .heading -->
 
     <div class="tab-content tab-content-carousel just-action-icons-sm">
@@ -40,19 +38,16 @@
                     "loop": false,
                     "responsive": {
                         "0": {
-                            "items":2
-                        },
-                        "480": {
-                            "items":2
-                        },
-                        "768": {
                             "items":3
                         },
-                        "992": {
+                        "600": {
                             "items":4
                         },
-                        "1200": {
+                        "992": {
                             "items":5
+                        },
+                        "1200": {
+                            "items":6
                         }
                     }
                 }'>
@@ -71,12 +66,10 @@
                                 <img src="{{ app('cloudfront') . ($product->variation->images->first()->image_path ?? 'path/to/default/image.jpg') }}" alt="{{ $product->productTranslation->name ?? 'Product Image' }}" class="product-image">
                             </a>
             
-                            <div class="product-action-vertical">
-                                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>Add to wishlist</span></a>
-                                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                            <div class="heart-icon">
+                                {{-- <i class="fa-regular fa-heart"></i> --}}
+                                <i class="fa-solid fa-heart text-danger"></i>
                             </div><!-- End .product-action-vertical -->
-            
                             <div class="product-action">
                                 <a href="#" class="btn-product btn-cart"><span>Add to cart</span></a>
                             </div><!-- End .product-action -->
@@ -127,4 +120,5 @@
 .bottom-class {
     margin-top: auto; /* Pushes the .bottom-class to the bottom of the container */
 }
+
 </style>
