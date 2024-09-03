@@ -4,10 +4,10 @@
         <div class="col-6 col-md-4 col-lg-4 mb-2">
             <div class="product product-7 text-center">
                 <figure class="product-media">
-                    <div class="label-wrapper">
+                    <div class="label-wrapper" style="position: absolute; top: -3px; left: 0; z-index: 10;">
                         @if ($product->tags)
                         @foreach ($product->tags as $tag)
-                            <span class="product-label col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                            <span class="col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
                         @endforeach
                         @endif
                     </div>
