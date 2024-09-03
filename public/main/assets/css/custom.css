@@ -1,3 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri&family=Scheherazade:wght@400;700&display=swap');
+@font-face {
+    font-family: 'lavaFont';
+    src:url('../../../font/Freeland.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+/* Now you can use the fonts in your CSS */
+.product-label[lang="ar"] {
+    font-family: 'Amiri', serif;
+}
+
+.product-label[lang="ku"] {
+    font-family: 'Scheherazade', serif;
+}
+
+
 .text-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -57,8 +74,38 @@
     display: flex;
     flex-direction: column;
     position: absolute;
-    right: 2rem;
-    top: 2rem;
+    right: 0.5rem;
+    top: 2.2rem;
     background-color: transparent;
     z-index: 10;
+}
+
+.product-7 {
+    -webkit-box-shadow: 0px 6px 24px -5px rgba(0,0,0,0.20);
+    -moz-box-shadow: 0px 6px 24px -5px rgba(0,0,0,0.20);
+    box-shadow: 0px 6px 24px -5px rgba(0,0,0,0.20);
+    border-radius: 8px;
+}
+
+.product-label {
+    display: inline-block; /* Ensures the tags don't overlap */
+    padding: 5px 10px;
+    margin-bottom: 5px; /* Adds some spacing between tags vertically */
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #ef837b;
+}
+
+.product-label[lang="ar"] {
+    font-family: 'Amiri', serif; /* Arabic font */
+    text-align: right;
+    direction: rtl;
+}
+
+.product-label[lang="ku"] {
+    font-family: 'Scheherazade', serif; /* Kurdish font */
+    text-align: right;
+    direction: rtl;
 }

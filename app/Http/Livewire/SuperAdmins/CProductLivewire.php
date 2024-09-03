@@ -429,11 +429,13 @@ class CProductLivewire extends Component
     
             // Commit transaction
             DB::commit();
-    
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Page Loaded Added Successfully')]);
             // Clear the images after upload
             $this->reset('images');
+            $this->resetInputValues();
     
         } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Page Loaded Added Successfully')]);
             DB::rollBack();
             // Rollback transaction if an error occurs
     
@@ -441,6 +443,38 @@ class CProductLivewire extends Component
                 'type' => 'error',
                 'message' => __('Failed to save product: ' . $e->getMessage())
             ]);
+        }
+        $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Page Loaded Added Successfully')]);
+
+    }
+
+    public function resetInputValues() {
+        $this->selectedBrand = "";
+        $this->faqs = []; // faqs
+        $this->selectedCategories = []; // Categories Selected
+        $this->selectedSubCategories = [];
+        $this->selectedColors = []; // Colors Selected
+        $this->selectedMaterials = []; // Materials Selected
+        $this->selectedSizes = []; // Sizes Selected
+        $this->selectedCapacities = []; // Capacities Selected
+        $this->selectedTags = [];
+        $this->images = []; // Cropped Imgeas
+        $this->sku = ""; // Cropped Imgeas
+        $this->is_spare_part = 0;
+        $this->is_on_stock = 1;
+        $this->is_on_sale = 0;
+        $this->is_featured = 0;
+        $this->status = 1;
+        $this->originalPrice = '';
+        $this->discountPrice = "";
+        $this->discountPercentage = "";
+        $this->seoKeywords = "";
+        foreach ($this->filteredLocales as $locale) {
+            $this->products[$locale] = ''; // or any default value
+            $this->contents[$locale] = ''; // or any default value
+            $this->productDescriptions[$locale] = ''; // or any default value
+            $this->productInformations[$locale] = ''; // or any default value
+            $this->productShip[$locale] = ''; // or any default value
         }
     }
     

@@ -4,10 +4,10 @@
         <div class="col-6 col-md-4 col-lg-4 col-xl-3 mb-2">
             <div class="product product-7 text-center">
                 <figure class="product-media">
-                    <div class="label-wrapper">
+                    <div class="label-wrapper" style="position: absolute; top: -3px; left: 0; z-index: 10;">
                         @if ($product->tags)
                         @foreach ($product->tags as $tag)
-                            <span class="product-label col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                            <span class="col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
                         @endforeach
                         @endif
                     </div>
@@ -15,12 +15,10 @@
                         <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->name[0]}}" class="product-image">
                     </a>
 
-                    <div class="product-action-vertical">
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                    <div class="heart-icon">
+                        <i class="fa-regular fa-heart"></i>
+                        {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
                     </div><!-- End .product-action-vertical -->
-
                     <div class="product-action">
                         <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product btn-cart"><span>add to cart</span></a>
                     </div><!-- End .product-action -->
@@ -95,9 +93,4 @@
     margin-top: auto; /* Pushes the .bottom-class to the bottom of the container */
 }
 
-.product-7 {
-    style="-webkit-box-shadow: 0px 6px 24px -5px rgba(0,0,0,0.20);
-    -moz-box-shadow: 0px 6px 24px -5px rgba(0,0,0,0.20);
-    box-shadow: 0px 6px 24px -5px rgba(0,0,0,0.20);"
-}
 </style>

@@ -24,20 +24,39 @@
                 </form>
             </div><!-- End .header-search -->
             <a href="wishlist.html" class="wishlist-link">
-                <i class="icon-heart-o"></i>
+                <lord-icon
+                    src="https://cdn.lordicon.com/jjoolpwc.json"
+                    trigger="loop"
+                    delay="2000"
+                    colors="primary:#3080e8,secondary:#000000"
+                    style="width:40px;height:40px">
+                </lord-icon>
                 <span class="wishlist-count">3</span>
             </a>
 
             <div class="dropdown cart-dropdown">
                 <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-                    <i class="icon-shopping-cart"></i>
+                    <lord-icon
+                        src="https://cdn.lordicon.com/odavpkmb.json"
+                        trigger="loop"
+                        delay="2000"
+                        colors="primary:#3080e8,secondary:#000000"
+                        style="width:40px;height:40px">
+                    </lord-icon>
                     <span class="cart-count">2</span>
                 </a>
 
                 <a href="" class="wishlist-link">
-                    <i class="icon-user"></i>
-                    <p class="flex-grow-1">Furat Hariri</p>
-                </a>
+                    <lord-icon
+                    src="https://cdn.lordicon.com/bgebyztw.json"
+                    trigger="loop"
+                    delay="2000"
+                    state="hover-looking-around"
+                    colors="primary:#3080e8,secondary:#000000"
+                    style="width:40px;height:40px">
+                </lord-icon>
+            </a>
+            <p class="flex-grow-1" style="font-size: 16px">Furat Hariri</p>
 
                 <div class="dropdown-menu dropdown-menu-right">
                     <div class="dropdown-cart-products">

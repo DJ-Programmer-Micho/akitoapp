@@ -14,6 +14,10 @@
                 <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}">
                     <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->name[0]}}" class="product-image">
                 </a>
+                <div class="heart-icon">
+                    <i class="fa-regular fa-heart"></i>
+                    {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
+                </div><!-- End .product-action-vertical -->
             </figure><!-- End .product-media -->
         </div><!-- End .col-sm-6 col-lg-3 -->
 
@@ -34,7 +38,7 @@
 
                 <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn btn-primary text-white"><span>add to cart</span></a>
                 <div class="my-3"></div>
-                {{-- @if ($product->variation->images->count() > 1)
+                @if ($product->variation->images->count() > 1)
                 <div class="product-nav product-nav-thumbs">
                     @foreach ($product->variation->images->take(3) as $index => $image)
                     <a href="#" class="active">
@@ -53,13 +57,13 @@
                     </a>
                     @endforeach
                 </div><!-- End .product-nav -->
-                @endif --}}
+                @endif
             </div><!-- End .product-list-action -->
         </div><!-- End .col-sm-6 col-lg-3 -->
 
         <div class="col-lg-6">
             <div class="product-body product-action-inner">
-                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
+                {{-- <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a> --}}
                 <div class="product-cat">
                     <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $product->categories[0]->id]) }}">{{$product->categories[0]->categoryTranslation->name}}</a>
                 </div><!-- End .product-cat -->

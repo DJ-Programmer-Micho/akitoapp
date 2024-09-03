@@ -129,9 +129,9 @@ class BusinessController extends Controller
 
         $imagesBanner = [];
         $imagesBanner = [
-            app('cloudfront') . 'web-setting/banners/banner4.png',
-            app('cloudfront') . 'web-setting/banners/banner6.png',
-            app('cloudfront') . 'web-setting/banners/banner5.png',
+            app('cloudfront') . 'web-setting/banners/banner7.png',
+            app('cloudfront') . 'web-setting/banners/banner8.png',
+            app('cloudfront') . 'web-setting/banners/banner9.png',
         ];
 
         return view('mains.pages.home-page-one', [

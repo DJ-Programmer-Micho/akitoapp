@@ -1,16 +1,16 @@
 <div class="container-fluid p-0">
     <div class="full-width-background">
-        <img src="{{ $image }}" alt="Banner Image" style="width: 100%; height: 250px; object-fit: cover;">
+        <img src="{{ $image }}" alt="Banner Image" style="width: 100%; max-height: 300px; object-fit: cover;">
     </div>
 </div>
 
 <style>
 .full-width-background {
     width: 100vw; /* 100% of the viewport width */
-    height: 250px; /* Adjust height as needed */
+    max-height: 300px; /* Adjust height as needed */
     margin: 0; /* Remove default margin */
     padding: 0; /* Remove default padding */
-    overflow: hidden; /* Ensure content doesn't overflow */
+    /* overflow: hidden; Ensure content doesn't overflow */
 }
 
 .section {

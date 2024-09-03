@@ -65,7 +65,7 @@
         <div class="container">
             <p class="footer-copyright" style="color: white">Copyright © 2024 Akito Store. All Rights Reserved.</p><!-- End .footer-copyright -->
             <figure class="footer-payments">
-                <img src="assets/images/payments.png" alt="Payment methods" width="272" height="20">
+                <img src="{{ asset('lang/payments.png')}}" alt="Payment methods" width="272" height="20">
             </figure><!-- End .footer-payments -->
         </div><!-- End .container -->
     </div><!-- End .footer-bottom -->

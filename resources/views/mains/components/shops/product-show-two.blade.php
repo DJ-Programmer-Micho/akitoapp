@@ -15,10 +15,9 @@
                         <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->name[0]}}" class="product-image">
                     </a>
 
-                    <div class="product-action-vertical">
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                    <div class="heart-icon">
+                        <i class="fa-regular fa-heart"></i>
+                        {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
                     </div><!-- End .product-action-vertical -->
 
                     <div class="product-action">

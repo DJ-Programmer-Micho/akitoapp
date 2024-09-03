@@ -63,6 +63,13 @@
                 @foreach ($featured_products as $item)
                 <div class="product product-7">
                     <figure class="product-media">
+                        <div class="label-wrapper" style="position: absolute; top: -3px; left: 0; z-index: 10;">
+                            @if ($item->tags)
+                            @foreach ($item->tags as $tag)
+                                <span class="col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                            @endforeach
+                            @endif
+                        </div>
                         <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
                             <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
                         </a>
@@ -153,8 +160,15 @@
                     }
                 }'>
                 @foreach ($on_sale as $item)
-                <div class="product product-2">
+                <div class="product product-7">
                     <figure class="product-media">
+                        <div class="label-wrapper" style="position: absolute; top: -3px; left: 0; z-index: 10;">
+                            @if ($item->tags)
+                            @foreach ($item->tags as $tag)
+                                <span class="col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                            @endforeach
+                            @endif
+                        </div>
                         <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
                             <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
                         </a>
