@@ -40,6 +40,7 @@ Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->na
 // HOME
     Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
         Route::get('/', [BusinessController::class, 'home'])->name('business.home');
+        Route::get('/account', [BusinessController::class, 'account'])->name('business.account');
         Route::get('shop', [BusinessController::class, 'productShop'])->name('business.productShop');
         Route::get('categories', [BusinessController::class, 'productCategory'])->name('business.category');
         Route::get('brands', [BusinessController::class, 'productBrand'])->name('business.brand');

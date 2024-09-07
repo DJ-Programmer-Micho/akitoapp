@@ -45,8 +45,63 @@
                     </lord-icon>
                     <span class="cart-count">2</span>
                 </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown-cart-products">
+                            <div class="product">
+                                <div class="product-cart-details">
+                                    <h4 class="product-title">
+                                        <a href="product.html">Beige knitted elastic runner shoes</a>
+                                    </h4>
 
-                <a href="" class="wishlist-link">
+                                    <span class="cart-product-info">
+                                        <span class="cart-product-qty">1</span>
+                                        x $84.00
+                                    </span>
+                                </div><!-- End .product-cart-details -->
+
+                                <figure class="product-image-container">
+                                    <a href="product.html" class="product-image">
+                                        <img src="assets/images/products/cart/product-1.jpg" alt="product">
+                                    </a>
+                                </figure>
+                                <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
+                            </div><!-- End .product -->
+
+                            <div class="product">
+                                <div class="product-cart-details">
+                                    <h4 class="product-title">
+                                        <a href="product.html">Blue utility pinafore denim dress</a>
+                                    </h4>
+
+                                    <span class="cart-product-info">
+                                        <span class="cart-product-qty">1</span>
+                                        x $76.00
+                                    </span>
+                                </div><!-- End .product-cart-details -->
+
+                                <figure class="product-image-container">
+                                    <a href="product.html" class="product-image">
+                                        <img src="assets/images/products/cart/product-2.jpg" alt="product">
+                                    </a>
+                                </figure>
+                                <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
+                            </div><!-- End .product -->
+                        </div><!-- End .cart-product -->
+
+                        <div class="dropdown-cart-total">
+                            <span>Total</span>
+
+                            <span class="cart-total-price">$160.00</span>
+                        </div><!-- End .dropdown-cart-total -->
+
+                        <div class="dropdown-cart-action">
+                            <a href="cart.html" class="btn btn-primary">View Cart</a>
+                            <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
+                        </div><!-- End .dropdown-cart-total -->
+                    </div><!-- End .dropdown-menu -->
+            </div><!-- End .cart-dropdown -->
+            <div class="dropdown cart-dropdown">
+                <a href="" class="wishlist-link m-0">
                     <lord-icon
                     src="https://cdn.lordicon.com/bgebyztw.json"
                     trigger="loop"
@@ -55,63 +110,16 @@
                     colors="primary:#3080e8,secondary:#000000"
                     style="width:40px;height:40px">
                 </lord-icon>
-            </a>
-            <p class="flex-grow-1" style="font-size: 16px">Furat Hariri</p>
-
-                <div class="dropdown-menu dropdown-menu-right">
-                    <div class="dropdown-cart-products">
-                        <div class="product">
-                            <div class="product-cart-details">
-                                <h4 class="product-title">
-                                    <a href="product.html">Beige knitted elastic runner shoes</a>
-                                </h4>
-
-                                <span class="cart-product-info">
-                                    <span class="cart-product-qty">1</span>
-                                    x $84.00
-                                </span>
-                            </div><!-- End .product-cart-details -->
-
-                            <figure class="product-image-container">
-                                <a href="product.html" class="product-image">
-                                    <img src="assets/images/products/cart/product-1.jpg" alt="product">
-                                </a>
-                            </figure>
-                            <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                        </div><!-- End .product -->
-
-                        <div class="product">
-                            <div class="product-cart-details">
-                                <h4 class="product-title">
-                                    <a href="product.html">Blue utility pinafore denim dress</a>
-                                </h4>
-
-                                <span class="cart-product-info">
-                                    <span class="cart-product-qty">1</span>
-                                    x $76.00
-                                </span>
-                            </div><!-- End .product-cart-details -->
-
-                            <figure class="product-image-container">
-                                <a href="product.html" class="product-image">
-                                    <img src="assets/images/products/cart/product-2.jpg" alt="product">
-                                </a>
-                            </figure>
-                            <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                        </div><!-- End .product -->
-                    </div><!-- End .cart-product -->
-
-                    <div class="dropdown-cart-total">
-                        <span>Total</span>
-
-                        <span class="cart-total-price">$160.00</span>
-                    </div><!-- End .dropdown-cart-total -->
-
-                    <div class="dropdown-cart-action">
-                        <a href="cart.html" class="btn btn-primary">View Cart</a>
-                        <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-                    </div><!-- End .dropdown-cart-total -->
-                </div><!-- End .dropdown-menu -->
+                </a>
+                <p class="flex-grow-1" style="font-size: 16px">Furat Hariri</p>
+                        <div class="dropdown-menu p-0">
+                            <nav class="side-nav">
+                                <ul class="menu-vertical sf-arrows">
+                                    <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">Dashboard</a></li>
+                                    <li class="item-lead"><a href="#">Sign Out</a></li>
+                                </ul><!-- End .menu-vertical -->
+                            </nav><!-- End .side-nav -->
+                        </div><!-- End .dropdown-menu -->
             </div><!-- End .cart-dropdown -->
         </div>
     </div><!-- End .container -->

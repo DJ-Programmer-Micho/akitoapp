@@ -160,45 +160,43 @@ class BusinessController extends Controller
         ]);
     }
 
-public function productDetail($locale, $slug)
-{
-    // Attempt to fetch the product
-    $product = Product::with([
-        'productTranslation' => function ($query) use ($locale) {
-            $query->where('locale', $locale);
-        },
-        'variation.colors',
-        'variation.sizes.variationSizeTranslation' => function ($query) use ($locale) {
-            $query->where('locale', $locale);
-        },
-        'variation.materials',
-        'variation.capacities',
-        'variation.images',
-        'brand.brandTranslation' => function ($query) use ($locale) {
-            $query->where('locale', $locale);
-        },
-        'categories.categoryTranslation' => function ($query) use ($locale) {
-            $query->where('locale', $locale);
-        },
-        'tags.tagTranslation' => function ($query) use ($locale) {
-            $query->where('locale', $locale);
-        },
-        'information.informationTranslation' => function ($query) use ($locale) {
-            $query->where('locale', $locale);
-        }
-    ])
-    ->whereHas('productTranslation', function ($query) use ($locale, $slug) {
-        $query->where('slug', $slug)
-              ->where('locale', $locale);
-    })
-    ->first();
+    public function productDetail($locale, $slug)
+    {
+        // Attempt to fetch the product
+        $product = Product::with([
+            'productTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'variation.colors',
+            'variation.sizes.variationSizeTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'variation.materials',
+            'variation.capacities',
+            'variation.images',
+            'brand.brandTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'categories.categoryTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'tags.tagTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'information.informationTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            }
+        ])
+        ->whereHas('productTranslation', function ($query) use ($locale, $slug) {
+            $query->where('slug', $slug)
+                ->where('locale', $locale);
+        })
+        ->first();
 
-    return view('mains.pages.product-page-one', [
-        'product' => $product,
-    ]);
-}
-
-
+        return view('mains.pages.product-page-one', [
+            'product' => $product,
+        ]);
+    }
 
     public function productShop(Request $request)
     {
@@ -388,7 +386,6 @@ public function productDetail($locale, $slug)
         ]);
     }
     
-    
     public function productShopSpare(Request $request)
     {
                 // Get all active filters from the request
@@ -576,5 +573,9 @@ public function productDetail($locale, $slug)
         ]);
     }
     
-    
+    public function account(){
+        return view('mains.pages.account-page-one', [
+
+        ]);
+    }
 }

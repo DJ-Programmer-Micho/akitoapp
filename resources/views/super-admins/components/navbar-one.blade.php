@@ -44,10 +44,10 @@
                     </div>
                 </li> <!-- end Dashboard Menu -->
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarProducts" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarProducts">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Product Management')}}</span>
+                    <a class="nav-link menu-link" href="#sidebarPreperties" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPreperties">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-dashboards">{{__('Properties')}}</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarProducts">
+                    <div class="collapse menu-dropdown" id="sidebarPreperties">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.brand', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-brands">{{__('Brands')}}</a>
@@ -59,20 +59,31 @@
                                 <a wire:navigate href="{{ route('super.tag', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tag">{{__('Product Tags')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.color', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tag">{{__('Product Colors')}}</a>
+                                <a wire:navigate href="{{ route('super.color', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-colors">{{__('Product Colors')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.size', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tag">{{__('Product Sizes')}}</a>
+                                <a wire:navigate href="{{ route('super.size', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-sizes">{{__('Product Sizes')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.material', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tag">{{__('Product Materials')}}</a>
+                                <a wire:navigate href="{{ route('super.material', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-materials">{{__('Product Materials')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.capacity', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tag">{{__('Product Capacity')}}</a>
+                                <a wire:navigate href="{{ route('super.capacity', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-capacity">{{__('Product Capacity')}}</a>
                             </li>
-
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarProducts" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarProducts">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Product Management')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarProducts">
+                        <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.product.create', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-product">{{__('Products')}}</a>
+                                <a wire:navigate href="{{ route('super.product.table', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Table Products')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.product.create', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-cProduct">{{__('New Products')}}</a>
                             </li>
                         </ul>
                     </div>
