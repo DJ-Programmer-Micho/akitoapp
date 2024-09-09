@@ -7,7 +7,7 @@
                     <div class="modal-body">
                         <div class="modal-header mb-3">
                             <h5 class="modal-title" id="addTagModalLabel">{{__('Add Tag')}}</h5>
-                            <button type="button" class="brn btn-danger" data-dismiss="modal" wire:click="closeModal"
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" wire:click="closeModal"
                                 aria-label="Close"><i class="fas fa-times"></i></button>
                         </div>
                         <hr class="bg-white">
@@ -16,14 +16,16 @@
                                 <div class="filter-choices-input">
                                     @foreach ($filteredLocales as $locale)
                                         <div class="mb-3">
-                                            <label for="tags.{{ $locale }}">In {{ $locale }} Language</label>
+                                            <label for="tags.{{ $locale }}" class=" @if($locale != 'en') ar-shift @endif">{{__('In ' . $locale . ' Language')}}</label>
                                             <input type="text" 
-                                                class="form-control 
+                                                class="form-control @if($locale != 'en') ar-shift @endif
                                                 @error('tags.' . $locale) is-invalid @enderror
                                                 @if(!$errors->has('tags.' . $locale) && !empty($tags[$locale])) is-valid @endif"
                                                 wire:model="tags.{{ $locale }}" placeholder="{{__('Tag Name')}}">
                                             @error('tags.' . $locale)
-                                                <span class="text-danger">{{ $message }}</span>
+                                                <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                                    <span class="text-danger">{{ __($message) }}</span>
+                                                </div>
                                             @enderror
                                         </div>
                                     @endforeach
@@ -32,29 +34,32 @@
                             <div class="col-6">
                                 <div class="filter-choices-input">
                                     <div class="mb-3">
-                                        <label for="priority">Priority</label>
+                                        <label for="priority">{{__('Priority')}}</label>
                                         <input type="text" 
                                             class="form-control 
                                             @error('priority') is-invalid @enderror
                                             @if(!$errors->has('priority') && !empty($priority)) is-valid @endif"
                                             wire:model="priority" placeholder="Priority">
                                         @error('priority')
-                                            <span class="text-danger">{{ $message }}</span>
+                                        <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+                                        </div>
                                         @enderror
                                     </div>
                                     
                                     <div class="mb-3">
-                                        <label for="status">Status</label>
+                                        <label for="status">{{__('Status')}}</label>
                                         <select 
-                                            class="form-control @error('status') is-invalid @enderror @if(!$errors->has('status') && $status) is-valid @endif" 
-                                            wire:model="status"
-                                        >
-                                            <option value="">Select Status</option>
-                                            <option value="1" @if($status == 1) selected @endif>Active</option>
-                                            <option value="0" @if($status == 0) selected @endif>Non-Active</option>
+                                            class="form-control @error('status') is-invalid @enderror @if(!$errors->has('status') && $status !== null) is-valid @endif" 
+                                            wire:model="status">
+                                            <option value="">{{__('Select Status')}}</option>
+                                            <option value="1" @if($status == 1) selected @endif>{{__('Active')}}</option>
+                                            <option value="0" @if($status == 0) selected @endif>{{__('Non-Active')}}</option>
                                         </select>
                                         @error('status')
-                                            <span class="text-danger">{{ $message }}</span>
+                                        <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+                                        </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -79,7 +84,7 @@
                     <div class="modal-body">
                         <div class="modal-header mb-3">
                             <h5 class="modal-title" id="updateTagModalLabel">{{__('Update Tag')}}</h5>
-                            <button type="button" class="brn btn-danger" data-dismiss="modal" wire:click="closeModal"
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" wire:click="closeModal"
                                 aria-label="Close"><i class="fas fa-times"></i></button>
                         </div>
                         <hr class="bg-white">
@@ -88,14 +93,16 @@
                                 <div class="filter-choices-input">
                                     @foreach ($filteredLocales as $locale)
                                         <div class="mb-3">
-                                            <label for="tagsEdit.{{ $locale }}">In {{ $locale }} Language</label>
+                                            <label for="tagsEdit.{{ $locale }}" class=" @if($locale != 'en') ar-shift @endif">{{__('In ' . $locale . ' Language')}}</label>
                                             <input type="text" 
-                                                class="form-control 
+                                                class="form-control @if($locale != 'en') ar-shift @endif
                                                 @error('tagsEdit.' . $locale) is-invalid @enderror
                                                 @if(!$errors->has('tagsEdit.' . $locale) && !empty($tagsEdit[$locale])) is-valid @endif"
                                                 wire:model="tagsEdit.{{ $locale }}" placeholder="{{__('Tag Name')}}">
                                             @error('tagsEdit.' . $locale)
-                                                <span class="text-danger">{{ $message }}</span>
+                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                                <span class="text-danger">{{ __($message) }}</span>
+                                            </div>
                                             @enderror
                                         </div>
                                     @endforeach
@@ -104,29 +111,32 @@
                             <div class="col-6">
                                 <div class="filter-choices-input">
                                     <div class="mb-3">
-                                        <label for="priority">Priority</label>
+                                        <label for="priority">{{__('Priority')}}</label>
                                         <input type="text" 
                                             class="form-control 
-                                            @error('priority') is-invalid @enderror
-                                            @if(!$errors->has('priority') && !empty($priority)) is-valid @endif"
-                                            wire:model="priority" placeholder="Priority">
-                                        @error('priority')
-                                            <span class="text-danger">{{ $message }}</span>
+                                            @error('priorityEdit') is-invalid @enderror
+                                            @if(!$errors->has('priorityEdit') && !empty($priorityEdit)) is-valid @endif"
+                                            wire:model="priorityEdit" placeholder="Priority">
+                                        @error('priorityEdit')
+                                        <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+                                        </div>
                                         @enderror
                                     </div>
                                     
                                     <div class="mb-3">
-                                        <label for="status">Status</label>
+                                        <label for="status">{{__('Status')}}</label>
                                         <select 
-                                            class="form-control @error('status') is-invalid @enderror @if(!$errors->has('status') && $status) is-valid @endif" 
-                                            wire:model="status"
-                                        >
-                                            <option value="">Select Status</option>
-                                            <option value="1" @if($status == 1) selected @endif>Active</option>
-                                            <option value="0" @if($status == 0) selected @endif>Non-Active</option>
+                                            class="form-control @error('statusEdit') is-invalid @enderror @if(!$errors->has('status') && $statusEdit !== null) is-valid @endif" 
+                                            wire:model="statusEdit">
+                                            <option value="">{{__('Select Status')}}</option>
+                                            <option value="1" @if($statusEdit == 1) selected @endif>{{__('Active')}}</option>
+                                            <option value="0" @if($statusEdit == 0) selected @endif>{{__('Non-Active')}}</option>
                                         </select>
-                                        @error('status')
-                                            <span class="text-danger">{{ $message }}</span>
+                                        @error('statusEdit')
+                                        <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+                                        </div>
                                         @enderror
                                     </div>
                                 </div>
@@ -153,9 +163,10 @@
                         aria-label="Close"><i class="fas fa-times"></i></button>
                 </div>
                 <form wire:submit.prevent="destroyTag">
-                    <div class="modal-body">
+                    <div class="modal-body @if(app()->getLocale() != 'en') ar-shift @endif">
                         <p>{{ __('Are you sure you want to delete this Tag?') }}</p>
-                        <p>{{ __('Please enter the')}}<strong> "{{$showTextTemp}}" </strong>{{__('to confirm:') }}</p>
+                        <p>{{ __('Please enter the in below to confirm:')}}</p>
+                        <p>{{$showTextTemp}}</p>
                         <input type="text" wire:model="tagNameToDelete" class="form-control">
                     </div>
                     <div class="modal-footer">

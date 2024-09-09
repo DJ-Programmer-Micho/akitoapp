@@ -20,5 +20,5 @@ class VariationMaterial extends Model
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
     public function productVariations() { return $this->belongsToMany(ProductVariation::class, 'product_variation_material'); }
-    public function variationMaterialeTranslation() { return $this->hasone(VariationMaterialTranslation::class,'variation_material_id'); }
+    public function variationMaterialTranslation() { return $this->hasone(VariationMaterialTranslation::class,'variation_material_id'); }
 }

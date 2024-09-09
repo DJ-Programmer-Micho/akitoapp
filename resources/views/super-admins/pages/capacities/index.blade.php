@@ -12,5 +12,19 @@
         $('#updateCapacityModal').modal('hide');
         $('#deleteCapacityModal').modal('hide');
     })
+    document.addEventListener('DOMContentLoaded', function () {
+        new bootstrap.Modal(document.getElementById('addCapacityModal'), {
+            backdrop: 'static',  // Prevent closing when clicking outside
+            keyboard: false      // Prevent closing on escape key press
+        });
+        new bootstrap.Modal(document.getElementById('updateCapacityModal'), {
+            backdrop: 'static',  // Prevent closing when clicking outside
+            keyboard: false      // Prevent closing on escape key press
+        });
+        new bootstrap.Modal(document.getElementById('deleteCapacityModal'), {
+            backdrop: 'static',  // Prevent closing when clicking outside
+            keyboard: false      // Prevent closing on escape key press
+        });
+    });
 </script>
 @endpush

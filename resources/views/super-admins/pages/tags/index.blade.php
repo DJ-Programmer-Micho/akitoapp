@@ -12,5 +12,19 @@
         $('#updateTagModal').modal('hide');
         $('#deleteTagModal').modal('hide');
     })
+    document.addEventListener('DOMContentLoaded', function () {
+        new bootstrap.Modal(document.getElementById('addTagModal'), {
+            backdrop: 'static',  // Prevent closing when clicking outside
+            keyboard: false      // Prevent closing on escape key press
+        });
+        new bootstrap.Modal(document.getElementById('updateTagModal'), {
+            backdrop: 'static',  // Prevent closing when clicking outside
+            keyboard: false      // Prevent closing on escape key press
+        });
+        new bootstrap.Modal(document.getElementById('deleteTagModal'), {
+            backdrop: 'static',  // Prevent closing when clicking outside
+            keyboard: false      // Prevent closing on escape key press
+        });
+    });
 </script>
 @endpush

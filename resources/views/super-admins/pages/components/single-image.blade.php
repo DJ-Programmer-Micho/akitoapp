@@ -202,7 +202,16 @@
                 }, 'image/png');
             });
         }
+
+
+        Livewire.on('resetData', () => {
+            // Call your JavaScript function here
+            const profilePicture = document.querySelector('.profile-picture');
+            profilePicture.style.backgroundImage = ``;
+        });
+
     });
+
     </script>
 
 @endpush

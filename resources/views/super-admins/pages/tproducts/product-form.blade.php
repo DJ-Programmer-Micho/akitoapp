@@ -87,7 +87,7 @@
                                     role="tabpanel"
                                 >
                                     <div class="mb-3">
-                                        <label for="products.{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="products.{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <input 
                                             type="text" 
                                             class="form-control 
@@ -97,11 +97,13 @@
                                             placeholder="Product Name"
                                         >
                                         @error('products.' . $locale)
-                                            <span class="text-danger">{{ $message }}</span>
+                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                         @enderror
                                     </div>
                                     <div class="mb-3">
-                                        <label for="contents.{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="contents.{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <div class="form-floating">
                                             <textarea 
                                             class="form-control @error('contents.' . $locale) is-invalid @enderror
@@ -112,7 +114,9 @@
                                             <label for="floatingTextarea2">Description</label>
                                           </div>
                                             @error('contents.' . $locale)
-                                                <span class="text-danger">{{ $message }}</span>
+                                                <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                             @enderror
                                         
                                         {{-- <div 
@@ -122,7 +126,9 @@
                                             {{ $contents[$locale] }}
                                         </div>
                                         @error('contents.' . $locale)
-                                            <span class="text-danger">{{ $message }}</span>
+                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                         @enderror --}}
                                     </div>
                                 </div>
@@ -261,7 +267,7 @@
                                                             <option value="">Select Material</option>
                                                             @foreach ($materials as $material)
                                                                 <option value="{{ $material->id }}">
-                                                                    {{ $material->variationMaterialeTranslation->name }}
+                                                                    {{ $material->variationMaterialTranslation->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -445,7 +451,7 @@
                                 <div wire:ignore.self class="tab-pane active" id="product-description" role="tabpanel">
                                     <div class="mb-3" wire:ignore>
                                         @foreach ($filteredLocales as $locale)
-                                        <label for="product-description{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="product-description{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <div 
                                             class="summernote" 
                                             id="product-description{{ $locale }}"
@@ -459,7 +465,7 @@
                                 <div wire:ignore.self class="tab-pane" id="product-information" role="tabpanel">
                                     <div class="mb-3" wire:ignore>
                                         @foreach ($filteredLocales as $locale)
-                                        <label for="product-information{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="product-information{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <div 
                                             class="summernote" 
                                             id="product-information{{ $locale }}"
@@ -473,7 +479,7 @@
                                 <div wire:ignore.self class="tab-pane" id="product-ship" role="tabpanel">
                                     <div class="mb-3" wire:ignore>
                                         @foreach ($filteredLocales as $locale)
-                                        <label for="product-ship{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="product-ship{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <div 
                                             class="summernote" 
                                             id="product-ship{{ $locale }}"
@@ -502,7 +508,9 @@
                                                     <div class="mb-3">
                                                         <label for="question-{{ $faqIndex }}-{{ $locale }}" class="form-label">Question ({{ $locale }})</label><br>
                                                         @error('faqs.' . $faqIndex . '.' . $locale . '.question')
-                                                            <span class="text-danger">{{ $message }}</span>
+                                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                                         @enderror
                                                         <input type="text" 
                                                         class="form-control
@@ -515,7 +523,9 @@
                                                     <div class="mb-3">
                                                         <label for="answer-{{ $faqIndex }}-{{ $locale }}" class="form-label">Answer ({{ $locale }})</label><br>
                                                         @error('faqs.' . $faqIndex . '.' . $locale . '.answer')
-                                                            <span class="text-danger">{{ $message }}</span>
+                                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                                         @enderror
                                                         <textarea 
                                                         class="form-control
@@ -593,7 +603,9 @@
                                     wire:model.debounce.500ms="originalPrice" placeholder="0.00">
                                 </div>
                                 @error('originalPrice')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                 @enderror
                             </div>
                         
@@ -614,7 +626,9 @@
                                     <span class="input-group-text" id="basic-addon1">%</span>
                                 </div>
                                 @error('discountPrice')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                 @enderror
                                 <small class="text-info">Discounted by {{ number_format($discountPercentage, 0) }}% from the original price.</small>
                             </div>
@@ -639,7 +653,9 @@
                                 @endforeach
                             </select>
                             @error('selectedBrand')
-                                <span class="text-danger">{{ $message }}</span>
+                                <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                             @enderror
                         </div>
                         <!-- end card body -->
@@ -651,8 +667,12 @@
                         </div>
                         <!-- end card body -->
                         <div class="card-body">
-                            @error('selectedCategories')<span class="text-danger">{{ $message }}</span>@enderror
-                            @error('selectedSubCategories')<span class="text-danger">{{ $message }}</span>@enderror
+                            @error('selectedCategories')<div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>@enderror
+                            @error('selectedSubCategories')<div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>@enderror
                             {{-- <div wire:ignore> --}}
                                 @foreach($categoriesData as $category)
                                 <div class="form-group">

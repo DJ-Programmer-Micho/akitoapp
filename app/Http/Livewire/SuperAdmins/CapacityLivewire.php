@@ -126,7 +126,7 @@ class CapacityLivewire extends Component
             ]);
         }
 
-        $this->resetInput();
+        $this->closeModal();
         $this->filterCapacities($this->statusFilter);
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('New Capacity Added Successfully')]);
     }

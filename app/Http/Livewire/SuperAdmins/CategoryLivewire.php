@@ -52,12 +52,6 @@ class CategoryLivewire extends Component
     public function mount(){
         $this->glang = app()->getLocale();
         $this->filteredLocales = app('glocales');
-        // Default Values
-        // $this->priority = Brand::max('priority') + 1;
-        // $this->status = 1;
-        // $this->statusFilter = request()->query('statusFilter', 'all');
-        // $this->page = request()->query('page', 1);
-        // $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Page Loaded Added Successfully')]);
     }
 
     // VALIDATION
@@ -84,7 +78,7 @@ class CategoryLivewire extends Component
             $rules['namesEdit.' . $locale] = 'required|string|min:2';
         }
         $rules['priorityEdit'] = ['required'];
-        $rules['statusEdit'] = ['required'];
+        $rules['statusEdit'] = ['required','in:0,1'];
         return $rules;
     }
 
@@ -104,7 +98,7 @@ class CategoryLivewire extends Component
             $rules['subNamesEdit.' . $locale] = 'required|string|min:2';
         }
         $rules['priorityEdit'] = ['required'];
-        $rules['statusEdit'] = ['required'];
+        $rules['statusEdit'] = ['required','in:0,1'];
         return $rules;
     }
 
@@ -127,40 +121,46 @@ class CategoryLivewire extends Component
     // CRUD
     public function addCategory()
     {
-        $this->currentValidation = 'categoryAdd';
-        $validatedData = $this->validate($this->rulesForCategory());
-
         try {
-            if($this->objectName) {
-                $croppedImage = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $this->objectData));
-                Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
-            } else {
-                $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please reload The Page CODE...CAT-ADD-IMG')]);
-                return;
+
+            $this->currentValidation = 'categoryAdd';
+            $validatedData = $this->validate($this->rulesForCategory());
+
+            try {
+                if($this->objectName) {
+                    $croppedImage = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $this->objectData));
+                    Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
+                } else {
+                    $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Uplaod The Image')]);
+                    return;
+                }
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
             }
-        } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
-        }
 
 
-        $category = Category::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
-            'priority' => Category::max('priority') + 1,
-            'image' => $this->objectName,
-        ]);
-
-        foreach ($this->filteredLocales as $locale) {
-            CategoryTranslation::create([
-                'category_id' => $category->id,
-                'locale' => $locale,
-                'name' => $this->names[$locale],
-                'slug' => Str::slug($this->names[$locale], '-', ''),
+            $category = Category::create([
+                'created_by_id' => 1,
+                'updated_by_id' => 1,
+                'priority' => Category::max('priority') + 1,
+                'image' => $this->objectName,
             ]);
-        }
 
-        $this->emit('categoryAdded');
-    
+            foreach ($this->filteredLocales as $locale) {
+                CategoryTranslation::create([
+                    'category_id' => $category->id,
+                    'locale' => $locale,
+                    'name' => $this->names[$locale],
+                    'slug' => Str::slug($this->names[$locale], '-', ''),
+                ]);
+            }
+
+            $this->emit('categoryAdded');
+            $this->resetInput();
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('New Category Added Successfully')]);
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Something Went Wrong: ' . $e->getMessage())]);
+        }
     }
 
     
@@ -169,6 +169,8 @@ class CategoryLivewire extends Component
 
         $category_edit = Category::find($id);
         $this->category_update = $category_edit;
+
+        $this->de = 0;
 
         if ($category_edit) {
             foreach ($this->filteredLocales as $locale) {
@@ -205,14 +207,15 @@ class CategoryLivewire extends Component
                         Storage::disk('s3')->delete($this->objectReader);
                         Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
                     } else {
-                        Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');               
-                }
-            } else {
-                $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please reload The Page CODE...CAT-ADD-IMG')]);
-                return;
+                        Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
+                    }
+                } else {
+                $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => __('Image Did Not Update')]);
+                // $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Upload New Image')]);
             }
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
+            return;
         }
 
         Category::where('id', $this->category_update->id)->update([
@@ -257,24 +260,27 @@ class CategoryLivewire extends Component
     {
         $this->currentValidation = 'subCategoryAdd';
         $validatedData = $this->validate($this->rulesForSubCategories());
-
-        $subcategory = SubCategory::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
-            'category_id' => $this->subaddid,
-            'priority' => $this->priorityEdit,
-            'status' => $this->statusEdit,
-        ]);
-
-        foreach ($this->filteredLocales as $locale) {
-            SubCategoryTranslation::create([
-                'sub_category_id' => $subcategory->id,
-                'locale' => $locale,
-                'name' => $this->subNames[$locale],
-                'slug' => Str::slug($this->subNames[$locale], '-', ''),
+        try { 
+            $subcategory = SubCategory::create([
+                'created_by_id' => 1,
+                'updated_by_id' => 1,
+                'category_id' => $this->subaddid,
+                'priority' => $this->priorityEdit,
+                'status' => $this->statusEdit,
             ]);
+
+            foreach ($this->filteredLocales as $locale) {
+                SubCategoryTranslation::create([
+                    'sub_category_id' => $subcategory->id,
+                    'locale' => $locale,
+                    'name' => $this->subNames[$locale],
+                    'slug' => Str::slug($this->subNames[$locale], '-', ''),
+                ]);
+            }
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('New Sub-Category Added Successfully')]);
+        } catch (\Exception $e) {
+            
         }
-    
     }
 
     public function editSubCategory(int $id) {
@@ -308,24 +314,6 @@ class CategoryLivewire extends Component
     public function updateSubCategory () {
         $validatedData = $this->validate($this->rulesForSubCategoriesEdit());
 
-        // try {
-        //     if($this->objectData) {
-        //         $croppedImage = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $this->objectData));
-
-        //         if($this->objectReader){
-        //                 Storage::disk('s3')->delete($this->objectReader);
-        //                 Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
-        //             } else {
-        //                 Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');               
-        //         }
-        //     } else {
-        //         $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please reload The Page CODE...CAT-ADD-IMG')]);
-        //         return;
-        //     }
-        // } catch (\Exception $e) {
-        //     $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
-        // }
-
         SubCategory::where('id', $this->sub_category_update->id)->update([
             'created_by_id' => 1,
             'updated_by_id' => 1,
@@ -351,7 +339,7 @@ class CategoryLivewire extends Component
 
         $this->closeModal();
         $this->render();
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Category Updated Successfully')]);
+        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Sub-Category Updated Successfully')]);
     }
 
     
@@ -394,7 +382,7 @@ class CategoryLivewire extends Component
             }
             Category::find($this->category_selected_id_delete->id)->delete();
             $this->closeModal();
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Menu Deleted Successfully')]);
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Category Deleted Successfully')]);
 
             $this->confirmDelete = false;
             $this->category_selected_id_delete = null;
@@ -405,6 +393,9 @@ class CategoryLivewire extends Component
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Operaiton Faild')]);
         }
     }
+
+
+
 
     public function deleteSubCategory (int $id) {
         $this->subCategory_selected_id_delete = SubCategory::find($id);
@@ -432,7 +423,7 @@ class CategoryLivewire extends Component
             // }
             SubCategory::find($this->subCategory_selected_id_delete->id)->delete();
             $this->closeModal();
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Menu Deleted Successfully')]);
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Sub-Category Deleted Successfully')]);
 
             $this->confirmDelete = false;
             $this->subCategory_selected_id_delete = null;
@@ -480,6 +471,55 @@ class CategoryLivewire extends Component
         }
     }
     
+    public function updateCatStatus(int $id)
+    {
+        // Find the brand by ID, if not found return an error
+        $catStatus = Category::find($id);
+    
+        if ($catStatus) {
+            // Toggle the status (0 to 1 and 1 to 0)
+            $catStatus->status = !$catStatus->status;
+            $catStatus->save();
+    
+            // Dispatch a browser event to show success message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => __('Status Updated Successfully')
+            ]);
+        } else {
+            // Dispatch a browser event to show error message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
+
+    public function updateSubCatStatus(int $id)
+    {
+        // Find the brand by ID, if not found return an error
+        $subCatStatus = SubCategory::find($id);
+    
+        if ($subCatStatus) {
+            // Toggle the status (0 to 1 and 1 to 0)
+            $subCatStatus->status = !$subCatStatus->status;
+            $subCatStatus->save();
+    
+            // Dispatch a browser event to show success message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => __('Status Updated Successfully')
+            ]);
+        } else {
+            // Dispatch a browser event to show error message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
+
+
     // RESET BUTTON
     public function reSyncA(){
         $this->render();
@@ -489,6 +529,7 @@ class CategoryLivewire extends Component
     {
         $this->dispatchBrowserEvent('close-modal');
         $this->resetInput();
+        $this->de = 1;
     }
 
     public function resetInput()
@@ -504,6 +545,9 @@ class CategoryLivewire extends Component
         $this->objectReader = null;
         $this->objectName = null;
         $this->objectData = null;
+
+        $this->emit('resetData');
+        $this->emit('resetEditData');
     }
 
 

@@ -126,7 +126,7 @@ class MaterialLivewire extends Component
             ]);
         }
 
-        $this->resetInput();
+        $this->closeModal();
         $this->filterMaterials($this->statusFilter);
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('New Material Added Successfully')]);
     }
@@ -314,7 +314,7 @@ class MaterialLivewire extends Component
         $this->activeCount = VariationMaterial::where('status', 1)->count() ?? 0;
         $this->nonActiveCount = VariationMaterial::where('status', 0)->count() ?? 0;
 
-        $query = VariationMaterial::with(['variationMaterialeTranslation' => function ($query) {
+        $query = VariationMaterial::with(['variationMaterialTranslation' => function ($query) {
             $query->where('locale', app()->getLocale());
         }]);
         
@@ -327,7 +327,7 @@ class MaterialLivewire extends Component
     
         // Apply search filter based on translations
         if (!empty($this->search)) {
-            $query->whereHas('variationMaterialeTranslation', function ($query) {
+            $query->whereHas('variationMaterialTranslation', function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
             });
         }

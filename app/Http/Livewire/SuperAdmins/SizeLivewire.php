@@ -126,7 +126,7 @@ class SizeLivewire extends Component
             ]);
         }
 
-        $this->resetInput();
+        $this->closeModal();
         $this->filterSizes($this->statusFilter);
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('New Size Added Successfully')]);
     }

@@ -17,9 +17,15 @@
         <link href="{{asset('dashboard/css/app.min.css')}}" rel="stylesheet" type="text/css" />
         <!-- custom Css-->
         <link href="{{asset('css/custom.min.css')}}" rel="stylesheet" type="text/css" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <link href="{{asset('dashboard/css/toaster.css')}}" rel="stylesheet" type="text/css">
         <title>{{ $title ?? 'Page Title' }}</title>
+        <style>
+            .ar-shift {
+                direction: rtl;
+                text-align: right;
+            }
+        </style>
         @livewireStyles
     </head>
     <body>
@@ -63,6 +69,7 @@
     @stack('capacitiesScripts')
     @stack('super_script')
     @stack('asideFilter')
+    @stack('tProductScripts')
     @livewireScripts
     <form id="languageForm" action="{{ route('setLocale') }}" method="post">
         @csrf

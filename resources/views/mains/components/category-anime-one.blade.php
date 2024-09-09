@@ -95,7 +95,7 @@
     top: 40%;
     left: 49%;
     content: " ";
-    background: #98cdff;
+    background: #b1d9ff;
     width: 75px;
     height: 75px;
     margin: 2px;

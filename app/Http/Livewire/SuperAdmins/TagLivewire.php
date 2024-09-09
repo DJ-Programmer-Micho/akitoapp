@@ -70,7 +70,7 @@ class TagLivewire extends Component
             $rules['tags.' . $locale] = 'required|string|min:1';
         }
         $rules['priority'] = ['required'];
-        $rules['status'] = ['required'];
+        $rules['status'] = ['required','in:0,1'];
         return $rules;
     }
 
@@ -81,7 +81,7 @@ class TagLivewire extends Component
             $rules['tagsEdit.' . $locale] = 'required|string|min:1';
         }
         $rules['priorityEdit'] = ['required'];
-        $rules['statusEdit'] = ['required'];
+        $rules['statusEdit'] = ['required','in:0,1'];
         return $rules;
     }
 
@@ -122,7 +122,7 @@ class TagLivewire extends Component
             ]);
         }
 
-        $this->resetInput();
+        $this->closeModal();
         $this->filterTags($this->statusFilter);
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('New Tag Added Successfully')]);
     }
@@ -147,7 +147,6 @@ class TagLivewire extends Component
             }
             $this->priorityEdit = $tag_edit->priority;
             $this->statusEdit = $tag_edit->status;
-
 
         } else {
         // error message

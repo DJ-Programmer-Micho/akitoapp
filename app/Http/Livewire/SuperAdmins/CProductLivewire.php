@@ -14,6 +14,7 @@ use App\Models\ProductImage;
 use App\Models\VariationSize;
 use Livewire\WithFileUploads;
 use App\Models\VariationColor;
+use Illuminate\Validation\Rule;
 use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
@@ -55,6 +56,7 @@ class CProductLivewire extends Component
     public $selectedTags = [];
     public $images = []; // Cropped Imgeas
     public $sku; // Cropped Imgeas
+    public $keywords; // Cropped Imgeas
     // Sub Form INT
     public $is_spare_part = 0;
     public $is_on_stock = 1;
@@ -88,8 +90,26 @@ class CProductLivewire extends Component
     protected function rulesForSaveProduct()
     {
         $rules = [];
+        $productNames = collect($this->products);
+        
         foreach ($this->filteredLocales as $locale) {
-            $rules['products.' . $locale] = 'required|string|min:3';
+            $rules['products.' . $locale] = [
+                'required',
+                'string',
+                'min:3',
+                Rule::unique('product_translations', 'name')
+                    ->where('locale', $locale)
+            ];
+
+            $rules['products.' . $locale][] = function ($attribute, $value, $fail) use ($productNames, $locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $productNames->get($locale) === $productNames->get($otherLocale)) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
+
+
             $rules['contents.' . $locale] = 'required|string|min:15';
             if (!empty($this->faqs)) {
                 foreach ($this->faqs as $faqIndex => $faq) {
@@ -210,7 +230,7 @@ class CProductLivewire extends Component
             $query->where('locale', app()->getLocale());
         }])->get();
 
-        $this->materials = VariationMaterial::with(['variationMaterialeTranslation' => function ($query) {
+        $this->materials = VariationMaterial::with(['variationMaterialTranslation' => function ($query) {
             $query->where('locale', app()->getLocale());
         }])->get();
 
@@ -334,6 +354,7 @@ class CProductLivewire extends Component
             // Create Variation entry
             $variation = ProductVariation::create([
                 'sku' => $this->sku ?? null,
+                'keywords' => $this->keywords ?? null,
                 'price' => $this->originalPrice ?? null,
                 'discount' => $this->discountPrice ?? null,
                 'on_stock' => $this->is_on_stock ?? 1,
@@ -429,13 +450,27 @@ class CProductLivewire extends Component
     
             // Commit transaction
             DB::commit();
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Page Loaded Added Successfully')]);
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Product Added Successfully')]);
             // Clear the images after upload
-            $this->reset('images');
             $this->resetInputValues();
-    
+
+
+            try {
+                $files = Storage::files('livewire-tmp');
+
+                foreach ($files as $file) {
+                    Storage::delete($file);
+                }
+                $this->dispatchBrowserEvent('clean-image');
+
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => __('IMage Cache Did Not Clear ' . $e)]);
+
+            }
+
+
         } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Page Loaded Added Successfully')]);
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong ' . $e)]);
             DB::rollBack();
             // Rollback transaction if an error occurs
     
@@ -444,8 +479,6 @@ class CProductLivewire extends Component
                 'message' => __('Failed to save product: ' . $e->getMessage())
             ]);
         }
-        $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Page Loaded Added Successfully')]);
-
     }
 
     public function resetInputValues() {
@@ -460,6 +493,7 @@ class CProductLivewire extends Component
         $this->selectedTags = [];
         $this->images = []; // Cropped Imgeas
         $this->sku = ""; // Cropped Imgeas
+        $this->keywords = ""; // Cropped Imgeas
         $this->is_spare_part = 0;
         $this->is_on_stock = 1;
         $this->is_on_sale = 0;
@@ -468,7 +502,6 @@ class CProductLivewire extends Component
         $this->originalPrice = '';
         $this->discountPrice = "";
         $this->discountPercentage = "";
-        $this->seoKeywords = "";
         foreach ($this->filteredLocales as $locale) {
             $this->products[$locale] = ''; // or any default value
             $this->contents[$locale] = ''; // or any default value
@@ -476,6 +509,8 @@ class CProductLivewire extends Component
             $this->productInformations[$locale] = ''; // or any default value
             $this->productShip[$locale] = ''; // or any default value
         }
+
+
     }
     
 

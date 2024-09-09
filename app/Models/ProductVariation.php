@@ -11,6 +11,7 @@ class ProductVariation extends Model
     protected $table = 'product_variations';
     protected $fillable = [
         'sku',
+        'keywords',
         'price',
         'discount',
         'on_stock',
@@ -18,6 +19,9 @@ class ProductVariation extends Model
         'featured',
     ];
 
+    protected $casts = [
+        'keywords' => 'array',
+    ];
 
     public function product() { return $this->hasMany(Product::class, 'variation_id'); }
     public function images() { return $this->hasMany(ProductImage::class, 'variation_id'); }

@@ -91,7 +91,7 @@
 <div>
     <div class="d-flex justify-content-between">
         <label for="priority">{{__($title)}}</label>
-        <button type="button" wire:click="sadImage">Click</button>
+        <button type="button" class="btn btn-secondary" wire:click="sadImage">{{__('Remove/Update Image')}}</button>
     </div>
     
     <div class="@if ($de==1) d-none @endif">
@@ -104,7 +104,6 @@
         </div>
     </div>
 
-    <small class="text-info">1080x1080</small>
     
     <div class="@if ($de==0) d-none @endif">
     <div wire:ignore.self class="profile-picture-update">
@@ -120,7 +119,6 @@
             />
         </div>
     </div>
-    <small class="text-info">1080x1080</small>
     
     
     {{-- IMAGE CROP MODAL --}}
@@ -253,6 +251,13 @@
     initializeCropper();
     handleFileInputChange();
     handleCropButtonClick();
+
+
+    Livewire.on('resetEditData', () => {
+        // Call your JavaScript function here
+        const profilePicture = document.querySelector('.profile-picture-update');
+        profilePicture.style.backgroundImage = ``;
+    });
 });
 
     </script>

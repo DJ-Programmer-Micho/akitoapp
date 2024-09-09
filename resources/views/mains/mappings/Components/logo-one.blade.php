@@ -110,8 +110,8 @@
                     colors="primary:#3080e8,secondary:#000000"
                     style="width:40px;height:40px">
                 </lord-icon>
-                </a>
-                <p class="flex-grow-1" style="font-size: 16px">Furat Hariri</p>
+            </a>
+                        <p style="color: #003465">Furat_Hariri</p>
                         <div class="dropdown-menu p-0">
                             <nav class="side-nav">
                                 <ul class="menu-vertical sf-arrows">

@@ -85,30 +85,27 @@
                                 <table class="table table-bordered table-striped table-hover table-sm">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Color Name</th>
-                                            <th>Color Preview</th>
-                                            <th>Status</th>
-                                            <th>priority</th>
-                                            <th>Action</th>
+                                            <th>{{__('Color Name')}}</th>
+                                            <th class="text-center">{{__('Color Preview')}}</th>
+                                            <th class="text-center">{{__('Status')}}</th>
+                                            <th class="text-center">{{__('priority')}}</th>
+                                            <th class="text-center">{{__('Action')}}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse($tableData as $data)
-                                        
                                             <tr>
-                                                <td class="align-middle">{{ $data->id }}</td>
                                                 <td class="@empty($data->variationColorTranslation->name)  text-danger @endif align-middle">{{ $data->variationColorTranslation->name ?? 'unKnown' }}</td>
-                                                <td class="align-middle">
-                                                    <div style="background-color: {{$data->code}}; width: 25px; height: 25px;" class="rounded-circle border border-white"></div>
+                                                <td class="align-middle text-center d-flex justify-content-center align-items-center">
+                                                    <div style="background-color: {{$data->code}}; width: 25px; height: 25px;" class="rounded-circle border border-white m-2"></div>
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <span class="badge {{ $data->status ? 'bg-success' : 'bg-danger' }} p-2" style="font-size: 0.7rem;">
-                                                        {{ $data->status ? 'Active' : 'Non-Active' }}
+                                                        {{ $data->status ? __('Active') : __('Non-Active') }}
                                                     </span>
                                                 </td>
                                                 <td class="align-middle text-center">
-                                                    <div class="d-flex">
+                                                    <div class="d-flex justify-content-center align-items-center">
                                                         <input type="number" id="priority_{{ $data->id }}" value="{{ $data->priority }}" class="form-control bg-dark text-white" style="max-width: 80px">
                                                         <button type="button" class="btn btn-warning btn-icon text-dark"  onclick="updatePriorityValue({{ $data->id }})">
                                                             <i class="fas fa-sort"></i>
@@ -116,21 +113,32 @@
                                                     </div>
                                                 </td>
                                                 <td class="align-middle text-center">
-                                                    <button type="button"
-                                                        wire:click="updateStatus({{ $data->id }})"
-                                                        class="btn {{ $data->status == 0 ? 'btn-danger' : 'btn-success' }} btn-icon">
-                                                        <i class="far {{ $data->status == 0 ? 'fa-times-circle' : 'fa-check-circle' }}"></i>
-                                                    </button>
-                                                    <button type="button" class="btn  btn-primary btn-icon" 
-                                                    data-bs-toggle="modal" data-bs-target="#updateColorModal" data-bs-placement="top" title="{{__('Edit Color')}}" wire:click="editColor({{ $data->id }})"
-                                                    >
-                                                        <i class="fas fa-edit fa-lg"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-danger btn-icon" 
-                                                    data-bs-toggle="modal" data-bs-target="#deleteColorModal" data-bs-placement="top" title="{{__('Delete Color')}}" wire:click="removeColor({{ $data->id }})"
-                                                    >
-                                                    <i class="fas fa-trash-alt fa-lg"></i>
-                                                    </button>
+                                                    <span>
+                                                        <div class="dropdown"><button
+                                                                class="btn btn-soft-secondary btn-sm dropdown"
+                                                                type="button" data-bs-toggle="dropdown"
+                                                                aria-expanded="false"><i
+                                                                    class="ri-more-fill"></i></button>
+                                                            <ul class="dropdown-menu dropdown-menu-end" style="">
+                                                                <li><button class="dropdown-item" type="button" wire:click="updateStatus({{ $data->id }})">
+                                                                    {{-- <i class="codicon align-bottom me-2 text-muted"></i> --}}
+                                                                    @if ( $data->status == 1)
+                                                                    <span class="text-danger"><i class="fa-solid fa-xmark me-2"></i> {{__('De-Active')}}</span>
+                                                                    @else
+                                                                    <span class="text-success"><i class="fa-solid fa-check me-2"></i> {{__('Active')}}</span>
+                                                                    @endif
+                                                                    </button>
+                                                                </li>
+                                                                <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#updateColorModal" wire:click="editColor({{ $data->id }})">
+                                                                    <i class="fa-regular fa-pen-to-square me-2"></i>{{__('Edit')}}</button>
+                                                                </li>
+                                                                <li class="dropdown-divider"></li>
+                                                                <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteColorModal" wire:click="removeColor({{ $data->id }})">
+                                                                    <i class="fa-regular fa-trash-can me-2"></i>{{__('Delete')}}</button>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </span>
                                                 </td>
                                             </tr>
                                         @empty

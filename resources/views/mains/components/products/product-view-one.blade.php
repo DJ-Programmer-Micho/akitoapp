@@ -39,7 +39,7 @@
                 @if ($productDetail->variation->discount)
                     <div class="product-price">
                         $ {{$productDetail->variation->discount}}
-                        <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                        <span class="mx-2" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
                             $ {{$productDetail->variation->price}}
                         </span>
                     </div><!-- End .product-price -->
@@ -120,7 +120,7 @@
                     <div class="product-cat">
                         <span>Materials:</span>
                         @foreach ($productDetail->variation->materials as $material)
-                        <a href="#">{{$material->variationMaterialeTranslation->name}}</a>,
+                        <a href="#">{{$material->variationMaterialTranslation->name}}</a>,
                         @endforeach
                     </div><!-- End .product-cat -->
      

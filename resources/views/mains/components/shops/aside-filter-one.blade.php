@@ -152,7 +152,7 @@
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" name="materials[]" value="{{ $material->id }}" class="custom-control-input" id="material-{{$index + 1}}"
                             {{ in_array($material->id, request()->materials ?? []) ? 'checked' : '' }}>
-                            <label class="custom-control-label" for="material-{{$index + 1}}">{{$material->variationMaterialeTranslation->name}}</label>
+                            <label class="custom-control-label" for="material-{{$index + 1}}">{{$material->variationMaterialTranslation->name}}</label>
                         </div><!-- End .custom-checkbox -->
                     </div><!-- End .filter-item -->
                     @endforeach

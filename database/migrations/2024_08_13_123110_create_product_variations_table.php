@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
             $table->string('sku')->nullable()->unique();
+            $table->string('keywords')->nullable();
             $table->integer('price');
             $table->integer('discount')->nullable();
             $table->integer('on_stock');

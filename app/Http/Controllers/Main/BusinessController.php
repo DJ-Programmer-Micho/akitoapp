@@ -365,7 +365,7 @@ class BusinessController extends Controller
         
         $materials = VariationMaterial::where('status', 1)
             ->whereIn('id', $materialIdsFromProducts)
-            ->with(['variationMaterialeTranslation' => function ($query) {
+            ->with(['variationMaterialTranslation' => function ($query) {
                 $query->where('locale', app()->getLocale());
             }])
             ->get();
@@ -553,7 +553,7 @@ class BusinessController extends Controller
                 
                 $materials = VariationMaterial::where('status', 1)
                     ->whereIn('id', $materialIdsFromProducts)
-                    ->with(['variationMaterialeTranslation' => function ($query) {
+                    ->with(['variationMaterialTranslation' => function ($query) {
                         $query->where('locale', app()->getLocale());
                     }])
                     ->get();

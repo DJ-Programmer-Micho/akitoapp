@@ -4,10 +4,10 @@
         <div class="row">
         <div class="col-6 col-lg-3">
             <figure class="product-media">
-                <div class="label-wrapper" style="position: absolute; top: -3px; left: 0; z-index: 10;">
+                <div class="label-wrapper" style="">
                     @if ($product->tags)
                     @foreach ($product->tags as $tag)
-                        <span class="col-3" style="background-color: #ef837b; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                        <span class="col-3" style="background-color: #eb4034; color: #ffffff">{{$tag->tagTranslation->name}}</span>
                     @endforeach
                     @endif
                 </div>
@@ -76,7 +76,7 @@
                 @if ($product->variation->discount)
                 <div class="product-price">
                     $ {{$product->variation->discount}}
-                    <span class="mx-2" style="text-decoration: line-through; color: #999; font-size: 16px">
+                    <span class="mx-2" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
                         $ {{$product->variation->price}}
                     </span>
                 </div><!-- End .product-price -->

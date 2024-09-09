@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
             $table->string('locale',5);
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('description');
-            $table->string('slug');
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }

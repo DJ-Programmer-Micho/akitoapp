@@ -44,12 +44,12 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Create Product</h4>
+                    <h4 class="mb-sm-0">{{__('Create Product')}}</h4>
 
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
-                            <li class="breadcrumb-item active">Create Product</li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">{{__('Dashboard')}}</a></li>
+                            <li class="breadcrumb-item active">{{__('Create Product')}}</li>
                         </ol>
                     </div>
 
@@ -71,8 +71,7 @@
                                         data-bs-toggle="tab" 
                                         href="#addproduct-{{ $locale }}" 
                                         role="tab"
-                                    >
-                                        Product Info In {{ $locale }}
+                                    >{{__('Product Info In '.$locale )}}
                                     </a>
                                 </li>
                                 @endforeach
@@ -87,32 +86,37 @@
                                     role="tabpanel"
                                 >
                                     <div class="mb-3">
-                                        <label for="products.{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="products.{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <input 
                                             type="text" 
-                                            class="form-control 
+                                            class="form-control @if($locale != 'en') ar-shift @endif 
                                             @error('products.' . $locale) is-invalid @enderror
                                             @if(!$errors->has('products.' . $locale) && !empty($products[$locale])) is-valid @endif"
                                             wire:model="products.{{ $locale }}" 
-                                            placeholder="Product Name"
+                                            placeholder="{{__('Product Name')}}"
                                         >
                                         @error('products.' . $locale)
-                                            <span class="text-danger">{{ $message }}</span>
+                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+                                        </div>
                                         @enderror
                                     </div>
                                     <div class="mb-3">
-                                        <label for="contents.{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="contents.{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <div class="form-floating">
                                             <textarea 
-                                            class="form-control @error('contents.' . $locale) is-invalid @enderror
+                                            class="form-control @if($locale != 'en') ar-shift @endif 
+                                            @error('contents.' . $locale) is-invalid @enderror
                                             @if(!$errors->has('contents.' . $locale) && !empty($contents[$locale])) is-valid @endif" 
-                                            placeholder="Description"  
+                                            placeholder="{{__('Description')}}"  
                                             style="height: 100px;"
                                             wire:model="contents.{{$locale}}"></textarea>
-                                            <label for="floatingTextarea2">Description</label>
+                                            <label for="floatingTextarea2">{{__('Description')}}</label>
                                           </div>
                                             @error('contents.' . $locale)
-                                                <span class="text-danger">{{ $message }}</span>
+                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                                <span class="text-danger">{{ __($message) }}</span>
+                                            </div>
                                             @enderror
                                         
                                         {{-- <div 
@@ -122,7 +126,9 @@
                                             {{ $contents[$locale] }}
                                         </div>
                                         @error('contents.' . $locale)
-                                            <span class="text-danger">{{ $message }}</span>
+                                        <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+                                        </div>
                                         @enderror --}}
                                     </div>
                                 </div>
@@ -136,7 +142,7 @@
                     <!-- end card -->
                     <div class="card">
                         <div class="card-header" wire:ignore>
-                            <h5 class="card-title mb-0">Image Uploader</h5>
+                            <h5 class="card-title mb-0">{{__('Image Uploader')}}</h5>
                         </div>
                         <!-- end card header -->
                         <div class="card-body" wire:ignore>
@@ -147,11 +153,11 @@
                                     @foreach ($images as $key => $image)
                                         <div class="image-preview">
                                             <img src="{{ $image->temporaryUrl() }}" alt="Image preview">
-                                            <button type="button" wire:click="removeImage({{ $key }})">Remove</button>
+                                            <button type="button" wire:click="removeImage({{ $key }})">{{__('Remove')}}</button>
                                         </div>
                                     @endforeach
                                 </div>
-                                <button wire:click="upload">Upload Images</button>
+                                <button wire:click="upload">{{__('Upload Images')}}</button>
                             @endif
                         
                             @if (session()->has('message'))
@@ -167,27 +173,27 @@
                             <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#variation-color" role="tab">
-                                        Colors
+                                        {{__('Colors')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#variation-naterial" role="tab">
-                                        Materials
+                                        {{__('Materials')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#variation-size" role="tab">
-                                        Sizes
+                                        {{__('Sizes')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#variation-capacity" role="tab">
-                                        Capacity
+                                        {{__('Capacity')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#variation-sku" role="tab">
-                                        SKU
+                                        {{__('SKU')}}
                                     </a>
                                 </li>
                             </ul>
@@ -196,13 +202,13 @@
                         <div class="card-body">
                             <div class="tab-content">
                                 <div wire:ignore.self class="tab-pane active" id="variation-color" role="tabpanel">
-                                    <button type="button" class="btn btn-success mb-3" wire:click="addColorSelect">Add Color</button>
+                                    <button type="button" class="btn btn-success mb-3" wire:click="addColorSelect">{{__('Add Color')}}</button>
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>Choose a color</th>
-                                                <th>Preview</th>
-                                                <th>Action</th>
+                                                <th>{{__('Choose a color')}}</th>
+                                                <th>{{__('Preview')}}</th>
+                                                <th>{{__('Action')}}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -233,7 +239,7 @@
                                                     </td>
                                                     <!-- Button to remove the color row -->
                                                     <td>
-                                                        <button type="button" class="btn btn-danger" wire:click="removeColorSelect({{ $index }})">Remove</button>
+                                                        <button type="button" class="btn btn-danger" wire:click="removeColorSelect({{ $index }})">{{__('Remove')}}</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -243,13 +249,13 @@
                                 <!-- end tab-pane -->
 
                                 <div wire:ignore.self class="tab-pane" id="variation-naterial" role="tabpanel">
-                                    <button type="button" class="btn btn-success mb-3" wire:click="addMaterialSelect">Add Material</button>
+                                    <button type="button" class="btn btn-success mb-3" wire:click="addMaterialSelect">{{__('Add Material')}}</button>
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>Choose a Material</th>
-                                                <th>Preview</th>
-                                                <th>Action</th>
+                                                <th>{{__('Choose a Material')}}</th>
+                                                <th>{{__('Preview')}}</th>
+                                                <th>{{__('Action')}}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -261,7 +267,7 @@
                                                             <option value="">Select Material</option>
                                                             @foreach ($materials as $material)
                                                                 <option value="{{ $material->id }}">
-                                                                    {{ $material->variationMaterialeTranslation->name }}
+                                                                    {{ $material->variationMaterialTranslation->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -280,7 +286,7 @@
                                                     </td>
                                                     <!-- Button to remove the color row -->
                                                     <td>
-                                                        <button type="button" class="btn btn-danger" wire:click="removeMaterialSelect({{ $index }})">Remove</button>
+                                                        <button type="button" class="btn btn-danger" wire:click="removeMaterialSelect({{ $index }})">{{__('Remove')}}</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -289,13 +295,13 @@
                                 </div>
 
                                 <div wire:ignore.self class="tab-pane" id="variation-size" role="tabpanel">
-                                    <button type="button" class="btn btn-success mb-3" wire:click="addSizeSelect">Add Size</button>
+                                    <button type="button" class="btn btn-success mb-3" wire:click="addSizeSelect">{{__('Add Size')}}</button>
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>Choose a Size</th>
-                                                <th>Preview</th>
-                                                <th>Action</th>
+                                                <th>{{__('Choose a Size')}}</th>
+                                                <th>{{__('Preview')}}</th>
+                                                <th>{{__('Action')}}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -326,7 +332,7 @@
                                                     </td>
                                                     <!-- Button to remove the color row -->
                                                     <td>
-                                                        <button type="button" class="btn btn-danger" wire:click="removeSizeSelect({{ $index }})">Remove</button>
+                                                        <button type="button" class="btn btn-danger" wire:click="removeSizeSelect({{ $index }})">{{__('Remove')}}</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -336,13 +342,13 @@
                                 <!-- end tab-pane -->
 
                                 <div wire:ignore.self class="tab-pane" id="variation-capacity" role="tabpanel">
-                                    <button type="button" class="btn btn-success mb-3" wire:click="addCapacitySelect">Add Capacity</button>
+                                    <button type="button" class="btn btn-success mb-3" wire:click="addCapacitySelect">{{__('Add Capacity')}}</button>
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>Choose a Capacity</th>
-                                                <th>Preview</th>
-                                                <th>Action</th>
+                                                <th>{{__('Choose a Capacity')}}</th>
+                                                <th>{{__('Preview')}}</th>
+                                                <th>{{__('Action')}}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -373,7 +379,7 @@
                                                     </td>
                                                     <!-- Button to remove the color row -->
                                                     <td>
-                                                        <button type="button" class="btn btn-danger" wire:click="removeCapacitySelect({{ $index }})">Remove</button>
+                                                        <button type="button" class="btn btn-danger" wire:click="removeCapacitySelect({{ $index }})">{{__('Remove')}}</button>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -386,26 +392,13 @@
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="mb-3">
-                                                <label class="form-label" for="meta-title-input">Meta title</label>
-                                                <input type="text" class="form-control" placeholder="Enter meta title" id="meta-title-input">
-                                            </div>
-                                        </div>
-                                        <!-- end col -->
-
-                                        <div class="col-lg-6">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="meta-keywords-input">Meta Keywords</label>
-                                                <input type="text" class="form-control" placeholder="Enter meta keywords" wire:model="seoKeywords" id="meta-keywords-input">
+                                                <label class="form-label" for="meta-title-input">{{__('SKU')}}</label>
+                                                <input type="text" class="form-control" wire:model="sku" placeholder="Enter meta title" id="meta-title-input">
                                             </div>
                                         </div>
                                         <!-- end col -->
                                     </div>
                                     <!-- end row -->
-
-                                    <div>
-                                        <label class="form-label" for="meta-description-input">Meta Description</label>
-                                        <textarea class="form-control" id="meta-description-input" placeholder="Enter meta description" rows="3"></textarea>
-                                    </div>
                                 </div>
                                 <!-- end tab pane -->
                             </div>
@@ -419,22 +412,22 @@
                             <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#product-description" role="tab">
-                                        Description
+                                        {{__('Description')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#product-information" role="tab">
-                                        Additionally Information
+                                        {{__('Additionally Information')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#product-ship" role="tab">
-                                        Shipping & Returns
+                                        {{__('Shipping & Returns')}}
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#product-faq" role="tab">
-                                        FAQ
+                                        {{__('FAQ')}}
                                     </a>
                                 </li>
                             </ul>
@@ -445,11 +438,8 @@
                                 <div wire:ignore.self class="tab-pane active" id="product-description" role="tabpanel">
                                     <div class="mb-3" wire:ignore>
                                         @foreach ($filteredLocales as $locale)
-                                        <label for="product-description{{ $locale }}">In {{ $locale }} Language</label>
-                                        <div 
-                                            class="summernote" 
-                                            id="product-description{{ $locale }}"
-                                        >
+                                        <label for="product-description{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
+                                        <div class="summernote" id="product-description{{ $locale }}">
                                             {{ $productDescriptions[$locale] }}
                                         </div>
                                         @endforeach
@@ -459,10 +449,8 @@
                                 <div wire:ignore.self class="tab-pane" id="product-information" role="tabpanel">
                                     <div class="mb-3" wire:ignore>
                                         @foreach ($filteredLocales as $locale)
-                                        <label for="product-information{{ $locale }}">In {{ $locale }} Language</label>
-                                        <div 
-                                            class="summernote" 
-                                            id="product-information{{ $locale }}"
+                                        <label for="product-information{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
+                                        <div class="summernote" id="product-information{{ $locale }}"
                                         >
                                             {{ $productInformations[$locale] }}
                                         </div>
@@ -473,7 +461,7 @@
                                 <div wire:ignore.self class="tab-pane" id="product-ship" role="tabpanel">
                                     <div class="mb-3" wire:ignore>
                                         @foreach ($filteredLocales as $locale)
-                                        <label for="product-ship{{ $locale }}">In {{ $locale }} Language</label>
+                                        <label for="product-ship{{ $locale }}">{{__('In ' . $locale . ' Language')}}</label>
                                         <div 
                                             class="summernote" 
                                             id="product-ship{{ $locale }}"
@@ -486,53 +474,61 @@
 
 
                                 <div wire:ignore.self class="tab-pane" id="product-faq" role="tabpanel">
-                                    <button type="button" class="btn btn-success mb-3" wire:click="addFaq">Add FAQ</button>
-
+                                    <button type="button" class="btn btn-success mb-3" wire:click="addFaq">{{__('Add FAQ')}}</button>
+                                
                                     <div class="accordion" id="faqAccordion">
                                         @foreach ($faqs as $faqIndex => $faq)
                                         <div class="accordion-item">
                                             <h2 class="accordion-header" id="heading-{{ $faqIndex }}">
                                                 <button class="accordion-button {{ $faqIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $faqIndex }}" aria-expanded="{{ $faqIndex === 0 ? 'true' : 'false' }}" aria-controls="collapse-{{ $faqIndex }}">
-                                                    FAQ {{ $faqIndex + 1 }}
+                                                    {{__('FAQ:')}} {{ $faqIndex + 1 }}
                                                 </button>
                                             </h2>
                                             <div id="collapse-{{ $faqIndex }}" class="accordion-collapse collapse {{ $faqIndex === 0 ? 'show' : '' }}" aria-labelledby="heading-{{ $faqIndex }}" data-bs-parent="#faqAccordion">
                                                 <div class="accordion-body">
                                                     @foreach ($filteredLocales as $locale)
                                                     <div class="mb-3">
-                                                        <label for="question-{{ $faqIndex }}-{{ $locale }}" class="form-label">Question ({{ $locale }})</label><br>
+                                                        <label for="question-{{ $faqIndex }}-{{ $locale }}" class="form-label">{{__('Question '.$locale.':')}}</label><br>
                                                         @error('faqs.' . $faqIndex . '.' . $locale . '.question')
-                                                            <span class="text-danger">{{ $message }}</span>
+                                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                                                <span class="text-danger">{{ __($message) }}</span>
+                                                            </div>
                                                         @enderror
                                                         <input type="text" 
-                                                        class="form-control
-                                                        @error('faqs.' . $faqIndex . '.' . $locale . '.question') is-invalid @enderror
-                                                        @if(!$errors->has('faqs.' . $faqIndex . '.' . $locale . '.question') && !empty($faqs[$faqIndex][$locale]['question'])) is-valid @endif" 
-                                                        id="question-{{ $faqIndex }}-{{ $locale }}" wire:model="faqs.{{ $faqIndex }}.{{ $locale }}.question" placeholder="Enter the question">
+                                                            class="form-control @if($locale != 'en') ar-shift @endif 
+                                                            @error('faqs.' . $faqIndex . '.' . $locale . '.question') is-invalid @enderror
+                                                            @if(!$errors->has('faqs.' . $faqIndex . '.' . $locale . '.question') && !empty($faqs[$faqIndex][$locale]['question'])) is-valid @endif" 
+                                                            id="question-{{ $faqIndex }}-{{ $locale }}" 
+                                                            wire:model="faqs.{{ $faqIndex }}.{{ $locale }}.question" 
+                                                            placeholder="{{__('Enter the question')}}">
                                                     </div>
-
                                 
                                                     <div class="mb-3">
-                                                        <label for="answer-{{ $faqIndex }}-{{ $locale }}" class="form-label">Answer ({{ $locale }})</label><br>
+                                                        <label for="answer-{{ $faqIndex }}-{{ $locale }}" class="form-label">{{__('Answer '.$locale.':')}}</label><br>
                                                         @error('faqs.' . $faqIndex . '.' . $locale . '.answer')
-                                                            <span class="text-danger">{{ $message }}</span>
+                                                            <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                                                <span class="text-danger">{{ __($message) }}</span>
+                                                            </div>
                                                         @enderror
                                                         <textarea 
-                                                        class="form-control
-                                                        @error('faqs.' . $faqIndex . '.' . $locale . '.answer') is-invalid @enderror
-                                                        @if(!$errors->has('faqs.' . $faqIndex . '.' . $locale . '.answer') && !empty($faqs[$faqIndex][$locale]['answer'])) is-valid @endif" 
-                                                        id="question-{{ $faqIndex }}-{{ $locale }}" wire:model="faqs.{{ $faqIndex }}.{{ $locale }}.answer" placeholder="Enter the question" rows="3" placeholder="Enter the answer"></textarea>
+                                                            class="form-control @if($locale != 'en') ar-shift @endif 
+                                                            @error('faqs.' . $faqIndex . '.' . $locale . '.answer') is-invalid @enderror
+                                                            @if(!$errors->has('faqs.' . $faqIndex . '.' . $locale . '.answer') && !empty($faqs[$faqIndex][$locale]['answer'])) is-valid @endif" 
+                                                            id="answer-{{ $faqIndex }}-{{ $locale }}" 
+                                                            wire:model="faqs.{{ $faqIndex }}.{{ $locale }}.answer" 
+                                                            placeholder="{{__('Enter the answer')}}" 
+                                                            rows="3"></textarea>
                                                     </div>
-
                                                     @endforeach
                                                     <br>
-                                                    <button type="button" class="btn btn-danger" wire:click="removeFaq({{ $faqIndex }})">Remove FAQ</button>
+                                                    <button type="button" class="btn btn-danger" wire:click="removeFaq({{ $faqIndex }})">{{__('Remove FAQ')}}</button>
                                                 </div>
                                             </div>
                                         </div>
                                         @endforeach
                                     </div>
                                 </div>
+                                
                             </div>
                             <!-- end tab content -->
                         </div>
@@ -540,7 +536,7 @@
                     </div>
                     <!-- end card -->
                     <div class="text-end mb-3">
-                        <button type="submit" class="btn btn-success w-sm">Submit</button>
+                        <button type="submit" class="btn btn-success w-sm">{{__('Submit')}}</button>
                     </div>
                 </div>
                 <!-- end col -->
@@ -548,28 +544,28 @@
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Product Properties</h5>
+                            <h5 class="card-title mb-0">{{__('Product Properties')}}</h5>
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="onStockSwitch" wire:model="is_on_stock">
-                                    <label class="form-check-label" for="onStockSwitch">On Stock</label>
+                                    <label class="form-check-label" for="onStockSwitch">{{__('On Stock')}}</label>
                                 </div>
 
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="sparePartSwitch" wire:model="is_spare_part" style="margin-bottom: 1rem;">
-                                    <label class="form-check-label" for="sparePartSwitch">Spare Part</label>
+                                    <label class="form-check-label" for="sparePartSwitch">{{__('Spare Part')}}</label>
                                 </div>
                                 
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="featuredSwitch" wire:model="is_featured">
-                                    <label class="form-check-label" for="featuredSwitch">Featured</label>
+                                    <label class="form-check-label" for="featuredSwitch">{{__('Featured')}}</label>
                                 </div>
                                 
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="statusSwitch" wire:model="status">
-                                    <label class="form-check-label" for="statusSwitch">Status</label>
+                                    <label class="form-check-label" for="statusSwitch">{{__('Status')}}</label>
                                 </div>
                             </div>
                         </div>
@@ -578,12 +574,12 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Product Price</h5>
+                            <h5 class="card-title mb-0">{{__('Product Price')}}</h5>
                         </div>
                         <!-- end card body -->
                         <div class="card-body">
                             <div class="mb-3">
-                                <label for="original-price-input" class="form-label">Original Price</label>
+                                <label for="original-price-input" class="form-label">{{__('Original Price')}}</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="basic-addon1">$</span>
                                     <input type="number"
@@ -593,18 +589,20 @@
                                     wire:model.debounce.500ms="originalPrice" placeholder="0.00">
                                 </div>
                                 @error('originalPrice')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                 @enderror
                             </div>
                         
                             <div class="form-check form-switch mb-3">
                                 <input class="form-check-input" type="checkbox" id="onSaleSwitch" wire:model="is_on_sale">
-                                <label class="form-check-label" for="onSaleSwitch">On Sale</label>
+                                <label class="form-check-label" for="onSaleSwitch">{{__('On Sale')}}</label>
                             </div>
                         
                             @if ($is_on_sale)
                             <div>
-                                <label for="discount-price-input" class="form-label">Discount Percentage</label>
+                                <label for="discount-price-input" class="form-label">{{__('Discount Percentage')}}</label>
                                 <div class="input-group">
                                     <input type="number" 
                                     class="form-control
@@ -614,9 +612,11 @@
                                     <span class="input-group-text" id="basic-addon1">%</span>
                                 </div>
                                 @error('discountPrice')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+</div>
                                 @enderror
-                                <small class="text-info">Discounted by {{ number_format($discountPercentage, 0) }}% from the original price.</small>
+                                <small class="text-info">{{__('Discounted by ')}} {{ number_format($discountPercentage, 0) }}{{__('% from the original price.')}}</small>
                             </div>
                             @endif
                         </div>
@@ -624,11 +624,10 @@
                     <!-- end card -->
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Product Brand</h5>
+                            <h5 class="card-title mb-0">{{__('Product Brand')}}</h5>
                         </div>
                         <div class="card-body">
-                            <p class="text-muted mb-2"> <a href="#" class="float-end text-decoration-underline">Add
-                                    New</a>Select product nrand</p>
+                            <p class="text-muted mb-2"> <a href="#" class="float-end text-decoration-underline">{{__('Add New')}}</a>{{__('Select product brand')}}</p>
                                 <select class="form-select
                                     @error('selectedBrand') is-invalid @enderror
                                     @if(!$errors->has('selectedBrand') && !empty($selectedBrand)) is-valid @endif" 
@@ -639,7 +638,9 @@
                                 @endforeach
                             </select>
                             @error('selectedBrand')
-                                <span class="text-danger">{{ $message }}</span>
+                                <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                    <span class="text-danger">{{ __($message) }}</span>
+                                </div>
                             @enderror
                         </div>
                         <!-- end card body -->
@@ -647,12 +648,18 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Product Categories</h5>
+                            <h5 class="card-title mb-0">{{__('Product Categories')}}</h5>
                         </div>
                         <!-- end card body -->
                         <div class="card-body">
-                            @error('selectedCategories')<span class="text-danger">{{ $message }}</span>@enderror
-                            @error('selectedSubCategories')<span class="text-danger">{{ $message }}</span>@enderror
+                            @error('selectedCategories')<div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                <span class="text-danger">{{ __($message) }}</span>
+                            </div>
+                            @enderror
+                            @error('selectedSubCategories')<div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                <span class="text-danger">{{ __($message) }}</span>
+                            </div>
+                            @enderror
                             {{-- <div wire:ignore> --}}
                                 @foreach($categoriesData as $category)
                                 <div class="form-group">
@@ -698,7 +705,7 @@
                         </div>
                         <div class="card-body" wire:ignore>
                             <p class="text-muted mb-2">
-                                <a href="#" class="float-end text-decoration-underline">Add New</a>Select product category
+                                <a href="#" class="float-end text-decoration-underline">{{__('Add New')}}</a>{{__('Select Tags')}}
                             </p>
                     
                             <!-- Bind the select element to Livewire property -->
@@ -713,7 +720,7 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Meta Keywords</h5>
+                            <h5 class="card-title mb-0">{{__('Meta Keywords')}}</h5>
                         </div>
                         <div class="card-body">
                             <p class="text-muted mb-2">{{__('Add a short Keywords for the product (Multi Langage if needed)')}}</p>
@@ -721,7 +728,7 @@
                                 class="form-control" 
                                 placeholder="Must enter a minimum of 100 characters" 
                                 rows="3" 
-                                wire:model.lazy="seoKeywords"
+                                wire:model.lazy="keywords"
                             ></textarea>
                             <small class="text-info">coffee beans, coffee machine, حبوب البن, آلة القهوة</small>
                         </div>
@@ -868,6 +875,15 @@ locales.forEach(locale => {
             }
         });
 
+        pond.on('removefile', function (error, file) {
+            if (error) {
+                console.error('File removal error:', error);
+            } else {
+                console.log('File removed:', file);
+                // Handle additional clean-up logic if necessary
+            }
+        });
+
         document.querySelectorAll('.main-category-checkbox').forEach(mainCheckbox => {
         mainCheckbox.addEventListener('change', function () {
             const subCheckboxes = this.closest('.form-group').querySelectorAll('.subcategory-checkbox');
@@ -875,6 +891,11 @@ locales.forEach(locale => {
             // Manually emit events or handle logic as needed
         });
     });
+
+    window.addEventListener('clean-image', () => {
+        pond.removeFiles();
+        $('.js-example-basic-multiple').val([]).trigger('change'); // Clear Select2 selections
+    })
 
     document.querySelectorAll('.subcategory-checkbox').forEach(subCheckbox => {
         subCheckbox.addEventListener('change', function () {

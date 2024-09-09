@@ -1,11 +1,12 @@
-<footer class="footer" style="background-color: #003465; color: white;">
+<footer class="footer bg-light">
+{{-- <footer class="footer" style="background-color: #eb4034; color: white;"> --}}
     <div class="footer-middle">
         <div class="container">
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
                         <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" class="footer-logo" width="105" height="25">
-                        <p style="color: white">Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
+                        <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
                         <div class="widget-call">
                             <i class="icon-phone"></i>

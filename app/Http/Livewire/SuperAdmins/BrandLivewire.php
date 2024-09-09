@@ -59,7 +59,6 @@ class BrandLivewire extends Component
         $this->status = 1;
         $this->statusFilter = request()->query('statusFilter', 'all');
         $this->page = request()->query('page', 1);
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Page Loaded Added Successfully')]);
     }
 
     // VALIDATION
@@ -75,7 +74,7 @@ class BrandLivewire extends Component
             $rules['brands.' . $locale] = 'required|string|min:1';
         }
         $rules['priority'] = ['required'];
-        $rules['status'] = ['required'];
+        $rules['status'] = ['required','in:0,1'];
         return $rules;
     }
 
@@ -86,7 +85,7 @@ class BrandLivewire extends Component
             $rules['brandsEdit.' . $locale] = 'required|string|min:1';
         }
         $rules['priorityEdit'] = ['required'];
-        $rules['statusEdit'] = ['required'];
+        $rules['statusEdit'] = ['required','in:0,1'];
         return $rules;
     }
 
@@ -117,7 +116,7 @@ class BrandLivewire extends Component
                 $croppedImage = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $this->objectData));
                 Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
             } else {
-                $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please reload The Page CODE...BRD-ADD-IMG')]);
+                $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Uplaod The Image')]);
                 return;
             }
         } catch (\Exception $e) {
@@ -189,11 +188,12 @@ class BrandLivewire extends Component
                         Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');               
                 }
             } else {
-                // $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please reload The Page CODE...CAT-ADD-IMG')]);
-                // return;
+                $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => __('Image Did Not Update')]);
+                // $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Upload New Image')]);
             }
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
+            return;
         }
 
         Brand::where('id', $this->brand_update->id)->update([
@@ -221,7 +221,6 @@ class BrandLivewire extends Component
 
         $this->closeModal();
         $this->filterBrands($this->statusFilter);
-        $this->render();
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Brand Updated Successfully')]);
     }
     public function removeBrand (int $id) {
@@ -250,7 +249,7 @@ class BrandLivewire extends Component
             }
             Brand::find($this->brand_selected_id_delete->id)->delete();
             $this->closeModal();
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Menu Deleted Successfully')]);
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Brand Deleted Successfully')]);
 
             $this->confirmDelete = false;
             $this->brand_selected_id_delete = null;
@@ -291,7 +290,7 @@ class BrandLivewire extends Component
         } else {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',  
-                'message' => __('Brand not found')
+                'message' => __('Record Not Found')
             ]);
         }
     }
@@ -309,13 +308,13 @@ class BrandLivewire extends Component
             // Dispatch a browser event to show success message
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
-                'message' => __('Menu Status Updated Successfully')
+                'message' => __('Status Updated Successfully')
             ]);
         } else {
             // Dispatch a browser event to show error message
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
-                'message' => __('Brand not found')
+                'message' => __('Record Not Found')
             ]);
         }
     }
@@ -369,8 +368,10 @@ class BrandLivewire extends Component
         $this->objectReader = null;
         $this->objectName = null;
         $this->objectData = null;
-    }
 
+        $this->emit('resetData');
+        $this->emit('resetEditData');
+    }
 
 
     // Render
@@ -396,7 +397,7 @@ class BrandLivewire extends Component
             });
         }
     
-        $tableData = $query->orderBy('priority', 'ASC')->paginate(10); 
+        $tableData = $query->orderBy('priority', 'ASC')->paginate(10)->withQueryString(); 
 
         return view('super-admins.pages.brands.brand-table', [
             'tableData' => $tableData,

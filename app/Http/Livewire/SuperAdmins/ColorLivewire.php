@@ -127,7 +127,7 @@ class ColorLivewire extends Component
             ]);
         }
 
-        $this->resetInput();
+        $this->closeModal();
         $this->filterColors($this->statusFilter);
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('New Color Added Successfully')]);
     }
