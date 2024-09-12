@@ -9,36 +9,57 @@ use Illuminate\Contracts\View\View;
 
 class ProductRecoOne extends Component
 {
-    public $product;
     public $recommends;
+    public $locale;
 
-    public function __construct()
+    public function __construct($locale)
     {
         $this->recommends = Product::with([
-            'productTranslation', 
-            'variation.colors', 
-            'variation.sizes', 
-            'variation.materials', 
+            'productTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'variation.colors',
+            'variation.sizes.variationSizeTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'variation.materials',
             'variation.capacities',
             'variation.images',
-            'brand.brandTranslation', 
-            'categories.categoryTranslation', 
-            'tags.tagTranslation'
-        ])->where('status', 1)
-          ->whereHas('variation', function($query) {
-              $query->where('featured', 1);
-          })
-          ->whereHas('brand', function($query) {
-              $query->where('status', 1);
-          })
-          ->whereHas('categories', function($query) {
-              $query->where('status', 1);
-          })
-          ->whereHas('tags', function($query) {
-              $query->where('status', 1);
-          })
-          ->limit(5)
-          ->get();
+            'brand.brandTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'categories.categoryTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'tags.tagTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'information.informationTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            }
+        ])
+        ->where('status', 1)
+        ->whereHas('variation', function($query) {
+            $query->where('featured', 1);
+        })
+        ->whereHas('brand', function($query) {
+            $query->where('status', 1);
+        })
+        ->whereHas('categories', function($query) {
+            $query->where('status', 1);
+        })
+        ->whereHas('tags', function($query) {
+            $query->where('status', 1);
+        })
+        ->limit(5)
+        ->get();
+
+          // Process each recommended product
+          foreach ($this->recommends as $product) {
+              // Fetch the first translation if available
+              $product->productTranslation = $product->productTranslation->first();
+              $product->information->informationTranslation = $product->information->informationTranslation->first();
+          }
     }
 
     /**

@@ -37,4 +37,9 @@ class SuperAdminController extends Controller
     public function cProduct(){
         return view('super-admins.pages.cproducts.index');
     }
+    public function eProduct($local, $id){
+        return view('super-admins.pages.eproducts.index',[
+            "p_id" => $id
+        ]);
+    }
 }

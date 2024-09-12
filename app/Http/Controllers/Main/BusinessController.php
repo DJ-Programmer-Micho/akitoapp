@@ -162,7 +162,7 @@ class BusinessController extends Controller
 
     public function productDetail($locale, $slug)
     {
-        // Attempt to fetch the product
+        // Fetch the product with its translations and related data
         $product = Product::with([
             'productTranslation' => function ($query) use ($locale) {
                 $query->where('locale', $locale);
@@ -188,16 +188,27 @@ class BusinessController extends Controller
             }
         ])
         ->whereHas('productTranslation', function ($query) use ($locale, $slug) {
-            $query->where('slug', $slug)
-                ->where('locale', $locale);
+            $query->where('slug', urldecode($slug))  // Decode the slug
+                  ->where('locale', $locale);
         })
         ->first();
-
+        // Check if the product was found
+        if (!$product) {
+            // Optionally, you can return a 404 page or redirect
+            abort(404, 'Product not found');
+        }
+    
+        // Extract the first translation from the collection
+        $product->productTranslation = $product->productTranslation->first();
+        $product->information->informationTranslation = $product->information->informationTranslation->first();
+    
+        // Pass the product and its translation to the view
         return view('mains.pages.product-page-one', [
             'product' => $product,
+            'locale' => $locale,
         ]);
     }
-
+    
     public function productShop(Request $request)
     {
         // Get all active filters from the request

@@ -62,8 +62,8 @@
                                 @endif
                             </div>
                             
-                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}">
-                                <img src="{{ app('cloudfront') . ($product->variation->images->first()->image_path ?? 'path/to/default/image.jpg') }}" alt="{{ $product->productTranslation->name ?? 'Product Image' }}" class="product-image">
+                            <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}">
+                                <img src="{{ app('cloudfront') . ($product->variation->images->first()->image_path ?? 'path/to/default/image.jpg') }}" alt="{{ $product->productTranslation->first()->name ?? 'Product Image' }}" class="product-image">
                             </a>
             
                             <div class="heart-icon">
@@ -79,7 +79,7 @@
                             <div class="product-cat">
                                 <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $product->categories->first()->id]) }}">{{ $product->categories->first()->categoryTranslation->name ?? 'Category' }}</a>
                             </div><!-- End .product-cat -->
-                            <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}">{{ $product->productTranslation->name ?? 'Product Title' }}</a></h3><!-- End .product-title -->
+                            <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}">{{ $product->productTranslation->first()->name ?? 'Product Title' }}</a></h3><!-- End .product-title -->
                             <div class="bottom-class">
                                 @if ($product->variation->discount)
                                 <div class="product-price mt-1 fw-bold">

@@ -11,8 +11,8 @@
                     @endforeach
                     @endif
                 </div>
-                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}">
-                    <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->name[0]}}" class="product-image">
+                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}">
+                    <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->first()->name[0]}}" class="product-image">
                 </a>
                 <div class="heart-icon">
                     <i class="fa-regular fa-heart"></i>
@@ -32,11 +32,11 @@
                 </div><!-- End .rating-container --> --}}
 
                 {{-- <div class="product-action">
-                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product btn-compare" title="Compare"><span>compare</span></a>
+                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn-product btn-compare" title="Compare"><span>compare</span></a>
                 </div><!-- End .product-action --> --}}
 
-                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn btn-primary text-white"><span>add to cart</span></a>
+                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn btn-primary text-white"><span>add to cart</span></a>
                 <div class="my-3"></div>
                 @if ($product->variation->images->count() > 1)
                 <div class="product-nav product-nav-thumbs">
@@ -63,14 +63,14 @@
 
         <div class="col-lg-6">
             <div class="product-body product-action-inner">
-                {{-- <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}" class="btn-product btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a> --}}
+                {{-- <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn-product btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a> --}}
                 <div class="product-cat">
                     <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $product->categories[0]->id]) }}">{{$product->categories[0]->categoryTranslation->name}}</a>
                 </div><!-- End .product-cat -->
-                <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->slug])}}">{{$product->productTranslation->name}}</a></h3><!-- End .product-title -->
+                <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}">{{$product->productTranslation->first()->name}}</a></h3><!-- End .product-title -->
 
                 <div class="product-content">
-                    <p class="text-clamp-2">{{$product->productTranslation->description}}</p>
+                    <p class="text-clamp-2">{{$product->productTranslation->first()->description}}</p>
                 </div><!-- End .product-content -->
                 
                 @if ($product->variation->discount)

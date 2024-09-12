@@ -66,12 +66,12 @@
                         <div class="label-wrapper" style="">
                             @if ($item->tags)
                             @foreach ($item->tags as $tag)
-                                <span class="col-3" style="background-color: #eb4034; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                                <span class="col-3" style="background-color: #eb4034; color: #ffffff">{{$tag->tagTranslation->first()->name}}</span>
                             @endforeach
                             @endif
                         </div>
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
-                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->first()->slug])}}">
+                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->first()->name}}" class="product-image">
                         </a>
 
                         <div class="heart-icon">
@@ -87,7 +87,7 @@
                         <div class="product-cat">
                             <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
                         </div><!-- End .product-cat -->
-                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
+                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->first()->slug])}}">{{$item->productTranslation->first()->name}}</a></h3><!-- End .product-title -->
                         @if ($item->variation->discount)
                             <div class="product-price">
                                 $ {{$item->variation->discount}}
@@ -169,8 +169,8 @@
                             @endforeach
                             @endif
                         </div>
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">
-                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->first()->slug])}}">
+                            <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->first()->name}}" class="product-image">
                         </a>
                         <div class="heart-icon">
                             <i class="fa-regular fa-heart"></i>
@@ -185,7 +185,7 @@
                         <div class="product-cat">
                             <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $item->categories[0]->id]) }}">{{$item->categories[0]->categoryTranslation->name}}</a>
                         </div><!-- End .product-cat -->
-                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->slug])}}">{{$item->productTranslation->name}}</a></h3><!-- End .product-title -->
+                        <h3 class="product-title text-clamp-2"><a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item->productTranslation->first()->slug])}}">{{$item->productTranslation->first()->name}}</a></h3><!-- End .product-title -->
                         @if ($item->variation->discount)
                             <div class="product-price">
                                 $ {{$item->variation->discount}}

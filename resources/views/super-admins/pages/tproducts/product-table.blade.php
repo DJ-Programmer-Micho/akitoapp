@@ -1,5 +1,4 @@
 <div class="page-content">
-    {{-- @include('super-admins.pages.brands.brand-form',[$title = "Brand Image"]) --}}
 <style>
     .filter-colors a {
     position: relative;
@@ -87,13 +86,16 @@
                                     <tbody>
                                         @forelse($tableData as $data)
                                             <tr>
-                                                <td class="@empty($data->productTranslation->name) text-danger @endif align-middle">
+                                                <td class="@empty($data->productTranslation->first()->name) text-danger @endif align-middle">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-shrink-0 me-2">
                                                             <img src="{{ app('cloudfront').$data->variation->images->first()->image_path }}" alt="{{ $data->name }}" class="img-fluid" style="max-width: 60px; max-height: 60px; object-fit: cover;">
                                                         </div>
                                                         <div>
-                                                            <h6 class="mb-0">{{ $data->productTranslation->name ?? 'unKnown' }}</h6>
+                                                            {{-- @php
+                                                                dd($data->productTranslation);
+                                                            @endphp --}}
+                                                            <h6 class="mb-0">{{ $data->productTranslation->first()->name ?? 'unKnown' }}</h6>
                                                             <p class="mb-0">{{__('Category:')}} {{ $data->categories->first()->categoryTranslation->name }}</p>
                                                         </div>
                                                     </div>
@@ -139,8 +141,10 @@
                                                                     @endif
                                                                     </button>
                                                                 </li>
-                                                                <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#updateSizeModal" wire:click="editSize({{ $data->id }})">
-                                                                    <i class="fa-regular fa-pen-to-square me-2"></i>{{__('Edit')}}</button>
+                                                                <li wire:ignore>
+                                                                    <a href="{{ route('super.product.edit', ['locale' => app()->getLocale(), 'id' => $data->id]) }}" class="dropdown-item edit-list">
+                                                                        <i class="fa-regular fa-pen-to-square me-2"></i>{{__('Edit')}}
+                                                                    </a>
                                                                 </li>
                                                                 <li class="dropdown-divider"></li>
                                                                 <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteSizeModal" wire:click="removeSize({{ $data->id }})">

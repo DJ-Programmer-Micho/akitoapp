@@ -28,7 +28,7 @@
                         <div class="product product-7">
                             <figure class="product-media">
                                 <a href="product.html">
-                                    <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name[0]}}" class="product-image">
+                                    <img src="{{app('cloudfront').$item->variation->images[0]->image_path ?? "sdf"}}" alt="{{$item->productTranslation->name}}" class="product-image">
                                 </a>
 
                                 <div class="product-action-vertical">

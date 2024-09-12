@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Main\BusinessController;
 use App\Http\Middleware\LocaleRedirectMiddleware;
@@ -22,6 +24,21 @@ use App\Http\Controllers\SuperAdmin\SuperAdminController;
 // });
 Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->name('setLocale');
 
+// routes/web.php
+Route::get('/temp-images/{filename}', function ($filename) {
+    $path = storage_path('app/livewire-tmp/' . $filename);
+
+    if (!File::exists($path)) {
+        abort(404); // Return 404 if file is not found
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    return Response::make($file, 200)->header("Content-Type", $type);
+})->name('temp-images');
+
+
 
 // Route::middleware([LocaleRedirectMiddleware::class])->group(function () {
 // ADMIN
@@ -36,6 +53,7 @@ Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->na
         Route::get('/capacities-managements', [SuperAdminController::class, 'capacity'])->name('super.capacity');
         Route::get('/product-table', [SuperAdminController::class, 'tProduct'])->name('super.product.table');
         Route::get('/product-create', [SuperAdminController::class, 'cProduct'])->name('super.product.create');
+        Route::get('/edit/{id}', [SuperAdminController::class, 'eProduct'])->name('super.product.edit');
     });
 // HOME
     Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {

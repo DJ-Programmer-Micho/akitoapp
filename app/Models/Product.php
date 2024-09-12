@@ -22,7 +22,7 @@ class Product extends Model
 
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
-    public function productTranslation() { return $this->hasOne(ProductTranslation::class,'product_id'); }
+    public function productTranslation() { return $this->hasMany(ProductTranslation::class,'product_id'); }
     public function information() { return $this->belongsTo(Information::class,'information_id'); }
     public function variation() { return $this->belongsTo(ProductVariation::class,'variation_id'); }
     public function brand() { return $this->belongsTo(Brand::class, 'brand_id'); }

@@ -15,7 +15,7 @@ class Information extends Model
     ];
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
-    public function informationTranslation(){ return $this->hasone(InformationTranslation::class,'information_id'); }
+    public function informationTranslation(){ return $this->hasMany(InformationTranslation::class,'information_id'); }
     public function products() { return $this->hasMany(Product::class, 'information_id'); }
 
 }

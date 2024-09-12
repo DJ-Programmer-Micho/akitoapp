@@ -45,10 +45,12 @@ class TProductLivewire extends Component
     public $search = '';
     public $statusFilter = 'all';
     public $page = 1;
+    public $glang;
 
 
     public function mount()
     {
+        $this->glang = app()->getLocale();
         $this->loadInitialData();
     }
 
@@ -190,14 +192,14 @@ class TProductLivewire extends Component
         // Build the product query
         $productsQuery = Product::query()
         ->distinct()
-            ->with(['brand', 'categories', 'subCategories', 'tags', 'variation'])
+        ->join('product_translations', 'products.id', '=', 'product_translations.product_id')
+        ->select('products.*', 'product_translations.name as product_name')
+        ->where('product_translations.locale', $this->glang)
     
-            // Apply search filter
-            ->when($this->search, function ($query) {
-                $query->join('product_translations', 'products.id', '=', 'product_translations.product_id')
-                    ->where('product_translations.name', 'like', '%' . $this->search . '%')
-                    ->select('products.*');
-            })
+        // Apply search filter
+        ->when($this->search, function ($query) {
+            $query->where('product_translations.name', 'like', '%' . $this->search . '%');
+        })
     
             // Apply status filter
             ->when($this->statusFilter === 'active', function ($query) {
