@@ -20,6 +20,6 @@ class Tag extends Model
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
     public function product() { return $this->belongsToMany(Product::class,'product_tag'); }
-    public function tagTranslation() { return $this->hasOne(TagTranslation::class,'tag_id'); }
+    public function tagTranslation() { return $this->hasMany(TagTranslation::class,'tag_id'); }
 
 }

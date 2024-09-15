@@ -162,17 +162,9 @@
                                             $temporaryUrl = null;
                                         }
                                     @endphp
-                                        {{-- <img src="{{ $temporaryUrl }}" alt="Image preview"> --}}
-                                        {{-- <button type="button" wire:click="removeImage({{ $key }})">{{__('Remove')}}</button> --}}
                                     </div>
                                 @endforeach
                             </div>
-                            
-                                {{-- <button wire:click="upload">{{__('Upload Images')}}</button> --}}
-                            @endif
-                        
-                            @if (session()->has('message'))
-                                <div>{{ session('message') }}</div>
                             @endif
                         </div>
                     </div>
@@ -721,7 +713,7 @@
                             <!-- Bind the select element to Livewire property -->
                             <select class="js-example-basic-multiple form-select" name="selectedTags[]" multiple="multiple" wire:model="selectedTags">
                                 @foreach($tags as $tag)
-                                    <option value="{{ $tag->id }}">{{ $tag->tagtranslation->name ?? $tag->name }}</option>
+                                    <option value="{{ $tag->id }}">{{ $tag->tagtranslation->first()->name ?? $tag->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -764,7 +756,7 @@
 
     // Locale-specific configuration for Summernote editors
 const locales = ['en', 'ar', 'ku'];
-
+let imagesData = [];
 locales.forEach(locale => {
     // $(`#product_content_${locale}`).summernote({
     //     toolbar: [
@@ -876,53 +868,185 @@ locales.forEach(locale => {
                 process: (fieldName, file, metadata, load, error, progress, abort) => {
                     @this.upload('images', file, load, error, progress);
                 },
-            },
-        });
-        document.addEventListener('livewire:load', function () {
-    const images = @json($images); // Ensure this is an array of objects
-
-    images.forEach(image => {
-        if (image.temporaryUrl) {
-            fetch(image.temporaryUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const file = new File([blob], image.id, { type: blob.type });
-                    pond.addFile(file);
-                })
-                .catch(error => {
-                    console.error('Error adding file to FilePond:', error);
-                });
-        } else {
-            console.error('Image object does not have temporaryUrl:', image);
-        }
-    });
-});
-
-        
-        pond.on('processfile', function (error, file) {
-            if (error) {
-                console.error('File upload error:', error);
-            } else {
-                console.log('File uploaded:', file);
+                revert: (fileId, load, error) => {
+                    @this.call('removeImage', fileId);
+                    load(); // Indicate to FilePond that the revert is complete
+                }
             }
         });
+
+
+        // document.addEventListener('livewire:load', function () {
+        //     const images = @json($images); // Ensure this is an array of objects
+
+        //     images.forEach(image => {
+        //         if (image.temporaryUrl) {
+        //             fetch(image.temporaryUrl)
+        //                 .then(response => response.blob())
+        //                 .then(blob => {
+        //                     const file = new File([blob], image.id, { type: blob.type });
+        //                     pond.addFile(file);
+        //                 })
+        //                 .catch(error => {
+        //                     console.error('Error adding file to FilePond:', error);
+        //                 });
+        //         } else {
+        //             console.error('Image object does not have temporaryUrl:', image);
+        //         }
+        //     });
+        // });
+        
+        // pond.on('processfile', function (error, file) {
+        //     if (error) {
+        //         console.error('File upload error:', error);
+        //     } else {
+        //         console.log('File uploaded:', file);
+        //     }
+        // });
+        document.addEventListener('livewire:load', function () {
+            const images = @json($images); // Ensure this is an array of objects
+            imagesData = [];
+
+            // Load existing files into FilePond and initialize the imagesData array
+            images.forEach(image => {
+                if (image.temporaryUrl) {
+                    fetch(image.temporaryUrl)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const file = new File([blob], image.tempFileName, { type: blob.type });
+                            pond.addFile(file);
+
+                            // Add existing file data to imagesData
+                            imagesData.push({
+                                id: image.id,
+                                tempFileName: image.tempFileName,
+                                temporaryUrl: image.temporaryUrl,
+                                is_existing: image.is_existing,
+                                priority: image.priority,
+                                is_removed: image.is_removed,
+                                file: {
+                                    name: file.name,
+                                    size: file.size,
+                                    type: file.type,
+                                    lastModified: file.lastModified
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error adding file to FilePond:', error);
+                        });
+                } else {
+                    console.error('Image object does not have a temporary URL:', image);
+                }
+            });
+
+            pond.on('processfile', function (error, file) {
+                if (error) {
+                    console.error('File upload error:', error);
+                } else {
+                    // Find existing image by tempFileName
+     
+                    const existingImageIndex = imagesData.findIndex(image => image.tempFileName === file.file.name);
+                    if (existingImageIndex !== -1) {
+                        // Update existing image metadata
+                        imagesData[existingImageIndex] = {
+                            ...imagesData[existingImageIndex],
+                            file: {
+                                name: file.file.name,
+                                size: file.file.size,
+                                type: file.file.type,
+                                lastModified: file.file.lastModified,
+                                temporaryUrl: file.serverId
+                            }
+                        };
+                    } else {
+                        // Add new image data
+                        imagesData.push({
+                            id: 0, // Default for new files
+                            tempFileName: file.file.name,
+                            temporaryUrl: file.serverId, 
+                            is_existing: false,
+                            priority: 0,
+                            is_removed: false,
+                            file: {
+                                name: file.file.name,
+                                size: file.file.size,
+                                type: file.file.type,
+                                lastModified: file.file.lastModified,
+                                temporaryUrl: file.serverId
+                            }
+                        });
+                    }
+
+                    // Emit the updated imagesData to Livewire
+                    window.livewire.emit('fileProcessed', imagesData);
+                }
+            });
+        });
+
 
         pond.on('removefile', function (error, file) {
             if (error) {
                 console.error('File removal error:', error);
             } else {
-                console.log('File removed:', file);
-                // Handle additional clean-up logic if necessary
+                // Find the file by temporaryUrl in imagesData
+                const imageIndex = imagesData.findIndex(image => image.file.temporaryUrl === file.serverId);
+                
+                if (imageIndex !== -1) {
+                    // Remove the file from imagesData
+                    imagesData.splice(imageIndex, 1);
+                    
+                    // Emit the updated imagesData to Livewire
+                    window.livewire.emit('removeImage', imagesData);
+                }
             }
         });
 
-        document.querySelectorAll('.main-category-checkbox').forEach(mainCheckbox => {
-            mainCheckbox.addEventListener('change', function () {
-                const subCheckboxes = this.closest('.form-group').querySelectorAll('.subcategory-checkbox');
-                subCheckboxes.forEach(subCheckbox => subCheckbox.checked = this.checked);
-                // Manually emit events or handle logic as needed
-            });
+        let reorderTimeout;
+
+        pond.on('reorderfiles', function (files) {
+            // Clear any existing timeout to prevent multiple emits
+            clearTimeout(reorderTimeout);
+            
+            // Set a timeout to emit the updated data after a short delay
+            reorderTimeout = setTimeout(() => {
+                // Update the priority or reorder imagesData based on the new order
+                imagesData = files.map((file, index) => {
+                    // Find the corresponding image by temporaryUrl
+                    const imageData = imagesData.find(image => image.file.temporaryUrl === file.serverId);
+                    
+                    if (imageData) {
+                        // Update priority (optional) and return the updated image data
+                        return {
+                            ...imageData,
+                            priority: index // You can use the index to set a priority
+                        };
+                    }
+                }).filter(Boolean); // Filter out any undefined entries
+
+                // Emit the updated imagesData to Livewire
+                window.livewire.emit('filesReordered', imagesData);
+            }, 1000); // Adjust the timeout duration if needed
         });
+        // pond.on('reorderfiles', function (files) {
+        //     // Update the priority or reorder imagesData based on the new order
+        //     imagesData = files.map((file, index) => {
+        //         // Find the corresponding image by temporaryUrl
+        //         const imageData = imagesData.find(image => image.file.temporaryUrl === file.serverId);
+                
+        //         if (imageData) {
+        //             // Update priority (optional) and return the updated image data
+        //             return {
+        //                 ...imageData,
+        //                 priority: index // You can use the index to set a priority
+        //             };
+        //         }
+        //     }).filter(Boolean); // Filter out any undefined entries
+
+        //     // Emit the updated imagesData to Livewire
+        //     window.livewire.emit('filesReordered', imagesData);
+        // });
+
 
     window.addEventListener('clean-image', () => {
         pond.removeFiles();

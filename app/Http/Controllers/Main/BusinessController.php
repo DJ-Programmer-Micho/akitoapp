@@ -173,7 +173,9 @@ class BusinessController extends Controller
             },
             'variation.materials',
             'variation.capacities',
-            'variation.images',
+            'variation.images'=> function ($query) {
+                $query->orderBy('priority'); // Order images by priority
+            },
             'brand.brandTranslation' => function ($query) use ($locale) {
                 $query->where('locale', $locale);
             },

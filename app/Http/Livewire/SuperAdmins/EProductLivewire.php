@@ -70,6 +70,7 @@ class EProductLivewire extends Component
     public $seoKeywords;
     
     public $p_id;
+    protected $listeners = ['fileProcessed', 'filesReordered', 'removeImage'];
 
     // On Load
     public function mount($id){
@@ -83,8 +84,13 @@ class EProductLivewire extends Component
             $this->productInformations[$locale] = ''; // or any default value
             $this->productShip[$locale] = ''; // or any default value
         }
+        Log::info('Locale before initialLoad: ' . app()->getLocale());
         $this->initialLoad();
+        Log::info('Locale after initialLoad: ' . app()->getLocale());
+        
         $this->loadProductData();
+        Log::info('Locale after loadProductData: ' . app()->getLocale());
+        
     }
 
     protected function loadProductData()
@@ -109,27 +115,29 @@ class EProductLivewire extends Component
             $tempFilePath = 'livewire-tmp/' . $tempFileName;
         
             try {
-                // Fetch the image from S3
+                // Fetch image from S3
                 $s3Contents = Storage::disk('s3')->get($image->image_path);
-        
-                // Save the file to local storage
+                // Save the file to temporary local storage
                 Storage::disk('local')->put($tempFilePath, $s3Contents);
-        
-                // Generate the URL for the temporary file using the new route
+                // Generate the temporary URL to serve the image
                 $temporaryUrl = route('temp-images', ['filename' => $tempFileName]);
             } catch (\Exception $e) {
                 Log::error("Failed to fetch or store the image: {$image->image_path}, error: {$e->getMessage()}");
                 $temporaryUrl = null;
             }
         
-            return (object) [
+            return (object)[
                 'id' => $image->id,
+                'tempFileName' => $tempFileName,
                 'temporaryUrl' => $temporaryUrl,
-                'is_existing' => true
+                'is_existing' => true, // Mark the image as an existing one
+                'priority' => $image->priority, // Ensure priority is carried over for reordering
+                'is_removed' => false
             ];
-        });
-        
+        })->toArray();
+        // Set the images to be rendered in Livewire
         $this->images = $existingImages;
+
         foreach ($this->filteredLocales as $locale) {
             $this->products[$locale] = $product->productTranslation->where('locale', $locale)->first()->name ?? null;
             $this->contents[$locale] = $product->productTranslation->where('locale', $locale)->first()->description ?? null;
@@ -164,10 +172,6 @@ class EProductLivewire extends Component
             $this->faqs = $faqs;
         }
         // Load variations
-        $this->colors = $product->variation->colors;
-        $this->materials = $product->variation->materials;
-        $this->sizes = $product->variation->sizes;
-        $this->capacities = $product->variation->capacities;
         $this->sku = $product->variation->sku;
         $this->keywords = $product->variation->keywords;
         $this->originalPrice = $product->variation->price;
@@ -217,6 +221,7 @@ class EProductLivewire extends Component
                 'min:3',
                 Rule::unique('product_translations', 'name')
                     ->where('locale', $locale)
+                    ->ignore($this->p_id, 'product_id')
             ];
 
             $rules['products.' . $locale][] = function ($attribute, $value, $fail) use ($productNames, $locale) {
@@ -251,17 +256,17 @@ class EProductLivewire extends Component
 
     public function updated($propertyName)
     {
-    // Validate only the changed property
-    if ($this->currentValidation == 'store') {
-        $this->validateOnly($propertyName, $this->rulesForSaveProduct());
-    } else {
-        $this->validateOnly($propertyName, $this->rulesForUpdateProduct());
-    }
+        // Validate only the changed property
+        if ($this->currentValidation == 'store') {
+            $this->validateOnly($propertyName, $this->rulesForSaveProduct());
+        } else {
+            $this->validateOnly($propertyName, $this->rulesForUpdateProduct());
+        }
 
     // Update discount value when prices change
     if ($propertyName == 'originalPrice' || $propertyName == 'discountPrice') {
-        $this->updateDiscountValue();
-    }
+            $this->updateDiscountValue();
+        }
     }
 
     public function updateDiscountValue()
@@ -422,13 +427,67 @@ class EProductLivewire extends Component
         session()->flash('message', 'Images successfully uploaded.');
     }
 
-    public function removeImage($index)
-    {
-        unset($this->images[$index]);
-    }
+    // public function removeImage($index)
+    // {
+    //     unset($this->images[$index]);
+    // }
 
+    public function fileProcessed($imagesData)
+    {
+        // Handle the updated image data (existing and new files) passed from the frontend
+        $this->images = $imagesData;
+    }
+    
+    public function removeImage($temporaryUrl)
+    {
+        // Update images to mark the image as removed
+        $this->images = collect($this->images)->map(function ($image) use ($temporaryUrl) {
+            // Check if the temporaryUrl matches
+            if ($image['file']['temporaryUrl'] === $temporaryUrl) {
+                $image['is_removed'] = true; // Mark as removed
+            }
+            return $image;
+        })->toArray();
+        
+        // Optionally, emit an event or perform additional logic if needed
+        $this->emit('imageRemoved');
+    }
+    
+    
+    public function filesReordered($orderedImages)
+    {
+        // Convert $orderedImages to an associative array keyed by 'file.temporaryUrl' for quick lookup
+        $orderedImagesMap = [];
+        foreach ($orderedImages as $orderedImage) {
+            $temporaryUrl = $orderedImage['file']['temporaryUrl'] ?? null;
+            if ($temporaryUrl) {
+                $orderedImagesMap[$temporaryUrl] = $orderedImage;
+            }
+        }
+        
+        // Iterate through each image in $this->images
+        foreach ($this->images as &$image) {
+            $temporaryUrl = $image['file']['temporaryUrl'] ?? null;
+            if ($temporaryUrl && isset($orderedImagesMap[$temporaryUrl])) {
+                // Update the priority based on the reordered image
+                $image['priority'] = $orderedImagesMap[$temporaryUrl]['priority'];
+            }
+        }
+        
+        // Ensure to unset the reference for clean array
+        unset($image);
+    
+        // Convert the updated array back to a simple array
+        $this->images = array_values($this->images);
+    }
+    
+    
     public function productSave()
     {
+        // foreach ($this->images as $index => $image) {
+        //     dd($image['file']);
+        // }
+        // dd($this->images, $this->imagesData);
 
         $this->currentValidation = 'store';
         $validatedData = $this->validate($this->rulesForSaveProduct());
@@ -485,28 +544,6 @@ class EProductLivewire extends Component
             $variation->materials()->sync(array_column($this->selectedMaterials, 'material_id') ?? []);
             $variation->capacities()->sync(array_column($this->selectedCapacities, 'capacity_id') ?? []);
 
-            
-            // // Attach colors if any are selected
-            // if (!empty($this->selectedColors)) {
-            //     $variation->colors()->attach(array_column($this->selectedColors, 'color_id'));
-            // }
-
-            // // Attach sizes if any are selected
-            // if (!empty($this->selectedSizes)) {
-            //     $variation->sizes()->attach(array_column($this->selectedSizes, 'size_id'));
-            // }
-
-            // // Attach materials if any are selected
-            // if (!empty($this->selectedMaterials)) {
-            //     $variation->materials()->attach(array_column($this->selectedMaterials, 'material_id'));
-            // }
-
-            // // Attach capacities if any are selected
-            // if (!empty($this->selectedCapacities)) {
-            //     $variation->capacities()->attach(array_column($this->selectedCapacities, 'capacity_id'));
-            // }
-    
-          
             // Create Product entry
             $product->update([
                 'updated_by_id' => 1,
@@ -563,6 +600,83 @@ class EProductLivewire extends Component
             //         return;
             //     }
             // }
+
+            foreach ($this->images as $index => $image) {
+                // Check if the image is marked as removed
+                if ($image['is_removed']) {
+                    // Delete the image from S3 and the database
+                    if ($image['is_existing']) {
+                        // dd($image['tempFileName'], $image);
+                        try {
+                            // Check if the file exists on S3 before attempting to delete
+                            if (Storage::disk('s3')->exists('products/products/'.$image['tempFileName'])) {
+                                Storage::disk('s3')->delete('products/products/'.$image['tempFileName']);
+                            }
+                        } catch (\Exception $e) {
+                            $this->dispatchBrowserEvent('alert', [
+                                'type' => 'error',
+                                'message' => __('Failed to delete image from S3: ' . $e->getMessage())
+                            ]);
+                        }
+            
+                        // Remove from the database
+                        ProductImage::where('id', $image['id'])->delete();
+                    }
+                    continue; // Skip further processing for removed images
+                }
+            
+                if ($image['is_existing']) {
+                    // Update the priority for existing images
+                    ProductImage::where('id', $image['id'])->update([
+                        'priority' => $image['priority'], // Update priority
+                        'is_primary' => $image['priority'] === 0 ? true : false,
+                        'is_secondary' => $image['priority'] === 1 ? true : false,
+                    ]);
+                
+                } else {
+                    // Handle new uploaded images
+                    $microtime = str_replace('.', '', microtime(true));
+                    $extension = pathinfo($image['file']['temporaryUrl'], PATHINFO_EXTENSION);
+                    $fileName = 'products/' . ($this->products['en'] ?? 'products') . '_product_' . date('Ydm') . $microtime . '.' . $extension;
+                    $localTempPath = storage_path('app/livewire-tmp/' . $image['file']['temporaryUrl']);
+
+                    try {
+                        if (file_exists($localTempPath)) {
+                            // Read the file contents
+                            $fileContents = file_get_contents($localTempPath);
+                            
+                            if ($fileContents === false) {
+                                throw new \Exception('Failed to read file contents.');
+                            }
+            
+                            // Upload the new image to S3
+                            $imagePath = Storage::disk('s3')->put('products/' . $fileName, $fileContents);
+            
+                            // Clean up the temporary local file
+                            // unlink($localTempPath);
+                            // Insert the new image into the database
+                           
+                            ProductImage::create([
+                                'variation_id' => $variation->id,
+                                'image_path' => 'products/'.$fileName, // S3 image path
+                                'is_primary' => $image['priority'] === 0 ? true : false,
+                                'is_secondary' => $image['priority'] === 1 ? true : false,
+                                'priority' => $image['priority'],
+                            ]);
+                        } else {
+                            throw new \Exception('File is not a valid instance of UploadedFile.');
+                            return;
+                        }
+                    } catch (\Exception $e) {
+                        $this->dispatchBrowserEvent('alert', [
+                            'type' => 'error',
+                            'message' => __('Failed to handle image: ' . $e->getMessage())
+                        ]);
+                        return;
+                    }
+                }
+            }
+            
     
             // Commit transaction
             DB::commit();
@@ -584,7 +698,7 @@ class EProductLivewire extends Component
 
             }
 
-
+            // return redirect()->route('super.product.table', ['locale' => app()->getLocale()]);
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong ' . $e)]);
             DB::rollBack();
@@ -596,7 +710,6 @@ class EProductLivewire extends Component
             ]);
         }
     }
-
     public function resetInputValues() {
         $this->selectedBrand = "";
         $this->faqs = []; // faqs

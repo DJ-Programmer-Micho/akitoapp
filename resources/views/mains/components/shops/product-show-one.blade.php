@@ -7,7 +7,7 @@
                 <div class="label-wrapper" style="">
                     @if ($product->tags)
                     @foreach ($product->tags as $tag)
-                        <span class="col-3" style="background-color: #eb4034; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                        <span class="col-3" style="background-color: #eb4034; color: #ffffff">{{$tag->tagTranslation->first()->name}}</span>
                     @endforeach
                     @endif
                 </div>
