@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -18,9 +19,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
+        'status',
+        'uid',
     ];
 
     /**
@@ -42,6 +45,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // JWT methods
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function profile() { return $this->hasOne(Profile::class, 'user_id');}
+    public function roles() { return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id'); }
     public function createdBrands() { return $this->hasMany(Brand::class, 'created_by_id'); }
     public function updatedBrands() { return $this->hasMany(Brand::class, 'updated_by_id'); }
     public function createdCategory() { return $this->hasMany(Category::class, 'created_by_id'); }

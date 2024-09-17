@@ -42,4 +42,10 @@ class SuperAdminController extends Controller
             "p_id" => $id
         ]);
     }
+    public function user(){
+        return view('super-admins.pages.users.index');
+    }
+    public function profile(){
+        return view('super-admins.pages.profiles.index');
+    }
 }

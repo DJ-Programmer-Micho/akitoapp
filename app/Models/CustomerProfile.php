@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Customer_Profile extends Model
+class CustomerProfile extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,11 @@ class Customer_Profile extends Model
         'customer_id',
         'first_name',
         'last_name',
-        'country',
+        'address',
+        'phone_number',
         'city',
+        'country',
     ];
+    
+    public function customer() { return $this->belongsTo(Customer::class); }
 }

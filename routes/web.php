@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\Main\BusinessController;
 use App\Http\Middleware\LocaleRedirectMiddleware;
+use App\Http\Controllers\SuperAdmin\AuthController;
 use App\Http\Middleware\LocalizationMainMiddleware;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,10 +41,20 @@ Route::get('/temp-images/{filename}', function ($filename) {
 })->name('temp-images');
 
 
+// DASHBOARD - AUTH
+Route::get('/signin', [AuthController::class, 'signIn'])->name('super.signin');
+Route::post('/signin', [AuthController::class, 'handleSignIn'])->name('super.signin.post');
+Route::get('/password-reset', [AuthController::class, 'passwordReset'])->name('super.password.reset');
+Route::post('/password-reset', [AuthController::class, 'sendResetLinkEmail'])->name('super.password.email');
+Route::post('/logout', [AuthController::class, 'signOut'])->name('super.signout');
+Route::get('/lockscreen', [AuthController::class, 'lock'])->name('lockscreen');
+Route::post('/unlock', [AuthController::class, 'unlock'])->name('unlock');
+Route::get('/auth-logout', [AuthController::class, 'logoutpage'])->name('logoutpage');
+Route::get('/suspended-account', [AuthController::class, 'suspend'])->name('suspend');
 
-// Route::middleware([LocaleRedirectMiddleware::class])->group(function () {
-// ADMIN
-    Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware'])->group(function () {
+// Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+// DASHBOARD - ADMIN
+Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware','superadmincheck','authcheck'])->group(function () {
         Route::get('/', [SuperAdminController::class, 'dashboard'])->name('super.dashboard');
         Route::get('/brands-managements', [SuperAdminController::class, 'brand'])->name('super.brand');
         Route::get('/categories-managements', [SuperAdminController::class, 'category'])->name('super.category');
@@ -54,8 +66,10 @@ Route::get('/temp-images/{filename}', function ($filename) {
         Route::get('/product-table', [SuperAdminController::class, 'tProduct'])->name('super.product.table');
         Route::get('/product-create', [SuperAdminController::class, 'cProduct'])->name('super.product.create');
         Route::get('/edit/{id}', [SuperAdminController::class, 'eProduct'])->name('super.product.edit');
+        Route::get('/users-managements', [SuperAdminController::class, 'user'])->name('super.users');
+        Route::get('/profile', [SuperAdminController::class, 'profile'])->name('super.profile');
     });
-// HOME
+    // HOME - CUSTOEMRS
     Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
         Route::get('/', [BusinessController::class, 'home'])->name('business.home');
         Route::get('/account', [BusinessController::class, 'account'])->name('business.account');
@@ -67,6 +81,7 @@ Route::get('/temp-images/{filename}', function ($filename) {
         // ->middleware('update.product.slug')
     });
     
-
+    
    
-// });
+    // Route::middleware([LocaleRedirectMiddleware::class])->group(function () {
+    // });
