@@ -10,7 +10,7 @@ class AuthCheck
 {
     public function handle($request, Closure $next)
     {
-        if (Auth::check()) {
+        if (Auth::guard('admin')->check()) {
 
 
             return $next($request);

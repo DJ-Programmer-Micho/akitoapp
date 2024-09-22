@@ -10,11 +10,11 @@ class CheckUserStatus
 {
     public function handle($request, Closure $next)
     {
-        if (Auth::check()) {
-            $user = Auth::user();
+        if (Auth::guard('admin')->check()) {
+            $user = Auth::guard('admin')->user();
             // dd('Inside middleware', Route::currentRouteName());
             if ($user->status == 0) {
-                Auth::logout();
+                Auth::guard('admin')->logout();
                 return redirect('/suspended-account')->with('alert', 'This is an alert message.');
             }
 

@@ -14,10 +14,12 @@ class CustomerProfile extends Model
         'customer_id',
         'first_name',
         'last_name',
-        'address',
-        'phone_number',
-        'city',
         'country',
+        'city',
+        'address',
+        'zip_code',
+        'phone_number',
+        'avatar',
     ];
     
     public function customer() { return $this->belongsTo(Customer::class); }

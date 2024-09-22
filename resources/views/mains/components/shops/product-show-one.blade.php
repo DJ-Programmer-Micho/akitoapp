@@ -14,10 +14,15 @@
                 <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}">
                     <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->first()->name[0]}}" class="product-image">
                 </a>
-                <div class="heart-icon">
+                @guest('customer')
+                <button href="#signin-modal" data-toggle="modal">
                     <i class="fa-regular fa-heart"></i>
-                    {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
-                </div><!-- End .product-action-vertical -->
+                </button>
+                @endguest
+                @auth('customer')
+                @livewire('cart.wishlist-on-card-livewire', ['product_id' => $product->id])
+                @endauth
+   
             </figure><!-- End .product-media -->
         </div><!-- End .col-sm-6 col-lg-3 -->
 
@@ -36,7 +41,16 @@
                     <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn-product btn-compare" title="Compare"><span>compare</span></a>
                 </div><!-- End .product-action --> --}}
 
-                <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn btn-primary text-white"><span>add to cart</span></a>
+                @guest('customer')
+                <button href="#signin-modal" data-toggle="modal">
+                    <span>add to cart</span>
+                </button>
+                @endguest
+                @auth('customer')
+                <button type="button" class="btn-product btn-cart" onclick="addToCart({{ $product->id }})">
+                    <span>add to cart</span>
+                </button>
+                @endauth
                 <div class="my-3"></div>
                 @if ($product->variation->images->count() > 1)
                 <div class="product-nav product-nav-thumbs">

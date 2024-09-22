@@ -591,4 +591,9 @@ class BusinessController extends Controller
 
         ]);
     }
+    public function register(){
+        return view('mains.pages.register-page-one', [
+
+        ]);
+    }
 }

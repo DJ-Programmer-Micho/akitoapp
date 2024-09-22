@@ -224,7 +224,7 @@
                                                             <option value="">Select Color</option>
                                                             @foreach ($colors as $color)
                                                                 <option value="{{ $color->id }}">
-                                                                    {{ $color->variationColorTranslation->name }}
+                                                                    {{ $color->variationColorTranslation->first()->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -271,7 +271,7 @@
                                                             <option value="">Select Material</option>
                                                             @foreach ($materials as $material)
                                                                 <option value="{{ $material->id }}">
-                                                                    {{ $material->variationMaterialTranslation->name }}
+                                                                    {{ $material->variationMaterialTranslation->first()->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -317,7 +317,7 @@
                                                             <option value="">Select size</option>
                                                             @foreach ($sizes as $size)
                                                                 <option value="{{ $size->id }}">
-                                                                    {{ $size->variationSizeTranslation->name }}
+                                                                    {{ $size->variationSizeTranslation->first()->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -364,7 +364,7 @@
                                                             <option value="">Select Capacity</option>
                                                             @foreach ($capacities as $capacity)
                                                                 <option value="{{ $capacity->id }}">
-                                                                    {{ $capacity->variationCapacityTranslation->name }}
+                                                                    {{ $capacity->variationCapacityTranslation->first()->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -636,7 +636,7 @@
                                 wire:model="selectedBrand" data-choices data-choices-search-true>
                                 <option value="" selected>{{__('Select a Brand')}}</option>
                                 @foreach($brands as $brand)
-                                    <option value="{{ $brand->id }}">{{ $brand->brandtranslation->name ?? 'unKnown' }}</option>
+                                    <option value="{{ $brand->id }}">{{ $brand->brandtranslation->first()->name ?? 'unKnown' }}</option>
                                 @endforeach
                             </select>
                             @error('selectedBrand')
@@ -674,7 +674,7 @@
                                             wire:model="selectedCategories"
                                         >
                                         <label class="form-check-label" for="category{{ $category->id }}">
-                                            {{ $category->categoryTranslation->name ?? $category->name }}
+                                            {{ $category->categoryTranslation->first()->name ?? $category->name }}
                                         </label>
                                     </div>
                         
@@ -690,7 +690,7 @@
                                                     wire:model="selectedSubCategories"
                                                 >
                                                 <label class="form-check-label" for="subcategory{{ $subcategory->id }}">
-                                                    {{ $subcategory->subCategoryTranslation->name ?? $subcategory->name }}
+                                                    {{ $subcategory->subCategoryTranslation->first()->name ?? $subcategory->name }}
                                                 </label>
                                             </div>
                                         @endforeach

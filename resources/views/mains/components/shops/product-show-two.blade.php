@@ -21,7 +21,16 @@
                     </div><!-- End .product-action-vertical -->
 
                     <div class="product-action">
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn-product btn-cart"><span>add to cart</span></a>
+                        @guest('customer')
+                        <button href="#signin-modal" data-toggle="modal">
+                            <span>add to cart</span>
+                        </button>
+                        @endguest
+                        @auth('customer')
+                        <button type="button" class="btn-product btn-cart" onclick="addToCart({{ $product->id }})">
+                            <span>add to cart</span>
+                        </button>
+                        @endauth
                     </div><!-- End .product-action -->
                 </figure><!-- End .product-media -->
 

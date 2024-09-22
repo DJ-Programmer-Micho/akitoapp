@@ -14,9 +14,9 @@ class Customer extends Authenticatable implements JWTSubject
 
     protected $fillable = [
         'email',
-        'phone',
         'password',
         'status',
+        'phone_verify',
     ];
 
     protected $hidden = [
@@ -24,8 +24,9 @@ class Customer extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
-        protected $casts = [
-        'email_verified_at' => 'datetime',
+    protected $casts = [
+        'phone_verified_at' => 'datetime',
+        'phone_otp_number' => 'integer',
     ];
 
     // JWT methods

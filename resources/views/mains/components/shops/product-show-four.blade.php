@@ -15,12 +15,28 @@
                         <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->first()->name[0]}}" class="product-image">
                     </a>
 
-                    <div class="heart-icon">
-                        <i class="fa-regular fa-heart"></i>
+                        @guest('customer')
+                        <div class="heart-icon">
+                            <button class="btn" href="#signin-modal" data-toggle="modal">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div><!-- End .product-action-vertical -->
+                        @endguest
+                        @auth('customer')
+                        @livewire('cart.wishlist-on-card-livewire', ['product_id' => $product->id])
+                        @endauth
                         {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
-                    </div><!-- End .product-action-vertical -->
                     <div class="product-action">
-                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="btn-product btn-cart"><span>add to cart</span></a>
+                        @guest('customer')
+                        <button href="#signin-modal" data-toggle="modal">
+                            <span>add to cart</span>
+                        </button>
+                        @endguest
+                        @auth('customer')
+                        <button type="button" class="btn-product btn-cart" onclick="addToCart({{ $product->id }})">
+                            <span>add to cart</span>
+                        </button>
+                        @endauth
                     </div><!-- End .product-action -->
                 </figure><!-- End .product-media -->
 

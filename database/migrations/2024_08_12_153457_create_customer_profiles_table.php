@@ -16,10 +16,12 @@ return new class extends Migration
             $table->foreignId('customer_id')->references('id')->on('customers')->onDelete('cascade')->onUpdate('cascade');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('address')->nullable();
-            $table->string('phone_number')->nullable();
-            $table->string('city');
             $table->string('country');
+            $table->string('city');
+            $table->string('address');
+            $table->string('zip_code');
+            $table->string('phone_number');
+            $table->string('avatar')->nullable();
             $table->timestamps();
         });
     }

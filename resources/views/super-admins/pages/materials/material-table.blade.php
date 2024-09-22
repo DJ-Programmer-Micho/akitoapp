@@ -95,7 +95,7 @@
                                     <tbody>
                                         @forelse($tableData as $data)
                                             <tr>
-                                                <td class="@empty($data->variationMaterialTranslation->name)  text-danger @endif align-middle">{{ $data->variationMaterialTranslation->name ?? 'unKnown' }}</td>
+                                                <td class="@empty($data->variationMaterialTranslation->first()->name)  text-danger @endif align-middle">{{ $data->variationMaterialTranslation->first()->name ?? 'unKnown' }}</td>
                                                 <td class="align-middle"><b>{{ $data->code }}</b></td>
                                                 <td class="align-middle text-center">
                                                     <span class="badge {{ $data->status ? 'bg-success' : 'bg-danger' }} p-2" style="font-size: 0.7rem;">

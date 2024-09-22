@@ -22,7 +22,7 @@ class AuthController extends Controller
         ]);
 
         // Attempt login
-        if (Auth::attempt($request->only('email', 'password'))) {
+        if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
             // Authentication successful
             return redirect()->route('super.dashboard', ['locale' => 'en']); // Adjust the route to your dashboard
         }
@@ -52,7 +52,7 @@ class AuthController extends Controller
     public function lock()
     {
         // Store user data in the session before logging out
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
     
         if ($user->profile->avatar) {
             $avatar = app('cloudfront') . $user->profile->avatar;
@@ -70,7 +70,7 @@ class AuthController extends Controller
         ]);
     
         // Log out the user
-        Auth::guard('web')->logout();
+        Auth::guard('admin')->logout();
         session()->regenerateToken(); // Regenerate session token for security
         return view('super-admins.auth.lock-one'); // Display lock screen
     }

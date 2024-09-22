@@ -92,9 +92,7 @@
                                                             <img src="{{ app('cloudfront').$data->variation->images->first()->image_path }}" alt="{{ $data->name }}" class="img-fluid" style="max-width: 60px; max-height: 60px; object-fit: cover;">
                                                         </div>
                                                         <div>
-                                                            {{-- @php
-                                                                dd($data->productTranslation);
-                                                            @endphp --}}
+
                                                             <h6 class="mb-0">{{ $data->productTranslation->first()->name ?? 'unKnown' }}</h6>
                                                             <p class="mb-0">{{__('Category:')}} {{ $data->categories->first()->categoryTranslation->name }}</p>
                                                         </div>
