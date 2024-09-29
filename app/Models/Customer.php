@@ -41,4 +41,5 @@ class Customer extends Authenticatable implements JWTSubject
     }
 
     public function customer_profile() { return $this->hasOne(CustomerProfile::class, 'customer_id'); }
+    public function customer_addresses() { return $this->hasMany(CustomerAddress::class, 'customer_id'); }
 }

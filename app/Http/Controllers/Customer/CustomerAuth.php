@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
+
 
 class CustomerAuth extends Controller
 {
@@ -124,5 +126,35 @@ class CustomerAuth extends Controller
         // Respond with file URL or success message
         return response()->json(['url' => asset('uploads/' . $filename)]);
     }
+
+    public function updatePassword()
+    {
+        $customer = Auth::guard('customer');
+    
+        // Validation logic
+        $data = request()->validate([
+            'old_password' => 'required',
+            'new_password' => ['required', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+            'confirm_password' => 'required|same:new_password',
+        ]);
+    
+        // Check if old password matches
+        if (!Hash::check($data['old_password'], $customer->user()->password)) {
+            return back()->withErrors(['old_password' => 'Old password is incorrect.']);
+        }
+    
+        // Check if old and new passwords are the same
+        if ($data['old_password'] === $data['new_password']) {
+            return back()->withErrors(['new_password' => 'New password cannot be the same as the old password.']);
+        }
+    
+        // Update password
+        $customer->user()->update([
+            'password' => Hash::make($data['new_password']),
+        ]);
+    
+        return redirect()->back(); // Redirect after updating the password
+    }
+    
     
 }

@@ -100,6 +100,18 @@
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Delivery Management')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarUsers">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.users', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Delivery Zones')}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
             </ul>
         </div>
         <!-- Sidebar -->

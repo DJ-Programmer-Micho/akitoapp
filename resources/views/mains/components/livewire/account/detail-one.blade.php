@@ -18,6 +18,17 @@
     </style>
     <div class="dashboard">
         <div class="container">
+            @if(!$editable)
+            <button type="button" wire:click="editInfo" class="btn btn-outline-primary-2">
+                <span>Edit</span>
+                <i class="icon-long-arrow-right"></i>
+            </button>
+            @else
+            <button type="button" wire:click="updateInfo" class="btn btn-outline-primary-2">
+                <span>Done</span>
+                <i class="icon-long-arrow-right"></i>
+            </button>
+            @endif
             <form id="myForm" action="#" method="">
                 <div class="row custom-row">
                     <div class="col-md-3 col-sm-12">
@@ -30,7 +41,7 @@
                         @enderror                   
                     </div>
                     <div class="col-md-9 col-sm-12">
-                        <label for="first_name">First Name * 5</label>
+                        <label for="first_name">First Name *</label>
                         <input type="text" class="form-control" wire:model="fName" @if(!$editable) disabled @endif required>                    
                         @error('fName')
                         <div class="text-danger">{{ $message }}</div>
@@ -94,10 +105,6 @@
                 </div>
                 <!-- Password Fields -->
                 <!-- Submit Button -->
-                <button type="submit" id="submitButton" class="btn btn-outline-primary-2">
-                    <span>Register</span>
-                    <i class="icon-long-arrow-right"></i>
-                </button>
             </form>
             
         </div><!-- End .container -->
@@ -185,46 +192,53 @@ FilePond.registerPlugin(
 </script>
  
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var countrySelector = $("#country_selector");
-        
-        // Fetch and populate country codes
-        $.getJSON("{{ asset('main/assets/lib/country_name/restcountries.json') }}", function(data) {
-            var countryOptions = '';
-            var countryCode = "{{ $country }}"; // Use the country name from Livewire
-            var iso2Code = '';
-    
-            data.forEach(function(country) {
-                var code = country.cca2.toLowerCase();
-                var name = country.name.common;
-                var dialCode = country.idd.root;
-    
-                // Check if suffixes exist and append the first suffix if available
-                if (country.idd.suffixes && country.idd.suffixes.length > 0) {
-                    dialCode += country.idd.suffixes[0];
-                }
-    
-                countryOptions += `<option value="${name}" data-dialcode="${dialCode}">${name} (+${dialCode})</option>`;
-    
-                // Check for the matching country to get ISO2 code
-                if (name === countryCode) {
-                    iso2Code = code; // Get the ISO2 code
-                }
-            });
-    
-            // Populate the select element
-            countrySelector.append(countryOptions);
-    
-            // Set the default country by name
-            countrySelector.val(countryCode).change(); // Set the default country
-    
-            // Initialize country select with the correct ISO2 code
-            countrySelector.countrySelect({
-                defaultCountry: iso2Code,
-                preferredCountries: ['iq', 'sa', 'ae']
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    var countrySelector = $("#country_selector");
+
+    // Fetch and populate country codes
+    $.getJSON("{{ asset('main/assets/lib/country_name/restcountries.json') }}", function(data) {
+        var countryOptions = '';
+        var countryCode = @this.get('country'); // Use the country name from Livewire
+        var iso2Code = '';
+
+        data.forEach(function(country) {
+            var code = country.cca2.toLowerCase();
+            var name = country.name.common;
+            var dialCode = country.idd.root;
+
+            // Check if suffixes exist and append the first suffix if available
+            if (country.idd.suffixes && country.idd.suffixes.length > 0) {
+                dialCode += country.idd.suffixes[0];
+            }
+
+            countryOptions += `<option value="${name}" data-dialcode="${dialCode}">${name} (+${dialCode})</option>`;
+
+            // Check for the matching country to get ISO2 code
+            if (name === countryCode) {
+                iso2Code = code; // Get the ISO2 code
+            }
+        });
+
+        // Populate the select element
+        countrySelector.append(countryOptions);
+
+        // Set the default country by name
+        countrySelector.val(countryCode).change(); // Set the default country
+
+        // Initialize country select with the correct ISO2 code
+        countrySelector.countrySelect({
+            defaultCountry: iso2Code,
+            preferredCountries: ['iq', 'sa', 'ae']
+        });
+
+        // Update Livewire country value when the selector changes
+        countrySelector.on('change', function(e) {
+            var selectedCountry = $(this).val();
+            @this.set('country', selectedCountry); // Update Livewire 'country' property
         });
     });
+});
+
     </script>
     
 @endpush

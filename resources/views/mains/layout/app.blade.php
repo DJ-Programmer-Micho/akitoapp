@@ -27,6 +27,7 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/demos/demo-3.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/custom.css')}}">
         <title>{{ $title ?? 'Page Title' }}</title>
+        @stack('styles-password')
         @livewireStyles
     </head>
     <body>
@@ -64,6 +65,9 @@
         @stack("productView")
         @stack("brandSlider")
         @stack("register")
+        @stack("password")
+        @stack("tab-script")
+        @stack("geo")
         @livewireScripts
 <form id="languageForm" action="{{ route('setLocale') }}" method="post">
     @csrf
@@ -85,8 +89,18 @@
     $('.featured-products-content').show();
 });
 </script>
-
-
+@if(session('alert'))
+    <script>
+        window.addEventListener('load', function () {
+            toastr["{{ session('alert')['type'] }}"]("{{ session('alert')['message'] }}", "", {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-bottom-right",
+                "timeOut": "5000"
+            });
+        });
+    </script>
+@endif
 <script>
     window.addEventListener('alert', event => { 
         toastr[event.detail.type](event.detail.message, 

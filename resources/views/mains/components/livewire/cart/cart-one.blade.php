@@ -15,7 +15,9 @@
             <div class="product d-flex align-items-center justify-content-between p-2" style="flex-direction:unset;">
                 <div class="product-cart-details flex-grow-1 d-flex flex-column">
                     <h4 class="product-title">
-                        <a href="product.html">{{ $item['product']['product_translation'][0]['name'] }}</a>
+                        <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}">
+                            {{ $item['product']['product_translation'][0]['name'] }}
+                        </a>
                     </h4>
                     <span class="cart-product-info">
                         <span class="cart-product-qty">{{ $item['quantity'] }}</span>
@@ -58,7 +60,7 @@
         </div><!-- End .dropdown-cart-total -->
     
         <div class="dropdown-cart-action mt-2">
-            <a href="cart.html" class="btn btn-primary">View Cart</a>
+            <a href="{{ route('business.viewcart', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}" class="btn btn-outline-primary-2">View Cart</a>
             <button wire:click="checkout" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></button>
         </div><!-- End .dropdown-cart-action -->
         @endif

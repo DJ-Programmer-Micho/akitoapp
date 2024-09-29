@@ -42,7 +42,10 @@
                         @auth('customer')
                         <ul class="menu-vertical sf-arrows">
                             <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">Dashboard</a></li>
-                            <li class="item-lead"><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign Out</a></li>
+                            <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">Wishlist</a></li>
+                            <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">View Cart</a></li>
+                            <li><a href="{{ route('business.checkout', ['locale' => app()->getLocale()]) }}">Check Out</a></li>
+                            <li class="item-lead"><a href="#signout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign Out</a></li>
                         </ul><!-- End .menu-vertical -->
                         @endauth
                         @guest('customer')

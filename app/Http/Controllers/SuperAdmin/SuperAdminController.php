@@ -48,4 +48,10 @@ class SuperAdminController extends Controller
     public function profile(){
         return view('super-admins.pages.profiles.index');
     }
+    public function deliveryZones(){
+        return view('super-admins.pages.delivery.index');
+    }
+    public function shippingCost(){
+        return view('super-admins.pages.shippingcost.index');
+    }
 }

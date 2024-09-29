@@ -11,6 +11,7 @@ use App\Http\Controllers\SuperAdmin\AuthController;
 use App\Http\Middleware\LocalizationMainMiddleware;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
+use App\Http\Controllers\Customer\CustomerAddressController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,23 +71,32 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
         Route::get('/edit/{id}', [SuperAdminController::class, 'eProduct'])->name('super.product.edit');
         Route::get('/users-managements', [SuperAdminController::class, 'user'])->name('super.users');
         Route::get('/profile', [SuperAdminController::class, 'profile'])->name('super.profile');
+        Route::get('/delivery-zones', [SuperAdminController::class, 'deliveryZones'])->name('super.deliveryZones');
+        Route::get('/shipping-costs', [SuperAdminController::class, 'shippingCost'])->name('super.shippingCost');
     });
     // HOME - CUSTOEMRS
     Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
         Route::get('/', [BusinessController::class, 'home'])->name('business.home');
-        Route::get('/account', [BusinessController::class, 'account'])->name('business.account');
-        Route::get('/register', [BusinessController::class, 'register'])->name('business.register');
+        Route::get('account', [BusinessController::class, 'account'])->name('business.account');        
+        Route::get('register', [BusinessController::class, 'register'])->name('business.register');
         Route::get('shop', [BusinessController::class, 'productShop'])->name('business.productShop');
         Route::get('categories', [BusinessController::class, 'productCategory'])->name('business.category');
         Route::get('brands', [BusinessController::class, 'productBrand'])->name('business.brand');
         Route::get('spare', [BusinessController::class, 'productShopSpare'])->name('business.productShopSpare');
         Route::get('product/{slug}', [BusinessController::class, 'productDetail'])->name('business.productDetail');
+        Route::get('wishlist-list', [BusinessController::class, 'wishlist'])->name('business.whishlist');
+        Route::get('view-cart-list', [BusinessController::class, 'viewcart'])->name('business.viewcart');
+        Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
         // ->middleware('update.product.slug')
         
+        Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account');
         Route::post('/avatarupload', [CustomerAuth::class, 'avatarupload'])->name('customer.avatarupload');
         Route::post('/register', [CustomerAuth::class, 'register'])->name('customer.register');
         Route::post('/cust-login', [CustomerAuth::class, 'login'])->name('customer.login');
         Route::post('/cust-logout', [CustomerAuth::class, 'logout'])->name('customer.logout');
+
+        Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');
+        Route::post('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
     });
 
     Route::get('/', function () {

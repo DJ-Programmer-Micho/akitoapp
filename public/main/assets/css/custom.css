@@ -132,3 +132,11 @@
 .label-wrapper span {
     border-radius: 5px 18px;
 }
+
+.tab-pane {
+    transition: opacity 0.3s ease;
+}
+
+.address .form-control {
+    border-color: #003465;
+}

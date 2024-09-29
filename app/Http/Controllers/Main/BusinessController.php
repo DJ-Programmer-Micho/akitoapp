@@ -14,6 +14,7 @@ use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class BusinessController extends Controller
@@ -147,7 +148,6 @@ class BusinessController extends Controller
         ]);
     }
     
-
     public function productCategory(){
         return view('mains.pages.category-page-one', [
 
@@ -587,12 +587,35 @@ class BusinessController extends Controller
     }
     
     public function account(){
-        return view('mains.pages.account-page-one', [
+        
+        $isLoggedIn = Auth::guard('customer')->check();
+    
+        if(!$isLoggedIn){
+            return redirect()->route('business.home', ['locale' => app()->getLocale()]);
+        }
+        return view('mains.pages.account-page-one');
+    }
+
+    public function register(){
+        return view('mains.pages.register-page-one', [
 
         ]);
     }
-    public function register(){
-        return view('mains.pages.register-page-one', [
+
+    public function wishlist(){
+        return view('mains.pages.wishlist-page-one', [
+
+        ]);
+    }
+    
+    public function viewcart(){
+        return view('mains.pages.cart-view-page-one', [
+
+        ]);
+    }
+
+    public function checkout(){
+        return view('mains.pages.checkout-page-one', [
 
         ]);
     }

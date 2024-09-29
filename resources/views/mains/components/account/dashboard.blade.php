@@ -5,7 +5,7 @@
                 <aside class="col-md-2">
                     <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+                            <a class="nav-link" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
@@ -20,6 +20,9 @@
                             <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" id="tab-password-link" data-toggle="tab" href="#tab-password" role="tab" aria-controls="tab-password" aria-selected="false">Change Password</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#">Sign Out</a>
                         </li>
                     </ul>
@@ -28,9 +31,39 @@
                 <div class="col-md-10">
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
-                            <p>Hello <span class="font-weight-normal text-dark">User</span> (not <span class="font-weight-normal text-dark">User</span>? <a href="#">Log out</a>) 
-                            <br>
-                            From your account dashboard you can view your <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="card card-dashboard">
+                                        <div class="card-head">
+                                            <h3 class="card-title p-2">Orders</h3><!-- End .card-title -->
+                                        </div>
+                                        <div class="card-body p-1">
+                                            <p class="card-title">2</p><!-- End .card-title -->
+                                        </div><!-- End .card-body -->
+                                    </div><!-- End .card-dashboard -->
+                                </div>
+                                <div class="col-4">
+                                    <div class="card card-dashboard">
+                                        <div class="card-head">
+                                            <h3 class="card-title p-2">Pending</h3><!-- End .card-title -->
+                                        </div>
+                                        <div class="card-body p-1">
+                                            <p class="card-title">1</p><!-- End .card-title -->
+                                        </div><!-- End .card-body -->
+                                    </div><!-- End .card-dashboard -->
+                                </div>
+                                <div class="col-4">
+                                    <div class="card card-dashboard">
+                                        <div class="card-head">
+                                            <h3 class="card-title p-2">Shipping</h3><!-- End .card-title -->
+                                        </div>
+                                        <div class="card-body p-1">
+                                            <p class="card-title">1</p><!-- End .card-title -->
+                                        </div><!-- End .card-body -->
+                                    </div><!-- End .card-dashboard -->
+                                </div>
+                            </div>
+
                         </div><!-- .End .tab-pane -->
 
                         
@@ -44,51 +77,60 @@
 
 
 
+
                         {{-- <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
                             <p>No downloads available yet.</p>
                             <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
                         </div><!-- .End .tab-pane --> --}}
 
                         <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
-                            <p>The following addresses will be used on the checkout page by default.</p>
-
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="card card-dashboard">
-                                        <div class="card-body">
-                                            <h3 class="card-title">Billing Address</h3><!-- End .card-title -->
-
-                                            <p>User Name<br>
-                                            User Company<br>
-                                            John str<br>
-                                            New York, NY 10001<br>
-                                            1-234-987-6543<br>
-                                            yourmail@mail.com<br>
-                                            <a href="#">Edit <i class="icon-edit"></i></a></p>
-                                        </div><!-- End .card-body -->
-                                    </div><!-- End .card-dashboard -->
-                                </div><!-- End .col-lg-6 -->
-
-                                <div class="col-lg-6">
-                                    <div class="card card-dashboard">
-                                        <div class="card-body">
-                                            <h3 class="card-title">Shipping Address</h3><!-- End .card-title -->
-
-                                            <p>You have not set up this type of address yet.<br>
-                                            <a href="#">Edit <i class="icon-edit"></i></a></p>
-                                        </div><!-- End .card-body -->
-                                    </div><!-- End .card-dashboard -->
-                                </div><!-- End .col-lg-6 -->
-                            </div><!-- End .row -->
+                            <x-mains.components.account.address-one />
                         </div><!-- .End .tab-pane -->
 
                         <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
                             @livewire('account.detail-one')
                             
                         </div><!-- .End .tab-pane -->
+
+                        <div class="tab-pane fade" id="tab-password" role="tabpanel" aria-labelledby="tab-password-link">
+                            <x-mains.components.account.password-one/>
+                        </div><!-- .End .tab-pane -->
                     </div>
                 </div><!-- End .col-lg-9 -->
             </div><!-- End .row -->
         </div><!-- End .container -->
     </div><!-- End .dashboard -->
+@push('tab-script')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the active tab from localStorage
+        const activeTab = localStorage.getItem('activeTab') || 'tab-dashboard';
+
+        // Hide all tab panes and remove active class from all links
+        document.querySelectorAll('.tab-pane').forEach(tab => {
+            tab.classList.remove('show', 'active');
+        });
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Show the active tab based on localStorage
+        const selectedTab = document.querySelector(`#${activeTab}`);
+        if (selectedTab) {
+            selectedTab.classList.add('show', 'active');
+            const activeLink = document.querySelector(`a[href="#${activeTab}"]`);
+            activeLink.classList.add('active');
+        }
+
+        // Add event listeners for tab links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function () {
+                const selectedTabId = this.getAttribute('href').substring(1);
+                localStorage.setItem('activeTab', selectedTabId);
+            });
+        });
+    });
+</script>
+
+@endpush
 </div><!-- End .page-content -->
