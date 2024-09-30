@@ -9,8 +9,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="HandheldFriendly" content="True"/>
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="#dc3545">
-    <meta name="theme-color" content="#dc3545">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#003465">
+    <meta name="theme-color" content="#003465">
     <meta name="publisher" content="Michel Shabo">
     <meta name="mobile-web-app-title" content="Akitu">
     <meta name="author" content="Michel Shabo">
@@ -19,17 +19,17 @@
     <meta name="page-type" content="website">
     <meta name="audience" content="Everyone">
     <meta name="robots" content="index, follow"> 
-    <meta name='google-site-verification' content='umlVYoC_GB0LKj19BGjAp0DDjU1Jirtq9sVJCgTGgAM'>
+    {{-- <meta name='google-site-verification' content='umlVYoC_GB0LKj19BGjAp0DDjU1Jirtq9sVJCgTGgAM'> --}}
     {{-- Sharing Purposes --}}
     <meta name='og:title' content='Akitu'>
     <meta name='og:type' content='Software Company'>
     <meta name='og:url' content='http://akitu-co.com/'>
     {{-- <meta name='og:image' content='https://d7tztcuqve7v9.cloudfront.net/{{app('fixedimage_640x360_half')}}'> --}}
     <meta name='og:site_name' content='Akitu'>
-    <meta name='og:description' content='احصل على قائمة الطعام الالكترونية الخاصة بمطعمك وخصصها كما تحب بابسط طريقة وبسعر مميز جدا, وساهم بحصول زبائنك على افضل تجربة'>
+    <meta name='og:description' content='Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'>
     {{-- META TAGS --}}
-    <meta name='keywords' content='minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food'>
-    <meta name="news_keywords" content="minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food">
+    {{-- <meta name="news_keywords" content="minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food"> --}}
+    {{-- <meta name='keywords' content='minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food'> --}}
     <!-- apple icons -->
     {{-- <link rel="shortcut icon" href="{{app('logo_72')}}">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{app('logo_144')}}">
