@@ -46,7 +46,7 @@
                     "loop": false,
                     "responsive": {
                         "0": {
-                            "items":3
+                            "items":2
                         },
                         "600": {
                             "items":4
@@ -138,7 +138,7 @@
                     "loop": false,
                     "responsive": {
                         "0": {
-                            "items":3
+                            "items":2
                         },
                         "600": {
                             "items":4

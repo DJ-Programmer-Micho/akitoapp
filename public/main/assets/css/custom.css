@@ -144,3 +144,16 @@
 .product-image {
     background-color: white;
 }
+
+.cart-dropdown .dropdown-menu .re{
+    width: 150px;
+}
+.dropdown-menu {
+    left: unset!important;
+    right: 0!important;
+    
+}
+
+.social-icons {
+    padding: 10px;
+}

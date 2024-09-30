@@ -25,7 +25,7 @@
             </div><!-- End .header-search -->
             @livewire('cart.wishlist-livewire')
             @livewire('cart.cart-livewire')
-            <div class="dropdown cart-dropdown">
+            <div class="dropdown cart-dropdown re">
                 <lord-icon
                     src="https://cdn.lordicon.com/bgebyztw.json"
                     trigger="loop"
@@ -37,7 +37,7 @@
                 @auth('customer')
                 <p style="color: #003465; white-space: nowrap;">{{auth()->guard('customer')->user()->customer_profile->first_name . ' ' . auth()->guard('customer')->user()->customer_profile->last_name}}</p>
                 @endauth
-                <div class="dropdown-menu p-0">
+                <div class="dropdown-menu p-0" style="width: 150px">
                     <nav class="side-nav">
                         @auth('customer')
                         <ul class="menu-vertical sf-arrows">
