@@ -43,7 +43,7 @@
                     <img class="mr-2" src="{{ asset('lang/'. str_replace('_', '-', app()->getLocale()) .'.png') }}" width="20" alt="{{ str_replace('_', '-', app()->getLocale()) }}"> {{ __(str_replace('_', '-', app()->getLocale())) }}
 
                 </div>
-                <div class="header-menu px-3">
+                <div class="header-menu px-3" style="z-index: 10000">
                     <ul>
                         @foreach (config('app.locales') as $locale)
                         <li>

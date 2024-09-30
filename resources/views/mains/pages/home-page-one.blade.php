@@ -12,7 +12,9 @@
     <x-mains.components.category-anime-one :categoiresData="$categoiresData"/>
     </div>
     <div class="mb-1 mb-lg-3"></div>
-    <x-mains.components.featured-one />
+    {{-- <x-mains.components.featured-one /> --}}
+    <x-mains.components.category-product-general-one :productsData="$featured_products['products']" :title="$featured_products['title']"/>
+    <x-mains.components.category-product-general-one :productsData="$on_sale_products['products']" :title="$on_sale_products['title']"/>
     <div class="mb-1 mb-lg-3"></div>
     {{-- <x-mains.components.cta-banner-one /> --}}
     {{-- <x-mains.components.deal-time-one /> --}}

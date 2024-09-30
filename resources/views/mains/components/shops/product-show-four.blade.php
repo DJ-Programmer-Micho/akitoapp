@@ -28,7 +28,7 @@
                         {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
                     <div class="product-action">
                         @guest('customer')
-                        <button href="#signin-modal" data-toggle="modal">
+                        <button type="button" class="btn-product btn-cart" href="#signin-modal" data-toggle="modal">
                             <span>add to cart</span>
                         </button>
                         @endguest

@@ -1,3 +1,5 @@
+
+{{-- FOR THE TABS BETWEEN FEATURED AND ON SALE --}}
 <div class="container featured">
     <ul class="nav nav-pills nav-border-anim nav-big justify-content-center mb-3" role="tablist">
         <li class="nav-item">
@@ -6,9 +8,6 @@
         <li class="nav-item">
             <a class="nav-link" id="products-sale-link" data-toggle="tab" href="#products-sale-tab" role="tab" aria-controls="products-sale-tab" aria-selected="false">On Sale</a>
         </li>
-        {{-- <li class="nav-item">
-            <a class="nav-link" id="products-top-link" data-toggle="tab" href="#products-top-tab" role="tab" aria-controls="products-top-tab" aria-selected="false">Top Rated</a>
-        </li> --}}
     </ul>
 
     <div class="tab-content tab-content-carousel">
@@ -76,7 +75,6 @@
 
                         <div class="heart-icon">
                             <i class="fa-regular fa-heart"></i>
-                            {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
                         </div><!-- End .product-action-vertical -->
                         <div class="product-action">
                             <a href="#" class="btn-product btn-cart"><span>Add to cart</span></a>
@@ -100,12 +98,6 @@
                                 $ {{$item->variation->price}}
                             </div><!-- End .product-price -->
                         @endif
-                        {{-- <div class="ratings-container">
-                            <div class="ratings">
-                                <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                            </div><!-- End .ratings -->
-                            <span class="ratings-text">( 2 Reviews )</span>
-                        </div><!-- End .rating-container --> --}}
                     </div><!-- End .product-body -->
                 </div><!-- End .product -->
                 @endforeach
@@ -165,7 +157,7 @@
                         <div class="label-wrapper">
                             @if ($item->tags)
                             @foreach ($item->tags as $tag)
-                                <span class="col-3" style="background-color: #eb4034; color: #ffffff">{{$tag->tagTranslation->name}}</span>
+                                <span class="col-3" style="background-color: #eb4034; color: #ffffff">{{$tag->tagTranslation->first()->name}}</span>
                             @endforeach
                             @endif
                         </div>
@@ -174,7 +166,6 @@
                         </a>
                         <div class="heart-icon">
                             <i class="fa-regular fa-heart"></i>
-                            {{-- <i class="fa-solid fa-heart text-danger"></i> --}}
                         </div><!-- End .product-action-vertical -->
                         <div class="product-action">
                             <a href="#" class="btn-product btn-cart"><span>Add to cart</span></a>
@@ -198,12 +189,6 @@
                                 $ {{$item->variation->price}}
                             </div><!-- End .product-price -->
                         @endif
-                        {{-- <div class="ratings-container">
-                            <div class="ratings">
-                                <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
-                            </div><!-- End .ratings -->
-                            <span class="ratings-text">( 2 Reviews )</span>
-                        </div><!-- End .rating-container --> --}}
                     </div><!-- End .product-body -->
                 </div><!-- End .product -->
                 @endforeach

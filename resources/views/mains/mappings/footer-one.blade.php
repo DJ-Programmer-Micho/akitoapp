@@ -5,7 +5,7 @@
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
-                        <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" class="footer-logo" width="105" height="25">
+                        <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" class="footer-logo" width="105" height="25">
                         <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
                         <div class="widget-call">

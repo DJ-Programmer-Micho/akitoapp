@@ -15,9 +15,9 @@
             <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
         </li>
         @endif
-        @if ($productDetail->information->informationTranslation->question_and_answer)
+        @if(!$productDetail->information->informationTranslation->question_and_answer)
         <li class="nav-item">
-            <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">Reviews (2)</a>
+            <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">FAQs</a>
         </li>
         @endif
     </ul>

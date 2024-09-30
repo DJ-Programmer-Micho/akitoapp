@@ -100,7 +100,7 @@
                     @foreach ($colors as $index => $color)
                     <a href="#" 
                        class="color-swatch {{ in_array($color->id, request()->colors ?? []) ? 'selected' : '' }}" 
-                       style="background: {{ $color->code }};" 
+                       style="background: {{ $color->code }}; border: 1px solid black" 
                        onclick="applyColorFilter(event, {{ $color->id }})">
                         <span class="sr-only">{{ $color->variationColorTranslation->name }}</span>
                     </a>

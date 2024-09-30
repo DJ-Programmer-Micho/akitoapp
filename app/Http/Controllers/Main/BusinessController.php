@@ -49,7 +49,7 @@ class BusinessController extends Controller
             ])
             ->where('status', 1)
             ->whereHas('categories', function ($query) {
-                $query->where('categories.id', 7);
+                $query->where('categories.id', 2);
             })
             ->get();
         });
@@ -80,7 +80,7 @@ class BusinessController extends Controller
             ])
             ->where('status', 1)
             ->whereHas('categories', function ($query) {
-                $query->where('categories.id', 9);
+                $query->where('categories.id', 2);
             })
             ->get();
         });
@@ -139,6 +139,9 @@ class BusinessController extends Controller
             app('cloudfront') . 'web-setting/banners/banner9.png',
         ];
 
+        $featured = $this->fetchProducts('featured', 'Featured');
+        $on_sale = $this->fetchProducts('on_sale', 'On Sale');
+
         return view('mains.pages.home-page-one', [
             'productsCat1' => $productsCat1,
             'productsCat1Title' => $productsCat1Title,
@@ -148,8 +151,50 @@ class BusinessController extends Controller
             'productsCat3Title' => $productsCat3Title,
             'categoiresData' => $categoiresData,
             'imageBanner' => $imagesBanner,
+            'featured_products' => $featured,
+            'on_sale_products' => $on_sale,
             'sliders' => $sliders,
         ]);
+    }
+
+    private function fetchProducts($type, $title)
+    {
+        $locale = app()->getLocale();
+        $products = Product::with([
+            'productTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'variation.colors',
+            'variation.sizes',
+            'variation.materials',
+            'variation.capacities',
+            'variation.images',
+            'brand.brandTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'categories.categoryTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            'tags.tagTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            }
+        ])
+        ->where('status', 1)
+        ->whereHas('variation', function ($query) use ($type) {
+            $query->where($type, 1);
+        })
+        ->whereHas('brand', function ($query) {
+            $query->where('status', 1);
+        })
+        ->whereHas('categories', function ($query) {
+            $query->where('status', 1);
+        })
+        ->get();
+
+        return [
+            'products' => $products,
+            'title' => $title,
+        ];
     }
     
     public function productCategory(){

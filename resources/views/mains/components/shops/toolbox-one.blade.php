@@ -16,7 +16,7 @@
                     <form method="GET" action="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">
                 @endif
                 {{-- <form method="GET" action="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}"> --}}
-                    <select name="sortby" onchange="this.form.submit()">
+                    <select name="sortby" class="form-control" onchange="this.form.submit()">
                     <option value="priority" {{ request()->query('sortby') == 'priority' ? 'selected' : '' }}>Default</option>
                     <option value="price_asc" {{ request()->query('sortby') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_desc" {{ request()->query('sortby') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
@@ -47,12 +47,11 @@
         </a>
 
         {{-- 3 Columns Layout --}}
-        @if(request()->is('*/shop'))
+        {{-- @if(request()->is('*/shop'))
             <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '3', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '4' ? 'active' : '' }}">
         @else
             <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale(), 'grid' => '3', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '4' ? 'active' : '' }}">
         @endif
-        {{-- <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '3', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '3' ? 'active' : '' }}"> --}}
             <svg width="16" height="10">
                 <rect x="0" y="0" width="4" height="4" />
                 <rect x="6" y="0" width="4" height="4" />
@@ -61,22 +60,21 @@
                 <rect x="6" y="6" width="4" height="4" />
                 <rect x="12" y="6" width="4" height="4" />
             </svg>
-        </a>
+        </a> --}}
 
         {{-- 2 Columns Layout --}}
-        @if(request()->is('*/shop'))
+        {{-- @if(request()->is('*/shop'))
             <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '2', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '4' ? 'active' : '' }}">
         @else
             <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale(), 'grid' => '2', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '4' ? 'active' : '' }}">
         @endif
-        {{-- <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '2', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '2' ? 'active' : '' }}"> --}}
             <svg width="10" height="10">
                 <rect x="0" y="0" width="4" height="4" />
                 <rect x="6" y="0" width="4" height="4" />
                 <rect x="0" y="6" width="4" height="4" />
                 <rect x="6" y="6" width="4" height="4" />
             </svg>
-        </a>
+        </a> --}}
 
         @if(request()->is('*/shop'))
             <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '1', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '4' ? 'active' : '' }}">

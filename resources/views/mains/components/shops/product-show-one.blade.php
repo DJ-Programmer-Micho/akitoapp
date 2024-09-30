@@ -1,6 +1,6 @@
 <div class="products mb-3">
     @foreach ($products as $product)
-    <div class="product product-list">
+    <div class="product product-list mb-4">
         <div class="row">
         <div class="col-6 col-lg-3">
             <figure class="product-media">
@@ -15,9 +15,11 @@
                     <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->first()->name[0]}}" class="product-image">
                 </a>
                 @guest('customer')
-                <button href="#signin-modal" data-toggle="modal">
-                    <i class="fa-regular fa-heart"></i>
-                </button>
+                <div class="heart-icon">
+                    <button class="btn" href="#signin-modal" data-toggle="modal">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div><!-- End .product-action-vertical -->
                 @endguest
                 @auth('customer')
                 @livewire('cart.wishlist-on-card-livewire', ['product_id' => $product->id])
@@ -42,7 +44,7 @@
                 </div><!-- End .product-action --> --}}
 
                 @guest('customer')
-                <button href="#signin-modal" data-toggle="modal">
+                <button type="button" class="btn-product btn-cart" href="#signin-modal" data-toggle="modal">
                     <span>add to cart</span>
                 </button>
                 @endguest

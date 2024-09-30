@@ -29,12 +29,12 @@
             <div class="product-details">
                 <h1 class="product-title">{{$productDetail->productTranslation->name}}</h1><!-- End .product-title -->
 
-                <div class="ratings-container">
+                {{-- <div class="ratings-container">
                     <div class="ratings">
                         <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
                     </div><!-- End .ratings -->
                     <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
-                </div><!-- End .rating-container -->
+                </div><!-- End .rating-container --> --}}
 
                 @if ($productDetail->variation->discount)
                     <div class="product-price">
@@ -110,8 +110,20 @@
                     <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
 
                     <div class="details-action-wrapper">
-                        <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                        <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
+                        @guest('customer')
+                        <div class="heart-icon">
+                            <button class="btn" href="#signin-modal" data-toggle="modal">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div><!-- End .product-action-vertical -->
+                        @endguest
+                        @auth('customer')
+                        @livewire('cart.wishlist-on-card-livewire', ['product_id' => $productDetail->id])
+                        @endauth
+                        {{-- <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a> --}}
+
+
+                        {{-- <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a> --}}
                     </div><!-- End .details-action-wrapper -->
                 </div><!-- End .product-details-action -->
 

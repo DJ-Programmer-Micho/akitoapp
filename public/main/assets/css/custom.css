@@ -140,3 +140,7 @@
 .address .form-control {
     border-color: #003465;
 }
+
+.product-image {
+    background-color: white;
+}

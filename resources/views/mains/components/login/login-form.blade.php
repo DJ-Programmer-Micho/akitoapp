@@ -12,7 +12,7 @@
                             <div class="d-flex justify-content-center">
 
                                 <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo">
-                                    <img src="{{ app('cloudfront').'web-setting/logo.png' }}" alt="Akito" width="120" height="20">
+                                    <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" width="120" height="20">
                                 </a>
                             </div>
                             <form action="{{route('customer.login', ['locale' => app()->getLocale()])}}" method="POST">
@@ -60,7 +60,7 @@
                                     </label>
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary-2">LOG IN</button>
-                                <p>Don't Have Account Yet? <a href="#" class="forgot-link">Register</a></p>
+                                <p>Don't Have Account Yet? <a href="{{ route('business.register', ['locale' => app()->getLocale()]) }}" class="forgot-link">Register</a></p>
                               </form>
                         </div><!-- .End .tab-pane -->
                     </div><!-- End .tab-content -->

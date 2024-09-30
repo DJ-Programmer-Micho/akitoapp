@@ -21,9 +21,13 @@ class FeaturedOne extends Component
     {
         // Get the current locale
         $this->locale = app()->getLocale();
+        $this->featured = $this->fetchProducts('featured', 1);
+        $this->on_sale = $this->fetchProducts('on_sale', 1);
+    }
 
-        // Fetch featured products with translations for the current locale
-        $this->featured = Product::with([
+    private function fetchProducts($type, $status)
+    {
+        return Product::with([
             'productTranslation' => function ($query) {
                 $query->where('locale', $this->locale);
             },
@@ -43,51 +47,13 @@ class FeaturedOne extends Component
             }
         ])
         ->where('status', 1)
-        ->whereHas('variation', function ($query) {
-            $query->where('featured', 1);
+        ->whereHas('variation', function ($query) use ($type) {
+            $query->where($type, 1);
         })
         ->whereHas('brand', function ($query) {
             $query->where('status', 1);
         })
         ->whereHas('categories', function ($query) {
-            $query->where('status', 1);
-        })
-        ->whereHas('tags', function ($query) {
-            $query->where('status', 1);
-        })
-        ->get();
-
-        // Fetch on-sale products with translations for the current locale
-        $this->on_sale = Product::with([
-            'productTranslation' => function ($query) {
-                $query->where('locale', $this->locale);
-            },
-            'variation.colors',
-            'variation.sizes',
-            'variation.materials',
-            'variation.capacities',
-            'variation.images',
-            'brand.brandTranslation' => function ($query) {
-                $query->where('locale', $this->locale);
-            },
-            'categories.categoryTranslation' => function ($query) {
-                $query->where('locale', $this->locale);
-            },
-            'tags.tagTranslation' => function ($query) {
-                $query->where('locale', $this->locale);
-            }
-        ])
-        ->where('status', 1)
-        ->whereHas('variation', function ($query) {
-            $query->where('on_sale', 1);
-        })
-        ->whereHas('brand', function ($query) {
-            $query->where('status', 1);
-        })
-        ->whereHas('categories', function ($query) {
-            $query->where('status', 1);
-        })
-        ->whereHas('tags', function ($query) {
             $query->where('status', 1);
         })
         ->get();
