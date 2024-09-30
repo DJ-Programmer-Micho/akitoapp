@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Main;
 
 use App\Models\Brand;
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\CartItem;
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\SubCategory;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\VariationSize;
 use App\Models\VariationColor;
@@ -586,8 +590,7 @@ class BusinessController extends Controller
         ]);
     }
     
-    public function account(){
-        
+    public function account(){        
         $isLoggedIn = Auth::guard('customer')->check();
     
         if(!$isLoggedIn){
@@ -603,20 +606,105 @@ class BusinessController extends Controller
     }
 
     public function wishlist(){
+        $isLoggedIn = Auth::guard('customer')->check();
+    
+        if(!$isLoggedIn){
+            return redirect()->route('business.home', ['locale' => app()->getLocale()]);
+        }
         return view('mains.pages.wishlist-page-one', [
 
         ]);
     }
     
     public function viewcart(){
+        $isLoggedIn = Auth::guard('customer')->check();
+    
+        if(!$isLoggedIn){
+            return redirect()->route('business.home', ['locale' => app()->getLocale()]);
+        }
         return view('mains.pages.cart-view-page-one', [
 
         ]);
     }
 
     public function checkout(){
+        $isLoggedIn = Auth::guard('customer')->check();
+    
+        if(!$isLoggedIn){
+            return redirect()->route('business.home', ['locale' => app()->getLocale()]);
+        }
         return view('mains.pages.checkout-page-one', [
 
         ]);
+    }
+
+    public function checkoutChecker($locale, $digit, $nvxf, Request $request){
+        
+        if(Auth::guard('customer')->check()) {
+            $customer = Auth::guard('customer')->user();
+            if($customer->status == 1 && $customer->id == $nvxf){
+                if($digit == 1) {
+                    try {
+                        //code...
+                        $validatedData = $request->validate([
+                            'address' => 'required|string|max:255',
+                            'payment' => 'required|string|max:255',
+                        ]);
+
+                        $customerP = Auth::guard('customer')->user()->customer_profile;
+                        $customerA = Auth::guard('customer')->user()->customer_addresses->where('id',$validatedData['address'])->first();
+                        
+                        $cartItems = CartItem::with('product','product.variation','product.productTranslation')->where('customer_id',$customer->id)->get();
+                        $random_number = Str::random(6);
+
+                        DB::beginTransaction();
+                        $order = Order::create([
+                            'customer_id' => $customer->id,
+                            'first_name' =>  $customerP->first_name,
+                            'last_name' => $customerP->last_name,
+                            'email' => $customer->email,
+                            'country' => $customerA->country,
+                            'city' => $customerA->city,
+                            'address' => $customerA->address,
+                            'zip_code' => $customerA->zip_code,
+                            'phone_number' => $customerA->phone_number,
+                            'payment_method' => $validatedData['payment'],
+                            'payment_status' => 'pending',
+                            'status' => 'pending', 
+                            'tracking_number' => $random_number,
+                            'discount' => null, 
+                            'total_amount' => 0, // ***********************
+                        ]);
+
+                        foreach ($cartItems as $item) {
+
+                            $pPrice = $item->product->variation->discount ? $item->product->variation->discount : $item->product->variation->price;
+
+                            OrderItem::create([
+                                'order_id' => $order->id,
+                                'product_id' => $item->product_id, // Assuming you're getting product_id
+                                'quantity' => $item->quantity,
+                                'product_name' => $item->product->productTranslation[0]->name,
+                                'price' => $pPrice,
+                                'total' => $item->quantity * $pPrice, // Calculate total for this item
+                            ]);
+                        }
+                        DB::commit();
+                    return 'Cash On Delivery';
+                    } catch (\Exception $e) {
+                        DB::rollBack();
+                    }
+                } else {
+                    return 'PAYMENT = Digital Payment';
+                }
+            } else {
+                return 'err2';
+            } 
+        } else {
+            return 'err1';
+        }
+        // return view('mains.pages.checkout-page-one', [
+
+        // ]);
     }
 }

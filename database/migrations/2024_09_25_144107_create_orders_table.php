@@ -24,8 +24,10 @@ return new class extends Migration
             $table->string('phone_number'); // Customer's phone number
             $table->decimal('total_amount', 10, 2); // Total amount for the order
             $table->string('payment_method'); // Payment method (e.g., COD, digital payment)
-            $table->enum('status', ['pending', 'payed', 'shipping', 'delivered', 'complete', 'canceled','refunded'])->default('pending'); // Order status
+            $table->enum('payment_status', ['pending', 'successful', 'failed'])->default('pending'); // Track payment status
+            $table->enum('status', ['pending', 'shipping', 'delivered', 'canceled', 'refunded'])->default('pending'); // Order status
             $table->string('tracking_number')->nullable();
+            $table->decimal('discount', 10, 2)->nullable(); // Field for discounts
             $table->timestamps(); // Timestamps for created_at and updated_at
         });
     }

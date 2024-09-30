@@ -61,7 +61,8 @@
     
         <div class="dropdown-cart-action mt-2">
             <a href="{{ route('business.viewcart', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}" class="btn btn-outline-primary-2">View Cart</a>
-            <button wire:click="checkout" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></button>
+            <a href="{{ route('business.checkout', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}" class="btn btn-outline-primary-2">Checkout</a>
+            {{-- <button wire:click="checkout" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></button> --}}
         </div><!-- End .dropdown-cart-action -->
         @endif
     </div><!-- End .dropdown-menu -->

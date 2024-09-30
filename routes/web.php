@@ -89,6 +89,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
         Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
         // ->middleware('update.product.slug')
         
+        Route::post('processing-checkout-list/{digit}/{nvxf}', [BusinessController::class, 'checkoutChecker'])->name('business.checkoutChecker');
         Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account');
         Route::post('/avatarupload', [CustomerAuth::class, 'avatarupload'])->name('customer.avatarupload');
         Route::post('/register', [CustomerAuth::class, 'register'])->name('customer.register');

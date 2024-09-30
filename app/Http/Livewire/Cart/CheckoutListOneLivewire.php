@@ -9,6 +9,7 @@ use App\Models\CartItem;
 use App\Models\ShippingCost;
 use App\Models\PaymentMethods;
 use App\Models\CustomerAddress;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -35,6 +36,7 @@ class CheckoutListOneLivewire extends Component
 
     public function mount()
     {
+        $this->digitPaymentStatus = null;
         $this->loadaddresses();
         
         if ($this->addressList->isNotEmpty()) {
@@ -42,13 +44,13 @@ class CheckoutListOneLivewire extends Component
             $this->selectAddress($this->addressSelected);
         }
         
+        $this->loadZoneData();
         $this->loadPayments();
         
         if ($this->paymentList->isNotEmpty()) {
             $this->paymentSelected = $this->paymentList->first()->id;
             $this->selectPayment($this->paymentSelected);        
         }
-        $this->loadZoneData();
 
         $this->loadCartList();
         $this->calculateTotals();
@@ -56,23 +58,61 @@ class CheckoutListOneLivewire extends Component
     
     protected function loadZoneData()
     {
-        // Assuming you have a method to get the zone data based on the address selected
-        $zone = Zone::where('coordinates', $this->getSelectedAddressCoordinates())->first();
-    
-        if ($zone) {
-            $this->digitPaymentStatus = $zone->cod_payment; // Save the COD payment status
-        } else {
-            $this->digitPaymentStatus = null; // No zone found, reset COD payment status
+        // Get the coordinates of the selected address
+        $selectedCoordinates = $this->getSelectedAddressCoordinates();
+        if (!$selectedCoordinates) {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Address coordinates not found.')]);
+            return;
         }
+    
+        $latitude = $selectedCoordinates[0];
+        $longitude = $selectedCoordinates[1];
+    
+        // Get all zones from the database
+        $zones = Zone::all();
+    
+        // Debug: Log the selected coordinates and number of zones
+        Log::info('Selected Coordinates:', ['latitude' => $latitude, 'longitude' => $longitude]);
+        Log::info('Number of zones:', ['count' => $zones->count()]);
+    
+        // Loop through each zone and check if the address is inside the zone
+        foreach ($zones as $zone) {
+            $polygon = json_decode($zone->coordinates, true); // Decode the JSON coordinates
+            
+            // Debug: Log the current zone being checked
+            Log::info('Checking zone:', ['zone_id' => $zone->id, 'coordinates' => $polygon]);
+            
+            if (pointInPolygon($latitude, $longitude, $polygon)) {
+                // Address is inside this zone, set COD payment status
+
+                $this->digitPaymentStatus = $zone->cod_payment;
+                $this->loadPayments();
+                return; // Exit the loop once a matching zone is found
+            }
+        }
+    
+        // If no zone matched, reset COD payment status
+        $this->digitPaymentStatus = null;
+        // Alert if no matching zone found
+        $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('No matching zone found.')]);
     }
+    
 
     private function getSelectedAddressCoordinates()
     {
         // Retrieve coordinates based on the selected address
         $address = CustomerAddress::find($this->addressSelected);
-        
-        // Return coordinates if available, else null
-        return $address ? [$address->latitude, $address->longitude] : null;
+        if($address->latitude && $address->longitude) {
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Address Has Been Updated')]);
+            try {
+                $this->loadPayments();
+                return [$address->latitude, $address->longitude];
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, CODE_3311')]);
+            }
+        } else {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, CODE_3310')]);
+        }
     }
     
     public function loadaddresses() {

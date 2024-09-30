@@ -9,10 +9,11 @@
                 padding: 2rem 2.8rem 2rem;
             }
         </style>
-        <form action="#">
+        <form action="{{ route('business.checkoutChecker', ['locale' => app()->getLocale(), 'digit' => $digitPaymentStatus, 'nvxf' => auth()->guard('customer')->user()->id])}}" method="POST">
+            @csrf
             <div class="row">
                 <div class="col-lg-9">
-                    <h2 class="checkout-title">Select Address:</h2>
+                    <h2 class="checkout-title">Select Address: {{$digitPaymentStatus ?? 'asd'}}</h2>
                     <div class="card card-dashboard px-1" style="border-radius: 16px">
                     <div class="row px-3">
                         @foreach ($addressList as $index => $address)
@@ -49,20 +50,23 @@
                 <h2 class="checkout-title">Select Payment Method:</h2>
                 <div class="card card-dashboard px-1" style="border-radius: 16px">
                     <div class="row px-3">
-                        
+                        {{-- @php
+                            dd($paymentList);
+                        @endphp --}}
                         @foreach ($paymentList as $index => $payment)
                         <div class="col-lg-6 p-0">
                             <div class="card card-dashboard m-1" style="border-radius: 24px">
                                 <div 
                                     class="card address-card {{ $paymentSelected == $payment->id ? 'selected' : '' }}" 
                                     wire:click="selectPayment({{ $payment->id }})"
-                                    style="cursor: pointer; {{ $paymentSelected == $payment->id ? 'border: 2px solid green;' : '' }} border-radius: 24px"
-                                    @if($digitPaymentStatus == 0 && $payment->online == 1) style="opacity: 0.5; pointer-events: none;" @endif
-                                >
+                                    style="cursor: pointer; {{ $paymentSelected == $payment->id ? 'border: 2px solid green;' : '' }} border-radius: 24px;
+                                    {{ $digitPaymentStatus == 0 && $payment->online == 0 ? 'opacity: 0.5; pointer-events: none;' : '' }}
+                                     {{ $digitPaymentStatus == 1 && $payment->online == 1 ? 'opacity: 0.5; pointer-events: none;' : '' }}
+                                     ">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $payment->name }}</h5>
                                         <p class="card-text">Fees: {{ $payment->transaction_fee }}</p>
-                                        <input type="radio" name="payment" value="{{ $payment->id }}" wire:model="paymentSelected" class="d-none" @if($digitPaymentStatus == 0 && $payment->online == 1) disabled @endif>
+                                        <input type="radio" name="payment" value="{{ $payment->id }}" wire:model="paymentSelected" class="d-none" @if($digitPaymentStatus == 0) disabled @endif>
                                     </div>
                                 </div>
                             </div><!-- End .card-dashboard -->
