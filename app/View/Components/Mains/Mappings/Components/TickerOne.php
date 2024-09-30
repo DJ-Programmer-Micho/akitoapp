@@ -23,7 +23,7 @@ class TickerOne extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('mains.mappings.Components.ticker-one',[
+        return view('mains.mappings.components.ticker-one',[
 
         ]);
     }
