@@ -62,6 +62,7 @@
         <!-- Main JS File -->
         <script src="{{asset('main/assets/js/main.js')}}"></script>
         <script src="{{asset('main/assets/js/demos/demo-3.js')}}"></script>
+        <script src="https://www.google.com/recaptcha/api.js?render={{ env('GOOGLE_RECAPTCHA_KEY') }}"></script>
         @stack("ticker")
         @stack("productView")
         @stack("brandSlider")

@@ -42,7 +42,11 @@
                         @enderror
                     </div>
                 </div>
-
+                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                <div class="g-recaptcha" id="feedback-recaptcha" data-sitekey="{!! env('GOOGLE_RECAPTCHA_KEY') !!}"></div>
+                @error('g-recaptcha-response')
+                <span class="danger" style="font-size: 12px">{{__('Please Check reCaptcha')}}</span><br>
+                @enderror
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-outline-primary-2">
                     <span>Update Password</span>

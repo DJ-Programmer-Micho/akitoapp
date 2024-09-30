@@ -18,17 +18,6 @@
     </style>
     <div class="dashboard">
         <div class="container">
-            @if(!$editable)
-            <button type="button" wire:click="editInfo" class="btn btn-outline-primary-2">
-                <span>Edit</span>
-                <i class="icon-long-arrow-right"></i>
-            </button>
-            @else
-            <button type="button" wire:click="updateInfo" class="btn btn-outline-primary-2">
-                <span>Done</span>
-                <i class="icon-long-arrow-right"></i>
-            </button>
-            @endif
             <form id="myForm" action="#" method="">
                 <div class="row custom-row">
                     <div class="col-md-3 col-sm-12">
@@ -103,8 +92,24 @@
                         @enderror
                     </div>
                 </div>
+                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                <div class="g-recaptcha" id="feedback-recaptcha" data-sitekey="{!! env('GOOGLE_RECAPTCHA_KEY') !!}"></div>
+                @error('g-recaptcha-response')
+                <span class="danger" style="font-size: 12px">{{__('Please Check reCaptcha')}}</span><br>
+                @enderror
                 <!-- Password Fields -->
                 <!-- Submit Button -->
+                @if(!$editable)
+                <button type="button" wire:click="editInfo" class="btn btn-outline-primary-2">
+                    <span>Edit</span>
+                    <i class="icon-long-arrow-right"></i>
+                </button>
+                @else
+                <button type="button" wire:click="updateInfo" class="btn btn-outline-primary-2">
+                    <span>Done</span>
+                    <i class="icon-long-arrow-right"></i>
+                </button>
+                @endif
             </form>
             
         </div><!-- End .container -->

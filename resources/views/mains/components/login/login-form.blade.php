@@ -53,6 +53,11 @@
                                   </div>
                                   <a href="#" class="forgot-link">Forgot Your Password?</a>
                                 </div>
+                                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                                <div class="g-recaptcha" id="feedback-recaptcha" data-sitekey="{!! env('GOOGLE_RECAPTCHA_KEY') !!}"></div>
+                                @error('g-recaptcha-response')
+                                <span class="danger" style="font-size: 12px">{{__('Please Check reCaptcha')}}</span><br>
+                                @enderror
                                 <div class="form-check p-0 mb-2">
                                     <input class="" type="checkbox" id="autoSizingCheck">
                                     <label class="form-check-label" for="autoSizingCheck">

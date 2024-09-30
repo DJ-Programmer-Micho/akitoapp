@@ -39,7 +39,7 @@
                             <li><a href="#">Money-back guarantee!</a></li>
                             <li><a href="#">Returns</a></li>
                             <li><a href="#">Shipping</a></li>
-                            <li><a href="#">Terms and conditions</a></li>
+                            <li><a href="{{route('law.terms')}}" target="_blank">Terms and conditions</a></li>
                             <li><a href="#">Privacy Policy</a></li>
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->

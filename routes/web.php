@@ -12,6 +12,7 @@ use App\Http\Middleware\LocalizationMainMiddleware;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\Customer\CustomerAddressController;
+use App\Http\Controllers\LawController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,7 @@ use App\Http\Controllers\Customer\CustomerAddressController;
 //     return view('welcome');
 // });
 Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->name('setLocale');
+
 
 // routes/web.php
 Route::get('/temp-images/{filename}', function ($filename) {
@@ -88,18 +90,21 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
         Route::get('view-cart-list', [BusinessController::class, 'viewcart'])->name('business.viewcart');
         Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
         // ->middleware('update.product.slug')
-        
+
         Route::post('processing-checkout-list/{digit}/{nvxf}', [BusinessController::class, 'checkoutChecker'])->name('business.checkoutChecker');
         Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account');
         Route::post('/avatarupload', [CustomerAuth::class, 'avatarupload'])->name('customer.avatarupload');
         Route::post('/register', [CustomerAuth::class, 'register'])->name('customer.register');
         Route::post('/cust-login', [CustomerAuth::class, 'login'])->name('customer.login');
         Route::post('/cust-logout', [CustomerAuth::class, 'logout'])->name('customer.logout');
-
+        
         Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');
-        Route::post('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
+        Route::get('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
     });
 
+    Route::get('law/terms-conditions', [LawController::class, 'termsCondition'])->name('law.terms');
+    Route::get('law/privacy-policy', [LawController::class, 'privacyPolicy'])->name('law.privacy');
+    
     Route::get('/', function () {
         return redirect()->to('/en', 301);
     });

@@ -113,6 +113,23 @@
                 </div>
             
                 <!-- Submit Button -->
+                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                <div class="g-recaptcha mb-3" id="feedback-recaptcha" data-sitekey="{!! env('GOOGLE_RECAPTCHA_KEY') !!}"></div>
+                @error('g-recaptcha-response')
+                <span class="danger" style="font-size: 12px">{{__('Please Check reCaptcha')}}</span><br>
+                @enderror
+                <div class="form-check">
+                    <input style="margin-left: -1.25rem" type="checkbox" value="" id="terms_conditions">
+                    <label class="form-check-label" for="defaultCheck1">
+                        I have read and agree to <a href="{{route('law.terms')}}" target="_blank" style="text-decoration: underline">Akitu's Term & Condition</a>
+                    </label>
+                  </div>
+                <div class="form-check">
+                    <input style="margin-left: -1.25rem" type="checkbox" value="" id="privacu_policy">
+                    <label class="form-check-label" for="defaultCheck1">
+                        I have read and agree to Akitu's <a href="http://" style="text-decoration: underline">Privacy Policy</a>
+                    </label>
+                  </div>
                 <button type="submit" id="submitButton" class="btn btn-outline-primary-2">
                     <span>Register</span>
                     <i class="icon-long-arrow-right"></i>
