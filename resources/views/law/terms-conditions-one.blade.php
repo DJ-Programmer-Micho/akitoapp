@@ -4,7 +4,7 @@
     body {
         background-color: #ffffff;
         max-width: 100%!important;
-        padding: 21.6pt 21.6pt 21.6pt 21.6pt;
+        padding: 0!important;
     }
     li {
         padding-top: 6pt!important;
