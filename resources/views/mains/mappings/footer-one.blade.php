@@ -6,7 +6,7 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
                         <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" class="footer-logo" width="105" height="25">
-                        <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
+                        <p>Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.</p>
 
                         <div class="widget-call">
                             <i class="icon-phone"></i>
@@ -25,7 +25,7 @@
                             <li><a href="#">Our Services</a></li>
                             <li><a href="#">How to shop on Akito</a></li>
                             <li><a href="faq.html">FAQ</a></li>
-                            <li><a href="contact.html">Contact us</a></li>
+                            {{-- <li><a href="contact.html">Contact us</a></li> --}}
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-6 col-lg-3 -->
