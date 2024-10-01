@@ -16,4 +16,14 @@ class LawController extends Controller
             'terms' => $htmlContent
         ]);
     }
+
+    public function privacyPolicy()
+    {
+        $filePath = public_path('main/law/privacy_policy.html'); // Path to the exported HTML file
+        $htmlContent = file_get_contents($filePath); // Read HTML content
+
+        return view('law.privacy-policy-one', [
+            'terms' => $htmlContent
+        ]);
+    }
 }

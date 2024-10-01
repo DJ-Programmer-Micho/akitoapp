@@ -63,6 +63,28 @@
     text-align: right;
     direction: rtl;
 }
+[lang="ar"] .nav-dir,
+[lang="ku"] .nav-dir{
+    text-align: right;
+    direction: rtl;
+}
+[lang="ar"] .menu .megamenu,
+[lang="ku"] .menu .megamenu{
+    left: 45.5rem;
+}
+[lang="ar"] .widget-collapsible .widget-title a:after,
+[lang="ku"] .widget-collapsible .widget-title a:after {
+    right: unset!important;
+    left: 0.17rem!important;
+}
+[lang="ar"] .widget-collapsible .widget-title a,
+[lang="ku"] .widget-collapsible .widget-title a,
+[lang="ar"] .filter-items-count .filter-item,
+[lang="ku"] .filter-items-count .filter-item{
+    padding-left: 0;
+    padding-right: 0;
+}
+[lang="ku"] 
 .menu>li>a {
     font-size: 20px;
     font-weight: 100;

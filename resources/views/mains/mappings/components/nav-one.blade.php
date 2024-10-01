@@ -1,9 +1,9 @@
 {{--file path: resources/views/mains/mappings/Components/nav-one.blade.php --}}
 <div class="header-bottom sticky-header">
     <div class="container">
-        <div class="header-left">
+        <div class="{{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'header-right' : 'header-left' }}">
             <nav class="main-nav">
-                <ul class="menu sf-arrows">
+                <ul class="menu nav-dir sf-arrows">
                     {{-- <li class="{{ request()->is(app()->getLocale() . '/') || request()->is(app()->getLocale()) ? 'active' : '' }}">
                         <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}">{{ __('Home') }}</a>
                     </li> --}}

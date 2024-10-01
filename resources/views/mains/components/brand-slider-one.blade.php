@@ -1,6 +1,6 @@
 <div class="heading text-center mb-4">
-    <h2 class="title">Brands</h2><!-- End .title -->
-    <p class="title-desc">Today’s deal and more</p><!-- End .title-desc -->
+    <h2 class="title">{{__('Brands')}}</h2><!-- End .title -->
+    <p class="title-desc">{{__('Today’s deal and more')}}</p><!-- End .title-desc -->
 </div><!-- End .heading -->
 
 <!-- Skeleton Loader -->

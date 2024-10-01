@@ -1,11 +1,11 @@
 {{-- aside-filter-one component --}}
 <div class="sidebar sidebar-shop">
     <div class="widget widget-clean">
-        <label>Filters:</label>
+        <label>{{__('Filters:')}}</label>
         @if(request()->is('*/shop'))
-        <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">Clean All</a>
+        <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">{{__('Clean All')}}</a>
         @else
-        <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">Clean All</a>
+        <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">{{__('Clean All')}}</a>
         @endif
     </div><!-- End .widget widget-clean -->
     @if(request()->is('*/shop'))
@@ -14,7 +14,7 @@
     <form id="filtersForm" method="GET" action="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">
     @endif
     {{-- <form id="filtersForm" method="GET" action="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}"> --}}
-    <div class="widget widget-collapsible">
+    <div class="widget widget-collapsible ">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-cat" role="button" aria-expanded="true" aria-controls="widget-cat">
                 {{__('Category')}}
@@ -41,7 +41,7 @@
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-sub_cat" role="button" aria-expanded="true" aria-controls="widget-sub_cat">
-                {{__('Sub Category')}}
+                {{__('Sub-Category')}}
             </a>
         </h3><!-- End .widget-title -->
 
@@ -65,7 +65,7 @@
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-size" role="button" aria-expanded="true" aria-controls="widget-size">
-                Size
+                {{__('Sizes')}}
             </a>
         </h3><!-- End .widget-title -->
 
@@ -89,7 +89,7 @@
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-color" role="button" aria-expanded="true" aria-controls="widget-color">
-                Colors
+                {{__('Colors')}}
             </a>
         </h3><!-- End .widget-title -->
 
@@ -116,7 +116,7 @@
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-capacity" role="button" aria-expanded="true" aria-controls="widget-capacity">
-                Capacity
+                {{__('Capacities')}}
             </a>
         </h3><!-- End .widget-title -->
 
@@ -140,7 +140,7 @@
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-material" role="button" aria-expanded="true" aria-controls="widget-material">
-                Material
+                {{__('Materials')}}
             </a>
         </h3><!-- End .widget-title -->
 
@@ -164,7 +164,7 @@
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-4" role="button" aria-expanded="true" aria-controls="widget-4">
-                Brand
+                {{__('Brands')}}
             </a>
         </h3><!-- End .widget-title -->
 
@@ -188,20 +188,20 @@
     <div class="widget widget-collapsible">
         <h3 class="widget-title">
             <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5">
-                Price
+                {{__('Price Range')}}
             </a>
         </h3><!-- End .widget-title -->
 
         <div class="collapse show" id="widget-price">
             <div class="widget-body">
-                <div id="price-filter">
+                <div id="price-filter nav-dir">
                     <div id="price-slider"></div>
                     <div id="filter-price-range"></div>
                     <input type="hidden" id="min-price" name="min_price" value="{{ request('min_price', $minPrice) }}">
                     <input type="hidden" id="max-price" name="max_price" value="{{ request('max_price', $maxPrice) }}">
                     
                     <!-- Confirm Button -->
-                    <button id="confirm-price-filter" type="button">Confirm</button>
+                    <button id="confirm-price-filter" type="button">{{__('Confirm')}}</button>
                 </div>
             </div><!-- End .widget-body -->
         </div><!-- End .collapse -->

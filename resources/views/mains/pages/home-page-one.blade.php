@@ -52,7 +52,7 @@
     </div><!-- End .container --> --}}
     <x-mains.components.service-view-one />
     <div class="bg-light" style="padding-top: 2rem; padding-bottom: 2rem">
-    <x-mains.components.cta-coupon-one />
+    {{-- <x-mains.components.cta-coupon-one /> --}}
     </div>
 </div>
 @endsection

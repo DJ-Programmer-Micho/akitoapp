@@ -3,7 +3,7 @@
         {{-- Previous Page Link --}}
         <li class="page-item {{ $products->currentPage() == 1 ? 'disabled' : '' }}">
             <a class="page-link page-link-prev" href="{{ $products->currentPage() > 1 ? route('business.productShop', array_merge(request()->query(), ['page' => $products->currentPage() - 1, 'locale' => app()->getLocale()])) : '#' }}" aria-label="Previous" tabindex="-1" aria-disabled="{{ $products->currentPage() == 1 ? 'true' : 'false' }}">
-                <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                <span aria-hidden="true"><i class="icon-long-arrow-{{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'right' : 'left' }},"></i></span>{{__('Prev')}}
             </a>
         </li>
 
@@ -15,12 +15,12 @@
         @endfor
 
         {{-- Total Pages --}}
-        <li class="page-item-total">of {{ $products->lastPage() }}</li>
+        <li class="page-item-total">{{__('of')}} {{ $products->lastPage() }}</li>
 
         {{-- Next Page Link --}}
         <li class="page-item {{ $products->currentPage() == $products->lastPage() ? 'disabled' : '' }}">
             <a class="page-link page-link-next" href="{{ $products->currentPage() < $products->lastPage() ? route('business.productShop', array_merge(request()->query(), ['page' => $products->currentPage() + 1, 'locale' => app()->getLocale()])) : '#' }}" aria-label="Next">
-                Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                {{__('Next')}} <span aria-hidden="true"><i class="icon-long-arrow-{{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'left' : 'right' }}"></i></span>
             </a>
         </li>
     </ul>

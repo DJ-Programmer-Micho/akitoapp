@@ -1,6 +1,6 @@
 <div class="megamenu demo">
 
-        <h4 class="py-5">{{__('Categories')}}</h4><!-- End .menu-title -->
+        <h4 class="py-5 text-center">{{__('Categories')}}</h4><!-- End .menu-title -->
         <div class="row">
             @foreach($categories as $category)
             <div class="col-6 col-sm-4 col-md-3 col-lg-2 mt-3">

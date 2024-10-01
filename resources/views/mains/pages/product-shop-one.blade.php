@@ -5,7 +5,7 @@
     <x-mains.components.shops.nav-one />
     <div class="page-content">
         <div class="container">
-            <div class="row">
+            <div class="row nav-dir">
                 <div class="col-lg-9">
                     <x-mains.components.shops.toolbox-one :products="$products" />
                     <x-mains.components.shops.product-show-one :products="$products" :grid="$grid"/>

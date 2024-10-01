@@ -1,15 +1,15 @@
 <div class="toolbox">
     <div class="toolbox-left">
         <div class="toolbox-info">
-            Showing <span>{{ $products->count() }} of {{ $products->total() }}</span> Products
+            {{__('Showing')}} <span>{{ $products->count() }} {{__('of')}} {{ $products->total() }}</span> {{__('Products')}}
         </div><!-- End .toolbox-info -->
     </div><!-- End .toolbox-left -->
 
     {{-- tool box component --}}
     <div class="toolbox-right">
         <div class="toolbox-sort">
-            <label for="sortby">Sort by:</label>
-            <div class="select-custom">
+            <label for="sortby">{{__('Sort by:')}}</label>
+            <div class="select-custom mx-1">
                 @if(request()->is('*/shop'))
                     <form method="GET" action="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">
                 @else
@@ -17,11 +17,11 @@
                 @endif
                 {{-- <form method="GET" action="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}"> --}}
                     <select name="sortby" class="form-control" onchange="this.form.submit()">
-                    <option value="priority" {{ request()->query('sortby') == 'priority' ? 'selected' : '' }}>Default</option>
-                    <option value="price_asc" {{ request()->query('sortby') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
-                    <option value="price_desc" {{ request()->query('sortby') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
-                    <option value="created_at_desc" {{ request()->query('sortby') == 'created_at_desc' ? 'selected' : '' }}>Newest</option>
-                    <option value="created_at_asc" {{ request()->query('sortby') == 'created_at_asc' ? 'selected' : '' }}>Oldest</option>
+                    <option value="priority" {{ request()->query('sortby') == 'priority' ? 'selected' : '' }}>{{__('Default')}}</option>
+                    <option value="price_asc" {{ request()->query('sortby') == 'price_asc' ? 'selected' : '' }}>{{__('Price: Low to High')}}</option>
+                    <option value="price_desc" {{ request()->query('sortby') == 'price_desc' ? 'selected' : '' }}>{{__('Price: High to Low')}}</option>
+                    <option value="created_at_desc" {{ request()->query('sortby') == 'created_at_desc' ? 'selected' : '' }}>{{__('Newest')}}</option>
+                    <option value="created_at_asc" {{ request()->query('sortby') == 'created_at_asc' ? 'selected' : '' }}>{{__('Oldest')}}</option>
                 </select>
                 </form>
             </div>
@@ -77,9 +77,9 @@
         </a> --}}
 
         @if(request()->is('*/shop'))
-            <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '1', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '4' ? 'active' : '' }}">
+            <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '1', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '1' ? 'active' : '' }}">
         @else
-            <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale(), 'grid' => '1', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '4' ? 'active' : '' }}">
+            <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale(), 'grid' => '1', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '1' ? 'active' : '' }}">
         @endif
         {{-- <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'grid' => '1', 'sortby' => request()->query('sortby')]) }}" class="btn-layout {{ request()->query('grid') == '1' ? 'active' : '' }}"> --}}
             <svg width="16" height="10">

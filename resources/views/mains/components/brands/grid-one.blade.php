@@ -1,5 +1,5 @@
 <div class="megamenu demo">
-    <h4 class="py-1">{{ __('Brands') }}</h4><!-- End .menu-title -->
+    <h4 class="py-1 text-center">{{ __('Brands') }}</h4><!-- End .menu-title -->
     <div class="row">
         @foreach($brands as $brand)
         <div class="col-6 col-sm-4 col-md-3 col-lg-2 mt-1">

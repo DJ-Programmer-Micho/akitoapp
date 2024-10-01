@@ -29,7 +29,7 @@
             @if(request()->is('*/shop'))
             <li class="breadcrumb-item active" aria-current="page">{{__('Products')}}</li>
             @else
-            <li class="breadcrumb-item active" aria-current="page">{{__('Items')}}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{__('Parts')}}</li>
             @endif
         </ol>
     </div><!-- End .container -->
