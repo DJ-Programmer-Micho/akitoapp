@@ -99,7 +99,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
         Route::post('/cust-logout', [CustomerAuth::class, 'logout'])->name('customer.logout');
         
         Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');
-        Route::get('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
+        Route::post('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
     });
 
     Route::get('law/terms-conditions', [LawController::class, 'termsCondition'])->name('law.terms');

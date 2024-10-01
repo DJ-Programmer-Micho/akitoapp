@@ -72,7 +72,7 @@
                             <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
                         </div><!-- .End .tab-pane --> --}}
                         <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-                            @livewire('account.cart-list-one-livewire')
+                            {{-- @livewire('account.cart-list-one-livewire') --}}
                         </div><!-- .End .tab-pane -->
 
 

@@ -2,26 +2,26 @@
     <ul class="nav nav-pills justify-content-center" role="tablist">
         @if ($productDetail->information->informationTranslation->description)
         <li class="nav-item">
-            <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">Description</a>
+            <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">{{__('Description')}}</a>
         </li>
         @endif
         @if ($productDetail->information->informationTranslation->addition)
         <li class="nav-item">
-            <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab" role="tab" aria-controls="product-info-tab" aria-selected="false">Additional information</a>
+            <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab" role="tab" aria-controls="product-info-tab" aria-selected="false">{{__('Additional Information')}}</a>
         </li>
         @endif
         @if ($productDetail->information->informationTranslation->shipping)
         <li class="nav-item">
-            <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
+            <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">{{__('Shipping & Returns')}}</a>
         </li>
         @endif
         @if(!$productDetail->information->informationTranslation->question_and_answer)
         <li class="nav-item">
-            <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">FAQs</a>
+            <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">{{__('FAQs')}}</a>
         </li>
         @endif
     </ul>
-    <div class="tab-content">
+    <div class="tab-content nav-dir">
         @if ($productDetail->information->informationTranslation->description)
         <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
             <div class="product-desc-content">

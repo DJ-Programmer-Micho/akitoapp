@@ -77,6 +77,11 @@
     right: unset!important;
     left: 0.17rem!important;
 }
+[lang="ar"] .product-details .product-content p,
+[lang="ku"] .product-details .product-content p {
+    text-align: right;
+    direction: rtl;
+}
 [lang="ar"] .widget-collapsible .widget-title a,
 [lang="ku"] .widget-collapsible .widget-title a,
 [lang="ar"] .filter-items-count .filter-item,
@@ -178,4 +183,11 @@
 
 .social-icons {
     padding: 10px;
+}
+
+
+[lang="ar"] .detail-icon .heart-icon,
+[lang="ku"] .detail-icon .heart-icon {
+    right: unset;
+    left: 1.5rem;
 }
