@@ -123,10 +123,12 @@
                                 </tr><!-- End .summary-total -->
                                 <tr class="summary-total-f">
                                     <td>Shipping:</td>
+                                    <input type="hidden" name="shipping_amount" value="{{$deliveryCharge}}">
                                     <td>${{$deliveryCharge}}</td>
                                 </tr><!-- End .summary-total -->
                                 <tr class="summary-total-f">
                                     <td>Total:</td>
+                                    <input type="hidden" name="total_amount" value="{{$totalListPrice + $transactionFee + $deliveryCharge}}">
                                     <td><b>${{ $totalListPrice + $transactionFee + $deliveryCharge}}</b></td>
                                 </tr><!-- End .summary-total -->
                             </tbody>

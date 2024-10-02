@@ -70,17 +70,9 @@ class CheckoutListOneLivewire extends Component
     
         // Get all zones from the database
         $zones = Zone::all();
-    
-        // Debug: Log the selected coordinates and number of zones
-        Log::info('Selected Coordinates:', ['latitude' => $latitude, 'longitude' => $longitude]);
-        Log::info('Number of zones:', ['count' => $zones->count()]);
-    
         // Loop through each zone and check if the address is inside the zone
         foreach ($zones as $zone) {
             $polygon = json_decode($zone->coordinates, true); // Decode the JSON coordinates
-            
-            // Debug: Log the current zone being checked
-            Log::info('Checking zone:', ['zone_id' => $zone->id, 'coordinates' => $polygon]);
             
             if (pointInPolygon($latitude, $longitude, $polygon)) {
                 // Address is inside this zone, set COD payment status

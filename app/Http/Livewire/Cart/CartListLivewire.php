@@ -35,6 +35,23 @@ class CartListLivewire extends Component
             ->get()
             ->toArray();
     
+        foreach ($this->cartItems as $index => $cartItem) {
+            $availableQty = $cartItem['product']['variation']['stock'] ?? 0;
+    
+            if ($cartItem['quantity'] > $availableQty) {
+                if ($availableQty > 0) {
+                    // Reduce the quantity in the cart to match available stock
+                    CartItem::where('id', $cartItem['id'])->update(['quantity' => $availableQty]);
+                    $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => __('Item QTY Removed')]);
+                } else {
+                    // If the product is out of stock, remove it from the cart
+                    CartItem::where('id', $cartItem['id'])->delete();
+                    unset($this->cartItems[$index]);
+                    $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => __('Item Removed From Cart')]);
+                }
+            }            
+        }
+        
         $this->calculateTotals(); // Calculate totals after loading cart items
     }
     
@@ -42,54 +59,64 @@ class CartListLivewire extends Component
     public function addToCartList($productId)
     {
         try {
-        $product = Product::findOrFail($productId);
+            $product = Product::findOrFail($productId);
 
-        // Check if the product is already in the cart
-        $cartItem = CartItem::where('customer_id', Auth::guard('customer')->id())
-            ->where('product_id', $product->id)
-            ->first();
+            $availableQty = $product->variation->stock ?? 0; // Check stock availability
 
-        if ($cartItem) {
-            // If it exists, increase the quantity
-            $cartItem->quantity += 1;
-            $cartItem->save();
-        } else {
-            // Add new item to the cart
-            CartItem::create([
-                'customer_id' => Auth::guard('customer')->id(),
-                'product_id' => $product->id,
-                'quantity' => 1,
-            ]);
-        }
+            // Check if the product is already in the cart
+            $cartItem = CartItem::where('customer_id', Auth::guard('customer')->id())
+                ->where('product_id', $product->id)
+                ->first();
 
-        // Refresh the cart
-        $this->loadCartList();
-        $this->emit('cartUpdated'); // Emit event to update other components, if needed
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Item Added To Cart')]);
+            if ($cartItem) {
+                if ($cartItem->quantity + 1 > $availableQty) {
+                    $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => __('Insufficient Stock')]);
+                } else {
+                    $cartItem->quantity += 1;
+                    $cartItem->save();
+                }
+            } else {
+                if (1 > $availableQty) {
+                    $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => __('Insufficient Stock')]);
+                } else {
+                    CartItem::create([
+                        'customer_id' => Auth::guard('customer')->id(),
+                        'product_id' => $product->id,
+                        'quantity' => 1,
+                    ]);
+                }
+            }
+
+            // Refresh the cart
+            $this->loadCartList();
+            $this->emit('cartUpdated'); // Emit event to update other components, if needed
+            // $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Item Added To Cart')]);
+
         } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong')]);
+            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Something Went Wrong')]);
         }
-
     }
 
     public function updateQuantity($cartItemId, $quantity)
     {
         try {
-
             $cartItem = CartItem::findOrFail($cartItemId);
-            if ($quantity > 0) {
+            $availableQty = $cartItem->product->variation->stock ?? 0; // Check available stock
+
+            if ($quantity > $availableQty) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => __('Insufficient Stock')]);
+            } elseif ($quantity > 0) {
                 $cartItem->update(['quantity' => $quantity]);
+                $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Item Quantity Updated')]);
             } else {
                 $this->removeFromCartList($cartItemId);
             }
-            
+
             $this->loadCartList();
             $this->emit('cartUpdated'); // Emit event to update other components, if needed
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Item Quantity Updated')]);
         } catch (\Exception $e) {
-            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong')]);
+            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Something Went Wrong')]);
         }
-
     }
 
     public function removeFromCartList($cartItemId)

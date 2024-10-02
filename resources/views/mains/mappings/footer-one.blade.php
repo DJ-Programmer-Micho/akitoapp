@@ -21,10 +21,11 @@
                         <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
 
                         <ul class="widget-list">
-                            <li><a href="about.html">About Akito</a></li>
+                            <li><a href="{{route('business.aboutus',['locale' => app()->getLocale()])}}">About Us</a></li>
+                            <li><a href="{{route('business.contactus',['locale' => app()->getLocale()])}}">Contact Us</a></li>
                             <li><a href="#">Our Services</a></li>
-                            <li><a href="#">How to shop on Akito</a></li>
-                            <li><a href="faq.html">FAQ</a></li>
+                            {{-- <li><a href="#">How to shop on Akito</a></li> --}}
+                            <li><a href="{{route('business.faq',['locale' => app()->getLocale()])}}">FAQ</a></li>
                             {{-- <li><a href="contact.html">Contact us</a></li> --}}
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->

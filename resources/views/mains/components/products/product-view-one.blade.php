@@ -16,12 +16,16 @@
         .owl-loaded {
             opacity: 1;
         }
+
+        .hover-text:hover {
+            color: whitel
+        }
     </style>
     <div class="row">
         <div class="col-md-6">
             <div class="product-gallery">
                 <!-- Main Image with Fancybox -->
-                <div class="product-main-image mb-3">
+                <div class="product-main-image mb-3 image-preview-slider">
                     <a id="main-image-fancybox" data-fancybox="gallery" href="{{ app('cloudfront').$productDetail->variation->images[0]->image_path ?? 'default.jpg' }}">
                         <img id="product-zoom" src="{{ app('cloudfront').$productDetail->variation->images[0]->image_path ?? 'default.jpg' }}" alt="product image">
                     </a>
@@ -90,7 +94,7 @@
 
 
                 <div class="product-content">
-                    <p>{{$productDetail->productTranslation->description}}</p>
+                    <p style="font-size: 14pt">{{$productDetail->productTranslation->description}}</p>
                 </div><!-- End .product-content -->
 
                 @if ($productDetail->variation->colors->count() > 1)
@@ -141,15 +145,20 @@
                 <div class="details-filter-row details-row-size nav-dir">
                     <label for="qty">{{__('Qty:')}}</label>
                     <div class="product-details-quantity mx-1">
-                        <input type="number" id="qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
+                        <input type="number" id="qty" class="form-control" value="1" min="1" max="{{$productDetail->variation->stock}}" step="1" data-decimals="0" required>
                     </div><!-- End .product-details-quantity -->
                 </div><!-- End .details-filter-row -->
 
                 <div class="product-details-action mx-1 nav-dir">
-                    <button type="button" onclick="addToCartDetail({{ $productDetail->id }})" class="btn btn-product btn-cart">
-                        <span>{{__('add to cart')}}</span>
+                    @if ($productDetail->variation->stock)
+                    <button type="button" onclick="addToCartDetail({{ $productDetail->id }})" class="btn hover-text btn-product btn-cart">
+                     {{__('add to cart')}}
                     </button>
-
+                    @else
+                    <button type="button" class="btn btn-primary text-white">
+                        <i class="fa-solid fa-cubes mr-1"></i> {{__('Out Of Stock')}}
+                    </button>
+                    @endif
                     <div class="details-action-wrapper detail-icon">
                         @guest('customer')
                         <div class="heart-icon">

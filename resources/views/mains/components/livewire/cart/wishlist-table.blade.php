@@ -30,7 +30,13 @@
                         </div><!-- End .product -->
                     </td>
                     <td class="price-col">${{ !empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price'] }}</td>
-                    <td class="stock-col"><span class="in-stock">In stock</span></td>
+                    <td class="stock-col">
+                        @if ($item['product']['variation']['stock'])
+                        <span class="text-success">In Stock</span>
+                        @else
+                        <span class="text-danger">Out Of Stock</span>
+                        @endif
+                    </td>
                     <td class="action-col">
                         <button class="btn btn-block btn-outline-primary-2"  wire:click="singleAddWishlist({{$item['product']['id']}})"><i class="icon-cart-plus"></i>Add to Cart</button>
                     </td>

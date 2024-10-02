@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('address'); // Customer's address
             $table->string('zip_code'); // Customer's zip code
             $table->string('phone_number'); // Customer's phone number
+            $table->decimal('shipping_amount', 10, 2); // Total amount for the order shipping
             $table->decimal('total_amount', 10, 2); // Total amount for the order
             $table->string('payment_method'); // Payment method (e.g., COD, digital payment)
             $table->enum('payment_status', ['pending', 'successful', 'failed'])->default('pending'); // Track payment status

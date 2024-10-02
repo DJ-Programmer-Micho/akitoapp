@@ -8,7 +8,7 @@
                             <a class="nav-link" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                            <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">My Orders</a>
                         </li>
                         <li class="nav-item">
                             {{-- <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a> --}}
@@ -72,6 +72,8 @@
                             <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
                         </div><!-- .End .tab-pane --> --}}
                         <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                            @livewire('account.orders-list-livewire')
+
                             {{-- @livewire('account.cart-list-one-livewire') --}}
                         </div><!-- .End .tab-pane -->
 

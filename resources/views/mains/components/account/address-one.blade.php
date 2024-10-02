@@ -9,10 +9,13 @@
             <div class="card-body">
                 <h3 class="card-title">{{$address->building_name ?? $index +1 }} </h3><!-- End .card-title -->
 
-                <p>{{$address->phone_number}}<br>
+                <p>{{$address->phone_number}}</p>
                     <div class="d-flex">
-                        <a href="#">Edit <i class="icon-edit"></i></a></p>
-                        <a href="#" class="mx-3 text-danger">Remove <i class="fa-regular fa-trash-can"></i></a></p>
+                        <a href="#">Edit <i class="icon-edit"></i>
+                        </a>
+                    </p>
+                        <a href="#" class="mx-3 text-danger">Remove <i class="fa-regular fa-trash-can"></i></a>
+                    </p>
                     </div>
             </div><!-- End .card-body -->
         </div><!-- End .card-dashboard -->

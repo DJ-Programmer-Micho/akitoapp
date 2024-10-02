@@ -80,6 +80,9 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
         Route::get('/', [BusinessController::class, 'home'])->name('business.home');
         Route::get('account', [BusinessController::class, 'account'])->name('business.account');        
+        Route::get('about-us', [BusinessController::class, 'aboutus'])->name('business.aboutus');
+        Route::get('contact-us', [BusinessController::class, 'contactus'])->name('business.contactus');
+        Route::get('faq', [BusinessController::class, 'faq'])->name('business.faq');
         Route::get('register', [BusinessController::class, 'register'])->name('business.register');
         Route::get('shop', [BusinessController::class, 'productShop'])->name('business.productShop');
         Route::get('categories', [BusinessController::class, 'productCategory'])->name('business.category');

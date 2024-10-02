@@ -18,6 +18,7 @@ use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\PaymentMethods;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
@@ -197,6 +198,23 @@ class BusinessController extends Controller
         ];
     }
     
+    public function aboutus(){
+        return view('mains.pages.aboutus-page-one', [
+
+        ]);
+    }
+    public function contactus(){
+        return view('mains.pages.contactus-page-one', [
+
+        ]);
+    }
+    
+    public function faq(){
+        return view('mains.pages.faq-page-one', [
+
+        ]);
+    }
+
     public function productCategory(){
         return view('mains.pages.category-page-one', [
 
@@ -698,13 +716,15 @@ class BusinessController extends Controller
                     try {
                         //code...
                         $validatedData = $request->validate([
+                            'shipping_amount' => 'required|string|max:255',
+                            'total_amount' => 'required|string|max:255',
                             'address' => 'required|string|max:255',
                             'payment' => 'required|string|max:255',
                         ]);
 
                         $customerP = Auth::guard('customer')->user()->customer_profile;
                         $customerA = Auth::guard('customer')->user()->customer_addresses->where('id',$validatedData['address'])->first();
-                        
+                        $paymentType = PaymentMethods::where('id', $validatedData['payment'])->first()->name;
                         $cartItems = CartItem::with('product','product.variation','product.productTranslation')->where('customer_id',$customer->id)->get();
                         $random_number = Str::random(6);
 
@@ -719,12 +739,13 @@ class BusinessController extends Controller
                             'address' => $customerA->address,
                             'zip_code' => $customerA->zip_code,
                             'phone_number' => $customerA->phone_number,
-                            'payment_method' => $validatedData['payment'],
+                            'payment_method' => $paymentType,
                             'payment_status' => 'pending',
                             'status' => 'pending', 
                             'tracking_number' => $random_number,
                             'discount' => null, 
-                            'total_amount' => 0, // ***********************
+                            'shipping_amount' => $validatedData['shipping_amount'], // ***********************
+                            'total_amount' => $validatedData['total_amount'] // ***********************
                         ]);
 
                         foreach ($cartItems as $item) {
@@ -744,6 +765,7 @@ class BusinessController extends Controller
                     return 'Cash On Delivery';
                     } catch (\Exception $e) {
                         DB::rollBack();
+                        dd($e);
                     }
                 } else {
                     return 'PAYMENT = Digital Payment';

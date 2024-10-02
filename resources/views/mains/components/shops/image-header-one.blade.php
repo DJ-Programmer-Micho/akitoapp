@@ -2,6 +2,12 @@
     <div class="container">
         @if(request()->is('*/shop'))
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Shop')}}</span></h1>
+        @elseif(request()->is('*/about-us'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('About Us')}}</span></h1>
+        @elseif(request()->is('*/contact-us'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Contact Us')}}</span></h1>
+        @elseif(request()->is('*/faq'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('F.A.Qs')}}</span></h1>
         @else
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Spare Parts')}}</span></h1>
         @endif

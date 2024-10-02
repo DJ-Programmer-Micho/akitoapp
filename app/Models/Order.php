@@ -18,6 +18,7 @@ class Order extends Model
         'address',
         'zip_code',
         'phone_number',
+        'shipping_amount',
         'total_amount',
         'payment_status',
         'payment_method',
@@ -29,4 +30,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    // public function calculateTotalAmount()
+    // {
+    //     return $this->orderItems->sum('total');
+    // }
 }
