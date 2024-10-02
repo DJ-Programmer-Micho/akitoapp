@@ -9,11 +9,9 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
-
 class CustomerAddressController extends Controller
 {
-
-    public function index(){
+    public function index() {
         $customer = Auth::guard('customer')->user();
         $zones = Zone::all();
         return view('mains.components.account.address.index', [
@@ -29,8 +27,7 @@ class CustomerAddressController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         // try {
             //code...
             // Check if the customer already has 5 addresses
@@ -88,8 +85,7 @@ class CustomerAddressController extends Controller
         // }
     }
     
-    private function checkZoneAvailability($latitude, $longitude)
-    {
+    private function checkZoneAvailability($latitude, $longitude) {
         // Get all zones from the database
         $zones = DB::table('zones')->get();
     
@@ -117,8 +113,6 @@ class CustomerAddressController extends Controller
         return false; // Address is not within any zone
     }
     
-    
-    
     private function isPointInPolygon($lat, $lng, $polygon)
     {
         $numPoints = count($polygon);
@@ -138,7 +132,4 @@ class CustomerAddressController extends Controller
     
         return $inside;
     }
-    
-    
-    
 }

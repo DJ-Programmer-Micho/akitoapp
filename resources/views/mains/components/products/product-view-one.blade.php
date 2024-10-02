@@ -51,7 +51,21 @@
 
         <div class="col-md-6">
             <div class="product-details">
-                <h1 class="product-title">{{$productDetail->productTranslation->name}}</h1><!-- End .product-title -->
+                <div class="nav-dir">
+                    <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $productDetail->brand->id]) }}">
+                        <img src="{{ app('cloudfront').$productDetail->brand->image ?? 'default.jpg'}}" alt="{{$productDetail->brand->brandTranslation->name}}" width="80">
+                    </a>
+                </div>
+                <h6 class="nav-dir">
+                    <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $productDetail->brand->id]) }}">
+                        {{$productDetail->brand->brandTranslation->name}}
+                    </a>
+                    /
+                    <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $productDetail->categories[0]->id]) }}">
+                        {{$productDetail->categories[0]->categoryTranslation->name}}
+                    </a>
+                </h6><!-- End .product-title -->
+                <h1 class="product-title px-0"><b>{{$productDetail->productTranslation->name}}</b></h1><!-- End .product-title -->
 
                 {{-- <div class="ratings-container">
                     <div class="ratings">
@@ -96,14 +110,15 @@
                 @if ($productDetail->variation->sizes->count() >= 1)
                 <div class="details-filter-row details-row-size nav-dir">
                     <label for="size">{{__('Size:')}}</label>
-                    <div class="select-custom mx-1">
+                    <p class="mx-1"><b>{{$productDetail->variation->sizes->first()->variationSizeTranslation->name}}</b></p>
+                    {{-- <div class="select-custom mx-1">
                         <select name="size" id="size" class="form-control">
                             <option value="#" selected="selected">{{__('Select a size')}}</option>
                             @foreach ($productDetail->variation->sizes as $size)
                             <option value="{{$size->id}}">{{$size->variationSizeTranslation->name}}</option>
                             @endforeach
                         </select>
-                    </div><!-- End .select-custom -->
+                    </div><!-- End .select-custom --> --}}
 
                     {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
                 </div><!-- End .details-filter-row -->
@@ -111,15 +126,15 @@
                 @if ($productDetail->variation->capacities->count() >= 1)
                 <div class="details-filter-row details-row-size nav-dir">
                     <label for="size">{{__('Capacity:')}}</label>
-                    <div class="select-custom mx-1">
+                    <p class="mx-1"><b>{{$productDetail->variation->capacities->first()->variationCapacityTranslation->name}}</b></p>
+                    {{-- <div class="select-custom mx-1">
                         <select name="capacity" id="capacity" class="form-control">
                             <option value="#" selected="selected">{{__('Select a Capacity')}}</option>
                             @foreach ($productDetail->variation->capacities as $capacity)
                             <option value="{{$capacity->id}}">{{$capacity->variationCapacityTranslation->name}}</option>
                             @endforeach
                         </select>
-                    </div><!-- End .select-custom -->
-
+                    </div><!-- End .select-custom --> --}}
                     {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
                 </div><!-- End .details-filter-row -->
                 @endif
@@ -131,7 +146,9 @@
                 </div><!-- End .details-filter-row -->
 
                 <div class="product-details-action mx-1 nav-dir">
-                    <a href="#" class="btn-product btn-cart"><span>{{__('add to cart')}}</span></a>
+                    <button type="button" onclick="addToCartDetail({{ $productDetail->id }})" class="btn btn-product btn-cart">
+                        <span>{{__('add to cart')}}</span>
+                    </button>
 
                     <div class="details-action-wrapper detail-icon">
                         @guest('customer')
@@ -213,5 +230,10 @@ $(document).ready(function(){
         ]
     });
 });
+
+function addToCartDetail(productId) {
+    const qty = document.getElementById('qty').value;
+    Livewire.emit('addToCartDetail', productId, qty);
+}
 </script>
 @endpush

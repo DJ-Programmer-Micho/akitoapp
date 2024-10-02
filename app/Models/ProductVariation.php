@@ -14,6 +14,7 @@ class ProductVariation extends Model
         'keywords',
         'price',
         'discount',
+        'stock',
         'on_stock',
         'on_sale',
         'featured',
@@ -29,6 +30,4 @@ class ProductVariation extends Model
     public function sizes() { return $this->belongsToMany(VariationSize::class, 'product_variation_size'); }
     public function materials() { return $this->belongsToMany(VariationMaterial::class, 'product_variation_material'); }
     public function capacities() { return $this->belongsToMany(VariationCapacity::class, 'product_variation_capacity'); }
-
-
 }

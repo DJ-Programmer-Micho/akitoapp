@@ -27,7 +27,7 @@
                         </button>
                         @endguest
                         @auth('customer')
-                        <button type="button" class="btn-product btn-cart" onclick="addToCart({{ $product->id }})">
+                        <button type="button" class="btn btn-product btn-cart" onclick="addToCart({{ $product->id }})">
                             <span>add to cart</span>
                         </button>
                         @endauth

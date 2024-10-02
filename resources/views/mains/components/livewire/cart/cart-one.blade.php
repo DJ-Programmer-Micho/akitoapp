@@ -71,7 +71,6 @@
 
 <script>
     function addToCart(productId) {
-        console.log('asd');
         Livewire.emit('addToCart', productId);
     }
 </script>

@@ -13,7 +13,7 @@ class CartLivewire extends Component
     public $totalQuantity = 0;
     public $totalPrice = 0;
 
-    protected $listeners = ['addToCart','cartUpdated' => 'loadCart'];
+    protected $listeners = ['addToCart','addToCartDetail','cartUpdated' => 'loadCart'];
 
     public function mount()
     {
@@ -68,7 +68,38 @@ class CartLivewire extends Component
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong')]);
         }
+    }
 
+    public function addToCartDetail($productId, $qty)
+    {
+        try {
+            $product = Product::findOrFail($productId);
+    
+            // Check if the product is already in the cart
+            $cartItem = CartItem::where('customer_id', Auth::guard('customer')->id())
+                ->where('product_id', $product->id)
+                ->first();
+    
+            if ($cartItem) {
+                // If it exists, increase the quantity by the value of $qty
+                $cartItem->quantity += $qty; // Increment by the passed qty
+                $cartItem->save();
+            } else {
+                // Add new item to the cart
+                CartItem::create([
+                    'customer_id' => Auth::guard('customer')->id(),
+                    'product_id' => $product->id,
+                    'quantity' => $qty,
+                ]);
+            }
+    
+            // Refresh the cart
+            $this->loadCart();
+            $this->emit('cartListUpdated'); // Emit event to update other components, if needed
+            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Item Added To Cart')]);
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong')]);
+        }
     }
 
     public function updateQuantity($cartItemId, $quantity)

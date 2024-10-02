@@ -220,8 +220,14 @@ class BusinessController extends Controller
             'variation.sizes.variationSizeTranslation' => function ($query) use ($locale) {
                 $query->where('locale', $locale);
             },
-            'variation.materials',
-            'variation.capacities',
+            // 'variation.materials',
+            'variation.materials.variationMaterialTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
+            // 'variation.capacities',
+            'variation.capacities.variationCapacityTranslation' => function ($query) use ($locale) {
+                $query->where('locale', $locale);
+            },
             'variation.images'=> function ($query) {
                 $query->orderBy('priority'); // Order images by priority
             },
