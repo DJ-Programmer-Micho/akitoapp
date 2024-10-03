@@ -35,7 +35,7 @@ class CartListLivewire extends Component
             ->get()
             ->toArray();
     
-        foreach ($this->cartItems as $index => $cartItem) {
+        foreach ($this->cartListItems as $index => $cartItem) {
             $availableQty = $cartItem['product']['variation']['stock'] ?? 0;
     
             if ($cartItem['quantity'] > $availableQty) {

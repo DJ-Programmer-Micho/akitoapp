@@ -41,7 +41,7 @@
                             <li><a href="#">Returns</a></li>
                             <li><a href="#">Shipping</a></li>
                             <li><a href="{{route('law.terms')}}" target="_blank">Terms and conditions</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="{{route('law.privacy')}}" target="_blank">">Privacy Policy</a></li>
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-6 col-lg-3 -->
@@ -51,11 +51,17 @@
                         <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
 
                         <ul class="widget-list">
-                            <li><a href="#">Sign In</a></li>
-                            <li><a href="cart.html">View Cart</a></li>
-                            <li><a href="#">My Wishlist</a></li>
+                            @guest('customer')
+                            <li><a href="#signin-modal" data-toggle="modal">Login</a></li>
+                            <li><a href="{{ route('business.register', ['locale' => app()->getLocale()]) }}">Register</a></li>
+                            @endguest
+                            @auth('customer')
+                            <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">Dashboard</a></li>
+                            <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">View Cart</a></li>
+                            <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">My Wishlist</a></li>
                             <li><a href="#">Track My Order</a></li>
                             <li><a href="#">Help</a></li>
+                            @endauth
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-6 col-lg-3 -->
@@ -65,7 +71,7 @@
 
     <div class="footer-bottom">
         <div class="container">
-            <p class="footer-copyright" style="color: white">Copyright © 2024 Akito Store. All Rights Reserved.</p><!-- End .footer-copyright -->
+            <p class="footer-copyright" style="color: rgb(0, 0, 0)">Copyright © 2024 Akitu-co Store. All Rights Reserved.</p><!-- End .footer-copyright -->
             <figure class="footer-payments">
                 <img src="{{ asset('lang/payments.png')}}" alt="Payment methods" width="272" height="20">
             </figure><!-- End .footer-payments -->
