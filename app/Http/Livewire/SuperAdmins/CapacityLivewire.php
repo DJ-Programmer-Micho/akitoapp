@@ -4,6 +4,7 @@ namespace App\Http\Livewire\SuperAdmins;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Validation\Rule;
 use App\Models\VariationCapacity;
 use App\Models\VariationCapacityTranslation;
 
@@ -68,7 +69,21 @@ class CapacityLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['capacities.' . $locale] = 'required|string|min:1';
+            $rules['capacities.' . $locale] = [
+                'required',
+                'string',
+                'min:1',
+                Rule::unique('capacity_translations', 'name')
+                    ->where('locale', $locale)
+            ];
+
+            $rules['capacities.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->capacities[$locale] === $this->capacities[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['code'] = ['required'];
         $rules['priority'] = ['required'];
@@ -80,7 +95,23 @@ class CapacityLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['capacitiesEdit.' . $locale] = 'required|string|min:1';
+            $rules['capacitiesEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:1',
+                Rule::unique('variation_capacity_translations', 'name')
+                    ->where('locale', $locale)
+                    ->ignore($this->capacity_update->id, 'variation_capacity_id')
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['capacitiesEdit.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->capacitiesEdit[$locale] === $this->capacitiesEdit[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['codeEdit'] = ['required'];
         $rules['priorityEdit'] = ['required'];

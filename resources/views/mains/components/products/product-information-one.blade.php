@@ -1,4 +1,4 @@
-<div class="product-details-tab">
+<div class="product-details-tab custom-table-info">
     <ul class="nav nav-pills justify-content-center" role="tablist">
         @if ($productDetail->information->informationTranslation->description)
         <li class="nav-item">
@@ -15,7 +15,7 @@
             <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">{{__('Shipping & Returns')}}</a>
         </li>
         @endif
-        @if(!$productDetail->information->informationTranslation->question_and_answer)
+        @if(!empty($productDetail->information->informationTranslation->question_and_answer))
         <li class="nav-item">
             <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab" role="tab" aria-controls="product-review-tab" aria-selected="false">{{__('FAQs')}}</a>
         </li>
@@ -44,11 +44,34 @@
         </div><!-- .End .tab-pane -->
         @endif
         @if ($productDetail->information->informationTranslation->question_and_answer)
+        @php
+            $faqData = json_decode($productDetail->information->informationTranslation->question_and_answer, true);
+        @endphp
+        @if ($faqData)
         <div class="tab-pane fade" id="product-review-tab" role="tabpanel" aria-labelledby="product-review-link">
             <div class="product-desc-content">
-                {!! $productDetail->information->informationTranslation->question_and_answer !!}
+                <div class="accordion accordion-rounded" id="accordion-1">
+                    @foreach($faqData as $index => $faq)
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading-{{ $index }}">
+                            <h5 class="card-title">
+                                <a role="button" data-toggle="collapse" href="#collapse-{{ $index }}" aria-expanded="{{ $index === 0 ? 'true' : 'false' }}" aria-controls="collapse-{{ $index }}">
+                                    {{ $faq['question'] }}
+                                </a>
+                            </h5>
+                        </div><!-- End .card-header -->
+    
+                        <div id="collapse-{{ $index }}" class="collapse @if($index === 0) show @endif" aria-labelledby="heading-{{ $index }}" data-parent="#accordion-1">
+                            <div class="card-body">
+                                {{ $faq['answer'] }}
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+                    @endforeach
+                </div><!-- End .accordion -->
             </div><!-- End .product-desc-content -->
-        </div><!-- .End .tab-pane -->
+        </div><!-- End .tab-pane -->
+        @endif
         @endif
     </div><!-- End .tab-content -->
 </div><!-- End .product-details-tab -->

@@ -16,7 +16,7 @@
         <!-- App Css-->
         <link href="{{asset('dashboard/css/app.min.css')}}" rel="stylesheet" type="text/css" />
         <!-- custom Css-->
-        <link href="{{asset('css/custom.min.css')}}" rel="stylesheet" type="text/css" />
+        {{-- <link href="{{asset('css/custom.min.css')}}" rel="stylesheet" type="text/css" /> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <link href="{{asset('dashboard/css/toaster.css')}}" rel="stylesheet" type="text/css">
         <title>{{ $title ?? 'Page Title' }}</title>
@@ -44,6 +44,7 @@
     <script src="{{asset('dashboard/libs/feather-icons/feather.min.js')}}"></script>
     <script src="{{asset('dashboard/js/pages/plugins/lord-icon-2.1.0.js')}}"></script>
     <script src="{{asset('dashboard/js/plugins.js')}}"></script>
+    <script src="{{asset('main/assets/js/jquery.min.js')}}"></script>
     <!-- apexcharts -->
     <script src="{{asset('dashboard/libs/apexcharts/apexcharts.min.js')}}"></script>
     <!-- Vector map-->
@@ -58,7 +59,7 @@
     
     @stack('tproductscript')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/jquery.easing@1.4.1/jquery.easing.min.js"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/jquery.easing@1.4.1/jquery.easing.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     @stack('scripts')
     @stack('brandScripts')
@@ -69,8 +70,10 @@
     @stack('capacitiesScripts')
     @stack('super_script')
     @stack('asideFilter')
+    @stack('cProductScripts')
     @stack('tProductScripts')
-    @livewireScripts
+    @stack('tproductscriptedit')
+    
     <form id="logout-form" action="{{ route('super.signout') }}" method="POST" style="display: none;">
         @csrf
     </form>
@@ -95,6 +98,33 @@
             }
         });
     </script>
-
+    
+    {{-- <script>
+                    $(document).ready(function(){
+    $(".owl-carousel").owlCarousel({
+        nav: true, 
+        dots: true,
+        rtl: {{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'true' : 'false' }},
+        lazyLoad: true,
+        margin: 20,
+        loop: false,
+        responsive: {
+            0: {
+                items: 2
+            },
+            600: {
+                items: 4
+            },
+            992: {
+                items: 6
+            },
+            1200: {
+                items: 8
+            }
+        }
+    });
+});
+    </script> --}}
+@livewireScripts
 </body>
 </html>

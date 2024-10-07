@@ -4,19 +4,19 @@
         <!-- Dark Logo-->
         <a href="index.html" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="assets/images/logo-sm.png" alt="" height="22">
+                <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="27">
             </span>
             <span class="logo-lg">
-                <img src="assets/images/logo-dark.png" alt="" height="17">
+                <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="42">
             </span>
         </a>
         <!-- Light Logo-->
         <a href="index.html" class="logo logo-light">
             <span class="logo-sm">
-                <img src="assets/images/logo-sm.png" alt="" height="22">
+                <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="27">
             </span>
             <span class="logo-lg">
-                <img src="assets/images/logo-light.png" alt="" height="17">
+                <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="42">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -38,7 +38,7 @@
                     <div class="collapse menu-dropdown" id="sidebarDashboards">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a wire:navigate href="/super-admin" class="nav-link" data-key="t-ecommerce">{{__('Dashboard')}}</a>
+                                <a wire:navigate href="{{ route('super.dashboard', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-ecommerce">{{__('Dashboard')}}</a>
                             </li>
                         </ul>
                     </div>
@@ -85,6 +85,12 @@
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.product.create', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-cProduct">{{__('New Products')}}</a>
                             </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.product.recommend', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-cProduct">{{__('Recommendation Product')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.product.adjust', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-cProduct">{{__('Adjust Product')}}</a>
+                            </li>
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
@@ -101,13 +107,31 @@
                     </div>
                 </li> <!-- end Dashboard Menu -->
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Delivery Management')}}</span>
+                    <a class="nav-link menu-link" href="#sidebarZones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarZones">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Order Management')}}</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarUsers">
+                    <div class="collapse menu-dropdown" id="sidebarZones">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.users', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Delivery Zones')}}</a>
+                                <a wire:navigate href="{{ route('super.deliveryZones', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Delivery Zones')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.shippingCost', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Shipping Costs')}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarZones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarZones">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Delivery Management')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarZones">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.deliveryZones', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Delivery Zones')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.shippingCost', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Shipping Costs')}}</a>
                             </li>
                         </ul>
                     </div>

@@ -7,7 +7,7 @@
                     <div class="modal-body">
                         <div class="modal-header mb-3">
                             <h5 class="modal-title" id="addColorModalLabel">{{__('Add Color')}}</h5>
-                            <button type="button" class="brn btn-danger" data-dismiss="modal" wire:click="closeModal"
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" wire:click="closeModal"
                                 aria-label="Close"><i class="fas fa-times"></i></button>
                         </div>
                         <hr class="bg-white">
@@ -98,7 +98,7 @@
                     <div class="modal-body">
                         <div class="modal-header mb-3">
                             <h5 class="modal-title" id="updateColorModalLabel">{{__('Edit Color')}}</h5>
-                            <button type="button" class="brn btn-danger" data-dismiss="modal" wire:click="closeModal"
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" wire:click="closeModal"
                                 aria-label="Close"><i class="fas fa-times"></i></button>
                         </div>
                         <hr class="bg-white">

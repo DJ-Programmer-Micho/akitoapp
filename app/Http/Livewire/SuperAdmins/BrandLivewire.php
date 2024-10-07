@@ -7,6 +7,7 @@ use Livewire\Component;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Illuminate\Validation\Rule;
 use App\Models\BrandTranslation;
 use Illuminate\Support\Facades\Storage;
 
@@ -71,7 +72,13 @@ class BrandLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['brands.' . $locale] = 'required|string|min:1';
+            $rules['brands.' . $locale] =  [
+                'required',
+                'string',
+                'min:1',
+                Rule::unique('brand_translations', 'name')
+                    ->where('locale', $locale)
+            ];
         }
         $rules['priority'] = ['required'];
         $rules['status'] = ['required','in:0,1'];
@@ -82,7 +89,13 @@ class BrandLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['brandsEdit.' . $locale] = 'required|string|min:1';
+            $rules['brandsEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:1',
+                Rule::unique('brand_translations', 'name')
+                    ->where('locale', $locale)
+            ];
         }
         $rules['priorityEdit'] = ['required'];
         $rules['statusEdit'] = ['required','in:0,1'];

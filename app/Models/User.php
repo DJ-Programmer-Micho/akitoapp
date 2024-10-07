@@ -80,4 +80,6 @@ class User extends Authenticatable implements JWTSubject
     public function updatedVariationColor() { return $this->hasMany(VariationColor::class, 'updated_by_id'); }
     public function createdVariationCapacity() { return $this->hasMany(VariationCapacity::class, 'created_by_id'); }
     public function updatedVariationCapacity() { return $this->hasMany(VariationCapacity::class, 'updated_by_id'); }
+    public function createdRecommendProduct() { return $this->hasMany(ProductRecommendation::class, 'created_by_id'); }
+    public function updatedRecommendProduct() { return $this->hasMany(ProductRecommendation::class, 'updated_by_id'); }
 }

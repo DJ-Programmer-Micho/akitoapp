@@ -29,5 +29,6 @@ class Product extends Model
     public function categories() { return $this->belongsToMany(Category::class, 'product_category'); }
     public function subCategories() { return $this->belongsToMany(SubCategory::class, 'product_sub_category'); }
     public function tags() { return $this->belongsToMany(Tag::class,'product_tag'); }
+    public function recommendations() { return $this->belongsToMany(Product::class, 'product_recommendations', 'product_id', 'recommended_product_id'); }
     // public function slug() { return $this->hasone(Slug::class,'slug_id'); }
 }

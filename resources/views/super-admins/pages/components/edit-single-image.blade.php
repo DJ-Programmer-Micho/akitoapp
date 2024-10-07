@@ -161,6 +161,7 @@
        document.addEventListener('livewire:load', function () {
     const modalUpdate = new bootstrap.Modal(document.getElementById('modalUpdate'));
     let cropperUpdate;
+    const profilePicture = document.querySelector('.profile-picture-update');
 
     function initializeCropper() {
         $('#modalUpdate').on('shown.bs.modal', function () {
@@ -178,6 +179,7 @@
 
     function handleFileInputChange() {
         $('#brandImgUpdate').change(function (event) {
+            profilePicture.style.backgroundImage = `url('')`;
             const image = document.getElementById('sample_image_update');
             const files = event.target.files;
             const maxSize = 2 * 1024 * 1024; // 2MB limit
@@ -211,8 +213,13 @@
                 width: 512,
                     height: 512,
                     // png
-                    fillColor: 'rgba(0, 0, 0, 0)',
+                    fillColor: 'rgba(255, 255, 255, 0)',
             });
+
+            if (!canvasUpdate) {
+                console.error("Cropped canvas not generated.");
+                return;
+            }
 
             canvasUpdate.toBlob(function (blob) {
                 const url = URL.createObjectURL(blob);
@@ -222,7 +229,7 @@
                     const base64data = reader.result;
                     modalUpdate.hide();
 
-                    const profilePicture = document.querySelector('.profile-picture-update');
+                    
                     profilePicture.style.backgroundImage = `url(${base64data})`;
 
                     // Emit Livewire event
@@ -243,15 +250,31 @@
                 // fileInput.files = dataTransfer.files;
 
                 modalUpdate.hide();
+                cleanupCropper();
             }, 'image/png');
         });
     }
 
+    $('#modalUpdate').on('shown.bs.modal', function () {
+        const image = document.getElementById('sample_image_update');
+        if (image.complete) {
+            initializeCropper();
+        } else {
+            image.onload = initializeCropper;
+        }
+    });
+
     // Initialize everything
-    initializeCropper();
+    // initializeCropper();
     handleFileInputChange();
     handleCropButtonClick();
 
+    function cleanupCropper() {
+        if (cropperUpdate) {
+            cropperUpdate.destroy();
+            document.getElementById('brandImg').value = null;
+        }
+    }
 
     Livewire.on('resetEditData', () => {
         // Call your JavaScript function here

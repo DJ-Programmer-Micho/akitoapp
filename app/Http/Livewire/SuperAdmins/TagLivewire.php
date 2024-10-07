@@ -6,6 +6,7 @@ use App\Models\Tag;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\TagTranslation;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 
 class TagLivewire extends Component
@@ -67,7 +68,19 @@ class TagLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['tags.' . $locale] = 'required|string|min:1';
+            $rules['tags.' . $locale] = [
+                'required',
+                'string',
+                'min:1',
+            ];
+
+            $rules['tags.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->tags[$locale] === $this->tags[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['priority'] = ['required'];
         $rules['status'] = ['required','in:0,1'];
@@ -78,7 +91,23 @@ class TagLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['tagsEdit.' . $locale] = 'required|string|min:1';
+            $rules['tagsEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('tag_translations', 'name')
+                    ->where('locale', $locale)
+                    ->ignore($this->tag_update->id, 'tag_id')
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['tagsEdit.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->tagsEdit[$locale] === $this->tagsEdit[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['priorityEdit'] = ['required'];
         $rules['statusEdit'] = ['required','in:0,1'];

@@ -94,7 +94,6 @@ class CustomerAuth extends Controller
         //     );
         // }
     
-
     
         // Store customer in Firebase Authentication
         $firebase = (new Factory)->withServiceAccount(base_path('resources/credentials/firebase_credentials.json')); // Path to your Firebase credentials

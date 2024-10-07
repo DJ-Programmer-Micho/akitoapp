@@ -28,7 +28,6 @@ class EProductLivewire extends Component
 {
     use WithFileUploads;
 
-
     // Pre-INT
     public $brands;
     public $categoriesData;
@@ -64,6 +63,8 @@ class EProductLivewire extends Component
     public $is_on_sale = 0;
     public $is_featured = 0;
     public $status = 1;
+    public $stock = 1;
+    public $priority = 1;
     public $originalPrice;
     public $discountPrice;
     public $discountPercentage;
@@ -84,13 +85,8 @@ class EProductLivewire extends Component
             $this->productInformations[$locale] = ''; // or any default value
             $this->productShip[$locale] = ''; // or any default value
         }
-        Log::info('Locale before initialLoad: ' . app()->getLocale());
         $this->initialLoad();
-        Log::info('Locale after initialLoad: ' . app()->getLocale());
-        
         $this->loadProductData();
-        Log::info('Locale after loadProductData: ' . app()->getLocale());
-        
     }
 
     protected function loadProductData()
@@ -176,11 +172,13 @@ class EProductLivewire extends Component
         $this->keywords = $product->variation->keywords;
         $this->originalPrice = $product->variation->price;
         $this->discountPrice = $product->variation->discount;
+        $this->stock = $product->variation->stock;
         $this->is_on_stock = $product->variation->on_stock;
         $this->is_on_sale = $product->variation->on_sale;
         $this->is_featured = $product->variation->featured;
         $this->is_spare_part = $product->is_spare_part;
         $this->status = $product->status;
+        $this->priority = $product->priority;
         $this->selectedCategories = $product->categories->pluck('id')->toArray();
         $this->selectedSubCategories = $product->subCategories->pluck('id')->toArray();
         $this->selectedTags = $product->tags->pluck('id')->toArray();
@@ -284,35 +282,39 @@ class EProductLivewire extends Component
     public function toggleCategory($categoryId)
     {
         if (in_array($categoryId, $this->selectedCategories)) {
-            // Uncheck category and its subcategories
+            // Uncheck the category and its subcategories
             $this->selectedCategories = array_filter($this->selectedCategories, fn($id) => $id != $categoryId);
-            // Remove all subcategories of this category from the selected subcategories
+            
+            // Remove all subcategories of this category from selected subcategories
             $this->selectedSubCategories = array_filter($this->selectedSubCategories, function ($id) use ($categoryId) {
                 return !SubCategory::where('category_id', $categoryId)->where('id', $id)->exists();
             });
         } else {
-            // Check category and all its subcategories
+            // Check the category and its subcategories
             $this->selectedCategories[] = $categoryId;
             $subCategories = SubCategory::where('category_id', $categoryId)->pluck('id')->toArray();
             $this->selectedSubCategories = array_merge($this->selectedSubCategories, $subCategories);
         }
     }
-
+    
     public function toggleSubCategory($subCategoryId, $categoryId)
     {
         if (in_array($subCategoryId, $this->selectedSubCategories)) {
-            // Uncheck subcategory
+            // Uncheck the subcategory
             $this->selectedSubCategories = array_filter($this->selectedSubCategories, fn($id) => $id != $subCategoryId);
-            // If no subcategories are left checked, uncheck the main category
-            $hasUnchecked = SubCategory::where('category_id', $categoryId)
+            
+            // Check if any subcategories are left checked, if none, uncheck the main category
+            $hasCheckedSubCategories = SubCategory::where('category_id', $categoryId)
                 ->whereIn('id', $this->selectedSubCategories)
                 ->exists();
-            if (!$hasUnchecked) {
+    
+            if (!$hasCheckedSubCategories) {
                 $this->selectedCategories = array_filter($this->selectedCategories, fn($id) => $id != $categoryId);
             }
         } else {
-            // Check subcategory
+            // Check the subcategory and also the main category if not already checked
             $this->selectedSubCategories[] = $subCategoryId;
+    
             if (!in_array($categoryId, $this->selectedCategories)) {
                 $this->selectedCategories[] = $categoryId;
             }
@@ -533,6 +535,7 @@ class EProductLivewire extends Component
                 'keywords' => $this->keywords ?? $variation->keywords,
                 'price' => $this->originalPrice ?? $variation->price,
                 'discount' => $this->discountPrice ?? $variation->discount,
+                'stock' => $this->stock ?? $variation->stock,
                 'on_stock' => $this->is_on_stock ?? $variation->on_stock,
                 'on_sale' => $this->is_on_sale ?? $variation->on_sale,
                 'featured' => $this->is_featured ?? $variation->featured,
@@ -549,8 +552,8 @@ class EProductLivewire extends Component
                 'updated_by_id' => 1,
                 'brand_id' => $validatedData['selectedBrand'] ?? $product->brand_id,
                 'information_id' => $information->id ?? $product->information_id,
-                'is_spare_part' => $this->is_spare_part ?? $product->is_spare_part,
-                'priority' => 1,
+                'is_spare_part' => $this->is_spare_part,
+                'priority' => $this->is_spare_part ?? $product->is_spare_part,
                 'status' => $this->status ?? $product->status,
             ]);
 
@@ -684,7 +687,6 @@ class EProductLivewire extends Component
             // Clear the images after upload
             $this->resetInputValues();
 
-
             try {
                 $files = Storage::files('livewire-tmp');
 
@@ -727,6 +729,7 @@ class EProductLivewire extends Component
         $this->is_on_stock = 1;
         $this->is_on_sale = 0;
         $this->is_featured = 0;
+        $this->stock = 1;
         $this->status = 1;
         $this->originalPrice = '';
         $this->discountPrice = "";
@@ -738,14 +741,11 @@ class EProductLivewire extends Component
             $this->productInformations[$locale] = ''; // or any default value
             $this->productShip[$locale] = ''; // or any default value
         }
-
-
     }
     
 
      // Render
      public function render(){ 
-        
         // $this->initialLoad();
         return view('super-admins.pages.eproducts.product-form');
     }

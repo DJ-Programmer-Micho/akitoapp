@@ -7,8 +7,9 @@
                     <div class="modal-body">
                         <div class="modal-header mb-3">
                             <h5 class="modal-title" id="addCapacityModalLabel">{{__('Add Capacity')}}</h5>
-                            <button type="button" class="brn btn-danger" data-dismiss="modal" wire:click="closeModal"
-                                aria-label="Close"><i class="fas fa-times"></i></button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" wire:click="closeModal"
+                                aria-label="Close"><i class="fas fa-times"></i>
+                            </button>
                         </div>
                         <hr class="bg-white">
                         <div class="row">
@@ -98,8 +99,9 @@
                     <div class="modal-body">
                         <div class="modal-header mb-3">
                             <h5 class="modal-title" id="updateCapacityModalLabel">{{__('Edit Capacity')}}</h5>
-                            <button type="button" class="brn btn-danger" data-dismiss="modal" wire:click="closeModal"
-                                aria-label="Close"><i class="fas fa-times"></i></button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" wire:click="closeModal"
+                                aria-label="Close"><i class="fas fa-times"></i>
+                            </button>
                         </div>
                         <hr class="bg-white">
                         <div class="row">

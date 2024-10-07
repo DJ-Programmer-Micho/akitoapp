@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use App\Models\CategoryTranslation;
 use App\Models\SubCategoryTranslation;
 use Illuminate\Support\Facades\Storage;
@@ -64,41 +65,105 @@ class CategoryLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['names.' . $locale] = 'required|string|unique:category_translations,name|min:2';
+            $rules['names.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('category_translations', 'name')
+                    ->where('locale', $locale)
+                    ->ignore($this->category_update->id, 'category_id')
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['names.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->names[$locale] === $this->names[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
-        // $rules['priority'] = ['required'];
-        // $rules['status'] = ['required'];
         return $rules;
     }
-
+    
     protected function rulesForCategoryEdit()
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['namesEdit.' . $locale] = 'required|string|min:2';
+            $rules['namesEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('category_translations', 'name')
+                    ->where('locale', $locale)
+                    ->ignore($this->category_update->id, 'category_id')
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['namesEdit.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->namesEdit[$locale] === $this->namesEdit[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['priorityEdit'] = ['required'];
-        $rules['statusEdit'] = ['required','in:0,1'];
+        $rules['statusEdit'] = ['required', 'in:0,1'];
         return $rules;
     }
-
+    
     protected function rulesForSubCategories()
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['subNames.' . $locale] = 'required|string|min:2';
+            if (!isset($this->subNames[$locale])) {
+                $this->subNames[$locale] = ''; // Initialize if not set
+            }
+    
+            $rules['subNames.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('sub_category_translations', 'name')
+                    ->where('locale', $locale)
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['subNames.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && isset($this->subNames[$otherLocale]) && $this->subNames[$locale] === $this->subNames[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         return $rules;
     }
-
+    
     protected function rulesForSubCategoriesEdit()
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['subNamesEdit.' . $locale] = 'required|string|min:2';
+            $rules['subNamesEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('sub_category_translations', 'name')
+                    ->where('locale', $locale)
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['subNamesEdit.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->subNamesEdit[$locale] === $this->subNamesEdit[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['priorityEdit'] = ['required'];
-        $rules['statusEdit'] = ['required','in:0,1'];
+        $rules['statusEdit'] = ['required', 'in:0,1'];
         return $rules;
     }
 
@@ -284,7 +349,7 @@ class CategoryLivewire extends Component
     }
 
     public function editSubCategory(int $id) {
-        $this->currentValidation = 'categoryEdit';
+        $this->currentValidation = 'subaCtegoryEdit';
 
         $sub_category_edit = SubCategory::find($id);
         $this->sub_category_update = $sub_category_edit;

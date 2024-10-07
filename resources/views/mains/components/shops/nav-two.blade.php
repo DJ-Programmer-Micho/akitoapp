@@ -19,6 +19,10 @@
                 <li class="breadcrumb-item active">
                     <a href="{{ route('business.category', ['locale' => app()->getLocale()]) }}">{{ __('Categories') }}</a>
                 </li>
+            @elseif(request()->is('*/shop-search'))
+                <li class="breadcrumb-item active">
+                    <a href="{{ route('business.category', ['locale' => app()->getLocale()]) }}">{{ __('Search') }}</a>
+                </li>
             @elseif(request()->is('*/brands'))
                 <li class="breadcrumb-item active">
                     <a href="{{ route('business.brand', ['locale' => app()->getLocale()]) }}">{{ __('Brands') }}</a>

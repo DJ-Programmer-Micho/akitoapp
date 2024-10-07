@@ -658,6 +658,88 @@ class BusinessController extends Controller
             'grid' => $grid
         ]);
     }
+
+    public function searchShop(Request $request)
+    {
+        // Get the search query from the request
+        $searchQuery = $request->query('q', '');
+    
+        // Base query to get products
+        $productQuery = Product::select('products.*', 'product_variations.price as variation_price')
+            ->join('product_variations', 'products.variation_id', '=', 'product_variations.id')
+            ->with([
+                'productTranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+                'variation.colors',
+                'variation.sizes',
+                'variation.materials',
+                'variation.capacities',
+                'variation.images',
+                'brand.brandtranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+                'categories.categoryTranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+            ])
+            ->where('products.status', 1)
+            ->where('products.is_spare_part', 0);
+    
+        // Search query logic
+        if (!empty($searchQuery)) {
+            $productQuery->where(function ($query) use ($searchQuery) {
+                // Search in product translation
+                $query->whereHas('productTranslation', function ($subQuery) use ($searchQuery) {
+                    // Make sure 'name' column exists, or replace 'name' with the correct column
+                    $subQuery->where('name', 'like', '%' . $searchQuery . '%');
+                })
+                // Search in brand translation
+                ->orWhereHas('brand.brandTranslation', function ($subQuery) use ($searchQuery) {
+                    // Replace 'name' with the correct column if needed
+                    $subQuery->where('name', 'like', '%' . $searchQuery . '%');
+                })
+                // Search in category translation
+                ->orWhereHas('categories.categoryTranslation', function ($subQuery) use ($searchQuery) {
+                    // Replace 'name' with the correct column if needed
+                    $subQuery->where('name', 'like', '%' . $searchQuery . '%');
+                })
+                // Search in variation colors
+                ->orWhereHas('variation.colors.variationColorTranslation', function ($subQuery) use ($searchQuery) {
+                    // Replace 'name' with the correct column if needed
+                    $subQuery->where('name', 'like', '%' . $searchQuery . '%');
+                })
+                // Search in variation sizes
+                ->orWhereHas('variation.sizes.variationSizeTranslation', function ($subQuery) use ($searchQuery) {
+                    // Replace 'name' with the correct column if needed
+                    $subQuery->where('name', 'like', '%' . $searchQuery . '%');
+                })
+                // Search in variation materials
+                ->orWhereHas('variation.materials.variationMaterialTranslation', function ($subQuery) use ($searchQuery) {
+                    // Replace 'name' with the correct column if needed
+                    $subQuery->where('name', 'like', '%' . $searchQuery . '%');
+                })
+                // Search in variation capacities
+                ->orWhereHas('variation.capacities.variationCapacityTranslation', function ($subQuery) use ($searchQuery) {
+                    // Replace 'name' with the correct column if needed
+                    $subQuery->where('name', 'like', '%' . $searchQuery . '%');
+                })
+                ->orWhereHas('variation', function ($subQuery) use ($searchQuery) {
+                    // Replace 'name' with the correct column if needed
+                    $subQuery->where('keywords', 'like', '%' . $searchQuery . '%');
+                });
+            });
+        }
+    
+        // Get the filtered products with pagination
+        $products = $productQuery->paginate(3);
+    
+        return view('mains.pages.search-page-one', [
+            'products' => $products,
+            'searchQuery' => $searchQuery,
+        ]);
+    }
+    
     
     public function account(){        
         $isLoggedIn = Auth::guard('customer')->check();

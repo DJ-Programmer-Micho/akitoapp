@@ -1,29 +1,4 @@
 <div class="page-content">
-    <script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{{asset('texteditor/summernote-bs5.css')}}">
-    <script src="{{asset('texteditor/summernote-bs5.js')}}"></script>
-    <link rel="stylesheet" href="{{asset('texteditor/summernote-lite.css')}}">
-    <script src="{{asset('texteditor/summernote-lite.js')}}"></script>
-    <script src="{{asset('texteditor/lang/summernote-en-US.min.js')}}"></script>
-    <link rel="stylesheet" href="{{asset('dashboard/css/select2.css')}}">
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    {{-- File Upload --}}
-    <!-- Include FilePond CSS -->
-    <link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.css" rel="stylesheet">
-
-    <!-- Include FilePond JS -->
-    <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.min.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.min.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.min.js"></script>
-    <script src="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.js"></script>
-
-
     <style>
         .note-frame {
             color: #222 !important;
@@ -195,11 +170,11 @@
                                         {{__('Capacity')}}
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                {{-- <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#variation-sku" role="tab">
                                         {{__('SKU')}}
                                     </a>
-                                </li>
+                                </li> --}}
                             </ul>
                         </div>
                         <!-- end card header -->
@@ -392,7 +367,7 @@
                                 </div>
                                 <!-- end tab pane -->
 
-                                <div wire:ignore.self class="tab-pane" id="variation-sku" role="tabpanel">
+                                {{-- <div wire:ignore.self class="tab-pane" id="variation-sku" role="tabpanel">
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="mb-3">
@@ -403,7 +378,7 @@
                                         <!-- end col -->
                                     </div>
                                     <!-- end row -->
-                                </div>
+                                </div> --}}
                                 <!-- end tab pane -->
                             </div>
                             <!-- end tab content -->
@@ -546,36 +521,6 @@
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">{{__('Product Properties')}}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="onStockSwitch" wire:model="is_on_stock">
-                                    <label class="form-check-label" for="onStockSwitch">{{__('On Stock')}}</label>
-                                </div>
-
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="sparePartSwitch" wire:model="is_spare_part" style="margin-bottom: 1rem;">
-                                    <label class="form-check-label" for="sparePartSwitch">{{__('Spare Part')}}</label>
-                                </div>
-                                
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="featuredSwitch" wire:model="is_featured">
-                                    <label class="form-check-label" for="featuredSwitch">{{__('Featured')}}</label>
-                                </div>
-                                
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="statusSwitch" wire:model="status">
-                                    <label class="form-check-label" for="statusSwitch">{{__('Status')}}</label>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- end card body -->
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
                             <h5 class="card-title mb-0">{{__('Product Price')}}</h5>
                         </div>
                         <!-- end card body -->
@@ -621,6 +566,75 @@
                                 <small class="text-info">{{__('Discounted by ')}} {{ number_format($discountPercentage, 0) }}{{__('% from the original price.')}}</small>
                             </div>
                             @endif
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{__('Product Properties')}}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="onStockSwitch" wire:model="is_on_stock">
+                                    <label class="form-check-label" for="onStockSwitch">{{__('On Stock')}}</label>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="sparePartSwitch" wire:model="is_spare_part" style="margin-bottom: 1rem;">
+                                    <label class="form-check-label" for="sparePartSwitch">{{__('Spare Part')}}</label>
+                                </div>
+                                
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="featuredSwitch" wire:model="is_featured">
+                                    <label class="form-check-label" for="featuredSwitch">{{__('Featured')}}</label>
+                                </div>
+                                
+                                {{-- <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="statusSwitch" wire:model="status">
+                                    <label class="form-check-label" for="statusSwitch">{{__('Status')}}</label>
+                                </div> --}}
+                            </div>
+                        </div>
+                        <!-- end card body -->
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{__('On Stock')}}</h5>
+                        </div>
+                        <!-- end card body -->
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        <i class="fa-solid fa-boxes-stacked"></i>
+                                    </span>
+                                    <input type="number"
+                                    class="form-control
+                                    @error('stock') is-invalid @enderror
+                                    @if(!$errors->has('stock') && !empty($stock)) is-valid @endif"
+                                    wire:model.debounce.500ms="stock" placeholder="1">
+                                </div>
+                                @error('stock')
+                                        <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                            <span class="text-danger">{{ __($message) }}</span>
+                                        </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{__('Stock-keeping unit (SKU)')}}</h5>
+                        </div>
+                        <!-- end card body -->
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="meta-title-input">{{__('SKU')}}</label>
+                                <input type="text" class="form-control" wire:model="sku" placeholder="xxxx-xxxxx-xxx" id="meta-title-input">
+                            </div>
                         </div>
                     </div>
                     <!-- end card -->
@@ -670,14 +684,13 @@
                                             class="form-check-input main-category-checkbox" 
                                             type="checkbox" 
                                             value="{{ $category->id }}" 
-                                            id="category{{ $category->id }}"
-                                            wire:model="selectedCategories"
+                                            wire:click="toggleCategory({{ $category->id }})"
+                                            @if(in_array($category->id, $this->selectedCategories)) checked @endif
                                         >
                                         <label class="form-check-label" for="category{{ $category->id }}">
-                                            {{ $category->categoryTranslation->first()->name ?? $category->name }}
+                                            {{ $category->categoryTranslation->name ?? $category->name }}
                                         </label>
                                     </div>
-                        
                                     <!-- Subcategories for the current category -->
                                     <div class="ms-4">
                                         @foreach($category->subCategory as $subcategory)
@@ -686,11 +699,11 @@
                                                     class="form-check-input subcategory-checkbox" 
                                                     type="checkbox" 
                                                     value="{{ $subcategory->id }}" 
-                                                    id="subcategory{{ $subcategory->id }}"
-                                                    wire:model="selectedSubCategories"
+                                                    wire:click="toggleSubCategory({{ $subcategory->id }}, {{ $category->id }})"
+                                                    @if(in_array($subcategory->id, $this->selectedSubCategories)) checked @endif
                                                 >
                                                 <label class="form-check-label" for="subcategory{{ $subcategory->id }}">
-                                                    {{ $subcategory->subCategoryTranslation->first()->name ?? $subcategory->name }}
+                                                    {{ $subcategory->subCategoryTranslation->name ?? $subcategory->name }}
                                                 </label>
                                             </div>
                                         @endforeach
@@ -737,6 +750,31 @@
                         <!-- end card body -->
                     </div>
                     <!-- end card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{__('Priority')}}</h5>
+                        </div>
+                        <!-- end card body -->
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        <i class="fa-solid fa-sort"></i>
+                                    </span>
+                                    <input type="number"
+                                    class="form-control
+                                    @error('priority') is-invalid @enderror
+                                    @if(!$errors->has('priority') && !empty($stock)) is-valid @endif"
+                                    wire:model.debounce.500ms="priority" placeholder="1">
+                                </div>
+                                @error('priority')
+                                    <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                        <span class="text-danger">{{ __($message) }}</span>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
                 <!-- end col -->
@@ -750,8 +788,31 @@
 </div>
 
 
-@push('tproductscript')
+@push('cProductScripts')
 <!-- jQuery is required -->
+<script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{{asset('texteditor/summernote-bs5.css')}}">
+<script src="{{asset('texteditor/summernote-bs5.js')}}"></script>
+<link rel="stylesheet" href="{{asset('texteditor/summernote-lite.css')}}">
+<script src="{{asset('texteditor/summernote-lite.js')}}"></script>
+<script src="{{asset('texteditor/lang/summernote-en-US.min.js')}}"></script>
+<link rel="stylesheet" href="{{asset('dashboard/css/select2.css')}}">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{{-- File Upload --}}
+<!-- Include FilePond CSS -->
+<link href="https://unpkg.com/filepond/dist/filepond.min.css" rel="stylesheet">
+<link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css" rel="stylesheet">
+<link href="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.css" rel="stylesheet">
+
+<!-- Include FilePond JS -->
+<script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-crop/dist/filepond-plugin-image-crop.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-transform/dist/filepond-plugin-image-transform.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="https://unpkg.com/filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.js"></script>
 <script>
 
     // Locale-specific configuration for Summernote editors
@@ -1052,21 +1113,6 @@ locales.forEach(locale => {
         pond.removeFiles();
         $('.js-example-basic-multiple').val([]).trigger('change'); // Clear Select2 selections
     })
-
-    document.querySelectorAll('.subcategory-checkbox').forEach(subCheckbox => {
-        subCheckbox.addEventListener('change', function () {
-            const mainCheckbox = this.closest('.form-group').querySelector('.main-category-checkbox');
-            if (this.checked) {
-                mainCheckbox.checked = true;
-            } else {
-                const allUnchecked = Array.from(this.closest('.ms-4').querySelectorAll('.subcategory-checkbox')).every(sub => !sub.checked);
-                if (allUnchecked) {
-                    mainCheckbox.checked = false;
-                }
-            }
-        });
-    });
-
     
     $('.js-example-basic-multiple').select2();
 

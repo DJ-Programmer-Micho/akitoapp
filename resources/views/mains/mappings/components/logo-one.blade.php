@@ -15,13 +15,14 @@
         <div class="header-right">
             <div class="header-search header-search-extended header-search-visible d-none d-lg-block mx-0 px-0">
                 <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                <form action="#" method="get" class="border rounded-pill p-3">
-                    <div class="header-search-wrapper search-wrapper-wide ">
-                        <label for="q" class="sr-only">Search</label>
-                        <input type="text" class="form-control p-2" name="q" id="q" placeholder="Search product ..." required>
+                <form action="{{ route('business.shop.search',['locale' => app()->getLocale()]) }}" method="get" class="border rounded-pill p-3">
+                    <div class="header-search-wrapper search-wrapper-wide">
+                        <label for="q" class="sr-only">{{__('Search')}}</label>
+                        <input type="text" class="form-control p-2" name="q" id="q" placeholder="{{__('Search product ...')}}" required>
                         <button class="btn btn-primary w-25 mr-3" type="submit"><i class="icon-search"></i></button>
-                    </div><!-- End .header-search-wrapper -->
+                    </div>
                 </form>
+                
             </div><!-- End .header-search -->
             @livewire('cart.wishlist-livewire')
             @livewire('cart.cart-livewire')

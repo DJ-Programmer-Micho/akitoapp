@@ -35,9 +35,9 @@
                 <div class="card p-4">
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <h5 class="text-center flex-grow-1">{{__('Category and Sub-Category Structure')}}</h5>
-                        <button type="button" class="btn btn-primary" wire:click="reSyncA">
+                        {{-- <button type="button" class="btn btn-primary" wire:click="reSyncA">
                             <i class="fas fa-sync-alt"></i>
-                        </button>
+                        </button> --}}
                     </div>
                     <div class="table-responsive">
                     <table class="table table-striped table-bordered mt-4 table-dark">

@@ -38,6 +38,7 @@ class CProductLivewire extends Component
     public $capacities;
     public $currentValidation = "store";
     // INT
+    public $priority;
     public $filteredLocales;
     public $glang;
     public $selectedBrand;
@@ -59,9 +60,9 @@ class CProductLivewire extends Component
     public $keywords; // Cropped Imgeas
     // Sub Form INT
     public $is_spare_part = 0;
-    public $is_on_stock = 1;
     public $is_on_sale = 0;
     public $is_featured = 0;
+    public $stock = 1;
     public $status = 1;
     public $originalPrice;
     public $discountPrice;
@@ -80,6 +81,7 @@ class CProductLivewire extends Component
             $this->productInformations[$locale] = ''; // or any default value
             $this->productShip[$locale] = ''; // or any default value
         }
+        $this->priority = Product::max('priority') + 1;
     }
 
     protected function rules()
@@ -90,9 +92,9 @@ class CProductLivewire extends Component
     protected function rulesForSaveProduct()
     {
         $rules = [];
-        $productNames = collect($this->products);
         
         foreach ($this->filteredLocales as $locale) {
+            // Rules for product name
             $rules['products.' . $locale] = [
                 'required',
                 'string',
@@ -100,17 +102,35 @@ class CProductLivewire extends Component
                 Rule::unique('product_translations', 'name')
                     ->where('locale', $locale)
             ];
-
-            $rules['products.' . $locale][] = function ($attribute, $value, $fail) use ($productNames, $locale) {
+    
+            // Unique validation across different languages for products
+            $rules['products.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
                 foreach ($this->filteredLocales as $otherLocale) {
-                    if ($locale !== $otherLocale && $productNames->get($locale) === $productNames->get($otherLocale)) {
+                    if ($locale !== $otherLocale && $this->products[$locale] === $this->products[$otherLocale]) {
                         $fail(__('The :attribute must be unique across different languages.'));
                     }
                 }
             };
-
-
-            $rules['contents.' . $locale] = 'required|string|min:15';
+    
+            // Rules for content description
+            $rules['contents.' . $locale] = [
+                'required',
+                'string',
+                'min:3',
+                Rule::unique('product_translations', 'description')  // Fixed typo from 'desciption'
+                    ->where('locale', $locale)
+            ];
+            $rules['priority'] = ['required'];
+            // Unique validation across different languages for contents
+            $rules['contents.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->contents[$locale] === $this->contents[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
+    
+            // Rules for FAQs
             if (!empty($this->faqs)) {
                 foreach ($this->faqs as $faqIndex => $faq) {
                     $rules["faqs.$faqIndex.$locale.question"] = 'required|string|min:10';
@@ -118,18 +138,23 @@ class CProductLivewire extends Component
                 }
             }
         }
+    
+        // General product rules
+        $rules['stock'] = 'required|numeric|min:0';
         $rules['images'] = 'required';
         $rules['selectedBrand'] = 'required';
         $rules['originalPrice'] = 'required|numeric|min:0';
         $rules['selectedCategories'] = 'required';
         $rules['selectedSubCategories'] = 'required';
+    
+        // Sale related rules
         if ($this->is_on_sale) {
             $rules['discountPrice'] = 'required|numeric|min:0';
         }
-        // $rules['priority'] = ['required'];
-        // $rules['status'] = ['required'];
+    
         return $rules;
     }
+    
 
     protected function rulesForUpdateProduct()
     {
@@ -172,40 +197,46 @@ class CProductLivewire extends Component
     public function toggleCategory($categoryId)
     {
         if (in_array($categoryId, $this->selectedCategories)) {
-            // Uncheck category and its subcategories
+            // Uncheck the category and its subcategories
             $this->selectedCategories = array_filter($this->selectedCategories, fn($id) => $id != $categoryId);
-            // Remove all subcategories of this category from the selected subcategories
+            
+            // Remove all subcategories of this category from selected subcategories
             $this->selectedSubCategories = array_filter($this->selectedSubCategories, function ($id) use ($categoryId) {
                 return !SubCategory::where('category_id', $categoryId)->where('id', $id)->exists();
             });
         } else {
-            // Check category and all its subcategories
+            // Check the category and its subcategories
             $this->selectedCategories[] = $categoryId;
             $subCategories = SubCategory::where('category_id', $categoryId)->pluck('id')->toArray();
             $this->selectedSubCategories = array_merge($this->selectedSubCategories, $subCategories);
         }
     }
-
+    
     public function toggleSubCategory($subCategoryId, $categoryId)
     {
         if (in_array($subCategoryId, $this->selectedSubCategories)) {
-            // Uncheck subcategory
+            // Uncheck the subcategory
             $this->selectedSubCategories = array_filter($this->selectedSubCategories, fn($id) => $id != $subCategoryId);
-            // If no subcategories are left checked, uncheck the main category
-            $hasUnchecked = SubCategory::where('category_id', $categoryId)
+            
+            // Check if any subcategories are left checked, if none, uncheck the main category
+            $hasCheckedSubCategories = SubCategory::where('category_id', $categoryId)
                 ->whereIn('id', $this->selectedSubCategories)
                 ->exists();
-            if (!$hasUnchecked) {
+    
+            if (!$hasCheckedSubCategories) {
                 $this->selectedCategories = array_filter($this->selectedCategories, fn($id) => $id != $categoryId);
             }
         } else {
-            // Check subcategory
+            // Check the subcategory and also the main category if not already checked
             $this->selectedSubCategories[] = $subCategoryId;
+    
             if (!in_array($categoryId, $this->selectedCategories)) {
                 $this->selectedCategories[] = $categoryId;
             }
         }
     }
+    
+    
     public function initialLoad(){
         $this->brands = Brand::with(['brandtranslation' => function ($query) {
             $query->where('locale', app()->getLocale());
@@ -267,7 +298,15 @@ class CProductLivewire extends Component
 
      public function addSizeSelect()
      {
+        if (count($this->selectedSizes) === 0) {
          $this->selectedSizes[] = ['size_id' => null]; // Add a new empty selection
+        } else {
+            // Optionally, you can show a message indicating that only one selection is allowed
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'warning',
+                'message' => __('Only one size selection is allowed.')
+            ]);
+        }
      }
      public function removeSizeSelect($index)
      {
@@ -277,7 +316,15 @@ class CProductLivewire extends Component
 
      public function addCapacitySelect()
      {
-         $this->selectedCapacities[] = ['capacity_id' => null]; // Add a new empty selection
+        if (count($this->selectedCapacities) === 0) {
+            $this->selectedCapacities[] = ['capacity_id' => null]; // Add a new empty selection
+           } else {
+               // Optionally, you can show a message indicating that only one selection is allowed
+               $this->dispatchBrowserEvent('alert', [
+                   'type' => 'warning',
+                   'message' => __('Only one Capacity selection is allowed.')
+               ]);
+           }
      }
      public function removeCapacitySelect($index)
      {
@@ -370,7 +417,7 @@ class CProductLivewire extends Component
                 'keywords' => $this->keywords ?? null,
                 'price' => $this->originalPrice ?? null,
                 'discount' => $this->discountPrice ?? null,
-                'on_stock' => $this->is_on_stock ?? 1,
+                'stock' => $this->stock ?? 1,
                 'on_sale' => $this->is_on_sale ?? 0,
                 'featured' => $this->is_featured ?? 0,
             ]);
@@ -404,7 +451,7 @@ class CProductLivewire extends Component
                 'variation_id' => $variation->id,
                 'information_id' => $information->id ?? null,
                 'is_spare_part' => $this->is_spare_part ?? 0,
-                'priority' => 1,
+                'priority' =>  $this->priority,
                 'status' => $this->status ?? 1,
             ]);
 
@@ -508,7 +555,7 @@ class CProductLivewire extends Component
         $this->sku = ""; // Cropped Imgeas
         $this->keywords = ""; // Cropped Imgeas
         $this->is_spare_part = 0;
-        $this->is_on_stock = 1;
+        $this->stock = 1;
         $this->is_on_sale = 0;
         $this->is_featured = 0;
         $this->status = 1;

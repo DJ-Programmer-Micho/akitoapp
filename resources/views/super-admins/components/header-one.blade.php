@@ -6,19 +6,19 @@
             <div class="navbar-brand-box horizontal-logo">
                 <a href="index.html" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="assets/images/logo-sm.png" alt="" height="22">
+                        <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="27">
                     </span>
                     <span class="logo-lg">
-                        <img src="assets/images/logo-dark.png" alt="" height="17">
+                        <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="42">
                     </span>
                 </a>
-
+                <!-- Light Logo-->
                 <a href="index.html" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="assets/images/logo-sm.png" alt="" height="22">
+                        <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="27">
                     </span>
                     <span class="logo-lg">
-                        <img src="assets/images/logo-light.png" alt="" height="17">
+                        <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" height="42">
                     </span>
                 </a>
             </div>
@@ -32,7 +32,7 @@
             </button>
 
             <!-- App Search-->
-            <form class="app-search d-none d-md-block">
+            {{-- <form class="app-search d-none d-md-block">
                 <div class="position-relative">
                     <input type="text" class="form-control" placeholder="Search..." autocomplete="off" id="search-options" value="">
                     <span class="mdi mdi-magnify search-widget-icon"></span>
@@ -63,7 +63,7 @@
                         <!-- item-->
                         <a href="javascript:void(0);" class="dropdown-item notify-item">
                             <i class="ri-lifebuoy-line align-middle fs-18 text-muted me-2"></i>
-                            <span>Help Center</span>
+                            <span>Help Center</span>Notifications
                         </a>
 
                         <!-- item-->
@@ -115,7 +115,7 @@
                         <a href="pages-search-results.html" class="btn btn-primary btn-sm">View All Results <i class="ri-arrow-right-line ms-1"></i></a>
                     </div>
                 </div>
-            </form>
+            </form> --}}
         </div>
 
         <div class="d-flex align-items-center">
@@ -174,7 +174,7 @@
                 </button>
             </div>
 
-            <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
+            {{-- <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                 <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                     <i class='bx bx-bell fs-22'></i>
                     <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
@@ -436,7 +436,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="dropdown ms-sm-3 header-item topbar-user">
                 <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

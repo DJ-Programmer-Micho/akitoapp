@@ -168,12 +168,11 @@
                     width: 512,
                     height: 512,
                     // png
-                    fillColor: 'rgba(0, 0, 0, 0)',
+                    fillColor: 'rgba(255, 255, 255, 0)',
                 });
     
                 canvas.toBlob(function (blob) {
                     const url = URL.createObjectURL(blob);
-    
 
                     // Livewire.emit('updateCroppedCategoryImg', data);
                     const reader = new FileReader();
@@ -199,10 +198,17 @@
                     // fileInput.files = dataTransfer.files;
     
                     modal.hide();
+                    cleanupCropper();
                 }, 'image/png');
             });
         }
 
+        function cleanupCropper() {
+                if (cropper) {
+                    cropper.destroy();
+                    document.getElementById('brandImg').value = null;
+                }
+            }
 
         Livewire.on('resetData', () => {
             // Call your JavaScript function here

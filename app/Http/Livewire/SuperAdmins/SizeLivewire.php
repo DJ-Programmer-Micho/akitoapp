@@ -5,6 +5,7 @@ namespace App\Http\Livewire\SuperAdmins;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\VariationSize;
+use Illuminate\Validation\Rule;
 use App\Models\VariationSizeTranslation;
 
 class SizeLivewire extends Component
@@ -68,7 +69,21 @@ class SizeLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['sizes.' . $locale] = 'required|string|min:1';
+            $rules['sizes.' . $locale] = [
+                'required',
+                'string',
+                'min:1',
+                Rule::unique('variation_size_translations', 'name')
+                ->where('locale', $locale)
+            ];
+
+            $rules['sizes.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->sizes[$locale] === $this->sizes[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['code'] = ['required'];
         $rules['priority'] = ['required'];
@@ -80,7 +95,23 @@ class SizeLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['sizesEdit.' . $locale] = 'required|string|min:1';
+            $rules['sizesEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('variation_size_translations', 'name')
+                    ->where('locale', $locale)
+                    ->ignore($this->size_update->id, 'variation_size_id')
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['sizesEdit.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->sizesEdit[$locale] === $this->sizesEdit[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['codeEdit'] = ['required'];
         $rules['priorityEdit'] = ['required'];

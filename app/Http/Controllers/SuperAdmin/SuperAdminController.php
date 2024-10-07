@@ -42,6 +42,17 @@ class SuperAdminController extends Controller
             "p_id" => $id
         ]);
     }
+    public function recommendProduct(){
+        return view('super-admins.pages.recommendproduct.index');
+    }
+    public function recommendProductEdit($local, $id){
+        return view('super-admins.pages.recommendproductedit.index',[
+            "p_id" => $id
+        ]);
+    }
+    public function adjustProduct(){
+        return view('super-admins.pages.adjustproducts.index');
+    }
     public function user(){
         return view('super-admins.pages.users.index');
     }

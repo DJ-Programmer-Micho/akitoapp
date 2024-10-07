@@ -39,7 +39,7 @@
                                         @error('priorityEdit')
                                             <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
                                             <span class="text-danger">{{ __($message) }}</span>
-</div>
+                                        </div>
                                         @enderror
                                     </div>
                                     

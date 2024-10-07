@@ -81,7 +81,7 @@
                 @if ($productDetail->variation->discount)
                     <div class="product-price">
                         $ {{$productDetail->variation->discount}}
-                        <span class="mx-2" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                        <span class="mx-2" style="text-decoration: line-through; color: #cc0022; font-size: 16px;">
                             $ {{$productDetail->variation->price}}
                         </span>
                     </div><!-- End .product-price -->
@@ -104,7 +104,7 @@
                     <div class="product-nav product-nav-thumbs">
                         @foreach ($productDetail->variation->colors as $color)
                         <a href="#">
-                            <div style="height: 100%; width: 100%; background-color: {{$color->code}};"></div>
+                            <div style="height: 100%; width: 100%; background-color: {{$color->code}};border: 1px solid black"></div>
                         </a>
                         @endforeach
                     </div><!-- End .product-nav -->
@@ -142,20 +142,21 @@
                     {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
                 </div><!-- End .details-filter-row -->
                 @endif
+                @if ($productDetail->variation->stock)
                 <div class="details-filter-row details-row-size nav-dir">
                     <label for="qty">{{__('Qty:')}}</label>
                     <div class="product-details-quantity mx-1">
                         <input type="number" id="qty" class="form-control" value="1" min="1" max="{{$productDetail->variation->stock}}" step="1" data-decimals="0" required>
                     </div><!-- End .product-details-quantity -->
                 </div><!-- End .details-filter-row -->
-
+                @endif
                 <div class="product-details-action mx-1 nav-dir">
                     @if ($productDetail->variation->stock)
                     <button type="button" onclick="addToCartDetail({{ $productDetail->id }})" class="btn hover-text btn-product btn-cart">
                      {{__('add to cart')}}
                     </button>
                     @else
-                    <button type="button" class="btn btn-primary text-white">
+                    <button type="button" class="btn btn-primary text-white" disabled>
                         <i class="fa-solid fa-cubes mr-1"></i> {{__('Out Of Stock')}}
                     </button>
                     @endif
@@ -196,14 +197,87 @@
                     </div><!-- End .product-cat -->
                     @endif
 
-                    <div class="social-icons social-icons-sm nav-dir">
-                        <span class="social-label">{{__('Share:')}}</span>
-                        <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                        <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                        <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                        <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+
+                    <div class="row w-100">
+                        <div class="col-md-6 col-12">
+                            <div class="icon-box icon-box-side nav-dir">
+                                <span class="icon-box-icon text-dark">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/zzjjvkam.json"
+                                        trigger="loop"
+                                        state="loop-ride"
+                                        colors="primary:#3080e8,secondary:#000000"
+                                        style="width:50px;height:50px">
+                                    </lord-icon>
+                                </span>
+                                <div class="icon-box-content">
+                                    <h3 class="icon-box-title">{{__('Fast shipping')}}</h3><!-- End .icon-box-title -->
+                                    <p>{{__('Receive your order on time, every time')}}</p>
+                                </div><!-- End .icon-box-content -->
+                            </div><!-- End .icon-box -->
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="icon-box icon-box-side nav-dir">
+                                <span class="icon-box-icon text-dark">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/urswgamh.json"
+                                        trigger="loop"
+                                        state="loop-ride"
+                                        colors="primary:#3080e8,secondary:#000000"
+                                        style="width:50px;height:50px">
+                                    </lord-icon>
+                                </span>
+                                <div class="icon-box-content">
+                                    <h3 class="icon-box-title">{{__('Always authentic')}}</h3><!-- End .icon-box-title -->
+                                    <p>{{__('We only sell 100% authentic products')}}</p>
+                                </div><!-- End .icon-box-content -->
+                            </div><!-- End .icon-box -->
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="icon-box icon-box-side nav-dir">
+                                <span class="icon-box-icon text-dark">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/iztkybbu.json"
+                                        trigger="loop"
+                                        state="loop-ride"
+                                        colors="primary:#3080e8,secondary:#000000"
+                                        style="width:50px;height:50px">
+                                    </lord-icon>
+                                </span>
+                                <div class="icon-box-content">
+                                    <h3 class="icon-box-title">{{__('Easy return')}}</h3><!-- End .icon-box-title -->
+                                    <p>{{__('Return policy that lets you shop at ease')}}</p>
+                                </div><!-- End .icon-box-content -->
+                            </div><!-- End .icon-box -->
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="icon-box icon-box-side nav-dir">
+                                <span class="icon-box-icon text-dark">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/fgxwhgfp.json"
+                                        trigger="loop"
+                                        state="loop-ride"
+                                        colors="primary:#3080e8,secondary:#000000"
+                                        style="width:50px;height:50px">
+                                    </lord-icon>
+                                </span>
+                                <div class="icon-box-content">
+                                    <h3 class="icon-box-title">{{__('Secure shopping')}}</h3><!-- End .icon-box-title -->
+                                    <p>{{__('Your data will always be protected')}}</p>
+                                </div><!-- End .icon-box-content -->
+                            </div><!-- End .icon-box -->
+                        </div>
                     </div>
+
                 </div><!-- End .product-details-footer -->
+                <hr>
+                <div class="social-icons social-icons-sm nav-dir">
+                    <span class="social-label">{{__('Share:')}}</span>
+                    <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                    <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                    <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                    <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                </div>
             </div><!-- End .product-details -->
         </div><!-- End .col-md-6 -->
     </div><!-- End .row -->

@@ -2,11 +2,12 @@
 
 namespace App\Http\Livewire\SuperAdmins;
 
-use App\Models\VariationColor;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\VariationColorTranslations;
+use App\Models\VariationColor;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use App\Models\VariationColorTranslations;
 
 class ColorLivewire extends Component
 {
@@ -69,7 +70,21 @@ class ColorLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['colors.' . $locale] = 'required|string|min:1';
+            $rules['colors.' . $locale] = [
+                'required',
+                'string',
+                'min:1',
+                Rule::unique('variation_color_translations', 'name')
+                ->where('locale', $locale)
+            ];
+
+            $rules['colors.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->colors[$locale] === $this->colors[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['code'] = ['required','regex:/^#?[0-9A-Fa-f]+$/'];
         $rules['priority'] = ['required'];
@@ -81,7 +96,23 @@ class ColorLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['colorsEdit.' . $locale] = 'required|string|min:1';
+            $rules['colorsEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('variation_color_translations', 'name')
+                    ->where('locale', $locale)
+                    ->ignore($this->color_update->id, 'variation_color_id')
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['colorsEdit.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->colorsEdit[$locale] === $this->colorsEdit[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['codeEdit'] = ['required','regex:/^#?[0-9A-Fa-f]+$/'];
         $rules['priorityEdit'] = ['required'];

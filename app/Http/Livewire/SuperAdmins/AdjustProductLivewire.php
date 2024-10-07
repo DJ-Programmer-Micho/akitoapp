@@ -15,7 +15,7 @@ use App\Models\VariationMaterial;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
-class TProductLivewire extends Component
+class AdjustProductLivewire extends Component
 {
     public $brandIds = [];
     public $categoryIds = [];
@@ -151,6 +151,96 @@ class TProductLivewire extends Component
         }
     }
 
+    public function updatePrice(int $p_id, $updatedprice)
+    {
+
+        // Validate if updatedPriority is a number
+        if (!is_numeric($updatedprice)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Invalid priority value')
+            ]);
+            return;
+        }
+    
+        // Find the brand by ID
+        $product = Product::with('variation')->find($p_id);
+        if ($product) {
+            $product->variation->price = $updatedprice;
+            $product->variation->save();
+            
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',  
+                'message' => __('Price Has Been Updated Successfully')
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
+
+    public function updateDiscount(int $p_id, $updatedDiscount)
+    {
+
+        // Validate if updatedPriority is a number
+        if (!is_numeric($updatedDiscount)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Invalid priority value')
+            ]);
+            return;
+        }
+    
+        // Find the brand by ID
+        $product = Product::with('variation')->find($p_id);
+        if ($product) {
+            $product->variation->discount = $updatedDiscount;
+            $product->variation->save();
+            
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',  
+                'message' => __('Discount Has Been Updated Successfully')
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
+    
+    public function updateStock(int $p_id, $updatedStock)
+    {
+
+        // Validate if updatedPriority is a number
+        if (!is_numeric($updatedStock)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Invalid priority value')
+            ]);
+            return;
+        }
+    
+        // Find the brand by ID
+        $product = Product::with('variation')->find($p_id);
+        if ($product) {
+            $product->variation->stock = $updatedStock;
+            $product->variation->save();
+            
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',  
+                'message' => __('Stock Has Been Updated Successfully')
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
+
 
     public function toggleColor($colorId)
     {
@@ -272,7 +362,7 @@ class TProductLivewire extends Component
             ->paginate($this->items)->withQueryString();
         
         // Return view with data
-        return view('super-admins.pages.tproducts.product-table', [
+        return view('super-admins.pages.adjustproducts.product-table', [
             'tableData' => $productsQuery,
         ]);
     }

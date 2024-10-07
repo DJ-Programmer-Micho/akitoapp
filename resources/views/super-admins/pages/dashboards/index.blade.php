@@ -2,7 +2,8 @@
 @extends('super-admins.layouts.layout')
 @section('super-admin-content')
 <div>
-    <div class="container-fluid">
+    DASHBOARD
+    {{-- <div class="container-fluid">
 
         <div class="row">
             <div class="col">
@@ -888,7 +889,7 @@
             </div> <!-- end col -->
 
             <div class="col-auto layout-rightside-col">
-                {{-- <div class="overlay"></div> --}}
+                <div class="overlay"></div>
                 <div class="layout-rightside">
                     <div class="card h-100 rounded-0">
                         <div class="card-body p-0">
@@ -1339,7 +1340,7 @@
             </div> <!-- end col -->
         </div>
 
-    </div>
+    </div> --}}
     <!-- container-fluid -->
 </div>
 @endsection

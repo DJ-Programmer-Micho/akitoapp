@@ -4,6 +4,7 @@ namespace App\Http\Livewire\SuperAdmins;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Validation\Rule;
 use App\Models\VariationMaterial;
 use App\Models\VariationMaterialTranslation;
 
@@ -68,7 +69,22 @@ class MaterialLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['materials.' . $locale] = 'required|string|min:1';
+            $rules['materials.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('variation_material_translations', 'name')
+                    ->where('locale', $locale)
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['materials.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->materials[$locale] === $this->materials[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['code'] = ['required'];
         $rules['priority'] = ['required'];
@@ -80,7 +96,23 @@ class MaterialLivewire extends Component
     {
         $rules = [];
         foreach ($this->filteredLocales as $locale) {
-            $rules['materialsEdit.' . $locale] = 'required|string|min:1';
+            $rules['materialsEdit.' . $locale] = [
+                'required',
+                'string',
+                'min:2',
+                Rule::unique('variation_material_translations', 'name')
+                    ->where('locale', $locale)
+                    ->ignore($this->material_update->id, 'variation_material_id')
+            ];
+    
+            // Add custom uniqueness check across locales
+            $rules['materialsEdit.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
+                foreach ($this->filteredLocales as $otherLocale) {
+                    if ($locale !== $otherLocale && $this->materialsEdit[$locale] === $this->materialsEdit[$otherLocale]) {
+                        $fail(__('The :attribute must be unique across different languages.'));
+                    }
+                }
+            };
         }
         $rules['codeEdit'] = ['required'];
         $rules['priorityEdit'] = ['required'];
