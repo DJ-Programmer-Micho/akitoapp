@@ -19,16 +19,21 @@
 <!-- Actual Slides -->
 <div class="slick-carousel d-none">
     @foreach($brands as $brand)
-    <div>
         <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $brand->id]) }}">
             <img src="{{ app('cloudfront').$brand->image }}" alt="{{ $brand->brandtranslation->name }}">
         </a>
-    </div>
     @endforeach
 </div><!-- End .slick-carousel -->
 
 
 <style>
+    .carousel-container {
+    width: 100%;
+    overflow: hidden; /* Hide overflow on the container */
+}
+    .slick-carousel {
+    width: 100%; /* Ensure carousel uses full width */
+}
         .slick-slide img {
             width: 100%;
             height: auto;
@@ -49,7 +54,6 @@
         }
         .skeleton-carousel {
     display: flex;
-    overflow: hidden;
 }
 
 .skeleton-slide {

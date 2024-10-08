@@ -16,6 +16,8 @@
                     <h2 class="checkout-title">Select Address: {{$digitPaymentStatus ?? 'asd'}}</h2>
                     <div class="card card-dashboard px-1" style="border-radius: 16px">
                     <div class="row px-3">
+                        @if ($addressList)
+
                         @foreach ($addressList as $index => $address)
                         <div class="col-lg-6 p-0">
                             <div class="card card-dashboard m-1" style="border-radius: 24px">
@@ -35,6 +37,17 @@
                         </div><!-- End .col-lg-6 -->
                         @endforeach
                         @if (count($addressList) < 5)
+                        <div class="col-lg-6 p-0">
+                            <a href="{{ route('customer.address', ['locale' => app()->getLocale()]) }}" >
+                            <div class="card" style="border-radius: 24px; height: 100%;">
+                                <div class="card-body address-card" style="border: 2px dashed black; border-radius: 24px;">
+                                        <i class="fa-solid fa-plus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        @endif
+                        @else
                         <div class="col-lg-6 p-0">
                             <a href="{{ route('customer.address', ['locale' => app()->getLocale()]) }}" >
                             <div class="card" style="border-radius: 24px; height: 100%;">

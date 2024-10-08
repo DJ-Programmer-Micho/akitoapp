@@ -57,7 +57,7 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/skins/skin-demo-3.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/demos/demo-3.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/custom.css')}}">
-        <title>{{ $title ?? 'Page Title' }}</title>
+        <title>{{ $title ?? 'Akitu' }}</title>
         @stack('styles-password')
         @livewireStyles
     </head>

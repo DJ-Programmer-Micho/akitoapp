@@ -81,7 +81,7 @@ class BusinessController extends Controller
             ])
             ->where('status', 1)
             ->whereHas('categories', function ($query) {
-                $query->where('categories.id', 2);
+                $query->where('categories.id', 3);
             })
             ->get();
         });
@@ -112,7 +112,7 @@ class BusinessController extends Controller
             ])
             ->where('status', 1)
             ->whereHas('categories', function ($query) {
-                $query->where('categories.id', 11);
+                $query->where('categories.id', 2);
             })
             ->get();
         });
@@ -844,7 +844,8 @@ class BusinessController extends Controller
                             ]);
                         }
                         DB::commit();
-                    return 'Cash On Delivery';
+                        return redirect()->route('business.account',['locale' => app()->getLocale()]);
+                    // return 'Cash On Delivery';
                     } catch (\Exception $e) {
                         DB::rollBack();
                         dd($e);

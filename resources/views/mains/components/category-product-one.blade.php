@@ -109,7 +109,7 @@
                                 </div><!-- End .product-price -->
                                 @endif
                                 <div>
-                                    <a type="button" class="btn btn-primary text-white">{{__('VIEW DETAILS')}}</a>
+                                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" type="button" class="btn btn-primary text-white">{{__('VIEW DETAILS')}}</a>
                                 </div>
                             </div>
                         </div><!-- End .product-body -->
