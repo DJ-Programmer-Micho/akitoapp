@@ -196,12 +196,12 @@
                                                     </button>
                                                     <ul class="dropdown-menu dropdown-menu-end" style="">
                                                         <li wire:ignore>
-                                                            <a href="{{ route('super.product.edit', ['locale' => app()->getLocale(), 'id' => $order->id]) }}" class="dropdown-item edit-list">
+                                                            <a href="{{ route('super.orderManagementsViewer', ['locale' => app()->getLocale(), 'id' => $order->id]) }}" class="dropdown-item edit-list">
                                                                 <i class="fa-regular fa-pen-to-square me-2"></i>{{__('View')}}
                                                             </a>
                                                         </li>
                                                         <li wire:ignore>
-                                                            <a href="{{ route('super.product.edit', ['locale' => app()->getLocale(), 'id' => $order->id]) }}" class="dropdown-item edit-list">
+                                                            <a href="{{ route('super.orderInvoice', ['locale' => app()->getLocale(), 'tacking' => $order->tracking_number]) }}" class="dropdown-item edit-list">
                                                                 <i class="fa-solid fa-print me-1"></i>{{__('Print')}}
                                                             </a>
                                                         </li>

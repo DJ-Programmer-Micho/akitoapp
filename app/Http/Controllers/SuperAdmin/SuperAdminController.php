@@ -67,6 +67,11 @@ class SuperAdminController extends Controller
             "p_id" => $id
         ]);
     }
+    public function orderInvoice($local, $id){
+        return view('super-admins.pdf.orderinvoice.index',[
+            "p_id" => $id
+        ]);
+    }
     public function deliveryZones(){
         return view('super-admins.pages.delivery.index');
     }

@@ -1,7 +1,7 @@
 @extends('super-admins.layouts.layout')
 @section('super-admin-content')
 <div>
-    @livewire('super-admins.t-product-livewire')
+    @livewire('pdf.order-invoice-livewire',['id'=>$p_id])
 </div>
 @endsection
 @push('super_script')

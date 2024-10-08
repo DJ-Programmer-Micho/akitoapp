@@ -113,10 +113,7 @@
                     <div class="collapse menu-dropdown" id="sidebarZones">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.deliveryZones', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Delivery Zones')}}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.shippingCost', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Shipping Costs')}}</a>
+                                <a wire:navigate href="{{ route('super.orderManagements', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Order Management')}}</a>
                             </li>
                         </ul>
                     </div>
