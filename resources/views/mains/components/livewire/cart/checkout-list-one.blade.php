@@ -9,7 +9,7 @@
                 padding: 2rem 2.8rem 2rem;
             }
         </style>
-        <form action="{{ route('business.checkoutChecker', ['locale' => app()->getLocale(), 'digit' => $digitPaymentStatus, 'nvxf' => auth()->guard('customer')->user()->id])}}" method="POST">
+        <form action="{{ route('business.checkout', ['locale' => app()->getLocale()])}}" method="POST">
             @csrf
             <div class="row">
                 <div class="col-lg-9">
