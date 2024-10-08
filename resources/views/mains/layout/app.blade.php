@@ -5,10 +5,41 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <link rel="alternate" hreflang="en" href="http://127.0.0.1:8000/en" />
-        <link rel="alternate" hreflang="ar" href="http://127.0.0.1:8000/ar" />
-        <link rel="alternate" hreflang="ku" href="http://127.0.0.1:8000/ku" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="HandheldFriendly" content="True"/>
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="#003465">
+        <meta name="theme-color" content="#003465">
+        <meta name="publisher" content="Michel Shabo">
+        <meta name="mobile-web-app-title" content="Akitu">
+        <meta name="author" content="Furat Hariri">
+        <meta name="copyright" content="Akitu Co">
+        <meta name="page-topic" content="e-commerce">
+        <meta name="page-type" content="website">
+        <meta name="audience" content="Everyone">
+        <meta name="robots" content="index, follow"> 
 
+        <link rel="alternate" hreflang="en" href="http://akitu-co/en" />
+        <link rel="alternate" hreflang="ar" href="http://akitu-co/ar" />
+        <link rel="alternate" hreflang="ku" href="http://akitu-co/ku" />
+
+        <meta name='og:title' content='Akitu'>
+        <meta name='og:type' content='Software Company'>
+        <meta name='og:url' content='http://akitu-co.com/'>
+        {{-- <meta name='og:image' content='https://d7tztcuqve7v9.cloudfront.net/{{app('fixedimage_640x360_half')}}'> --}}
+        <meta name='og:site_name' content='Akitu'>
+        <meta name='og:description' content='Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'>
+
+        <meta name="news_keywords" content="akitu">
+        <meta name='keywords' content='akitu'>
+
+        <link rel="shortcut icon" href="{{app('logo_72')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{app('logo_144')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{app('logo_114')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{app('logo_72')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{app('logo_57')}}">
+        <link rel="apple-touch-icon-precomposed" href="{{app('logo_1024')}}">
+    
         <link rel="stylesheet" href="{{asset('main/assets/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css')}}">
         <!-- Plugins CSS File -->
         <link rel="stylesheet" href="{{asset('main/assets/css/bootstrap.min.css')}}">

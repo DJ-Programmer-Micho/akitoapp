@@ -51,7 +51,7 @@
     <body>	
         <div class="container mt-4">
             <a class="navbar-brand" href="/"> 
-                <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akitu" width="120">
+                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akitu" width="120">
             </a>	
             <hr class="underline_Logo" style="height: 5px; background-color: #003465">
             @yield('law')

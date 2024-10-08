@@ -2,13 +2,13 @@
     <div class="container">
         <div class="header-left">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}">
-                <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" width="120" height="20">
+                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="120" height="20">
             </a>
 
         </div>
         <div class="header-center">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo d-lg-none">
-                <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" alt="Akito" width="120" height="20">
+                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="120" height="20">
             </a>
         </div><!-- End .header-left -->
 

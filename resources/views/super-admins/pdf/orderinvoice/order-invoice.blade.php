@@ -27,8 +27,8 @@
                             <div class="card-header border-bottom-dashed p-4">
                                 <div class="d-flex">
                                     <div class="flex-grow-1">
-                                        <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" class="card-logo card-logo-dark" alt="logo dark" width="120">
-                                        <img src="{{ app('cloudfront').'web-setting/logo2.png' }}" class="card-logo card-logo-light" alt="logo light" width="120">
+                                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" class="card-logo card-logo-dark" alt="logo dark" width="120">
+                                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" class="card-logo card-logo-light" alt="logo light" width="120">
                                         <div class="mt-sm-5 mt-4">
                                             <h6 class="text-muted text-uppercase fw-semibold">Address</h6>
                                             <p class="text-muted mb-1" id="address-details">Iraq, Erbil</p>
