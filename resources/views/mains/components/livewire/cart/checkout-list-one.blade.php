@@ -9,11 +9,11 @@
                 padding: 2rem 2.8rem 2rem;
             }
         </style>
-        <form action="{{ route('business.checkout', ['locale' => app()->getLocale()])}}" method="POST">
+        <form action="{{ route('business.checkoutChecker', ['locale' => app()->getLocale(), 'digit' => $digitPaymentStatus, 'nvxf' => auth()->guard('customer')->user()->id])}}" method="POST">
             @csrf
             <div class="row">
                 <div class="col-lg-9">
-                    <h2 class="checkout-title">Select Address: {{$digitPaymentStatus ?? 'asd'}}</h2>
+                    <h2 class="checkout-title">Select Address: {{$digitPaymentStatus ?? 'none'}}</h2>
                     <div class="card card-dashboard px-1" style="border-radius: 16px">
                     <div class="row px-3">
                         @if ($addressList)

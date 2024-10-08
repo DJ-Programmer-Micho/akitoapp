@@ -42,19 +42,19 @@
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
-                            <label for="building_name">Building Name (Optional)</label>
+                            <label for="building_name">Building Name</label>
                             <input type="text" name="building_name" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
-                            <label for="apt_or_company">Apartment No./Company (Optional)</label>
+                            <label for="apt_or_company">Apartment No./Company</label>
                             <input type="text" name="apt_or_company" class="form-control">
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
-                            <label for="floor">Floor (Optional)</label>
+                            <label for="floor">Floor</label>
                             <input type="text" name="floor" class="form-control">
                         </div>
                     </div>
