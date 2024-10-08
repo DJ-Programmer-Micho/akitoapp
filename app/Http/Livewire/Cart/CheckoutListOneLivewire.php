@@ -42,9 +42,11 @@ class CheckoutListOneLivewire extends Component
         if ($this->addressList->isNotEmpty()) {
             $this->addressSelected = $this->addressList->first()->id;
             $this->selectAddress($this->addressSelected);
+            $this->loadZoneData();
         }
         
-        $this->loadZoneData();
+
+        
         $this->loadPayments();
         
         if ($this->paymentList->isNotEmpty()) {
