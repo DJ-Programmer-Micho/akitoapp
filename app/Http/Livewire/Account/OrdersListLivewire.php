@@ -29,11 +29,6 @@ class OrdersListLivewire extends Component
             }, 'variation', 'variation.images']);
         }])
         ->get();
-
-        // foreach ($this->orderTable as $order) {
-        //     // Calculate total amount for each order
-        //     $order->total_amount = $order->calculateTotalAmount();
-        // }
     }
 
 

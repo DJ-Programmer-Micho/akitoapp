@@ -59,6 +59,14 @@ class SuperAdminController extends Controller
     public function profile(){
         return view('super-admins.pages.profiles.index');
     }
+    public function orderManagements(){
+        return view('super-admins.pages.order.index');
+    }
+    public function orderManagementsViewer($local, $id){
+        return view('super-admins.pages.orderviewer.index',[
+            "p_id" => $id
+        ]);
+    }
     public function deliveryZones(){
         return view('super-admins.pages.delivery.index');
     }

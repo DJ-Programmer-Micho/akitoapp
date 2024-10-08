@@ -30,6 +30,10 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
     // public function calculateTotalAmount()
     // {
     //     return $this->orderItems->sum('total');

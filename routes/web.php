@@ -76,6 +76,8 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
         Route::get('/product-adjust', [SuperAdminController::class, 'adjustProduct'])->name('super.product.adjust');
         Route::get('/users-managements', [SuperAdminController::class, 'user'])->name('super.users');
         Route::get('/profile', [SuperAdminController::class, 'profile'])->name('super.profile');
+        Route::get('/order-managements', [SuperAdminController::class, 'orderManagements'])->name('super.orderManagements');
+        Route::get('/order-management-viewer/{id}', [SuperAdminController::class, 'orderManagementsViewer'])->name('super.orderManagementsViewer');
         Route::get('/delivery-zones', [SuperAdminController::class, 'deliveryZones'])->name('super.deliveryZones');
         Route::get('/shipping-costs', [SuperAdminController::class, 'shippingCost'])->name('super.shippingCost');
     });
