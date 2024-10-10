@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\Customer\CustomerAddressController;
 use App\Http\Controllers\LawController;
+use App\Http\Controllers\Pdf\PdfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,9 +79,15 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
         Route::get('/profile', [SuperAdminController::class, 'profile'])->name('super.profile');
         Route::get('/order-managements', [SuperAdminController::class, 'orderManagements'])->name('super.orderManagements');
         Route::get('/order-management-viewer/{id}', [SuperAdminController::class, 'orderManagementsViewer'])->name('super.orderManagementsViewer');
-        Route::get('/order-invoice/{tacking}', [SuperAdminController::class, 'orderInvoice'])->name('super.orderInvoice');
+        Route::get('/order-invoice/{tracking}', [SuperAdminController::class, 'orderInvoice'])->name('super.orderInvoice');
         Route::get('/delivery-zones', [SuperAdminController::class, 'deliveryZones'])->name('super.deliveryZones');
         Route::get('/shipping-costs', [SuperAdminController::class, 'shippingCost'])->name('super.shippingCost');
+        Route::get('/customer-list', [SuperAdminController::class, 'customerList'])->name('super.customerList');
+        Route::get('/customer-ranking', [SuperAdminController::class, 'customerRanking'])->name('super.customerRanking');
+        Route::get('/customer-orders/{id}', [SuperAdminController::class, 'customerOrder'])->name('super.customerOrder');
+        Route::prefix('pdf-viewer')->group(function () {
+            Route::get('/invoicepdf/{tracking}', [PdfController::class, 'pdfOrderInvoice'])->name('pdf.order.invoice');
+        });
     });
     // HOME - CUSTOEMRS
     Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {

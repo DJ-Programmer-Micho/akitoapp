@@ -4,6 +4,7 @@ namespace App\Http\Livewire\SuperAdmins;
 
 use App\Models\Order;
 use Livewire\Component;
+use App\Events\OrderStatusUpdated;
 
 class OrderViewerLivewire extends Component
 {
@@ -39,6 +40,7 @@ class OrderViewerLivewire extends Component
                     'type' => 'success',
                     'message' => __('Status Updated Successfully')
                 ]);
+                broadcast(new OrderStatusUpdated($order->id, $order->status))->toOthers();
             } else {
             }
         } else {

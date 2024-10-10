@@ -78,4 +78,15 @@ class SuperAdminController extends Controller
     public function shippingCost(){
         return view('super-admins.pages.shippingcost.index');
     }
+    public function customerList(){
+        return view('super-admins.pages.customerlist.index');
+    }
+    public function customerRanking(){
+        return view('super-admins.pages.customerranking.index');
+    }
+    public function customerOrder($local, $id){
+        return view('super-admins.pages.customerorder.index',[
+            "p_id" => $id
+        ]);
+    }
 }

@@ -95,18 +95,6 @@
                     </div>
                 </li> <!-- end Dashboard Menu -->
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Users Management')}}</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarUsers">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a wire:navigate href="{{ route('super.users', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Table Users')}}</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li> <!-- end Dashboard Menu -->
-                <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarZones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarZones">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Order Management')}}</span>
                     </a>
@@ -129,6 +117,33 @@
                             </li>
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.shippingCost', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Shipping Costs')}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarCustomers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarCustomers">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Customer Management')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarCustomers">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.customerList', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Customers List')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.customerRanking', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Customers Ranking')}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Users Management')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarUsers">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.users', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Table Users')}}</a>
                             </li>
                         </ul>
                     </div>

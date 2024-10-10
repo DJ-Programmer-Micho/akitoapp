@@ -1,23 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Invoice of #VL{{$orderData->tracking_number}}</title>
+    <link href="https://akitu-co.com/dashboard/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="https://akitu-co.com/dashboard/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="https://akitu-co.com/dashboard/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <style>
+@media print {
+
+    body {
+        background-color: transparent
+    }
+        @page {
+            size: A4; /* Set paper size to A4 */
+            margin: 20mm; /* Optional: Set page margins */
+        }
+        
+        body, .container-fluid, .page-content {
+            width: 100%;
+            height: 297mm;
+            margin: 0; /* Remove margins for printing */
+            padding: 0; /* Remove padding for printing */
+            -webkit-print-color-adjust: exact; /* Ensure colors are printed accurately */
+        }
+
+        .text-muted{
+            font-size: 10pt!important 
+        }
+        .card {
+            page-break-inside: avoid; /* Avoid breaking the card across pages */
+        }
+
+        /* Optional: Adjust font sizes for better print readability */
+        h5, p, table th, table td {
+            font-size: 10pt; /* Adjust font size to fit content on the page */
+        }
+        
+        .table {
+            width: 100%; /* Ensure table spans the full width of the page */
+        }
+    }
+    </style>
+</head>
+<body>
 <div class="page-content">
     <div class="container-fluid">
-
-        <!-- start page title -->
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Invoice Details</h4>
-
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Invoices</a></li>
-                            <li class="breadcrumb-item active">Invoice Details</li>
-                        </ol>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- end page title -->
 
         <div class="row justify-content-center">
             <div class="col-xxl-9">
@@ -51,24 +84,24 @@
                         <div class="col-lg-12">
                             <div class="card-body p-4">
                                 <div class="row g-3">
-                                    <div class="col-lg-3 col-6">
+                                    <div class="col-3">
                                         <p class="text-muted mb-2 text-uppercase fw-semibold">Invoice No</p>
                                         <h5 class="fs-14 mb-0">#VL<span id="invoice-no"></span>{{$orderData->tracking_number}}</h5>
                                     </div>
                                     <!--end col-->
-                                    <div class="col-lg-3 col-6">
+                                    <div class="col-3">
                                         <p class="text-muted mb-2 text-uppercase fw-semibold">Date</p>
                                         <h5 class="fs-14 mb-0"><span id="invoice-date">{{$orderData->created_at}}</span> 
                                             {{-- <small class="text-muted" id="invoice-time">02:36PM</small> --}}
                                         </h5>
                                     </div>
                                     <!--end col-->
-                                    <div class="col-lg-3 col-6">
+                                    <div class="col-3">
                                         <p class="text-muted mb-2 text-uppercase fw-semibold">Payment Status</p>
                                         <span class="badge bg-success-subtle text-success fs-11" id="payment-status">{{$orderData->payment_status}}</span>
                                     </div>
                                     <!--end col-->
-                                    <div class="col-lg-3 col-6">
+                                    <div class="col-3">
                                         <p class="text-muted mb-2 text-uppercase fw-semibold">Total Amount</p>
                                         <h5 class="fs-14 mb-0"><span id="total-amount">{{Number::currency($subTotal + $orderData->shipping_amount)}}</span></h5>
                                     </div>
@@ -104,13 +137,13 @@
                             <!--end card-body-->
                         </div><!--end col-->
                         <div class="col-lg-12">
-                            <div class="card-body p-4">
+                            <div class="card-body p-4 pt-0">
                                 <div class="table-responsive">
                                     <table class="table table-borderless text-center table-nowrap align-middle mb-0">
                                         <thead>
                                             <tr class="table-active">
                                                 <th scope="col" style="width: 50px;">#</th>
-                                                <th scope="col">Product Details</th>
+                                                <th scope="col" class="text-left">Product Details</th>
                                                 <th scope="col">Rate</th>
                                                 <th scope="col">Quantity</th>
                                                 <th scope="col" class="text-end">Amount</th>
@@ -186,9 +219,8 @@
                                     </div>
                                 </div> --}}
                                 <div class="hstack gap-2 justify-content-end d-print-none mt-4">
-                                    <button type="button" wire:click="printCustomPdf('{{ $orderData->tracking_number }}')" class="btn btn-success"><i class="ri-printer-line align-bottom me-1"></i> Print </button>
-                                    {{-- <a href="javascript:window.print()" class="btn btn-success"><i class="ri-printer-line align-bottom me-1"></i> Print</a> --}}
-                                    <button type="button" wire:click="printDirectPdf('{{ $orderData->tracking_number }}')" class="btn btn-primary"><i class="ri-download-2-line align-bottom me-1"></i> Download</button>
+                                    {{-- <a href="javascript:window.print()" class="btn btn-success"><i class="ri-printer-line align-bottom me-1"></i> Print</a>
+                                    <a href="javascript:void(0);" class="btn btn-primary"><i class="ri-download-2-line align-bottom me-1"></i> Download</a> --}}
                                 </div>
                             </div>
                             <!--end card-body-->
@@ -200,23 +232,25 @@
             <!--end col-->
         </div>
         <!--end row-->
-    </div><!-- container-fluid -->
-    <x-super-admins.components.pdf-order-invoice />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        // Latitude and longitude
-        const latitude = 33.3152;  // Example: Latitude of Baghdad, Iraq
-        const longitude = 44.3661; // Example: Longitude of Baghdad, Iraq
-    
-        // Google Maps link with the coordinates
-        const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-    
-        // Create the QR code
-        const qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: mapUrl,         // The URL that will be encoded in the QR code
-        width: 100,           // QR code width
-        height: 100           // QR code height
-        });
-    </script>
-</div><!-- End Page-content -->
 
+    </div><!-- container-fluid -->
+</div><!-- End Page-content -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    // Latitude and longitude
+    const latitude = 33.3152;  // Example: Latitude of Baghdad, Iraq
+    const longitude = 44.3661; // Example: Longitude of Baghdad, Iraq
+  
+    // Google Maps link with the coordinates
+    const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+  
+    // Create the QR code
+    const qrcode = new QRCode(document.getElementById("qrcode"), {
+      text: mapUrl,         // The URL that will be encoded in the QR code
+      width: 100,           // QR code width
+      height: 100           // QR code height
+    });
+  </script>
+  
+</body>
+</html>

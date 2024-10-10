@@ -2,21 +2,11 @@
 
 namespace App\Http\Livewire\SuperAdmins;
 
-use App\Models\Tag;
-use App\Models\Brand;
 use App\Models\Order;
-use App\Models\Product;
 use Livewire\Component;
-use App\Models\Category;
-use App\Models\SubCategory;
-use Illuminate\Support\Str;
-use App\Models\VariationSize;
-use App\Models\VariationColor;
-use App\Models\VariationCapacity;
-use App\Models\VariationMaterial;
-use Illuminate\Support\Facades\DB;
+use App\Models\Customer;
 
-class OrderLivewire extends Component
+class CustomerOrderLivewire extends Component
 {
     public $oPending = 0;
     public $oShipping = 0;
@@ -29,10 +19,14 @@ class OrderLivewire extends Component
     public $startDate;
     public $endDate;
 
+    public $fullName;
+
     public $pAll = 0;
     public $pPending = 0;
     public $pPayed = 0;
     public $pFailed = 0;
+
+    public $cust_id;
 
     public $search = '';
     public $statusFilter = 'all';
@@ -40,8 +34,10 @@ class OrderLivewire extends Component
     public $statusPaymentMethodFilter = 'all';
     public $page = 1;
 
-    public function mount()
+    public function mount($id)
     {
+        $this->cust_id = $id;
+        $this->fullName = Customer::with('customer_profile')->where('id', $id)->first()->customer_profile->only('first_name', 'last_name');
         $this->statusFilter = request()->query('statusFilter', 'all');
         $this->statusFilter = request()->query('statusPaymentFilter', 'all');
         $this->page = request()->query('page', 1);
@@ -82,7 +78,7 @@ class OrderLivewire extends Component
     {
         $locale = app()->getLocale();
         // Base query with eager loading
-        $query = Order::with([
+        $query = Order::where('customer_id', $this->cust_id)->with([
             'orderItems.product' => function ($query) use ($locale) {
                 $query->with([
                     'productTranslation' => function ($subQuery) use ($locale) {
@@ -166,7 +162,7 @@ class OrderLivewire extends Component
         // Paginate the results
         $orders = $query->paginate(15);
         // Return view with data
-        return view('super-admins.pages.order.order-table', [
+        return view('super-admins.pages.customerorder.customer-order-table', [
             'orderTable' => $orders,
         ]);
     }

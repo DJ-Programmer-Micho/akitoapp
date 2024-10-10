@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\CustomerProfile;
 
 class Customer extends Authenticatable implements JWTSubject
 {
@@ -17,6 +18,7 @@ class Customer extends Authenticatable implements JWTSubject
         'password',
         'status',
         'phone_verify',
+        'uid',
     ];
 
     protected $hidden = [
@@ -42,4 +44,5 @@ class Customer extends Authenticatable implements JWTSubject
 
     public function customer_profile() { return $this->hasOne(CustomerProfile::class, 'customer_id'); }
     public function customer_addresses() { return $this->hasMany(CustomerAddress::class, 'customer_id'); }
+    public function orders() { return $this->hasMany(Order::class, 'customer_id'); }
 }

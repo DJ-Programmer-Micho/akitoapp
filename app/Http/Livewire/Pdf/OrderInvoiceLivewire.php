@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Pdf;
 
 use App\Models\Order;
 use Livewire\Component;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderInvoiceLivewire extends Component
 {
@@ -22,33 +23,38 @@ class OrderInvoiceLivewire extends Component
         $this->o_id = $id;
     }
 
-    public function updateStatus(int $id)
+    public function printCustomPdf($invoiceId){
+        try {
+            $this->dispatchBrowserEvent('openPdfInNewTab', ['trackingId' => $invoiceId]);
+        } catch (\Exception $e) {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('PDF Error')]);
+        }
+    } 
+
+    // direct pdf download?
+    public function printDirectPdf($invoiceId)
     {
-        // Find the order by ID
-        $order = Order::find($id);
+        try {
+            $sum = 0;
+            $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')
+                          ->where('tracking_number', $invoiceId)
+                          ->first();
     
-        if ($order) {
-            // Ensure that the selected payment status is not empty
-            if (!empty($this->statusPaymentFilter)) {
-                // Update the payment status with the selected filter value
-                $order->payment_status = $this->statusPaymentFilter;
-                $order->save();
-    
-                // Dispatch a success message
-                $this->dispatchBrowserEvent('alert', [
-                    'type' => 'success',
-                    'message' => __('Status Updated Successfully')
-                ]);
-            } else {
-            }
-        } else {
-            // Dispatch an error message if the order is not found
-            $this->dispatchBrowserEvent('alert', [
-                'type' => 'error',
-                'message' => __('Record Not Found')
+            // Load the PDF view
+            $pdf = Pdf::loadView('super-admins.pdf.orderinvoice.order-invoice-print', [
+                'orderData' => $order,
+                'subTotal' => $sum,
             ]);
+    
+            // Return the PDF as a download
+            return $pdf->download("invoice_{$invoiceId}.pdf");
+        } catch (\Exception $e) {
+            // Log the error and provide feedback
+            dd('PDF Generation Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('PDF Error: ' . $e->getMessage()));
         }
     }
+    
 
     public function render()
     {

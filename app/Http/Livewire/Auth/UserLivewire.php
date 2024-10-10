@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Auth;
 
 use App\Models\User;
-use App\Models\Brand;
 use App\Models\Profile;
 use Livewire\Component;
 use Illuminate\Support\Str;
@@ -269,47 +268,47 @@ class UserLivewire extends Component
     
         $this->closeModal();
         $this->filterUsers($this->statusFilter);
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Brand Updated Successfully')]);
+        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('User Updated Successfully')]);
     }
 
 
-    public function removeUser (int $id) {
-        $this->brand_selected_id_delete = Brand::find($id);
-        $this->brand_name_selected_delete = BrandTranslation::where('brand_id', $id)->where('locale', app()->getLocale())->first() ?? "Delete";
-        if ($this->brand_name_selected_delete) {
-            $this->showTextTemp = $this->brand_name_selected_delete->name;
-            $this->confirmDelete = true;
-        } else {
-            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Record Not Found')]);
-        }
-    }
+    // public function removeUser (int $id) {
+    //     $this->brand_selected_id_delete = Brand::find($id);
+    //     $this->brand_name_selected_delete = BrandTranslation::where('brand_id', $id)->where('locale', app()->getLocale())->first() ?? "Delete";
+    //     if ($this->brand_name_selected_delete) {
+    //         $this->showTextTemp = $this->brand_name_selected_delete->name;
+    //         $this->confirmDelete = true;
+    //     } else {
+    //         $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Record Not Found')]);
+    //     }
+    // }
 
     public $brandNameToDelete = '';
-    public function destroyBrand () {
-        if ($this->confirmDelete && $this->brandNameToDelete === $this->showTextTemp) {
-            try {
-                if($this->brand_selected_id_delete->image) {
-                    Storage::disk('s3')->delete($this->brand_selected_id_delete->image);
-                } else {
-                    $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => __('Something Went Wrong, Image Did Not Removed From Server')]);
-                }
-            } catch (\Exception $e) {
-                $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
-                return;
-            }
-            Brand::find($this->brand_selected_id_delete->id)->delete();
-            $this->closeModal();
-            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Brand Deleted Successfully')]);
+    // public function destroyBrand () {
+    //     if ($this->confirmDelete && $this->brandNameToDelete === $this->showTextTemp) {
+    //         try {
+    //             if($this->brand_selected_id_delete->image) {
+    //                 Storage::disk('s3')->delete($this->brand_selected_id_delete->image);
+    //             } else {
+    //                 $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => __('Something Went Wrong, Image Did Not Removed From Server')]);
+    //             }
+    //         } catch (\Exception $e) {
+    //             $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
+    //             return;
+    //         }
+    //         Brand::find($this->brand_selected_id_delete->id)->delete();
+    //         $this->closeModal();
+    //         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Brand Deleted Successfully')]);
 
-            $this->confirmDelete = false;
-            $this->brand_selected_id_delete = null;
-            $this->brand_name_selected_delete = null;
-            $this->brandNameToDelete = '';
-            $this->showTextTemp = null;
-        } else {
-            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Operaiton Faild')]);
-        }
-    }
+    //         $this->confirmDelete = false;
+    //         $this->brand_selected_id_delete = null;
+    //         $this->brand_name_selected_delete = null;
+    //         $this->brandNameToDelete = '';
+    //         $this->showTextTemp = null;
+    //     } else {
+    //         $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Operaiton Faild')]);
+    //     }
+    // }
 
     public function sadImage () { 
         $this->de = 1;
