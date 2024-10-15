@@ -221,3 +221,11 @@
 .custom-table-info .nav-pills+.tab-content .tab-pane{
     padding: 0;
 }
+
+
+.btn-ghost-ptimary:hover{color:#865ce2}
+.btn-ghost-ptimary{color:var(--vz-primary-color)}
+.btn-ghost-ptimary{--vz-btn-color:var(--vz-primary);}
+.btn-ghost-success:hover{color:#865ce2}
+.btn-ghost-success{color:var(--vz-success-color)}
+.btn-ghost-success{--vz-btn-color:var(--vz-success);}

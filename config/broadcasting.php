@@ -49,7 +49,7 @@ return [
 
         'ably' => [
             'driver' => 'ably',
-            'key' => env('ABLY_KEY'),
+            'key' => env('VITE_ABLY_KEY'),
         ],
 
         'redis' => [

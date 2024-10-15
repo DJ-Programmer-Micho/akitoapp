@@ -173,11 +173,11 @@
                     <i class='bx bx-moon fs-22'></i>
                 </button>
             </div>
-
+            
             <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                 <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                     <i class='bx bx-bell fs-22'></i>
-                    <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
+                    <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">{{$notificationsCount}}<span class="visually-hidden">unread messages</span></span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
 
@@ -200,7 +200,7 @@
                                         All (4)
                                     </a>
                                 </li>
-                                <li class="nav-item waves-effect waves-light">
+                                {{-- <li class="nav-item waves-effect waves-light">
                                     <a class="nav-link" data-bs-toggle="tab" href="#messages-tab" role="tab" aria-selected="false">
                                         Messages
                                     </a>
@@ -209,43 +209,32 @@
                                     <a class="nav-link" data-bs-toggle="tab" href="#alerts-tab" role="tab" aria-selected="false">
                                         Alerts
                                     </a>
-                                </li>
+                                </li> --}}
                             </ul>
                         </div>
 
                     </div>
-
                     <div class="tab-content position-relative" id="notificationItemsTabContent">
                         <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
                             <div data-simplebar style="max-height: 300px;" class="pe-2">
+                                @forelse ($notifications as $notification)
                                 <div class="text-reset notification-item d-block dropdown-item position-relative">
-                                    <div class="d-flex">
-                                        <div class="avatar-xs me-3 flex-shrink-0">
-                                            <span class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
-                                                <i class="bx bx-badge-check"></i>
-                                            </span>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <a href="#!" class="stretched-link">
-                                                <h6 class="mt-0 mb-2 lh-base">Your <b>Elite</b> author Graphic
-                                                    Optimization <span class="text-secondary">reward</span> is
-                                                    ready!
-                                                </h6>
-                                            </a>
-                                            <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                <span><i class="mdi mdi-clock-outline"></i> Just 30 sec ago</span>
-                                            </p>
-                                        </div>
-                                        <div class="px-2 fs-15">
-                                            <div class="form-check notification-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="all-notification-check01">
-                                                <label class="form-check-label" for="all-notification-check01"></label>
-                                            </div>
-                                        </div>
+                                    <div class="notification">
+                                        {{ $notification->data['message'] }}<br>
+                                        <button type="button" wire:click="markAsRead('{{ $notification->id }}')" class="btn btn-soft-success btn-sm">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                        @if (!empty($notification->data['orderNumber']))
+                                        <a target="_blank" wire:click="markAsRead('{{ $notification->id }}')" href="{{ route('super.orderManagementsViewer', ['locale' => app()->getLocale(), 'id' => $notification->data['orderNumber']]) }}" class="btn btn-soft-secondary btn-sm">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                    @endif
                                     </div>
                                 </div>
-
-                                <div class="text-reset notification-item d-block dropdown-item position-relative">
+                                @empty
+                                Nothing
+                                @endforelse
+                                {{-- <div class="text-reset notification-item d-block dropdown-item position-relative">
                                     <div class="d-flex">
                                         <img src="assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
                                         <div class="flex-grow-1">
@@ -315,12 +304,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
 
-                                <div class="my-3 text-center view-all">
+                                {{-- <div class="my-3 text-center view-all">
                                     <button type="button" class="btn btn-soft-success waves-effect waves-light">View
                                         All Notifications <i class="ri-arrow-right-line align-middle"></i></button>
-                                </div>
+                                </div> --}}
                             </div>
 
                         </div>
@@ -437,7 +426,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="dropdown ms-sm-3 header-item topbar-user">
                 <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <span class="d-flex align-items-center">
@@ -451,12 +439,11 @@
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
                     <h6 class="dropdown-header">{{__('Welcome')}} {{auth()->guard('admin')->user()->profile->first_name}}</h6>
-                    <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">{{__('Profile')}}</span></a>
+                    <a class="dropdown-item" href="{{ route('super.profile',['locale' => app()->getLocale()]) }}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">{{__('Profile')}}</span></a>
                     {{-- <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
                     <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
                     <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a> --}}
-                    <div class="dropdown-divider"></div>
-                    @if (auth()->guard('admin')->user()->roles[0]->id == 1)
+                    @if (hasRole([1, 2, 6]))
                     <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>$5971.67</b></span></a>
                     @endif
                     {{-- <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end">New</span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a> --}}

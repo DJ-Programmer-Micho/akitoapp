@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('zones', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('delivery_man');
+            $table->foreignId('delivery_team')->references('id')->on('driver_teams')->onDelete('cascade');;
             $table->string('digit_payment');
             $table->string('cod_payment');
             $table->string('status');

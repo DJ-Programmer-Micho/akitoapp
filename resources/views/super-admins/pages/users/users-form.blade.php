@@ -132,10 +132,55 @@
                                                         <p>Responsible for deleting existing data in the application.</p>
                                                     </div>
                                                 </div>
+                                                <div class="col-6">
+                                                    <div class="form-check">
+                                                        <input wire:model="rolesEdit" wire:click="driverCheck" class="form-check-input" type="checkbox" value="8" id="role-delete-action">
+                                                        <label class="form-check-label driver" for="role-delete-action">Driver</label>
+                                                        <p>Responsible for delivering products.</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-
+                                    @if ($driverSection)
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label for="driverLicEdit">{{__('Driving Lic. No.')}}</label>
+                                                <input type="text" class="form-control" wire:model="driverLicEdit" placeholder="1568091">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label for="plateNumberEdit">{{__('Plate Number')}}</label>
+                                                <input type="text" class="form-control" wire:model="plateNumberEdit" placeholder="22 M 650124">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label for="vehicleLicEdit">{{__('Vehicle Lic. No.')}}</label>
+                                                <input type="text" class="form-control" wire:model="vehicleLicEdit" placeholder="1503698">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label for="vehicleModelEdit">{{__('Vehicle Model')}}</label>
+                                                <input type="text" class="form-control" wire:model="vehicleModelEdit" placeholder="Toyota">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="mb-3">
+                                                <label for="vinNumberEdit">{{__('Vehicle Vin No.')}}</label>
+                                                <input type="text" class="form-control" wire:model="vinNumberEdit" placeholder="4Y1SL65848Z411439">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">

@@ -256,7 +256,7 @@ class ProfileLivewire extends Component
 
     // Render
     public function render(){        
-        $query = User::with(['profile', 'roles'])->where('id', auth()->user()->id)->first();
+        $query = User::with(['profile', 'roles'])->where('id', auth()->guard('admin')->user()->id)->first();
 
         return view('super-admins.pages.profiles.profile', [
             'query' => $query,

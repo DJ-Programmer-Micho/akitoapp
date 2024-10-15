@@ -26,7 +26,7 @@
                         <div class="d-flex align-items-center">
                             <h5 class="card-title flex-grow-1 mb-0">Order #{{$orderData->tracking_number}}</h5>
                             <div class="flex-shrink-0">
-                                <a href="apps-invoices-details.html" class="btn btn-success btn-sm"><i class="ri-download-2-fill align-middle me-1"></i> Invoice</a>
+                                <a target="_blank" href="{{ route('super.orderInvoice', ['locale' => app()->getLocale(), 'tracking' => $orderData->tracking_number]) }}" class="btn btn-success btn-sm"><i class="fa-regular fa-eye me-1"></i> Print</a>
                             </div>
                         </div>
                     </div>
@@ -239,18 +239,38 @@
                     </div>
                     <div class="card-body">
                         <div class="text-center">
+                            <script src="https://cdn.lordicon.com/lordicon.js"></script>
+                            @if ($orderData->driver)
                             <lord-icon src="https://cdn.lordicon.com/uetqnvvg.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:80px;height:80px"></lord-icon>
-                            <h5 class="fs-16 mt-2">RQK Logistics</h5>
-                            <p class="text-muted mb-0">ID: MFDS1400457854</p>
-                            <p class="text-muted mb-0">Payment Mode : {{$orderData->payment_method}}</p>
+                            @else
+                            <lord-icon src="https://cdn.lordicon.com/lltgvngb.json" trigger="loop" delay="2000" state="hover-oscillate" colors="primary:#66d7ee,secondary:#e83a30" style="width:80px;height:80px"></lord-icon>
+                            @endif
+                            <h5 class="fs-16 mt-2">Akitu Logistics</h5>
+                            <p class="text-muted mb-0">CAR MODEL: {{$carModel}}</p>
+                            <p class="text-muted mb-0">PLATE NUMBER: {{$plateNumber}}</p>
+                            <p class="text-muted mb-0">Payment Mode: {{ $orderData->payment_method }}</p>
+                            @if (hasRole([1, 4]))
+                            <label class="fs-16 mt-2">Select Driver</label>                        
+                            <select class="js-basic-single form-select" name="selectedDriver" wire:model="selectedDriver" wire:change="driverData">
+                                <option value="" disabled selected>Select a Driver</option> <!-- Placeholder -->
+                                @foreach($driverList as $group)
+                                    <optgroup label="{{ $group['text'] }}">
+                                        @foreach($group['children'] as $driver)
+                                            <option value="{{ $driver['id'] }}">{{ $driver['driverName'] }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                            @endif
                         </div>
                     </div>
                 </div>
                 <!--end card-->
+
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex">
-                            <h5 class="card-title flex-grow-1 mb-0"><i class="mdi mdi-truck-fast-outline align-middle me-1 text-muted"></i> Payment Status</h5>
+                            <h5 class="card-title flex-grow-1 mb-0"><i class="fa-solid fa-dollar-sign me-1"></i> Payment Status</h5>
                         </div>
                     </div>
                     <div class="card-body">
@@ -263,15 +283,52 @@
                             <span class="badge bg-danger-subtle text-danger text-uppercase" style="font-size: 2em">{{$orderData->payment_status}}</span>
                             @endif
                         </div>
+                        @if (hasRole([1, 3, 5]))
                         <div class="text-center">
-                            <select class="form-control" data-choices data-choices-search-false wire:model="statusPaymentFilter" wire:click="updateStatus({{$orderData->id}})">
+                            <select class="form-control" data-choices data-choices-search-false wire:model="statusPaymentFilter" wire:change="updatePaymentStatus({{$orderData->id}})">
                                 <option value="">Status</option>
-                                <option value="all">All</option>
                                 <option value="pending">Pending</option>
                                 <option value="successful">Successful</option>
                                 <option value="failed">Failed</option>
                             </select>
                         </div>
+                        @endif
+                    </div>
+                </div>
+                <!--end card-->
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex">
+                            <h5 class="card-title flex-grow-1 mb-0"><i class="mdi mdi-truck-fast-outline align-middle me-1 text-muted"></i> Shipping Status</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            @if ($orderData->status == "pending")
+                            <span class="badge bg-warning-subtle text-warning text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
+                            @elseif ($orderData->status == "shipping")
+                            <span class="badge bg-primary-subtle text-primary text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
+                            @elseif ($orderData->status == "delivered")
+                            <span class="badge bg-success-subtle text-success text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
+                            @elseif ($orderData->status == "canceled")
+                            <span class="badge bg-danger-subtle text-danger text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
+                            @else
+                            <span class="badge bg-secondary-subtle text-secondary text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
+                            @endif
+                        </div>
+                        @if (hasRole([1, 4, 8]))
+                        <div class="text-center">
+                            <select class="form-control" data-choices data-choices-search-false wire:model="statusFilter" wire:change="updateStatus({{$orderData->id}})">
+                                <option value="">Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="shipping">Shipping</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="canceled">Cancelled</option>
+                                <option value="refunded">Refunded</option>
+                            </select>
+                        </div>
+                        @endif
                     </div>
                 </div>
                 <!--end card-->
@@ -390,3 +447,46 @@
 
     </div><!-- container-fluid -->
 </div><!-- End Page-content -->
+@push('cProductScripts')
+<script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="{{ asset('dashboard/css/select2.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 with placeholder and allowClear option
+        $('.js-basic-single').select2({
+            placeholder: 'Select a Driver',
+            allowClear: true // Allows clearing the selection
+        });
+
+        // Update Livewire when Select2 selection changes
+        $('.js-basic-single').on('change', function (e) {
+            var selectedDriver = $(this).val();
+            @this.set('selectedDriver', selectedDriver); // This updates the Livewire property
+            @this.driverData(); // Call the driverData function in Livewire
+        });
+    });
+    
+    var selectedDriver = @json($selectedDriver);
+    $('.js-basic-single').val(selectedDriver).trigger('change');
+    console.log(selectedDriver)
+    
+
+    // Reinitialize Select2 after Livewire re-renders the component
+    document.addEventListener('livewire:load', function () {
+        Livewire.hook('message.processed', (message, component) => {
+            $('.js-basic-single').select2({
+                placeholder: 'Select a Driver',
+                allowClear: true // Re-apply the allowClear option
+            });
+
+            // Re-trigger the placeholder
+            if ($('.js-basic-single').val() === '') {
+                $('.js-basic-single').select2('val', null); // Clear selection to show placeholder
+            }
+        });
+    });
+</script>
+@endpush

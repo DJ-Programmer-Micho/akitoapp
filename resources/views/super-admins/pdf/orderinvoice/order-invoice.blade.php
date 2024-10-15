@@ -1,4 +1,165 @@
 <div class="page-content">
+    <style>
+        @media print {
+            :root, [data-bs-theme=light] {
+    --vz-blue: #6691e7;
+    --vz-indigo: #405189;
+    --vz-purple: #865ce2;
+    --vz-pink: #f672a7;
+    --vz-red: #ed5e5e;
+    --vz-orange: #f1963b;
+    --vz-yellow: #e8bc52;
+    --vz-green: #13c56b;
+    --vz-teal: #02a8b5;
+    --vz-cyan: #50c3e6;
+    --vz-white: #fff;
+    --vz-gray: #878a99;
+    --vz-gray-dark: #363d48;
+    --vz-gray-100: #f3f6f9;
+    --vz-gray-200: #eff2f7;
+    --vz-gray-300: #e9ebec;
+    --vz-gray-400: #ced4da;
+    --vz-gray-500: #adb5bd;
+    --vz-gray-600: #878a99;
+    --vz-gray-700: #495057;
+    --vz-gray-800: #363d48;
+    --vz-gray-900: #212529;
+    --vz-primary: #6691e7;
+    --vz-secondary: #865ce2;
+    --vz-success: #13c56b;
+    --vz-info: #50c3e6;
+    --vz-warning: #e8bc52;
+    --vz-danger: #ed5e5e;
+    --vz-light: #f3f6f9;
+    --vz-dark: #363d48;
+    --vz-primary-rgb: 102, 145, 231;
+    --vz-secondary-rgb: 134, 92, 226;
+    --vz-success-rgb: 19, 197, 107;
+    --vz-info-rgb: 80, 195, 230;
+    --vz-warning-rgb: 232, 188, 82;
+    --vz-danger-rgb: 237, 94, 94;
+    --vz-light-rgb: 243, 246, 249;
+    --vz-dark-rgb: 54, 61, 72;
+    --vz-primary-text-emphasis: #577bc4;
+    --vz-secondary-text-emphasis: #724ec0;
+    --vz-success-text-emphasis: #10a75b;
+    --vz-info-text-emphasis: #44a6c4;
+    --vz-warning-text-emphasis: #c5a046;
+    --vz-danger-text-emphasis: #c95050;
+    --vz-light-text-emphasis: #ced4da;
+    --vz-dark-text-emphasis: #363d48;
+    --vz-primary-bg-subtle: #e8effb;
+    --vz-secondary-bg-subtle: #ede7fb;
+    --vz-success-bg-subtle: #dcf6e9;
+    --vz-info-bg-subtle: #e5f6fb;
+    --vz-warning-bg-subtle: #fcf5e5;
+    --vz-danger-bg-subtle: #fce7e7;
+    --vz-light-bg-subtle: #f9fbfc;
+    --vz-dark-bg-subtle: #e9ebec;
+    --vz-primary-border-subtle: #c2d3f5;
+    --vz-secondary-border-subtle: #cfbef3;
+    --vz-success-border-subtle: #a1e8c4;
+    --vz-info-border-subtle: #b9e7f5;
+    --vz-warning-border-subtle: #f6e4ba;
+    --vz-danger-border-subtle: #f8bfbf;
+    --vz-light-border-subtle: #eff2f7;
+    --vz-dark-border-subtle: #adb5bd;
+    --vz-white-rgb: 255, 255, 255;
+    --vz-black-rgb: 0, 0, 0;
+    --vz-font-sans-serif: "Rubik", sans-serif;
+    --vz-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --vz-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+    --vz-body-font-family: var(--vz-font-sans-serif);
+    --vz-body-font-size: 0.825rem;
+    --vz-body-font-weight: 400;
+    --vz-body-line-height: 1.5;
+    --vz-body-color: #212529;
+    --vz-body-color-rgb: 33, 37, 41;
+    --vz-body-bg: #f3f6f9;
+    --vz-body-bg-rgb: 243, 246, 249;
+    --vz-emphasis-color: #212529;
+    --vz-emphasis-color-rgb: 33, 37, 41;
+    --vz-secondary-color: #878a99;
+    --vz-secondary-color-rgb: 135, 138, 153;
+    --vz-secondary-bg: #fff;
+    --vz-secondary-bg-rgb: 255, 255, 255;
+    --vz-tertiary-color: rgba(33, 37, 41, 0.5);
+    --vz-tertiary-color-rgb: 33, 37, 41;
+    --vz-tertiary-bg: #eff2f7;
+    --vz-tertiary-bg-rgb: 239, 242, 247;
+    --vz-heading-color: #495057;
+    --vz-link-color: #6691e7;
+    --vz-link-color-rgb: 102, 145, 231;
+    --vz-link-decoration: none;
+    --vz-link-hover-color: #6691e7;
+    --vz-link-hover-color-rgb: 102, 145, 231;
+    --vz-code-color: #f672a7;
+    --vz-highlight-bg: #fcf8e3;
+    --vz-border-width: 1px;
+    --vz-border-style: solid;
+    --vz-border-color: #e9ebec;
+    --vz-border-color-translucent: #ced4da;
+    --vz-border-radius: 0.25rem;
+    --vz-border-radius-sm: 0.2rem;
+    --vz-border-radius-lg: 0.3rem;
+    --vz-border-radius-xl: 1rem;
+    --vz-border-radius-xxl: 2rem;
+    --vz-border-radius-2xl: var(--vz-border-radius-xxl);
+    --vz-border-radius-pill: 50rem;
+    --vz-box-shadow: 0 1px 2px rgba(56, 65, 74, 0.15);
+    --vz-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --vz-box-shadow-lg: 0 5px 10px rgba(30, 32, 37, 0.12);
+    --vz-box-shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+    --vz-focus-ring-width: 0.25rem;
+    --vz-focus-ring-opacity: 0.25;
+    --vz-focus-ring-color: rgba(var(--vz-primary-rgb), 0.25);
+    --vz-form-valid-color: #13c56b;
+    --vz-form-valid-border-color: #13c56b;
+    --vz-form-invalid-color: #ed5e5e;
+    --vz-form-invalid-border-color: #ed5e5e;
+            }
+            body {
+                background-color: transparent!important
+                /* background-color: transparent!important */
+            }
+            .card {
+                background-color: white
+                /* background-color: transparent!important */
+            }
+            .card {
+                background-color: white
+                /* background-color: transparent!important */
+            }
+                @page {
+                    size: A4; /* Set paper size to A4 */
+                    margin: 20mm; /* Optional: Set page margins */
+                }
+                
+                body, .container-fluid, .page-content {
+                    width: 100%;
+                    height: 297mm;
+                    margin: 0; /* Remove margins for printing */
+                    padding: 0; /* Remove padding for printing */
+                    -webkit-print-color-adjust: exact; /* Ensure colors are printed accurately */
+                }
+        
+                .text-muted{
+                    font-size: 10pt!important 
+                }
+                .card {
+                    page-break-inside: avoid; /* Avoid breaking the card across pages */
+                }
+        
+                /* Optional: Adjust font sizes for better print readability */
+                h5, p, table th, table td {
+                    font-size: 10pt; /* Adjust font size to fit content on the page */
+                }
+                
+                .table {
+                    width: 100%; /* Ensure table spans the full width of the page */
+                }
+            }
+            </style>
     <div class="container-fluid">
 
         <!-- start page title -->
@@ -187,7 +348,7 @@
                                 </div> --}}
                                 <div class="hstack gap-2 justify-content-end d-print-none mt-4">
                                     <button type="button" wire:click="printCustomPdf('{{ $orderData->tracking_number }}')" class="btn btn-success"><i class="ri-printer-line align-bottom me-1"></i> Print </button>
-                                    {{-- <a href="javascript:window.print()" class="btn btn-success"><i class="ri-printer-line align-bottom me-1"></i> Print</a> --}}
+                                    <a href="javascript:window.print()" class="btn btn-success"><i class="ri-printer-line align-bottom me-1"></i> aPrint</a>
                                     <button type="button" wire:click="printDirectPdf('{{ $orderData->tracking_number }}')" class="btn btn-primary"><i class="ri-download-2-line align-bottom me-1"></i> Download</button>
                                 </div>
                             </div>

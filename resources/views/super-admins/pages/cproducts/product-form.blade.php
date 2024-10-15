@@ -795,26 +795,26 @@
     // Locale-specific configuration for Summernote editors
 const locales = ['en', 'ar', 'ku'];
 
-locales.forEach(locale => {
-    // $(`#product_content_${locale}`).summernote({
-    //     toolbar: [
-    //         ['style', ['style']],
-    //         ['font', ['bold', 'underline', 'clear']],
-    //         ['fontname', ['fontname']],
-    //         ['color', ['color']],
-    //         ['para', ['ul', 'ol', 'paragraph']],
-    //         ['table', ['table']],
-    //         ['insert', ['link', 'picture', 'video']],
-    //         ['view', ['codeview', 'help']],
-    //     ],
-    //     height: 200,
-    //     callbacks: {
-    //         onChange: function(contents) {
-    //             // Dynamically set the content in Livewire property
-    //             @this.set(`contents.${locale}`, contents);
-    //         }
-    //     }
-    // });
+    locales.forEach(locale => {
+        // $(`#product_content_${locale}`).summernote({
+        //     toolbar: [
+        //         ['style', ['style']],
+        //         ['font', ['bold', 'underline', 'clear']],
+        //         ['fontname', ['fontname']],
+        //         ['color', ['color']],
+        //         ['para', ['ul', 'ol', 'paragraph']],
+        //         ['table', ['table']],
+        //         ['insert', ['link', 'picture', 'video']],
+        //         ['view', ['codeview', 'help']],
+        //     ],
+        //     height: 200,
+        //     callbacks: {
+        //         onChange: function(contents) {
+        //             // Dynamically set the content in Livewire property
+        //             @this.set(`contents.${locale}`, contents);
+        //         }
+        //     }
+        // });
 
         $(`#product-description${locale}`).summernote({
             toolbar: [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Main;
 
+use App\Models\User;
 use App\Models\Brand;
 use App\Models\Order;
 use App\Models\Product;
@@ -12,15 +13,18 @@ use App\Models\SubCategory;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\VariationSize;
+use App\Models\PaymentMethods;
 use App\Models\VariationColor;
 use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\PaymentMethods;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use App\Events\EventCustomerOrderCheckout;
+use App\Events\EventNotifyCustomerOrderCheckout;
+use App\Notifications\NotifyCustomerOrderCheckout;
 
 class BusinessController extends Controller
 {
@@ -820,6 +824,8 @@ class BusinessController extends Controller
                             'city' => $customerA->city,
                             'address' => $customerA->address,
                             'zip_code' => $customerA->zip_code,
+                            'latitude' => $customerA->latitude,
+                            'longitude' => $customerA->longitude,
                             'phone_number' => $customerA->phone_number,
                             'payment_method' => $paymentType,
                             'payment_status' => 'pending',
@@ -842,6 +848,35 @@ class BusinessController extends Controller
                                 'price' => $pPrice,
                                 'total' => $item->quantity * $pPrice, // Calculate total for this item
                             ]);
+                        }
+
+                        try {
+                            $adminUsers = User::whereHas('roles', function ($query) {
+                                $query->where('name', 'Administrator')
+                                      ->orWhere('name', 'Data Entry Specialist')
+                                      ->orWhere('name', 'Finance Manager')
+                                      ->orWhere('name', 'Order Processor');
+                            })->whereDoesntHave('roles', function ($query) {
+                                $query->where('name', 'Driver');
+                            })->get();
+                
+                            foreach ($adminUsers as $admin) {
+                                if (!$admin->notifications()->where('data->order_id', $order->tracking_number)
+                                    ->where('data->tracking_number', $random_number)->exists()) {
+                                    $admin->notify(new NotifyCustomerOrderCheckout(
+                                        $order->tracking_number, 
+                                        $order->id,
+                                        $customerP->first_name .' '. $customerP->last_name, 
+                                        "New Order has Been Submitted By {$customerP->first_name} {$customerP->last_name} Order ID: [#{$random_number}]", 
+                                    ));
+                                }
+                            }
+                            try {
+                            broadcast(new EventCustomerOrderCheckout($random_number, $customerP->first_name .' '. $customerP->last_nam))->toOthers();    
+                            } catch (\Exception $e) {
+                                // DO NOTHING
+                            }
+                        } catch (\Exception $e) {
                         }
                         DB::commit();
                         return redirect()->route('business.account',['locale' => app()->getLocale()]);

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedInteger('phone_verify')->default(0);
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('phone_otp_number')->nullable();
-            $table->string('uid');
+            $table->string('uid')->unique();
             $table->rememberToken();
             $table->timestamps();
         });

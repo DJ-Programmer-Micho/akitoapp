@@ -17,7 +17,7 @@
                         <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="" height="40">
                     </a>
                 </div>
-                <p class="mt-3 fs-15 fw-medium">Premium Admin & Dashboard Template</p>
+                <p class="mt-3 fs-15 fw-medium">Premium Admin</p>
             </div>
         </div>
     </div>

@@ -17,6 +17,9 @@ class Order extends Model
         'city',
         'address',
         'zip_code',
+        'latitude',
+        'longitude',
+        'driver',
         'phone_number',
         'shipping_amount',
         'total_amount',
@@ -33,6 +36,10 @@ class Order extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+    public function driverUser() // Renamed for clarity
+    {
+        return $this->belongsTo(User::class, 'driver'); // Specify 'driver' as the foreign key
     }
     // public function calculateTotalAmount()
     // {

@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Log;
 
 function pointInPolygon($latitude, $longitude, $polygon)
 {
-    Log::info('Checking point in polygon:', [
-        'latitude' => $latitude,
-        'longitude' => $longitude,
-        'polygon' => $polygon
-    ]);
+    // Log::info('Checking point in polygon:', [
+    //     'latitude' => $latitude,
+    //     'longitude' => $longitude,
+    //     'polygon' => $polygon
+    // ]);
 
     $inside = false;
 

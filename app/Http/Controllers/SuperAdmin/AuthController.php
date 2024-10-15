@@ -22,11 +22,10 @@ class AuthController extends Controller
         ]);
 
         // Attempt login
+        // Authentication successful
         if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
-            // Authentication successful
-            return redirect()->route('super.dashboard', ['locale' => 'en']); // Adjust the route to your dashboard
+            return redirect()->route('super.dashboard', ['locale' => app()->getLocale()]);
         }
-
         // If authentication fails
         return back()->withErrors([
             'email' => 'Invalid email or password.',
@@ -101,7 +100,7 @@ class AuthController extends Controller
     }
     
     public function signOut(){
-        Auth::logout(); // Log out the user
+        Auth::guard('admin')->logout(); // Log out the user
         return redirect()->to('/auth-logout');
     }
     public function logoutpage() {

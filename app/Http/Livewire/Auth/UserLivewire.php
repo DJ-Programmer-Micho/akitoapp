@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Auth;
 use App\Models\User;
 use App\Models\Profile;
 use Livewire\Component;
+use App\Models\DriverData;
 use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -32,6 +33,12 @@ class UserLivewire extends Component
     public $status;
     public $glang;
     public $roles = [];
+
+    public $driverLic;
+    public $plateNumber;
+    public $vehicleLic;
+    public $vehicleModel;
+    public $vinNumber;
     // EDIT
     public $fNameEdit;
     public $lNameEdit;
@@ -42,6 +49,12 @@ class UserLivewire extends Component
     public $statusEdit;
     public $rolesEdit = [];
     public $user_update;
+
+    public $driverLicEdit;
+    public $plateNumberEdit;
+    public $vehicleLicEdit;
+    public $vehicleModelEdit;
+    public $vinNumberEdit;
     // DELETE
     public $brand_selected_id_delete;
     public $brand_name_selected_delete;
@@ -178,7 +191,18 @@ class UserLivewire extends Component
                     'phone_number' => $validatedData['phone'],
                     'avatar' => $this->objectName,
                 ]);
-    
+
+                if (in_array("8", $validatedData['roles'])) {
+                    DriverData::create([
+                        'user_id' => $user->id,
+                        'driver_lic_no' => $this->driverLic,
+                        'plate_number' => $this->plateNumber,
+                        'vin_number' => $this->vinNumber,
+                        'vehicle_lic_no' => $this->vehicleLic,
+                        'vehicle_model' => $this->vehicleModel,
+                    ]);
+                }
+
             } catch (\Exception $e) {
                 if (isset($firebaseUser)) {
                     $this->fAuth->deleteUser($firebaseUser->uid);
@@ -215,6 +239,14 @@ class UserLivewire extends Component
             $this->objectReader = $user_edit->profile->avatar;
 
             $this->rolesEdit = $user_edit->roles->pluck('id')->toArray();
+        if($user_edit->driver) {
+            $this->driverSection = true;
+            $this->driverLicEdit = $user_edit->driver->driver_lic_no;
+            $this->plateNumberEdit = $user_edit->driver->plate_number;
+            $this->vehicleLicEdit = $user_edit->driver->vehicle_lic_no;
+            $this->vehicleModelEdit = $user_edit->driver->vehicle_model;
+            $this->vinNumberEdit = $user_edit->driver->vin_number;
+        }
         } else {
         // error message
         }
@@ -257,6 +289,19 @@ class UserLivewire extends Component
             'avatar' => $this->objectName ?? $this->objectReader,
         ]);
 
+        if (in_array("8", $validatedData['rolesEdit'])) {
+            DriverData::where('user_id', $this->user_update->id)->update([
+                'user_id' => $this->user_update->id,
+                'driver_lic_no' => $this->driverLicEdit,
+                'plate_number' => $this->plateNumberEdit,
+                'vin_number' => $this->vehicleLicEdit,
+                'vehicle_lic_no' => $this->vehicleModelEdit,
+                'vehicle_model' => $this->vinNumberEdit,
+            ]);
+        } else {
+            DriverData::where('user_id',$this->user_update->id)->delete();
+        }
+
         $this->user_update->roles()->sync($validatedData['rolesEdit']);
 
         if ($this->user_update->email !== $validatedData['emailEdit']) {
@@ -271,50 +316,15 @@ class UserLivewire extends Component
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('User Updated Successfully')]);
     }
 
-
-    // public function removeUser (int $id) {
-    //     $this->brand_selected_id_delete = Brand::find($id);
-    //     $this->brand_name_selected_delete = BrandTranslation::where('brand_id', $id)->where('locale', app()->getLocale())->first() ?? "Delete";
-    //     if ($this->brand_name_selected_delete) {
-    //         $this->showTextTemp = $this->brand_name_selected_delete->name;
-    //         $this->confirmDelete = true;
-    //     } else {
-    //         $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Record Not Found')]);
-    //     }
-    // }
-
-    public $brandNameToDelete = '';
-    // public function destroyBrand () {
-    //     if ($this->confirmDelete && $this->brandNameToDelete === $this->showTextTemp) {
-    //         try {
-    //             if($this->brand_selected_id_delete->image) {
-    //                 Storage::disk('s3')->delete($this->brand_selected_id_delete->image);
-    //             } else {
-    //                 $this->dispatchBrowserEvent('alert', ['type' => 'warning',  'message' => __('Something Went Wrong, Image Did Not Removed From Server')]);
-    //             }
-    //         } catch (\Exception $e) {
-    //             $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
-    //             return;
-    //         }
-    //         Brand::find($this->brand_selected_id_delete->id)->delete();
-    //         $this->closeModal();
-    //         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Brand Deleted Successfully')]);
-
-    //         $this->confirmDelete = false;
-    //         $this->brand_selected_id_delete = null;
-    //         $this->brand_name_selected_delete = null;
-    //         $this->brandNameToDelete = '';
-    //         $this->showTextTemp = null;
-    //     } else {
-    //         $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Operaiton Faild')]);
-    //     }
-    // }
-
     public function sadImage () { 
         $this->de = 1;
     }
 
-
+    public $driverSection = false;
+    public function driverCheck()
+    {
+        $this->driverSection = !$this->driverSection;
+    }
     public function updateStatus(int $id)
     {
         // Find the brand by ID, if not found return an error
@@ -377,7 +387,7 @@ class UserLivewire extends Component
  
     public function resetInput()
     {
-
+        $this->driverSection = false;
         $this->fName = null;
         $this->lName = null;
         $this->username = null;
@@ -403,6 +413,17 @@ class UserLivewire extends Component
         $this->objectName = null;
         $this->objectData = null;
 
+        $this->driverLicEdit = null;
+        $this->plateNumberEdit = null;
+        $this->vehicleLicEdit = null;
+        $this->vehicleModelEdit = null;
+        $this->vinNumberEdit = null;
+
+        $this->driverLic = null;
+        $this->plateNumber = null;
+        $this->vehicleLic = null;
+        $this->vehicleModel = null;
+        $this->vinNumber = null;
         $this->emit('resetData');
         $this->emit('resetEditData');
     }

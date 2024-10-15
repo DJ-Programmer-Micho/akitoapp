@@ -4,6 +4,24 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="csrf-token" content="{{csrf_token()}}">
+
+        <meta name="theme-color" content="#003465">
+        <meta name="publisher" content="Michel Shabo">
+        <meta name="mobile-web-app-title" content="Akitu Dashboard">
+        <meta name="author" content="Furat Hariri">
+        <meta name="copyright" content="Akitu Co">
+        <meta name="page-topic" content="e-commerce">
+        <meta name="page-type" content="website">
+        <meta name="audience" content="Everyone">
+        <meta name="robots" content="index, follow"> 
+
+        <link rel="shortcut icon" href="{{app('logo_72')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{app('logo_144')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{app('logo_114')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{app('logo_72')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{app('logo_57')}}">
+        <link rel="apple-touch-icon-precomposed" href="{{app('logo_1024')}}">
+
         <link rel="stylesheet" href="{{asset('main/assets/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css')}}">
         <!--Swiper slider css-->
         <link href="{{asset('dashboard/libs/swiper/swiper-bundle.min.css')}}" rel="stylesheet" type="text/css" />
@@ -19,24 +37,25 @@
         {{-- <link href="{{asset('css/custom.min.css')}}" rel="stylesheet" type="text/css" /> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <link href="{{asset('dashboard/css/toaster.css')}}" rel="stylesheet" type="text/css">
-        <title>{{ $title ?? 'Page Title' }}</title>
+        <title>{{ 'Dashboard | Akitu' }}</title>
         <style>
             .ar-shift {
                 direction: rtl;
                 text-align: right;
             }
         </style>
+        @vite('resources/js/app.js')
         @livewireStyles
     </head>
     <body>
-        <x-super-admins.components.header-one />
+        {{-- <x-super-admins.components.header-one /> --}}
+        @livewire('partial.header-one-livewire')
         <x-super-admins.components.navbar-one/>
         <div class="vertical-overlay"></div>
          <div class="main-content">{{-- style="margin-top: 90px;" --}}
             @yield('super-admin-content')
             <x-super-admins.components.footer-one />
         </div>
-
     <!-- JAVASCRIPT -->
     <script src="{{asset('dashboard/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{asset('dashboard/libs/simplebar/simplebar.min.js')}}"></script>
@@ -56,7 +75,6 @@
     <script src="{{asset('dashboard/js/pages/dashboard-ecommerce.init.js')}}"></script>
     <!-- App js -->
     <script src="{{asset('dashboard/js/app.js')}}"></script>
-    
     @stack('tproductscript')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.easing@1.4.1/jquery.easing.min.js"></script>
@@ -98,7 +116,6 @@
             }
         });
     </script>
-    
     {{-- <script>
                     $(document).ready(function(){
     $(".owl-carousel").owlCarousel({
@@ -114,17 +131,25 @@
             },
             600: {
                 items: 4
-            },
+                },
             992: {
                 items: 6
             },
             1200: {
                 items: 8
-            }
-        }
+                }
+                }
     });
 });
     </script> --}}
-@livewireScripts
+
+    @livewireScripts
+    @stack('teamDelivery')
+    {{-- console.log('check', @json(Auth::guard('admin')->user() && hasRole([8]) ? Auth::guard('admin')->user()->id : null)); --}}
+    <script>
+        window.Laravel = {
+            driver_id: @json(Auth::guard('admin')->user() && hasRole([8]) ? Auth::guard('admin')->user()->id : null)
+        };
+    </script>
 </body>
 </html>

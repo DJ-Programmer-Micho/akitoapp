@@ -56,6 +56,17 @@ class SuperAdminController extends Controller
     public function user(){
         return view('super-admins.pages.users.index');
     }
+    public function driverTeam(){
+        return view('super-admins.pages.driverteam.index');
+    }
+    public function driverTeamStore(){
+        return view('super-admins.pages.driverteam.index-add');
+    }
+    public function driverTeamEdit($local, $id){
+        return view('super-admins.pages.driverteam.index-edit',[
+            "d_id" => $id
+        ]);
+    }
     public function profile(){
         return view('super-admins.pages.profiles.index');
     }

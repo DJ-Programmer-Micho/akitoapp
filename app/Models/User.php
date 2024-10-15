@@ -58,6 +58,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function profile() { return $this->hasOne(Profile::class, 'user_id');}
     public function roles() { return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id'); }
+    public function driver() { return $this->hasOne(DriverData::class, 'user_id');}
+    public function driverTeam() { return $this->belongsToMany(DriverTeam::class, 'driver_team_membership', 'user_id', 'team_id');}
     public function createdBrands() { return $this->hasMany(Brand::class, 'created_by_id'); }
     public function updatedBrands() { return $this->hasMany(Brand::class, 'updated_by_id'); }
     public function createdCategory() { return $this->hasMany(Category::class, 'created_by_id'); }

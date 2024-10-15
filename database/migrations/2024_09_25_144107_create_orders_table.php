@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('city'); // Customer's city
             $table->string('address'); // Customer's address
             $table->string('zip_code'); // Customer's zip code
+            $table->string('latitude'); // Customer's zip code
+            $table->string('longitude'); // Customer's zip code
+            $table->foreignId('driver')->nullable()->constrained('users')->onDelete('set null'); // Foreign key referencing the users table (nullable)
             $table->string('phone_number'); // Customer's phone number
             $table->decimal('shipping_amount', 10, 2); // Total amount for the order shipping
             $table->decimal('total_amount', 10, 2); // Total amount for the order

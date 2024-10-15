@@ -10,14 +10,14 @@
             <div class="row g-4">
                 <div class="col-auto">
                     <div class="avatar-lg">
-                        <img src="{{isset(auth()->user()->profile->avatar) ? app('cloudfront').auth()->user()->profile->avatar : app('userImg')}}" alt="{{auth()->user()->profile->first_name . ' ' . auth()->user()->profile->last_name}}" class="img-thumbnail rounded-circle" />
+                        <img src="{{isset(auth()->guard('admin')->user()->profile->avatar) ? app('cloudfront').auth()->guard('admin')->user()->profile->avatar : app('userImg')}}" alt="{{auth()->guard('admin')->user()->profile->first_name . ' ' . auth()->guard('admin')->user()->profile->last_name}}" class="img-thumbnail rounded-circle" />
                     </div>
                 </div>
                 <!--end col-->
                 <div class="col">
                     <div class="p-2">
-                        <h3 class="text-white mb-1">{{auth()->user()->profile->first_name . ' ' . auth()->user()->profile->last_name}}</h3>
-                        <p class="text-white text-opacity-75">{{auth()->user()->profile->position}}</p>
+                        <h3 class="text-white mb-1">{{auth()->guard('admin')->user()->profile->first_name . ' ' . auth()->guard('admin')->user()->profile->last_name}}</h3>
+                        <p class="text-white text-opacity-75">{{auth()->guard('admin')->user()->profile->position}}</p>
                     </div>
                 </div>
                 <!--end col-->
@@ -41,19 +41,19 @@
                                                 <tbody>
                                                     <tr>
                                                         <th class="ps-0" scope="row">Full Name :</th>
-                                                        <td class="text-muted">{{auth()->user()->profile->first_name . ' ' . auth()->user()->profile->last_name}}</td>
+                                                        <td class="text-muted">{{auth()->guard('admin')->user()->profile->first_name . ' ' . auth()->guard('admin')->user()->profile->last_name}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th class="ps-0" scope="row">Mobile :</th>
-                                                        <td class="text-muted">{{auth()->user()->profile->phone_number}}</td>
+                                                        <td class="text-muted">{{auth()->guard('admin')->user()->profile->phone_number}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th class="ps-0" scope="row">E-mail :</th>
-                                                        <td class="text-muted">{{auth()->user()->email}}</td>
+                                                        <td class="text-muted">{{auth()->guard('admin')->user()->email}}</td>
                                                     </tr>
                                                     <tr>
                                                         <th class="ps-0" scope="row">Joining Date</th>
-                                                        <td class="text-muted">{{auth()->user()->created_at}}</td>
+                                                        <td class="text-muted">{{auth()->guard('admin')->user()->created_at}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>

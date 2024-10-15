@@ -31,6 +31,7 @@
             </div>
             <ul class="navbar-nav" id="navbar-nav">
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                @if (hasRole([1]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-dashboards">{{__('Dashboards')}}</span>
@@ -43,6 +44,8 @@
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,2,5,6,7]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarPreperties" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPreperties">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-dashboards">{{__('Properties')}}</span>
@@ -73,12 +76,15 @@
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,2,5,6,7]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarProducts" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarProducts">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Product Management')}}</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarProducts">
                         <ul class="nav nav-sm flex-column">
+                            @if (hasRole([1,2,5,6,7]))
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.product.table', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Table Products')}}</a>
                             </li>
@@ -88,12 +94,17 @@
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.product.recommend', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-cProduct">{{__('Recommendation Product')}}</a>
                             </li>
+                            @endif
+                            @if (hasRole([1,2,3,5,6,7]))
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.product.adjust', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-cProduct">{{__('Adjust Product')}}</a>
                             </li>
+                            @endif
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,3,4,5,6,7]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarZones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarZones">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Order Management')}}</span>
@@ -106,6 +117,8 @@
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,3,5,6,7]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarZones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarZones">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Delivery Management')}}</span>
@@ -121,6 +134,8 @@
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,3]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarCustomers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarCustomers">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Customer Management')}}</span>
@@ -136,6 +151,8 @@
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,3]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
                         <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Users Management')}}</span>
@@ -145,9 +162,32 @@
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.users', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Table Users')}}</a>
                             </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.driver.team', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Table Driver')}}</a>
+                            </li>
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,3,8]))
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Tasks')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarUsers">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('driver.task', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Driver Task')}}</a>
+                            </li>
+                            @if (hasRole([1,3]))
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('driver.task.all', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('All Driver Tasks')}}</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+                @endif
             </ul>
         </div>
         <!-- Sidebar -->

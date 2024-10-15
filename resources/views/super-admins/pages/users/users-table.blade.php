@@ -5,6 +5,10 @@
             font-weight: 800;
             color: var(--vz-blue)
         }
+        .driver{
+            font-weight: 800;
+            color: var(--vz-orange)
+        }
     </style>
     <div class="container-fluid">
         <!-- start page title -->
@@ -214,6 +218,16 @@
                             </div>
                         
                             <div class="row">
+                                <div class="col-4 text-center">
+                                </div>
+                                <div class="col-4 text-center">
+                                    @include('super-admins.pages.components.single-image',[$title = "Avatar"])
+
+                                </div>
+                                <div class="col-4 text-center">
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-6">
                                     <div class="mb-3">
                                         <label for="fName">{{__('First Name')}}</label>
@@ -371,9 +385,55 @@
                                                 <p>Responsible for deleting existing data in the application.</p>
                                             </div>
                                         </div>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input wire:model="roles" wire:click="driverCheck" class="form-check-input" type="checkbox" value="8" id="role-delete-action">
+                                                <label class="form-check-label driver" for="role-delete-action">Driver</label>
+                                                <p>Responsible for delivering products.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            @if ($driverSection)
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="driverLic">{{__('Driving Lic. No.')}}</label>
+                                        <input type="text" class="form-control" wire:model="driverLic" placeholder="1568091">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="plateNumber">{{__('Plate Number')}}</label>
+                                        <input type="text" class="form-control" wire:model="plateNumber" placeholder="22 M 650124">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="vehicleLic">{{__('Vehicle Lic. No.')}}</label>
+                                        <input type="text" class="form-control" wire:model="vehicleLic" placeholder="1503698">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="vehicleModel">{{__('Vehicle Model')}}</label>
+                                        <input type="text" class="form-control" wire:model="vehicleModel" placeholder="Toyota">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="vinNumber">{{__('Vehicle Vin No.')}}</label>
+                                        <input type="text" class="form-control" wire:model="vinNumber" placeholder="4Y1SL65848Z411439">
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            @endif
                             <div class="mb-3">
                                 <label for="status">{{__('Status')}}</label>
                                 <select 
@@ -384,12 +444,11 @@
                                     <option value="0" @if($status == 0) selected @endif>{{__('Non-Active')}}</option>
                                 </select>
                                 @error('status')
-                                    <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
-                                            <span class="text-danger">{{ __($message) }}</span>
-                                    </div>
+                                <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                        <span class="text-danger">{{ __($message) }}</span>
+                                </div>
                                 @enderror
                             </div>
-                            @include('super-admins.pages.components.single-image',[$title = "Avatar"])
                         </form>
                     </div>
                 </div>

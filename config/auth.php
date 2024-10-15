@@ -50,6 +50,11 @@ return [
             'driver' => 'session',
             'provider' => 'customers', // This provider should be defined below
         ],
+
+        'driver' => [
+            'driver' => 'session',
+            'provider' => 'drivers', // This provider should be defined below
+        ],
     ],
 
     /*
@@ -78,6 +83,11 @@ return [
         'customers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Customer::class, // Adjust this to the correct customer model path
+        ],
+
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Driver::class, // Adjust this to the correct customer model path
         ],
 
         // 'users' => [

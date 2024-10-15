@@ -35,12 +35,12 @@
                             <input type="text" id="name" class="form-control" wire:model="name" required>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="name">Delivary Man</label>
-                            <select class="form-control" wire:model="delivery_man" required>
-                                <option value="" selected>Select Delivary Team</option>
-                                <option value="1">Team A</option>
-                                <option value="2">Team B</option>
-                                <option value="2">Team B</option>
+                            <label for="name">Delivary Team</label>
+                            <select class="form-control" wire:model="delivery_team" required>
+                                <option value="" selected>{{__('Select Delivary Team')}}</option>
+                                @foreach ($teamList as $team)
+                                    <option value="{{$team->id}}">{{$team->team_name}}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="form-group mb-3">
@@ -143,7 +143,7 @@
                             <tr>
                                 <th>{{__('ID')}}</th>
                                 <th>{{__('Name')}}</th>
-                                <th class="text-center">{{__('Delivery Man')}}</th>
+                                <th class="text-center">{{__('Delivery Team')}}</th>
                                 <th class="text-center">{{__('Digital Payment')}}</th>
                                 <th class="text-center">{{__('Cash On Delivery Payment')}}</th>
                                 <th class="text-center">{{__('Status')}}</th>
@@ -160,7 +160,7 @@
                                         {{ $data->name }}
                                     </td>
                                     <td class="align-middle text-center">
-                                        {{ $data->delivery_man }}
+                                        {{ $data->driverTeam->team_name }}
                                     </td>
                                     <td class="align-middle text-center">
                                         <div class="form-check form-switch align-middle text-center">

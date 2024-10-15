@@ -4,6 +4,7 @@ namespace App\Http\Livewire\SuperAdmins;
 
 use App\Models\Zone;
 use Livewire\Component;
+use App\Models\DriverTeam;
 use Livewire\WithPagination;
 
 class DeliveryZonesLivewire extends Component
@@ -11,7 +12,7 @@ class DeliveryZonesLivewire extends Component
     use WithPagination;
     public $name;
     public $coordinates;
-    public $delivery_man;
+    public $delivery_team;
     public $digit_payment;
     public $cod_payment;
 
@@ -35,7 +36,7 @@ class DeliveryZonesLivewire extends Component
         Zone::create([
             'name' => $this->name,
             'coordinates' => json_encode($this->coordinates),
-            'delivery_man' => $this->delivery_man,
+            'delivery_team' => $this->delivery_team,
             'digit_payment' => $this->digit_payment ?? 0,
             'cod_payment' => $this->cod_payment ?? 0,
             'status' => '1',
@@ -44,6 +45,9 @@ class DeliveryZonesLivewire extends Component
         $this->reset(['name', 'coordinates']);
         $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Zone Added successfully!')]);
         $this->dispatchBrowserEvent('reint', []);
+    }
+    public function mount() {
+        $this->getTeam();
     }
     public function filterBrands($status)
     {
@@ -190,32 +194,39 @@ class DeliveryZonesLivewire extends Component
         }
     }
 
+    public $teamList = [];
+    public function getTeam() {
+        $this->teamList = DriverTeam::get();
+    }
+
     public function render()
     {
         $this->activeCount = Zone::where('status', 1)->count();
         $this->nonActiveCount = Zone::where('status', 0)->count();
 
-        // Start with a query builder instance
-        $query = Zone::query();
-
+        $query = Zone::with('driverTeam'); // No need to call query() method
+    
         // Apply status filter
         if ($this->statusFilter === 'active') {
             $query->where('status', 1);
         } elseif ($this->statusFilter === 'non-active') {
             $query->where('status', 0);
         }
+    
         // Apply search filter if applicable
         if (!empty($this->search)) {
-            $query->whereHas('brandtranslation', function ($query) {
+            $query->whereHas('driverTeam', function ($query) { // Use driverTeam for filtering
                 $query->where('name', 'like', '%' . $this->search . '%');
             });
         }
-
+    
         // Fetch the data after applying filters
         $tableData = $query->get();
-
+    
         return view('super-admins.pages.delivery.delivery-table', [
             'zones' => $tableData
         ]);
+        
+        
     }
 }

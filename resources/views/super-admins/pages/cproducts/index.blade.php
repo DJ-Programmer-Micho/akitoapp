@@ -1,4 +1,3 @@
-
 @extends('super-admins.layouts.layout')
 @section('super-admin-content')
 <div>

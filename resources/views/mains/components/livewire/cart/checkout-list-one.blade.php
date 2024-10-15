@@ -155,4 +155,5 @@
             </div><!-- End .row -->
         </form>
     </div><!-- End .container -->
+    @vite('resources/js/app.js')
 </div><!-- End .checkout -->

@@ -2,19 +2,11 @@
 
 namespace App\Http\Livewire\SuperAdmins;
 
-use App\Models\Tag;
-use App\Models\Brand;
+use App\Models\User;
 use App\Models\Order;
-use App\Models\Product;
 use Livewire\Component;
-use App\Models\Category;
-use App\Models\SubCategory;
-use Illuminate\Support\Str;
-use App\Models\VariationSize;
-use App\Models\VariationColor;
-use App\Models\VariationCapacity;
-use App\Models\VariationMaterial;
-use Illuminate\Support\Facades\DB;
+use App\Events\EventOrderStatusUpdated;
+use App\Notifications\NotifyOrderStatusChanged;
 
 class OrderLivewire extends Component
 {
@@ -40,8 +32,22 @@ class OrderLivewire extends Component
     public $statusPaymentMethodFilter = 'all';
     public $page = 1;
 
+    protected $listeners = [
+        'echo:AdminChannel,EventOrderStatusUpdated' => 'reloadTable',
+        'echo:AdminChannel,EventOrderPaymentStatusUpdated' => 'reloadTable',
+    ];
+
+    public function reloadTable($e){ 
+        $this->render();
+    }
+
     public function mount()
     {
+        $user = auth('admin')->user();
+
+        if (!$user) {
+            abort(403, 'Unauthorized action.');
+        }
         $this->statusFilter = request()->query('statusFilter', 'all');
         $this->statusFilter = request()->query('statusPaymentFilter', 'all');
         $this->page = request()->query('page', 1);
@@ -64,6 +70,44 @@ class OrderLivewire extends Component
             $orderStatus->status = $status;
             $orderStatus->save();
     
+            $adminUsers = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Administrator')
+                      ->orWhere('name', 'Data Entry Specialist')
+                      ->orWhere('name', 'Finance Manager')
+                      ->orWhere('name', 'Order Processor');
+            })->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'Driver');
+            })->get();
+
+            foreach ($adminUsers as $admin) {
+                if (!$admin->notifications()->where('data->order_id', $orderStatus->tracking_number)
+                    ->where('data->status', $orderStatus->status)->exists()) {
+                    $admin->notify(new NotifyOrderStatusChanged(
+                        $orderStatus->tracking_number, 
+                        $orderStatus->status, 
+                        "Order ID {$orderStatus->tracking_number} has been updated to {$orderStatus->status}", 
+                    ));
+                }
+            }
+
+            // Notify specific driver
+            if($orderStatus->driver) {
+                $driverUser = User::find($orderStatus->driver);
+                $driverUser->notify(new NotifyOrderStatusChanged(
+                    $orderStatus->tracking_number,
+                    $orderStatus->status,
+                    "Order ID {$orderStatus->tracking_number} has been updated to {$orderStatus->status}",
+                ));
+            }
+
+            // Broadcast to admins and the specific driver
+            try {
+                broadcast(new EventOrderStatusUpdated($orderStatus->tracking_number, $orderStatus->id, $orderStatus->status))->toOthers();    
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'info', 'message' => __('Your Internet is Weak!: ' . $e->getMessage())]);
+                return;
+            }
+            
             // Dispatch a browser event to show success message
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',
