@@ -37,7 +37,7 @@ class OrderViewerLivewire extends Component
 
     protected $listeners = [
         'echo:AdminChannel,EventOrderStatusUpdated' => 'statusReload',
-        'echo:AdminChannel,EventDriverUpdated' => 'reloadNotification',
+        'echo:AdminChannel,EventDriverUpdated' => 'driverReload',
         'echo:AdminChannel,EventOrderPaymentStatusUpdated' => 'paymentReload',
     ];
     
