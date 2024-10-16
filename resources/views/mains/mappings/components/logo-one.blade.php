@@ -2,24 +2,24 @@
     <div class="container">
         <div class="header-left">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="120" height="20">
+                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="150" height="30">
             </a>
 
         </div>
         <div class="header-center">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo d-lg-none">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="120" height="20">
+                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="150" height="30">
             </a>
         </div><!-- End .header-left -->
 
         <div class="header-right">
             <div class="header-search header-search-extended header-search-visible d-none d-lg-block mx-0 px-0">
                 <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                <form action="{{ route('business.shop.search',['locale' => app()->getLocale()]) }}" method="get" class="border rounded-pill p-3">
+                <form action="{{ route('business.shop.search',['locale' => app()->getLocale()]) }}" method="get" class="border rounded-pill p-2">
                     <div class="header-search-wrapper search-wrapper-wide">
                         <label for="q" class="sr-only">{{__('Search')}}</label>
-                        <input type="text" class="form-control p-2" name="q" id="q" placeholder="{{__('Search product ...')}}" required>
-                        <button class="btn btn-primary w-25 mr-3" type="submit"><i class="icon-search"></i></button>
+                        <input type="text" class="form-control" name="q" id="q" placeholder="{{__('Search product ...')}}" required>
+                        <button class="btn btn-primary w-25 mr-4" type="submit"><i class="icon-search"></i></button>
                     </div>
                 </form>
                 

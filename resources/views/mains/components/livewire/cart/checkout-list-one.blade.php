@@ -14,17 +14,17 @@
             <div class="row">
                 <div class="col-lg-9">
                     <h2 class="checkout-title">Select Address: {{$digitPaymentStatus ?? 'none'}}</h2>
-                    <div class="card card-dashboard px-1" style="border-radius: 16px">
+
                     <div class="row px-3">
                         @if ($addressList)
 
                         @foreach ($addressList as $index => $address)
                         <div class="col-lg-6 p-0">
-                            <div class="card card-dashboard m-1" style="border-radius: 24px">
+                            <div class="card card-dashboard m-1">
                                 <div 
                                     class="card address-card {{ $addressSelected == $address->id ? 'selected' : '' }}" 
                                     wire:click="selectAddress({{ $address->id }})"
-                                    style="cursor: pointer; {{ $addressSelected == $address->id ? 'border: 2px solid green;' : '' }} border-radius: 24px"
+                                    style="cursor: pointer; {{ $addressSelected == $address->id ? 'border: 2px solid green;' : '' }}"
                                     >
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $address->type }}</h5>
@@ -39,8 +39,8 @@
                         @if (count($addressList) < 5)
                         <div class="col-lg-6 p-0">
                             <a href="{{ route('customer.address', ['locale' => app()->getLocale()]) }}" >
-                            <div class="card" style="border-radius: 24px; height: 100%;">
-                                <div class="card-body address-card" style="border: 2px dashed black; border-radius: 24px;">
+                            <div class="card" style="height: 100%;">
+                                <div class="card-body address-card" style="border: 2px dashed black;">
                                         <i class="fa-solid fa-plus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
                                     </div>
                                 </div>
@@ -50,45 +50,43 @@
                         @else
                         <div class="col-lg-6 p-0">
                             <a href="{{ route('customer.address', ['locale' => app()->getLocale()]) }}" >
-                            <div class="card" style="border-radius: 24px; height: 100%;">
-                                <div class="card-body address-card" style="border: 2px dashed black; border-radius: 24px;">
+                            <div class="card" style="height: 100%;">
+                                <div class="card-body address-card" style="border: 2px dashed black;">
                                         <i class="fa-solid fa-plus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
                                     </div>
                                 </div>
                             </a>
                         </div>
                         @endif
+
                     </div>
-                </div>
-                <h2 class="checkout-title">Select Payment Method:</h2>
-                <div class="card card-dashboard px-1" style="border-radius: 16px">
+
+                    <h2 class="checkout-title">Select Payment Method:</h2>
+
                     <div class="row px-3">
-                        {{-- @php
-                            dd($paymentList);
-                        @endphp --}}
+
                         @foreach ($paymentList as $index => $payment)
                         <div class="col-lg-6 p-0">
-                            <div class="card card-dashboard m-1" style="border-radius: 24px">
+                            <div class="card card-dashboard m-1">
                                 <div 
                                     class="card address-card {{ $paymentSelected == $payment->id ? 'selected' : '' }}" 
                                     wire:click="selectPayment({{ $payment->id }})"
-                                    style="cursor: pointer; {{ $paymentSelected == $payment->id ? 'border: 2px solid green;' : '' }} border-radius: 24px;
+                                    style="cursor: pointer; {{ $paymentSelected == $payment->id ? 'border: 2px solid green;' : '' }} 
                                     {{ $digitPaymentStatus == 0 && $payment->online == 0 ? 'opacity: 0.5; pointer-events: none;' : '' }}
-                                     {{ $digitPaymentStatus == 1 && $payment->online == 1 ? 'opacity: 0.5; pointer-events: none;' : '' }}
-                                     ">
+                                        {{ $digitPaymentStatus == 1 && $payment->online == 1 ? 'opacity: 0.5; pointer-events: none;' : '' }}
+                                        ">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $payment->name }}</h5>
                                         <p class="card-text">Fees: {{ $payment->transaction_fee }}</p>
                                         <input type="radio" name="payment" value="{{ $payment->id }}" wire:model="paymentSelected" class="d-none" @if($digitPaymentStatus == 0) disabled @endif>
                                     </div>
                                 </div>
-                            </div><!-- End .card-dashboard -->
+                            </div>
                         </div><!-- End .col-lg-6 -->
                         @endforeach
                     </div>
-                </div>
-                    <label><h2 class="checkout-title">Order notes (optional)</h2></label>
-                    <textarea class="form-control" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+                    {{-- <label><h2 class="checkout-title">Order notes (optional)</h2></label>
+                    <textarea class="form-control" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea> --}}
                 </div>
                 <aside class="col-lg-3">
                     <div class="summary">

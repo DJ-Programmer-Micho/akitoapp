@@ -229,3 +229,17 @@
 .btn-ghost-success:hover{color:#865ce2}
 .btn-ghost-success{color:var(--vz-success-color)}
 .btn-ghost-success{--vz-btn-color:var(--vz-success);}
+
+.header-6 .header-search-extended .form-control{
+    height: 22px;
+}
+.header-6 .header-search-extended .btn {
+    margin-bottom: 4px;
+}
+.header-search .header-search-wrapper {
+    align-items: center;
+}
+
+.header-6 .header-search-extended .btn {
+    height: 30px;
+}

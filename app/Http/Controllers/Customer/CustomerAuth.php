@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Models\Customer;
+use App\Rules\ReCaptcha;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Factory;
+// use App\Services\FirebaseService;
+use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+
 
 
 class CustomerAuth extends Controller
@@ -18,18 +23,20 @@ class CustomerAuth extends Controller
     {
         // Validate the form data
         $request->validate([
-            'email-form-signin' => 'required|email',
-            'password-form-signin' => 'required|string|min:6',
+            'login' => 'required|string',
+            'password-form-signin' => 'required|string|min:8',
+            'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
     
         // Map form field names to the correct database column names
+        $loginType = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
         $credentials = [
-            'email' => $request->input('email-form-signin'),
+            $loginType => $request->input('login'),
             'password' => $request->input('password-form-signin'),
         ];
     
-        // Attempt authentication with the mapped credentials
-        if (Auth::guard('customer')->attempt($credentials)) {  // Ensure you're using the correct guard for customers
+        if (Auth::guard('customer')->attempt($credentials)) {
             // Authentication successful
             return redirect()->route('business.home', ['locale' => 'en']); // Adjust the route as needed
         }
@@ -48,6 +55,7 @@ class CustomerAuth extends Controller
         $validatedData = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:customers,username',
             'email' => 'required|email|unique:customers,email',
             'phone_number' => 'required|string|max:15|unique:customer_profiles,phone_number', // Checking uniqueness in 'customer_profiles' table
             'country' => 'required|string|max:255',
@@ -57,55 +65,166 @@ class CustomerAuth extends Controller
             'password' => 'required|string|min:8|confirmed', // 'password' and 'password_confirmation' should match
             // 'profile_picture_data' => 'nullable|string', // This will be your base64 encoded image
         ]);
+        
+        try {
+            // Create new customer in the database
+            $customer = Customer::create([
+                'email' => $validatedData['email'],
+                'username' => $validatedData['username'],
+                'password' => Hash::make($validatedData['password']),
+                'status' => 1, // Default status
+                'phone_verify' => 1, // OTP non-functional for now
+                // 'phone_otp_number' and 'phone_verified_at' are left for future implementation
+            ]);
 
-        // Create new customer in the database
-        $customer = Customer::create([
-            'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
-            'status' => 1, // Default status
-            'phone_verify' => 1, // OTP non-functional for now
-            // 'phone_otp_number' and 'phone_verified_at' are left for future implementation
-        ]);
+            // Create customer profile
+            $customer->customer_profile()->create([
+                'first_name' => $validatedData['first_name'],
+                'last_name' => $validatedData['last_name'],
+                'country' => $validatedData['country'],
+                'city' => $validatedData['city'],
+                'address' => $validatedData['address'],
+                'zip_code' => $validatedData['zip_code'],
+                'phone_number' => $validatedData['phone_number'], // Store phone number in profile too
+                'avatar' => null, // Store profile picture path in AWS S3 if uploaded
+            ]);
 
-        // Create customer profile
-        $customer->customer_profile()->create([
-            'first_name' => $validatedData['first_name'],
-            'last_name' => $validatedData['last_name'],
-            'country' => $validatedData['country'],
-            'city' => $validatedData['city'],
-            'address' => $validatedData['address'],
-            'zip_code' => $validatedData['zip_code'],
-            'phone_number' => $validatedData['phone_number'], // Store phone number in profile too
-            'avatar' => null, // Store profile picture path in AWS S3 if uploaded
-        ]);
+            // Store profile picture in AWS S3 if provided
+            // $profilePicturePath = null;
+            // if ($request->hasFile('profile_picture')) {
+            //     $firstName = $validatedData['first_name'] ?? 'user';
+            //     $lastName = $validatedData['last_name'] ?? 'user';
+            //     $microtime = str_replace('.', '', microtime(true));
+            //     $fileName = $firstName . '_' . $lastName . '_user_' . date('Ymd') . $microtime . '.' . $request->file('profile_picture')->getClientOriginalExtension();
+        
+            //     $profilePicturePath = Storage::disk('s3')->put(
+            //         'customer/customer/' . $fileName,
+            //         file_get_contents($request->file('profile_picture')->getRealPath()),
+            //         'public'
+            //     );
+            // }
+        
+        
+            // Store customer in Firebase Authentication
+            $firebase = (new Factory)->withServiceAccount(base_path('resources/credentials/firebase_credentials.json')); // Path to your Firebase credentials
+            $auth = $firebase->createAuth();
+            $firebaseUser = $auth->createUser([
+                'email' => $validatedData['email'],
+                'password' => $validatedData['password'],
+                'displayName' => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
+            ]);
 
-        // Store profile picture in AWS S3 if provided
-        // $profilePicturePath = null;
-        // if ($request->hasFile('profile_picture')) {
-        //     $firstName = $validatedData['first_name'] ?? 'user';
-        //     $lastName = $validatedData['last_name'] ?? 'user';
-        //     $microtime = str_replace('.', '', microtime(true));
-        //     $fileName = $firstName . '_' . $lastName . '_user_' . date('Ymd') . $microtime . '.' . $request->file('profile_picture')->getClientOriginalExtension();
-    
-        //     $profilePicturePath = Storage::disk('s3')->put(
-        //         'customer/customer/' . $fileName,
-        //         file_get_contents($request->file('profile_picture')->getRealPath()),
-        //         'public'
-        //     );
-        // }
-    
-    
-        // Store customer in Firebase Authentication
-        $firebase = (new Factory)->withServiceAccount(base_path('resources/credentials/firebase_credentials.json')); // Path to your Firebase credentials
-        $auth = $firebase->createAuth();
-        $firebaseUser = $auth->createUser([
-            'email' => $validatedData['email'],
-            'password' => $validatedData['password'],
-        ]);
-    
+        } catch (\Exception $e) {
+            // If an error occurs during Firebase user creation, rollback
+            if (isset($firebaseUser)) {
+                $auth->deleteUser($firebaseUser->uid); // Delete Firebase user if created
+            }
+
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+        
         // Redirect or return success message
-        return redirect()->route('business.account', ['locale' => app()->getLocale()]);
+        return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $customer->id, 'email' => $customer->email]);
+        // return redirect()->route('business.account', ['locale' => app()->getLocale()]);
     }
+
+    public function goEmailOTP($local, $uid, $email){
+        return view('mains.components.otp.email-otp',['id' => $uid, 'email' => $email]);
+    } // END Function (Register)
+
+    public function resendEmailOTP($local, $id, $email){
+        $customer = Customer::where('email', $email)->first();
+        if ($customer) {
+            $otpCodeEmail = rand(100000, 999999);
+
+            $customer->updateOrCreate(
+                ['id' => $customer->id], // Use the primary key column for identification
+                ['email_otp_number' => $otpCodeEmail]
+            );
+            // Send OTP via email (Mailtrap)
+            Mail::to($customer->email)->send(new EmailVerificationMail($otpCodeEmail));
+            session()->flash('alert', [
+                'type' => 'success',
+                'message' => __('PIN CODE SENT!, Please Check Your Email'),
+            ]);
+            return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $id, 'email' => $customer->email]);
+        } else {
+            return redirect()->back()->with('error', 'User not found.');
+        }
+    }
+    
+    public function verifyEmailOTP(Request $request)
+    {
+        // Verify email OTP code...
+        $enteredEmailOTP = $request->input('entered_email_otp_code');
+        $customer = Customer::where('email', $request->input('email'))->first();
+
+        if ($customer && $enteredEmailOTP == $customer->email_otp_number) {
+            $customer->email_verify = 1;
+            $customer->save();
+
+            Auth::guard('customer')->login($customer);
+
+            return redirect()->route('business.home', ['locale' => 'en']);
+        }
+        session()->flash('alert', [
+            'type' => 'error',
+            'message' => __('PIN CODE NOT CORRECT!'),
+        ]);
+    }
+
+    public function goReEmailOTP($local, $uid){
+        return view('mains.components.otp.re-email-otp',['locale' => app()->getLocale(), 'id' => $uid]);
+    } // END Function (Register)
+
+    public function updateReEmailOTP($local, $uid, Request $request){
+    // dd($request->all());
+    $customer = Customer::find($uid);
+    if (!$customer) {
+        return abort(404); // Or handle the case where the user is not found
+    }
+        $new_email = $request->email;
+        if(Customer::where('email', $new_email)->exists()) {
+            return redirect()->back()->with('alert', [
+                'type' => 'error',
+                'message' => __('Check Your Email Spelling, Or Email Has been Alreary Registerd'),
+            ]);
+        } else {
+            $customer->email = $new_email;
+            $customer->save();
+
+            // try {
+            //     $firebaseAuth = $firebaseService->getAuth();
+                
+            //     // Assuming you store Firebase UID in the customer record
+            //     $firebaseAuth->updateUser($customer->firebase_uid, [
+            //         'email' => $new_email
+            //     ]);
+        
+            //     // If successful, update the local database
+            //     $customer->email = $new_email;
+            //     $customer->save();
+        
+            //     return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $customer->id, 'email' => $new_email])->with('alert', [
+            //         'type' => 'success',
+            //         'message' => __('Email Updated!'),
+            //     ]);
+            // } catch (\Kreait\Firebase\Exception\AuthException $e) {
+            //     // Handle Firebase errors
+            //     return redirect()->back()->with('alert', [
+            //         'type' => 'error',
+            //         'message' => __('Failed to update email in Firebase: ') . $e->getMessage(),
+            //     ]);
+            // }
+            
+            return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $customer->id, 'email' => $new_email])->with('alert', [
+                'type' => 'success',
+                'message' => __('Email Updated!'),
+            ]);
+        }
+    } // END Function (update email)
+
+
     public function logout(){
         Auth::guard('customer')->logout();
         return redirect()->route('business.home', ['locale' => app()->getLocale()]);

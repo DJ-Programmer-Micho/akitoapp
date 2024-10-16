@@ -76,9 +76,11 @@
                         <div class="heart-icon">
                             <i class="fa-regular fa-heart"></i>
                         </div><!-- End .product-action-vertical -->
+                        @if ($productDetail->variation->stock)
                         <div class="product-action">
                             <a href="#" class="btn-product btn-cart"><span>Add to cart</span></a>
                         </div><!-- End .product-action -->
+                        @endif
                     </figure><!-- End .product-media -->
 
                     <div class="product-body">

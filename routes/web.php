@@ -130,6 +130,13 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     
     Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');
     Route::post('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
+
+    //OTP
+    Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
+    Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
+    Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
+    Route::get('/resend-verify-otp/{id}/{email}', [CustomerAuth::class,'resendEmailOTP'])->name('resendEmailOTP');
+    Route::post('/email-verify-otp', [CustomerAuth::class,'verifyEmailOTP'])->name('verifyEmailOTP');
 });
 
 Route::get('law/terms-conditions', [LawController::class, 'termsCondition'])->name('law.terms');

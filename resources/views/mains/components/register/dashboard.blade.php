@@ -32,15 +32,25 @@
                         @enderror                   
                     </div>
                     <div class="col-md-9 col-sm-12">
-                        <label for="first_name">First Name *</label>
-                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ old('first_name', $customer->customer_profile->first_name ?? '') }}" required>
-                        @error('first_name')
-                        <div class="text-danger">{{ $message }}</div>
-                        @enderror
-            
-                        <label for="last_name">Last Name *</label>
-                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ old('last_name', $customer->customer_profile->last_name ?? '') }}" required>
-                        @error('last_name')
+                        <div class="row">
+                            <div class="col-md-6 col-sm-12">
+                                <label for="first_name">First Name *</label>
+                                <input type="text" id="first_name" name="first_name" class="form-control" value="{{ old('first_name', $customer->customer_profile->first_name ?? '') }}" required>
+                                @error('first_name')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="last_name">Last Name *</label>
+                                <input type="text" id="last_name" name="last_name" class="form-control" value="{{ old('last_name', $customer->customer_profile->last_name ?? '') }}" required>
+                                @error('last_name')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" name="username" class="form-control" value="{{ old('first_name', $customer->username ?? '') }}" required>
+                        @error('username')
                         <div class="text-danger">{{ $message }}</div>
                         @enderror
             

@@ -14,10 +14,14 @@ class Customer extends Authenticatable implements JWTSubject
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
+        'username',
         'email',
         'password',
         'status',
+        'email_verify',
         'phone_verify',
+        'email_otp_number',
+        'phone_otp_number',
         'uid',
     ];
 
@@ -27,8 +31,8 @@ class Customer extends Authenticatable implements JWTSubject
     ];
 
     protected $casts = [
+        'email_verified_at' => 'datetime',
         'phone_verified_at' => 'datetime',
-        'phone_otp_number' => 'integer',
     ];
 
     // JWT methods

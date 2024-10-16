@@ -33,9 +33,11 @@
                         </button>
                         @endguest
                         @auth('customer')
+                        @if ($product->variation->stock)
                         <button type="button" class="btn btn-product btn-cart" onclick="addToCart({{ $product->id }})">
                             <span>add to cart</span>
                         </button>
+                        @endif
                         @endauth
                     </div><!-- End .product-action -->
                 </figure><!-- End .product-media -->
@@ -59,7 +61,13 @@
                         </div><!-- End .product-price -->
                         @endif
                         <div>
+                            @if ($product->variation->stock)
                             <a type="button" class="btn btn-primary text-white">{{__('VIEW DETAILS')}}</a>
+                            @else
+                            <button type="button" class="btn btn-primary text-white" disabled>
+                                <i class="fa-solid fa-cubes mr-1"></i> {{__('Out Of Stock')}}
+                            </button>
+                            @endif
                         </div>
                     </div>
                         

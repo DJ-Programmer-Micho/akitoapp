@@ -44,14 +44,20 @@
                 </div><!-- End .product-action --> --}}
 
                 @guest('customer')
-                <button type="button" class="btn btn-product btn-cart" href="#signin-modal" data-toggle="modal">
-                    <span>add to cart</span>
+                <button type="button" class="btn btn-product" href="#signin-modal" data-toggle="modal">
+                    <span>{{__('add to cart')}}</span>
                 </button>
                 @endguest
                 @auth('customer')
-                <button type="button" class="btn btn-product btn-cart" onclick="addToCart({{ $product->id }})">
-                    <span>add to cart</span>
+                @if ($product->variation->stock)
+                <button type="button" class="btn btn-primary" onclick="addToCart({{ $product->id }})">
+                    <span><i class="fa-solid fa-plus"></i> {{__('add to cart')}}</span>
                 </button>
+                @else
+                <button type="button" class="btn btn-primary text-white" disabled>
+                    <i class="fa-solid fa-cubes mr-1"></i> {{__('Out Of Stock')}}
+                </button>
+                @endif
                 @endauth
                 <div class="my-3"></div>
                 @if ($product->variation->images->count() > 1)
