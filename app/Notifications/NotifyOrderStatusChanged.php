@@ -57,6 +57,7 @@ class NotifyOrderStatusChanged extends Notification
     {
         return [
             'tracking_number' => $this->trackingNumber,
+            'orderNumber' => $this->orderNumber,
             'status' => $this->status,
             'message' => $this->message,
         ];

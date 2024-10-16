@@ -38,6 +38,7 @@ class OrderLivewire extends Component
     ];
 
     public function reloadTable($e){ 
+        $this->emit('notificationSound');
         $this->render();
     }
 
@@ -85,6 +86,7 @@ class OrderLivewire extends Component
                     $admin->notify(new NotifyOrderStatusChanged(
                         $orderStatus->tracking_number, 
                         $orderStatus->status, 
+                        $orderStatus->id,
                         "Order ID {$orderStatus->tracking_number} has been updated to {$orderStatus->status}", 
                     ));
                 }
@@ -96,6 +98,7 @@ class OrderLivewire extends Component
                 $driverUser->notify(new NotifyOrderStatusChanged(
                     $orderStatus->tracking_number,
                     $orderStatus->status,
+                    $orderStatus->id,
                     "Order ID {$orderStatus->tracking_number} has been updated to {$orderStatus->status}",
                 ));
             }
@@ -124,6 +127,7 @@ class OrderLivewire extends Component
 
     public function render()
     {
+        $this->emit('notificationSound');
         $locale = app()->getLocale();
         // Base query with eager loading
         $query = Order::with([

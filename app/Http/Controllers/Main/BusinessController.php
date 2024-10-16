@@ -879,6 +879,9 @@ class BusinessController extends Controller
                         } catch (\Exception $e) {
                         }
                         DB::commit();
+
+                        CartItem::where('customer_id', $customer->id)->delete();
+
                         return redirect()->route('business.account',['locale' => app()->getLocale()]);
                     // return 'Cash On Delivery';
                     } catch (\Exception $e) {

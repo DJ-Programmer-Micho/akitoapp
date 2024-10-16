@@ -48,6 +48,23 @@ class CustomerAuth extends Controller
     }
     
 
+
+
+    public $objectData;
+    public $objectName;
+    public function handleCroppedImage($base64data, $fName, $lName)
+    {
+        if ($base64data){
+            $microtime = str_replace('.', '', microtime(true));
+            $this->objectData = $base64data;
+            $this->objectName = 'customer/' . $fName .'_'. $lName .date('Ydm') . $microtime . '.png';
+        } else {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Image did not crop!!!')]);
+            return;
+            // return 'failed to crop image code...405';
+        }
+    }
+
     public function register(Request $request)
     {
 
@@ -63,9 +80,13 @@ class CustomerAuth extends Controller
             'address' => 'required|string|max:255',
             'zip_code' => 'required|string|max:10',
             'password' => 'required|string|min:8|confirmed', // 'password' and 'password_confirmation' should match
-            // 'profile_picture_data' => 'nullable|string', // This will be your base64 encoded image
+            'profile_picture_data' => 'nullable|string', // This will be your base64 encoded image
+            'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
-        
+
+
+
+
         try {
             // Create new customer in the database
             $customer = Customer::create([
@@ -77,6 +98,12 @@ class CustomerAuth extends Controller
                 // 'phone_otp_number' and 'phone_verified_at' are left for future implementation
             ]);
 
+            if($validatedData['profile_picture_data']){
+                $this->handleCroppedImage($validatedData['profile_picture_data'], $validatedData['first_name'] ?? 'fuser', $validatedData['last_name'] ?? 'luser');
+            }
+
+            
+
             // Create customer profile
             $customer->customer_profile()->create([
                 'first_name' => $validatedData['first_name'],
@@ -86,25 +113,20 @@ class CustomerAuth extends Controller
                 'address' => $validatedData['address'],
                 'zip_code' => $validatedData['zip_code'],
                 'phone_number' => $validatedData['phone_number'], // Store phone number in profile too
-                'avatar' => null, // Store profile picture path in AWS S3 if uploaded
+                'avatar' => $this->objectName ?? null, // Store profile picture path in AWS S3 if uploaded
             ]);
+            try {
+                if($this->objectName) {
+                    $croppedImage = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $this->objectData));
+                    Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
+                } else {
+                    $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Uplaod The Image')]);
+                    return;
+                }
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
+            }
 
-            // Store profile picture in AWS S3 if provided
-            // $profilePicturePath = null;
-            // if ($request->hasFile('profile_picture')) {
-            //     $firstName = $validatedData['first_name'] ?? 'user';
-            //     $lastName = $validatedData['last_name'] ?? 'user';
-            //     $microtime = str_replace('.', '', microtime(true));
-            //     $fileName = $firstName . '_' . $lastName . '_user_' . date('Ymd') . $microtime . '.' . $request->file('profile_picture')->getClientOriginalExtension();
-        
-            //     $profilePicturePath = Storage::disk('s3')->put(
-            //         'customer/customer/' . $fileName,
-            //         file_get_contents($request->file('profile_picture')->getRealPath()),
-            //         'public'
-            //     );
-            // }
-        
-        
             // Store customer in Firebase Authentication
             $firebase = (new Factory)->withServiceAccount(base_path('resources/credentials/firebase_credentials.json')); // Path to your Firebase credentials
             $auth = $firebase->createAuth();

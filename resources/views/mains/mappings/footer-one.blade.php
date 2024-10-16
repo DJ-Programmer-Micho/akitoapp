@@ -73,7 +73,7 @@
         <div class="container">
             <p class="footer-copyright" style="color: rgb(0, 0, 0)">Copyright © 2024 Akitu-co Store. All Rights Reserved.</p><!-- End .footer-copyright -->
             <figure class="footer-payments">
-                <img src="{{ asset('lang/payments.png')}}" alt="Payment methods" width="272" height="20">
+                {{-- <img src="{{ asset('lang/payments.png')}}" alt="Payment methods" width="272" height="20"> --}}
             </figure><!-- End .footer-payments -->
         </div><!-- End .container -->
     </div><!-- End .footer-bottom -->

@@ -13,6 +13,7 @@ class CustomerAddress extends Model
         'type',
         'building_name',
         'apt_or_company',
+        'address_name',
         'floor',
         'country',
         'city',

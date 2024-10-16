@@ -130,6 +130,9 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     
     Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');
     Route::post('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
+    Route::get('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'edit'])->name('customer.addresses.edit');
+    Route::put('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'update'])->name('customer.addresses.update');
+    Route::delete('/cust-address/{addressId}/delete', [CustomerAddressController::class, 'destroy'])->name('customer.addresses.delete');
 
     //OTP
     Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');

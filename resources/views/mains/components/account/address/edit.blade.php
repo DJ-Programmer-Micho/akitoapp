@@ -4,8 +4,9 @@
     <x-mains.components.account.image-header-one />
     <x-mains.components.account.nav-one />
     <div class="container address">
-        <form method="POST" action="{{ route('customer.addresses.store', ['locale' => app()->getLocale()]) }}">
+        <form method="POST" action="{{ route('customer.addresses.update', ['locale' => app()->getLocale(), 'addressId' => $address->id]) }}">
             @csrf
+            @method('PUT')
             <div class="card card-dashboard">
                 <div class="row custom-row p-3">
                     <div class="col-md-4 col-sm-12">
@@ -34,37 +35,36 @@
                         <div class="form-group">
                             <label for="type">Address Type *</label>
                             <select name="type" class="form-control" id="addressType" required>
-                                <option value="Apartment">Apartment</option>
-                                <option value="House">House</option>
-                                <option value="Office">Office</option>
+                                <option value="Apartment" {{ $address->type === 'Apartment' ? 'selected' : '' }}>Apartment</option>
+                                <option value="House" {{ $address->type === 'House' ? 'selected' : '' }}>House</option>
+                                <option value="Office" {{ $address->type === 'Office' ? 'selected' : '' }}>Office</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="address_name">Address Name</label>
-                            <input type="text" name="address_name" class="form-control" required>
+                            <input type="text" name="address_name" class="form-control" value="{{ old('address_name', $address->address_name) }}" required>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12" id="buildingNameDiv">
                         <div class="form-group">
                             <label for="building_name">Building Name</label>
-                            <input type="text" name="building_name" class="form-control">
+                            <input type="text" name="building_name" class="form-control" value="{{ old('building_name', $address->building_name) }}">
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12" id="aptOrCompanyDiv">
                         <div class="form-group">
                             <label for="apt_or_company">Apartment No./Company</label>
-                            <input type="text" name="apt_or_company" class="form-control">
+                            <input type="text" name="apt_or_company" class="form-control" value="{{ old('apt_or_company', $address->apt_or_company) }}">
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12" id="floorDiv">
                         <div class="form-group">
                             <label for="floor">Floor</label>
-                            <input type="text" name="floor" class="form-control">
+                            <input type="text" name="floor" class="form-control" value="{{ old('floor', $address->floor) }}">
                         </div>
                     </div>
-    
                 </div>
             </div>
             <div class="card card-dashboard">
@@ -72,31 +72,31 @@
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="country">Country *</label>
-                            <input id="country_selector" name="country" class="form-control" required>
+                            <input id="country_selector" name="country" class="form-control" required value="{{ old('country', $address->country) }}">
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="city">City</label>
-                            <input type="text" name="city" class="form-control" value="{{$city}}" required>
+                            <input type="text" name="city" class="form-control" value="{{ old('city', $address->city) }}" required>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
-                            <label for="address">address</label>
-                            <input type="text" name="address" class="form-control" value="{{$address}}" required>
+                            <label for="address">Address</label>
+                            <input type="text" name="address" class="form-control" value="{{ old('address', $address->address) }}" required>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="zip_code">Zip Code</label>
-                            <input type="text" name="zip_code" class="form-control" value="{{$zip_code}}" required>
+                            <input type="text" name="zip_code" class="form-control" value="{{ old('zip_code', $address->zip_code) }}" required>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="phone_number">Phone Number</label>
-                            <input type="text" name="phone_number" class="form-control" value="{{$phone}}" required>
+                            <input type="text" name="phone_number" class="form-control" value="{{ old('phone_number', $address->phone_number) }}" required>
                         </div>
                     </div>
                 </div>
@@ -106,44 +106,39 @@
                     <div class="col-md-6 col-sm-12">
                         <div class="form-group">
                             <label for="address_label">Address Label (Optional)</label>
-                            <input type="text" name="address_label" class="form-control">
+                            <input type="text" name="address_label" class="form-control" value="{{ old('address_label', $address->address_label) }}">
                         </div>
                         <div class="form-group">
                             <label for="additional_directions">Additional Directions (Optional)</label>
-                            <textarea name="additional_directions" class="form-control"></textarea>
+                            <textarea name="additional_directions" class="form-control">{{ old('additional_directions', $address->additional_directions) }}</textarea>
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-12">
                         <div class="form-group">
                             <label for="additional_directions">Map</label>
                             <div id="map" style="height: 400px; width: 100%;"></div>
-                            
                             <!-- Hidden Fields for Latitude and Longitude -->
-                            <input type="hidden" name="latitude" id="latitude" required>
-                            <input type="hidden" name="longitude" id="longitude" required>
+                            <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $address->latitude) }}" required>
+                            <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $address->longitude) }}" required>
                         </div>
                     </div>
                 </div>
             </div>
-        
             <button type="submit" class="btn btn-primary mt-3">Save Address</button>
         </form>
     </div>
-    
 
-    
-    <!-- Include Leaflet.js -->
     @push('geo')
     <link rel="stylesheet" href="{{ asset('main/assets/lib/country_select/countrySelect.min.css') }}">
     <script src="{{ asset('main/assets/lib/country_select/countrySelect.min.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQuIFgYGBzpKpzzp3puSrqzL6uK7sXiTo&callback=initMap" async defer></script>
     <script>
         let map, marker;
-        
+
         function initMap() {
             const zones = @json($zones);
-            const defaultLat = 36.2222; // Default latitude
-            const defaultLng = 43.9953; // Default longitude
+            const defaultLat = {{ $address->latitude ?? 36.2222 }}; // Default latitude
+            const defaultLng = {{ $address->longitude ?? 43.9953 }}; // Default longitude
 
             // Create a map centered at the default location
             map = new google.maps.Map(document.getElementById("map"), {
@@ -159,22 +154,23 @@
             });
 
             zones.forEach(zone => {
-        const zoneCoords = JSON.parse(zone.coordinates).map(coord => ({
-            lat: parseFloat(coord.lat),
-            lng: parseFloat(coord.lng)
-        }));
+                const zoneCoords = JSON.parse(zone.coordinates).map(coord => ({
+                    lat: parseFloat(coord.lat),
+                    lng: parseFloat(coord.lng)
+                }));
 
-        const zonePolygon = new google.maps.Polygon({
-            paths: zoneCoords,
-            strokeColor: '#28a745',
-            strokeOpacity: 0.2,
-            strokeWeight: 1,
-            fillColor: '#28a745',
-            fillOpacity: 0.15,
-        });
+                const zonePolygon = new google.maps.Polygon({
+                    paths: zoneCoords,
+                    strokeColor: '#28a745',
+                    strokeOpacity: 0.2,
+                    strokeWeight: 1,
+                    fillColor: '#28a745',
+                    fillOpacity: 0.15,
+                });
 
-        zonePolygon.setMap(map);
-    });
+                zonePolygon.setMap(map);
+            });
+
             // Update hidden fields when marker is dragged
             google.maps.event.addListener(marker, 'dragend', function (event) {
                 document.getElementById('latitude').value = event.latLng.lat();
@@ -183,106 +179,40 @@
 
             // Check for geolocation support
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
+                navigator.geolocation.getCurrentPosition(position => {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
 
-                        // Set map view to current location
-                        const pos = { lat: lat, lng: lng };
-                        map.setCenter(pos);
-                        marker.setPosition(pos);
-                        document.getElementById('latitude').value = lat;
-                        document.getElementById('longitude').value = lng;
-                    },
-                    function () {
-                        // Handle error
-                        handleLocationError(true, map.getCenter());
-                    }
-                );
-            } else {
-                // Browser doesn't support Geolocation
-                handleLocationError(false, map.getCenter());
+                    // Center the map on the user's location
+                    map.setCenter(pos);
+                    marker.setPosition(pos); // Move the marker to user's location
+                    document.getElementById('latitude').value = pos.lat;
+                    document.getElementById('longitude').value = pos.lng;
+                });
             }
         }
 
-        function handleLocationError(browserHasGeolocation, pos) {
-            console.log(browserHasGeolocation ?
-                'Error: The Geolocation service failed.' :
-                'Error: Your browser doesn\'t support geolocation.');
-        }
-            document.addEventListener('DOMContentLoaded', function() {
-            var countrySelector = $("#country_selector");
-            var defaultCountry = "{{ $country }}"; // Use the country passed from the controller
+        $(document).ready(function () {
+            $('#addressType').change(function () {
+                const selectedType = $(this).val();
 
-            // Fetch and populate country codes
-            $.getJSON("{{ asset('main/assets/lib/country_name/restcountries.json') }}", function(data) {
-                var countryOptions = '';
-                var iso2Code = ''; // To store the ISO2 code for the default country
-
-                data.forEach(function(country) {
-                    var code = country.cca2.toLowerCase(); // ISO2 code
-                    var name = country.name.common; // Country name
-                    var dialCode = country.idd.root;
-
-                    // Check if suffixes exist and append the first suffix if available
-                    if (country.idd.suffixes && country.idd.suffixes.length > 0) {
-                        dialCode += country.idd.suffixes[0];
-                    }
-
-                    // Build the dropdown options
-                    countryOptions += `<option value="${name}" data-dialcode="${dialCode}">${name} (+${dialCode})</option>`;
-
-                    // Find the matching country name
-                    if (name === defaultCountry) {
-                        iso2Code = code; // Store the ISO2 code for the default country
-                    }
-                });
-
-                // Populate the country selector with options
-                countrySelector.append(countryOptions);
-
-                // Set the default country by name
-                countrySelector.val(defaultCountry).change(); // Set the default country
-
-                // Initialize the country select plugin with the correct ISO2 code
-                countrySelector.countrySelect({
-                    defaultCountry: iso2Code,
-                    preferredCountries: ['iq', 'sa', 'ae'] // Preferred countries to show at the top
-                });
-
+                // Show or hide fields based on selected address type
+                $('#buildingNameDiv').toggle(selectedType === 'Apartment');
+                $('#aptOrCompanyDiv').toggle(selectedType === 'Apartment' || selectedType === 'Office');
+                $('#floorDiv').toggle(selectedType === 'Apartment');
             });
-        });
 
-    </script>
-    <script>
-        $(document).ready(function() {
-            // Function to check the selected value and show/hide fields accordingly
-            function toggleFields() {
-                var addressType = $('#addressType').val();
-                if (addressType === 'House') {
-                    $('#buildingNameDiv').hide();
-                    $('#aptOrCompanyDiv').hide();
-                    $('#floorDiv').hide();
-                } else {
-                    $('#buildingNameDiv').show();
-                    $('#aptOrCompanyDiv').show();
-                    $('#floorDiv').show();
+            // Initialize country selector
+            $("#country_selector").countrySelect({
+                preferredCountries: ['iq', 'us', 'gb'],
+                onCountryChange: function (countryData) {
+                    console.log("Selected country: ", countryData.name);
                 }
-            }
-    
-            // Initial check when the page loads
-            toggleFields();
-    
-            // Listen for changes in the address type dropdown
-            $('#addressType').change(function() {
-                toggleFields();
             });
         });
     </script>
     @endpush
-    
-    
 </div>
 @endsection
-

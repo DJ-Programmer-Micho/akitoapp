@@ -28,25 +28,25 @@ class AppServiceProvider extends ServiceProvider
             return config('app.locales'); // Replace "abc" with your desired value or logic to fetch the data.
         });
         $this->app->singleton('cloudfront', function () {
-            return 'https://d1gdghw8f3v9rw.cloudfront.net/'; // Replace "abc" with your desired value or logic to fetch the data.
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/'; // Replace "abc" with your desired value or logic to fetch the data.
         });
         $this->app->singleton('userImg', function () {
-            return 'https://d1gdghw8f3v9rw.cloudfront.net/users/user.png'; // Replace "abc" with your desired value or logic to fetch the data.
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/users/user.png'; // Replace "abc" with your desired value or logic to fetch the data.
         });
         $this->app->singleton('logo_72', function () {
-            return 'https://d1gdghw8f3v9rw.cloudfront.net/web-setting/72.png'; // Replace "abc" with your desired value or logic to fetch the data.
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/72.png'; // Replace "abc" with your desired value or logic to fetch the data.
         });
         $this->app->singleton('logo_114', function () {
-            return 'https://d1gdghw8f3v9rw.cloudfront.net/web-setting/114.png'; // Replace "abc" with your desired value or logic to fetch the data.
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/114.png'; // Replace "abc" with your desired value or logic to fetch the data.
         });
         $this->app->singleton('logo_144', function () {
-            return 'https://d1gdghw8f3v9rw.cloudfront.net/web-setting/144.png'; // Replace "abc" with your desired value or logic to fetch the data.
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/144.png'; // Replace "abc" with your desired value or logic to fetch the data.
         });
         $this->app->singleton('logo_57', function () {
-            return 'https://d1gdghw8f3v9rw.cloudfront.net/web-setting/57.png'; // Replace "abc" with your desired value or logic to fetch the data.
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/57.png'; // Replace "abc" with your desired value or logic to fetch the data.
         });
         $this->app->singleton('logo_1024', function () {
-            return 'https://d1gdghw8f3v9rw.cloudfront.net/web-setting/1024.png'; // Replace "abc" with your desired value or logic to fetch the data.
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/1024.png'; // Replace "abc" with your desired value or logic to fetch the data.
         });
     }
 }

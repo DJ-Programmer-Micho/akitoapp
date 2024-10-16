@@ -2,6 +2,7 @@
     <div class="layout-width">
     <div class="navbar-header">
         <div class="d-flex">
+            <audio id="notificationSound" src="{{ asset('dashboard/audio/notification.mp3') }}" preload="auto" allow="autoplay"></audio>
             <!-- LOGO -->
             <div class="navbar-brand-box horizontal-logo">
                 <a href="index.html" class="logo logo-dark">

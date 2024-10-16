@@ -100,7 +100,7 @@ var Telex = function (e) {
         var i = this;
         Object.setPrototypeOf(this, {
             defaults: {
-                speed: 100,
+                speed: 50,
                 direction: "normal",
                 timing: "linear",
                 pauseOnHover: 1,

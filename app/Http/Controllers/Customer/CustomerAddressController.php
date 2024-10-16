@@ -28,7 +28,7 @@ class CustomerAddressController extends Controller
     }
 
     public function store(Request $request) {
-        // try {
+        try {
             //code...
             // Check if the customer already has 5 addresses
             $customer = Auth::guard('customer')->user();// Assuming customer is logged in
@@ -44,6 +44,7 @@ class CustomerAddressController extends Controller
             'type' => 'required|in:Apartment,House,Office',
             'building_name' => 'nullable|string|max:255',
             'apt_or_company' => 'nullable|string|max:255',
+            'address_name' => 'nullable|string|max:255',
             'floor' => 'nullable|string|max:255',
             'country' => 'required|string|max:255',
             'city' => 'required|string|max:255',
@@ -80,9 +81,9 @@ class CustomerAddressController extends Controller
             'type' => 'success', 
             'message' => 'Address added successfully.'
         ]);
-        // } catch (\Exception $e) {
-        //     dd('input form',$e);
-        // }
+        } catch (\Exception $e) {
+            dd('input form',$e);
+        }
     }
     
     private function checkZoneAvailability($latitude, $longitude) {
@@ -131,5 +132,67 @@ class CustomerAddressController extends Controller
         }
     
         return $inside;
+    }
+
+    public function edit($locale, $addressId)
+    {
+        $customer = Auth::guard('customer')->user();
+        $address = $customer->customer_addresses()->findOrFail($addressId);
+        $zones = Zone::all();
+
+        return view('mains.components.account.address.edit', [
+            'address' => $address,
+            'fName' => $customer->customer_profile->first_name,
+            'lName' => $customer->customer_profile->last_name,
+            'email' => $customer->email,
+            'country' => $customer->customer_profile->country,
+            'city' => $customer->customer_profile->city,
+            'zip_code' => $customer->customer_profile->zip_code,
+            'phone' => $customer->customer_profile->phone_number,
+            'zones' => $zones,
+        ]);
+    }
+
+    public function update(Request $request, $locale, $addressId)
+    {
+        $customer = Auth::guard('customer')->user();
+        $address = $customer->customer_addresses()->findOrFail($addressId);
+
+        $validated = $request->validate([
+            'type' => 'required|in:Apartment,House,Office',
+            'building_name' => 'nullable|string|max:255',
+            'apt_or_company' => 'nullable|string|max:255',
+            'address_name' => 'nullable|string|max:255',
+            'floor' => 'nullable|string|max:255',
+            'country' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'zip_code' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:15|regex:/^\+?[0-9]{10,15}$/',
+            'additional_directions' => 'nullable|string',
+            'address_label' => 'nullable|string|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        $address->update($validated);
+
+        return redirect()->route('customer.account', ['locale' => $locale])->with('alert', [
+            'type' => 'success',
+            'message' => 'Address updated successfully.'
+        ]);
+    }
+
+    public function destroy($locale, $addressId)
+    {
+        $customer = Auth::guard('customer')->user();
+        $address = $customer->customer_addresses()->findOrFail($addressId);
+
+        $address->delete();
+
+        return redirect()->route('customer.account', ['locale' => $locale])->with('alert', [
+            'type' => 'success',
+            'message' => 'Address deleted successfully.'
+        ]);
     }
 }

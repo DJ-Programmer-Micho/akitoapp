@@ -9,7 +9,7 @@
                 padding: 2rem 2.8rem 2rem;
             }
         </style>
-        <form action="{{ route('business.checkoutChecker', ['locale' => app()->getLocale(), 'digit' => $digitPaymentStatus, 'nvxf' => auth()->guard('customer')->user()->id])}}" method="POST">
+        <form action="{{ route('business.checkoutChecker', ['locale' => app()->getLocale(), 'digit' => $digitPaymentStatus ?? 'none', 'nvxf' => auth()->guard('customer')->user()->id])}}" method="POST">
             @csrf
             <div class="row">
                 <div class="col-lg-9">
@@ -144,10 +144,17 @@
                                 </tr><!-- End .summary-total -->
                             </tbody>
                         </table><!-- End .table table-summary -->
+                        @if ($digitPaymentStatus)
+                            
                         <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
                             <span class="btn-text">Place Order</span>
                             <span class="btn-hover-text">Proceed to Checkout</span>
                         </button>
+                        @else
+                        <div class="text-center mt-1">
+                            <h6 class="text-danger">Please Add Address First</h6>
+                        </div>
+                        @endif
                     </div><!-- End .summary -->
                 </aside><!-- End .col-lg-3 -->
             </div><!-- End .row -->

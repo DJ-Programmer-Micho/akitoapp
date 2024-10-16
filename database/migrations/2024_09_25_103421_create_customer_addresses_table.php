@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->enum('type', ['Apartment', 'House', 'Office']);
-            $table->string('building_name');
-            $table->string('apt_or_company');
+            $table->string('building_name')->nullable();
+            $table->string('apt_or_company')->nullable();
+            $table->string('address_name');
             $table->string('floor')->nullable(); // Nullable for 'House'
             $table->string('country'); // Customer's country
             $table->string('city'); // Customer's city

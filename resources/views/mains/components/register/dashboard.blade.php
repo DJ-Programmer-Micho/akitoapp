@@ -198,16 +198,16 @@ FilePond.registerPlugin(
                 imageTransformOutput: {
                     type: 'image/jpeg', // Output format
                 },
-                // server: {
-                //     url: '/avatarupload',
-                //     process: {
-                //         url: '/avatarupload',
-                //         method: 'POST',
-                //         headers: {
-                //             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                //         }
-                //     }
-                // },
+                server: {
+                    url: '/avatarupload',
+                    process: {
+                        url: '/avatarupload',
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    }
+                },
                 onprocessfile: (error, file) => {
                     if (error) {
                         console.error('File processing error:', error);

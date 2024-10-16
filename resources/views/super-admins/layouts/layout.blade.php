@@ -116,36 +116,19 @@
             }
         });
     </script>
-    {{-- <script>
-                    $(document).ready(function(){
-    $(".owl-carousel").owlCarousel({
-        nav: true, 
-        dots: true,
-        rtl: {{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'true' : 'false' }},
-        lazyLoad: true,
-        margin: 20,
-        loop: false,
-        responsive: {
-            0: {
-                items: 2
-            },
-            600: {
-                items: 4
-                },
-            992: {
-                items: 6
-            },
-            1200: {
-                items: 8
-                }
-                }
-    });
-});
-    </script> --}}
 
     @livewireScripts
     @stack('teamDelivery')
     {{-- console.log('check', @json(Auth::guard('admin')->user() && hasRole([8]) ? Auth::guard('admin')->user()->id : null)); --}}
+    <script>
+            // JavaScript to play the notification sound when the Livewire event is emitted
+    document.addEventListener('DOMContentLoaded', function () {
+        window.livewire.on('notificationSound', () => {
+            let audio = document.getElementById('notificationSound');
+            audio.play();
+        });
+    });
+    </script>
     <script>
         window.Laravel = {
             driver_id: @json(Auth::guard('admin')->user() && hasRole([8]) ? Auth::guard('admin')->user()->id : null)

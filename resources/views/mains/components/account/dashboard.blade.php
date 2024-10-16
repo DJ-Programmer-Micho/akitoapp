@@ -38,7 +38,7 @@
                                             <h3 class="card-title p-2">Orders</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
-                                            <p class="card-title">2</p><!-- End .card-title -->
+                                            <p class="card-title">{{$totalPendingAndShipping}}</p><!-- End .card-title -->
                                         </div><!-- End .card-body -->
                                     </div><!-- End .card-dashboard -->
                                 </div>
@@ -48,7 +48,7 @@
                                             <h3 class="card-title p-2">Pending</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
-                                            <p class="card-title">1</p><!-- End .card-title -->
+                                            <p class="card-title">{{$totalPending}}</p><!-- End .card-title -->
                                         </div><!-- End .card-body -->
                                     </div><!-- End .card-dashboard -->
                                 </div>
@@ -58,7 +58,7 @@
                                             <h3 class="card-title p-2">Shipping</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
-                                            <p class="card-title">1</p><!-- End .card-title -->
+                                            <p class="card-title">{{$totalShipping}}</p><!-- End .card-title -->
                                         </div><!-- End .card-body -->
                                     </div><!-- End .card-dashboard -->
                                 </div>

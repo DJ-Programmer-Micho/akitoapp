@@ -402,6 +402,7 @@ private function isCoordinateInsidePolygon($coordinates, $lat, $lng)
             $this->selectedDriver = $orderLocation->driver;
             $this->driverData();
         }
+        $this->emit('notificationSound');
     }
     public function statusReload() {
         $orderLocation = Order::where('id', $this->o_id)->first(['status']);
@@ -412,6 +413,7 @@ private function isCoordinateInsidePolygon($coordinates, $lat, $lng)
         if ($orderLocation->status) {
             $this->statusFilter = $orderLocation->status;
         }
+        $this->emit('notificationSound');
     }
     public function paymentReload() {
         $orderLocation = Order::where('id', $this->o_id)->first(['payment_status']);
@@ -422,5 +424,6 @@ private function isCoordinateInsidePolygon($coordinates, $lat, $lng)
         if ($orderLocation->payment_status) {
             $this->statusPaymentFilter = $orderLocation->payment_status;
         }
+        $this->emit('notificationSound');
     }
 }

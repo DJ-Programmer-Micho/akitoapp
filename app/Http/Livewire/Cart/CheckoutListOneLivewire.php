@@ -45,12 +45,10 @@ class CheckoutListOneLivewire extends Component
             $this->loadZoneData();
         }
         
-
-        
         $this->loadPayments();
         
         if ($this->paymentList->isNotEmpty()) {
-            $this->paymentSelected = $this->paymentList->first()->id;
+            $this->paymentSelected = 2;
             $this->selectPayment($this->paymentSelected);        
         }
 

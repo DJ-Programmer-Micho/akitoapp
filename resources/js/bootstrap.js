@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // console.log('Ita a me Luigi');
     // Check if Echo is defined
     if (window.Echo) {
-        const driverId = window.Laravel.driver_id; // Get the driver ID from a global variable or similar method
+        // const driverId = window.Laravel.driver_id; // Get the driver ID from a global variable or similar method
         // console.log('Ita a me Waligi');
         // console.log('asd', driverId);
         // Listening to the private channel 'orders'
