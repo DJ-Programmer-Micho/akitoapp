@@ -15,8 +15,8 @@
         <div class="header-right">
             <div class="social-icons social-icons-color mr-0">
                 <a href="#" class="social-icon social-facebook" title="Facebook" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" class="social-icon social-twitter" title="Twitter" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
-                <a href="#" class="social-icon social-instagram" title="Pinterest" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="social-icon social-twitter" title="TikTok" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="#" class="social-icon social-instagram" title="Instagram" target="_blank"><i class="fa-brands fa-instagram"></i></a>
                 {{-- <a href="#" class="social-icon social-pinterest" title="Instagram" target="_blank"><i class="icon-pinterest-p"></i></a> --}}
             </div><!-- End .soial-icons -->
             <ul class="top-menu top-link-menu">
