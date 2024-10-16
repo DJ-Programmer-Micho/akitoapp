@@ -4,14 +4,6 @@
 <div>
     <h1>DASHBOARD</h1>
     <h1>DASHBOARD</h1>
-    <h1>DASHBOARD</h1>
-    <h1>
-        @if (auth()->guard('admin')->user())
-            <h1>USER</h1>
-        @else
-            <h1>DRIVER</h1>
-        @endif
-    </h1>
     {{-- <div class="container-fluid">
 
         <div class="row">
