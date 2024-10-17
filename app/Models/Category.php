@@ -20,6 +20,6 @@ class Category extends Model
     public function creator() { return $this->belongsTo(User::class, 'created_by_id'); }
     public function updater() { return $this->belongsTo(User::class, 'updated_by_id'); }
     public function categoryTranslation(){ return $this->hasOne(CategoryTranslation::class,'category_id'); }
-    public function subCategory() { return $this->hasMany(subcategory::class,'category_id'); }
+    public function subCategory() { return $this->hasMany(SubCategory::class,'category_id'); }
     public function product() { return $this->belongsToMany(Product::class, 'product_category'); }
 }
