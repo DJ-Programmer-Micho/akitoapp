@@ -127,7 +127,7 @@ class OrderLivewire extends Component
 
     public function render()
     {
-        $this->emit('notificationSound');
+        // $this->emit('notificationSound');
         $locale = app()->getLocale();
         // Base query with eager loading
         $query = Order::with([
