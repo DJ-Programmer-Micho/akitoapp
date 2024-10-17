@@ -882,11 +882,11 @@ class BusinessController extends Controller
 
                         CartItem::where('customer_id', $customer->id)->delete();
 
-                        return redirect()->route('business.account',['locale' => app()->getLocale()]);
-                    // return 'Cash On Delivery';
+                        return redirect()->route('business.checkout.success',['locale' => app()->getLocale()]);
+                        // return 'Cash On Delivery';
                     } catch (\Exception $e) {
                         DB::rollBack();
-                        dd($e);
+                        return redirect()->route('business.checkout.faild',['locale' => app()->getLocale()]);
                     }
                 } else {
                     return 'PAYMENT = Digital Payment';
@@ -900,5 +900,16 @@ class BusinessController extends Controller
         // return view('mains.pages.checkout-page-one', [
 
         // ]);
+    }
+
+    public function checkSuccess(){
+        return view('mains.components.livewire.aftercheckout.check-success', [
+            
+        ]);
+    }
+    public function checkFaild(){
+        return view('mains.components.livewire.aftercheckout.check-failed', [
+            
+        ]);
     }
 }

@@ -499,7 +499,14 @@
     "The faqs.9.ku.answer field is required.": "حقل الإجابة في السؤال الشائع 10 باللغة الكردية مطلوب.",
     "The faqs.9.en.answer field must be at least 10 characters.": "يجب أن يكون حقل الإجابة في السؤال الشائع 10 باللغة الإنجليزية مكونًا من 10 أحرف على الأقل.",
     "The faqs.9.ar.answer field must be at least 10 characters.": "يجب أن يكون حقل الإجابة في السؤال الشائع 10 باللغة العربية مكونًا من 10 أحرف على الأقل.",
-    "The faqs.9.ku.answer field must be at least 10 characters.": "يجب أن يكون حقل الإجابة في السؤال الشائع 10 باللغة الكردية مكونًا من 10 أحرف على الأقل."
+    "The faqs.9.ku.answer field must be at least 10 characters.": "يجب أن يكون حقل الإجابة في السؤال الشائع 10 باللغة الكردية مكونًا من 10 أحرف على الأقل.",
 
-    
+    "Order Has Been Placed": "تمت عملية الطلب",
+    "Thank You For Your Shopping": "شكراً لتسوقك",
+    "Shop More": "تسوق المزيد",
+    "Operation Failed": "فشلت العملية",
+    "Something Went Wrong": "حدث خطأ ما",
+    "Please Contact Support Team": "يرجى الاتصال بفريق الدعم",
+    "Email Us": "راسلنا عبر البريد الإلكتروني",
+    "Call Us": "اتصل بنا"
 }

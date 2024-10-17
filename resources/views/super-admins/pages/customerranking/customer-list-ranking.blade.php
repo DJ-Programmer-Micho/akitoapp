@@ -82,9 +82,6 @@
                             <!--end row-->
                         </form>
                     </div>
-                                                            {{-- @php
-                                            dd($tableData );
-                                        @endphp --}}
                     <div class="card-body">
                         <div>
                             <div class="table-responsive table-card mb-1">

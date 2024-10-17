@@ -497,6 +497,14 @@
     "The faqs.9.ku.answer field is required.": "سەرەکیی پەیامەکان لە پەیامەکان ١٠ بە زمانێکی کوردی پێویستە.",
     "The faqs.9.en.answer field must be at least 10 characters.": "پەیامەکان لە پەیامەکان ١٠ بە زمانێکی ئینگلیزی پێویستە کەمترین ١٠ تێکستی بەرز بێت.",
     "The faqs.9.ar.answer field must be at least 10 characters.": "پەیامەکان لە پەیامەکان ١٠ بە زمانێکی عەرەبی پێویستە کەمترین ١٠ تێکستی بەرز بێت.",
-    "The faqs.9.ku.answer field must be at least 10 characters.": "پەیامەکان لە پەیامەکان ١٠ بە زمانێکی کوردی پێویستە کەمترین ١٠ تێکستی بەرز بێت."
+    "The faqs.9.ku.answer field must be at least 10 characters.": "پەیامەکان لە پەیامەکان ١٠ بە زمانێکی کوردی پێویستە کەمترین ١٠ تێکستی بەرز بێت.",
 
+    "Order Has Been Placed": "داواكەی پەیوەندیدا",
+    "Thank You For Your Shopping": "سوپاس بۆ کڕینی تۆ",
+    "Shop More": "بەرهەمی زیاتر کڕە",
+    "Operation Failed": "چالاکی فەلە",
+    "Something Went Wrong": "چوونی هەڵەیەک بوو",
+    "Please Contact Support Team": "تکایە پەیوەندیدا بە تیمی پشتیوانی بکە",
+    "Email Us": "بە پەیام پەیوەندیمان بکە",
+    "Call Us": "بەرەوە پەیوەندیمان بکە"
 }

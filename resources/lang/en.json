@@ -517,6 +517,13 @@
     "The faqs.9.ar.answer field must be at least 10 characters.": "The FAQ in Answer 10 in Arabic language field must be at least 10 characters.",
     "The faqs.9.ku.answer field must be at least 10 characters.": "The FAQ in Answer 10 in Kurdish language field must be at least 10 characters.",
     "":"",
-    "":"",
+    "Order Has Been Placed":"Order Has Been Placed",
+    "Thank You For Your Shopping":"Thank You For Your Shopping",
+    "Shop More":"Shop More",
+    "Operation Failed":"Operation Failed",
+    "Something Went Wrong":"Something Went Wrong",
+    "Please Contact Support Team":"Please Contact Support Team",
+    "Email Us":"Email Us",
+    "Call Us":"Call Us",
     "":""
 }

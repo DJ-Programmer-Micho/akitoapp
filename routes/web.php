@@ -120,6 +120,8 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
     Route::get('shop-search', [BusinessController::class, 'searchShop'])->name('business.shop.search');
     // ->middleware('update.product.slug')
+    Route::get('proccess/success', [BusinessController::class, 'checkSuccess'])->name('business.checkout.success');
+    Route::get('proccess/failed', [BusinessController::class, 'checkFaild'])->name('business.checkout.faild');
 
     Route::post('processing-checkout-list/{digit}/{nvxf}', [BusinessController::class, 'checkoutChecker'])->name('business.checkoutChecker');
     Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account');
