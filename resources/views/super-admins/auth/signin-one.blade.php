@@ -8,12 +8,12 @@
                 <div class="text-center mt-2">
                     <h5 class="text-primary">Welcome Back !</h5>
                     <p class="text-muted">Sign in to continue to Akitu-co</p>
-                    @if (auth()->guard('admin')->user())
+                    {{-- @if (auth()->guard('admin')->user())
                     <h1>USER</h1>
                 @else
                     <h1>DRIVER</h1>
-                @endif
-                    {{Hash::make(123456)}}
+                @endif --}}
+                    {{-- {{Hash::make(123456)}} --}}
                 </div>
                 <div class="p-2 mt-4">
                     <form action="{{ route('super.signin.post') }}" method="POST">

@@ -82,6 +82,9 @@
                             <!--end row-->
                         </form>
                     </div>
+                                                            @php
+                                            dd($tableData );
+                                        @endphp
                     <div class="card-body">
                         <div>
                             <div class="table-responsive table-card mb-1">
@@ -104,14 +107,13 @@
                                         <tr>
                                             <td class="customer_name @empty($data->customer_profile->first_name) text-danger @endif align-middle">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="flex-shrink-0 me-2">
-                                                        <img src="{{ $data->customer_profile && $data->customer_profile->avatar ? app('cloudfront').$data->customer_profile->avatar : $customerImg }}" 
-                                                        alt="{{ $data->customer_profile->first_name ?? 'Unknown Customer' }}" 
-                                                        class="img-fluid rounded-circle" 
-                                                        style="max-width: 60px; max-height: 60px; object-fit: cover; border: 2px solid white;">                                                    </div>
+                                                    <img src="{{ $data->customer_profile && $data->customer_profile->avatar ? app('cloudfront').$data->customer_profile->avatar : $customerImg }}" 
+                                                    alt="{{ $data->customer_profile->first_name ?? 'Unknown Customer' }}" 
+                                                    class="img-fluid rounded-circle" 
+                                                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid white; object-position: center;">                                                </div>
                                                     <div>
                                                         <h6 class="mb-0">{{ $data->customer_profile->first_name ?? 'Unknown' }} {{ $data->customer_profile->last_name ?? '' }}</h6>
-                                                        <p class="mb-0"><span>@</span>{{ $data->customer_profile->username ?? 'Customer' }}</p>
+                                                        <p class="mb-0"><span>@</span>{{ $data->username ?? 'Customer' }}</p>
                                                     </div>
                                                 </div>
                                             </td>
