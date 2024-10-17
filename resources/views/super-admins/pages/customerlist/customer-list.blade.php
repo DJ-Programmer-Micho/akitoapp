@@ -99,9 +99,9 @@
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all">
-                                        {{-- @php
+                                        @php
                                             dd($tableData );
-                                        @endphp --}}
+                                        @endphp
                                         @forelse($tableData as $data)
                                         <tr>
                                             <td class="customer_name @empty($data->customer_profile->first_name) text-danger @endif align-middle">
@@ -110,7 +110,8 @@
                                                         <img src="{{ $data->customer_profile && $data->customer_profile->avatar ? app('cloudfront').$data->customer_profile->avatar : $customerImg }}" 
                                                         alt="{{ $data->customer_profile->first_name ?? 'Unknown Customer' }}" 
                                                         class="img-fluid rounded-circle" 
-                                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid white; object-position: center;">                                   </div>
+                                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid white; object-position: center;">                             
+                                                    </div>
                                                     <div>
                                                         <h6 class="mb-0">{{ $data->customer_profile->first_name ?? 'Unknown' }} {{ $data->customer_profile->last_name ?? '' }}</h6>
                                                         <p class="mb-0"><span>@</span>{{ $data->username ?? 'Customer' }}</p>
