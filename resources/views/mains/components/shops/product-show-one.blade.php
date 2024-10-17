@@ -44,7 +44,7 @@
                 </div><!-- End .product-action --> --}}
 
                 @guest('customer')
-                <button type="button" class="btn btn-product" href="#signin-modal" data-toggle="modal">
+                <button type="button" class="btn btn-primary" href="#signin-modal" data-toggle="modal">
                     <span>{{__('add to cart')}}</span>
                 </button>
                 @endguest
@@ -63,7 +63,7 @@
                 @if ($product->variation->images->count() > 1)
                 <div class="product-nav product-nav-thumbs">
                     @foreach ($product->variation->images->take(3) as $index => $image)
-                    <a href="#" class="active">
+                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="active">
                         <img src="{{app('cloudfront').$image->image_path ?? "sdf"}}" alt="product desc">
                     </a>
                     @endforeach
@@ -74,7 +74,7 @@
                 @if ($product->variation->colors->count() >= 1)
                 <div class="product-nav product-nav-thumbs">
                     @foreach ($product->variation->colors->take(3) as $index => $color)
-                    <a href="#" class="active">
+                    <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="active">
                         <div style="height: 100%; width: 100%; background-color: {{$color->code}};"></div>
                     </a>
                     @endforeach
