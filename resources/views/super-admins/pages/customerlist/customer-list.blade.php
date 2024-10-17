@@ -107,11 +107,13 @@
                                             <td class="customer_name @empty($data->customer_profile->first_name) text-danger @endif align-middle">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-shrink-0 me-2">
-                                                        <img src="{{ $data->customer_profile && $data->customer_profile->avatar ? app('cloudfront').$data->customer_profile->avatar : $customerImg}}" alt="{{ $data->customer_profile && $data->customer_profile->first_name ? $data->customer_profile->first_name : 'user'}}" class="img-fluid" style="max-width: 60px; max-height: 60px; object-fit: cover;">
-                                                    </div>
+                                                        <img src="{{ $data->customer_profile && $data->customer_profile->avatar ? app('cloudfront').$data->customer_profile->avatar : $customerImg }}" 
+                                                        alt="{{ $data->customer_profile->first_name ?? 'Unknown Customer' }}" 
+                                                        class="img-fluid rounded-circle" 
+                                                        style="max-width: 60px; max-height: 60px; object-fit: cover; border: 2px solid white;">                                                    </div>
                                                     <div>
-                                                        <h6 class="mb-0">{{$data->customer_profile->first_name}} {{$data->customer_profile->last_name}}</h6>
-                                                        <p class="mb-0"><span>@</span>{{ $data->customer_profile->first_name }}</p>
+                                                        <h6 class="mb-0">{{ $data->customer_profile->first_name ?? 'Unknown' }} {{ $data->customer_profile->last_name ?? '' }}</h6>
+                                                        <p class="mb-0"><span>@</span>{{ $data->customer_profile->username ?? 'Customer' }}</p>
                                                     </div>
                                                 </div>
                                             </td>
