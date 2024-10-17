@@ -99,9 +99,9 @@
                                         </tr>
                                     </thead>
                                     <tbody class="list form-check-all">
-                                        @php
+                                        {{-- @php
                                             dd($tableData );
-                                        @endphp
+                                        @endphp --}}
                                         @forelse($tableData as $data)
                                         <tr>
                                             <td class="customer_name @empty($data->customer_profile->first_name) text-danger @endif align-middle">
