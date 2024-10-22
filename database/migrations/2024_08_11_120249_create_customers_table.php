@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedInteger('status')->default(1);
             $table->unsignedInteger('phone_verify')->default(0);
             $table->unsignedInteger('email_verify')->default(0);
+            $table->unsignedInteger('company_verify')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('email_otp_number')->nullable();
             $table->timestamp('phone_verified_at')->nullable();

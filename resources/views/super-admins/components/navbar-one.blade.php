@@ -188,6 +188,28 @@
                     </div>
                 </li> <!-- end Dashboard Menu -->
                 @endif
+                @if (hasRole([1,3,8]))
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarWebSetting" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarWebSetting">
+                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Web Setting')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarWebSetting">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('driver.task', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Email')}}</a>
+                            </li>
+                            @if (hasRole([1,3]))
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('driver.task.all', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Language')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('driver.task.all', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Images')}}</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+                @endif
             </ul>
         </div>
         <!-- Sidebar -->

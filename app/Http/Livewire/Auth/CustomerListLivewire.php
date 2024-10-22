@@ -24,17 +24,7 @@ class CustomerListLivewire extends Component
     // INT
     public $filteredLocales;
     public $customerImg;
-    // Create
-    // public $fName;
-    // public $lName;
-    // public $username;
-    // public $position;
-    // public $email;
-    // public $phone;
-    // public $password;
-    // public $status;
-    // public $glang;
-    // public $roles = [];
+    public $glang;
     // EDIT
     public $fNameEdit;
     public $lNameEdit;
@@ -76,7 +66,6 @@ class CustomerListLivewire extends Component
         $this->glang = app()->getLocale();
         $this->filteredLocales = app('glocales');
         // Default Values
-        $this->status = 1;
         $this->statusFilter = request()->query('statusFilter', 'all');
         $this->page = request()->query('page', 1);
     }
@@ -322,28 +311,12 @@ class CustomerListLivewire extends Component
  
     public function resetInput()
     {
-
-        $this->fName = null;
-        $this->lName = null;
-        $this->username = null;
-        $this->position = null;
-        $this->email = null;
-        $this->phone = null;
-        $this->password = null;
-        $this->status = null;
-        $this->roles = [];
         $this->fNameEdit = null;
         $this->lNameEdit = null;
-        $this->usernameEdit = null;
-        $this->positionEdit = null;
         $this->phoneEdit = null;
         $this->emailEdit = null;
-        $this->rolesEdit = [];
         $this->customer_update = null;
-        $this->status = 1;
-        // $this->priority = Brand::max('priority') + 1;
         $this->statusEdit = 1;
-        // $this->priorityEdit = '';
         $this->objectReader = null;
         $this->objectName = null;
         $this->objectData = null;

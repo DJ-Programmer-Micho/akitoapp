@@ -18,20 +18,27 @@
         <meta name="page-type" content="website">
         <meta name="audience" content="Everyone">
         <meta name="robots" content="index, follow"> 
-
+        <meta name="language" content="{{app()->getLocale()}}">
         <link rel="alternate" hreflang="en" href="http://akitu-co/en" />
         <link rel="alternate" hreflang="ar" href="http://akitu-co/ar" />
         <link rel="alternate" hreflang="ku" href="http://akitu-co/ku" />
 
-        <meta name='og:title' content='Akitu'>
-        <meta name='og:type' content='Software Company'>
-        <meta name='og:url' content='http://akitu-co.com/'>
-        {{-- <meta name='og:image' content='https://d7tztcuqve7v9.cloudfront.net/{{app('fixedimage_640x360_half')}}'> --}}
-        <meta name='og:site_name' content='Akitu'>
-        <meta name='og:description' content='Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'>
+        <meta name='owner' content='Furat Hariri'>
+        <meta name='url' content='{{url()->current()}}'>
+        <meta name='identifier-URL' content='{{url()->current()}}'>
 
-        <meta name="news_keywords" content="akitu">
-        <meta name='keywords' content='akitu'>
+        <meta name="msapplication-TileColor" content="#003465">
+        <meta name="msapplication-TileImage" content="{{app('logo_1024')}}">
+
+        <meta name='og:title' content="{{$seo['title'] ?? 'Akitu'}}">
+        <meta name='og:description' content="{{$seo['description'] ?? 'Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
+        <meta name='og:image' content="{{$seo['image'] ?? app('cloudfront').'web-setting/logo3.png'}}">
+        <meta name='og:type' content='eCommerce'>
+        <meta name='og:url' content='http://akitu-co.com/'>
+        <meta name='og:site_name' content='Akitu'>
+
+        <meta name="news_keywords" content="{{$seo['keywords'] ?? 'akitu'}}">
+        <meta name='keywords' content='{{$seo['keywords'] ?? 'akitu'}}'>
 
         <link rel="shortcut icon" href="{{app('logo_72')}}">
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{app('logo_144')}}">

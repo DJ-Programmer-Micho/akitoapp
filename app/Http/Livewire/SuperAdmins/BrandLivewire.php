@@ -135,10 +135,10 @@ class BrandLivewire extends Component
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
         }
-
+        
         $brand = Brand::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'priority' => $validatedData['priority'],
             'status' => $validatedData['status'],
             'image' => $this->objectName,
@@ -210,8 +210,8 @@ class BrandLivewire extends Component
         }
 
         Brand::where('id', $this->brand_update->id)->update([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'priority' => $validatedData['priorityEdit'],
             'status' => $validatedData['statusEdit'],
             'image' => $this->objectName ?? $this->objectReader,

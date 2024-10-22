@@ -135,8 +135,10 @@
                                                                     <i class="fa-regular fa-pen-to-square me-2"></i>{{__('Edit')}}</button>
                                                                 </li>
                                                                 <li class="dropdown-divider"></li>
-                                                                <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteBrandModal" wire:click="removeBrand({{ $data->id }})">
-                                                                    <i class="fa-regular fa-trash-can me-2"></i>{{__('Delete')}}</button>
+                                                                <li>
+                                                                    <button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteBrandModal" wire:click="removeBrand({{ $data->id }})">
+                                                                        <i class="fa-regular fa-trash-can me-2"></i>{{__('Delete')}}
+                                                                    </button>
                                                                 </li>
 
                                                             </ul>

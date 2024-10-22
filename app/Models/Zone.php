@@ -14,6 +14,7 @@ class Zone extends Model
         'digit_payment', 
         'cod_payment', 
         'status',
+        'delivery_cost',
         'coordinates', 
     ];
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('digit_payment');
             $table->string('cod_payment');
             $table->string('status');
+            $table->decimal('delivery_cost', 8, 2);
             $table->json('coordinates'); // Store the polygon coordinates as JSON
             $table->timestamps();
         });

@@ -142,8 +142,8 @@ class SizeLivewire extends Component
         $validatedData = $this->validate($this->rulesForSave());
 
         $size = VariationSize::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'code' => $validatedData['code'],
             'priority' => $validatedData['priority'],
             'status' => $validatedData['status'],
@@ -194,8 +194,8 @@ class SizeLivewire extends Component
         $validatedData = $this->validate($this->rulesForUpdate());
 
         VariationSize::where('id', $this->size_update->id)->update([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'code' => $validatedData['codeEdit'],
             'priority' => $validatedData['priorityEdit'],
             'status' => $validatedData['statusEdit'],

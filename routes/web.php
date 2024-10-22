@@ -87,9 +87,11 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::get('/order-invoice/{tracking}', [SuperAdminController::class, 'orderInvoice'])->name('super.orderInvoice');
     Route::get('/delivery-zones', [SuperAdminController::class, 'deliveryZones'])->name('super.deliveryZones');
     Route::get('/shipping-costs', [SuperAdminController::class, 'shippingCost'])->name('super.shippingCost');
+    Route::get('/customer-profile/{id}', [SuperAdminController::class, 'customerProfile'])->name('super.customerProfile');
     Route::get('/customer-list', [SuperAdminController::class, 'customerList'])->name('super.customerList');
     Route::get('/customer-ranking', [SuperAdminController::class, 'customerRanking'])->name('super.customerRanking');
     Route::get('/customer-orders/{id}', [SuperAdminController::class, 'customerOrder'])->name('super.customerOrder');
+    Route::get('/customer-discounts', [SuperAdminController::class, 'customerDiscount'])->name('super.customerDiscount');
     Route::prefix('tasks')->group(function () {
         Route::get('/all-driver-task', [DriverController::class, 'allDriverTask'])->name('driver.task.all');
         Route::get('/driver-task', [DriverController::class, 'driverTask'])->name('driver.task');

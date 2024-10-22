@@ -89,6 +89,11 @@ class SuperAdminController extends Controller
     public function shippingCost(){
         return view('super-admins.pages.shippingcost.index');
     }
+    public function customerProfile($local, int $id){
+        return view('super-admins.pages.customerprofile.index',[
+            "c_id" => $id
+        ]);
+    }
     public function customerList(){
         return view('super-admins.pages.customerlist.index');
     }
@@ -99,5 +104,8 @@ class SuperAdminController extends Controller
         return view('super-admins.pages.customerorder.index',[
             "p_id" => $id
         ]);
+    }
+    public function customerDiscount(){
+        return view('super-admins.pages.customerdiscount.index');
     }
 }

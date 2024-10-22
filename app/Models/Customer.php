@@ -20,6 +20,7 @@ class Customer extends Authenticatable implements JWTSubject
         'status',
         'email_verify',
         'phone_verify',
+        'company_verify',
         'email_otp_number',
         'phone_otp_number',
         'uid',
@@ -48,5 +49,6 @@ class Customer extends Authenticatable implements JWTSubject
 
     public function customer_profile() { return $this->hasOne(CustomerProfile::class, 'customer_id'); }
     public function customer_addresses() { return $this->hasMany(CustomerAddress::class, 'customer_id'); }
+    public function discountRules() { return $this->hasMany(DiscountRule::class); }
     public function orders() { return $this->hasMany(Order::class, 'customer_id'); }
 }

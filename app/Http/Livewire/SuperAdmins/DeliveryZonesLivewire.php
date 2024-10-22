@@ -13,8 +13,10 @@ class DeliveryZonesLivewire extends Component
     public $name;
     public $coordinates;
     public $delivery_team;
+    public $delivery_cost;
     public $digit_payment;
     public $cod_payment;
+    public $status = 1;
 
     public $activeCount = 0;
     public $nonActiveCount = 0;
@@ -30,6 +32,7 @@ class DeliveryZonesLivewire extends Component
     {
         $this->validate([
             'name' => 'required|string|max:255',
+            'delivery_cost' => 'required|numeric|min:0',
             'coordinates' => 'required|array',
         ]);
 
@@ -37,9 +40,10 @@ class DeliveryZonesLivewire extends Component
             'name' => $this->name,
             'coordinates' => json_encode($this->coordinates),
             'delivery_team' => $this->delivery_team,
+            'delivery_cost' => $this->delivery_cost,
+            'status' => $this->status ?? 1,
             'digit_payment' => $this->digit_payment ?? 0,
             'cod_payment' => $this->cod_payment ?? 0,
-            'status' => '1',
         ]);
 
         $this->reset(['name', 'coordinates']);
@@ -62,7 +66,6 @@ class DeliveryZonesLivewire extends Component
         $this->emitSelf('refresh');
     }
 
-    public $status; // Add status property
     public $selectedZoneId; // Add this property to store the selected zone ID
 
     public function updateZone()
@@ -73,7 +76,6 @@ class DeliveryZonesLivewire extends Component
         }
         $zone = Zone::findOrFail($this->selectedZoneId);
         $zone->coordinates = json_encode($this->coordinates); // Save updated coordinates
-        $zone->status = 1; // Update status based on editing
         $zone->save();
 
         $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Zone updated successfully!')]);
@@ -87,6 +89,36 @@ class DeliveryZonesLivewire extends Component
     public function resetInput(){
         $this->coordinates = null;
         $this->selectedZoneId = null;
+    }
+
+    public function updateCost(int $p_id, $updatedCost)
+    {
+        // Validate if updatedCost is a number
+        if (!is_numeric($updatedCost)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Invalid value')
+            ]);
+            return;
+        }
+    
+        // Find the brand by ID
+        $zone = Zone::find($p_id);
+        
+        if ($zone) {
+            $zone->delivery_cost = $updatedCost;
+            $zone->save();
+            
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',  
+                'message' => __('Delivery Cost Updated Successfully')
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Record Not Found')
+            ]);
+        }
     }
 
     public function updateStatus(int $id)

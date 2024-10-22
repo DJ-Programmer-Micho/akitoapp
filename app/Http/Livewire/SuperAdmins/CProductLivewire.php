@@ -63,6 +63,7 @@ class CProductLivewire extends Component
     public $is_on_sale = 0;
     public $is_featured = 0;
     public $stock = 1;
+    public $order_limit = 1;
     public $status = 1;
     public $originalPrice;
     public $discountPrice;
@@ -141,6 +142,7 @@ class CProductLivewire extends Component
     
         // General product rules
         $rules['stock'] = 'required|numeric|min:0';
+        $rules['order_limit'] = 'required|numeric|min:0';
         $rules['images'] = 'required';
         $rules['selectedBrand'] = 'required';
         $rules['originalPrice'] = 'required|numeric|min:0';
@@ -381,8 +383,8 @@ class CProductLivewire extends Component
 
                 
                 $information = Information::create([
-                    'created_by_id' => 1,
-                    'updated_by_id' => 1,
+                    'created_by_id' => auth('admin')->id() ?? 1,
+                    'updated_by_id' => auth('admin')->id() ?? 1,
                 ]);
 
                 foreach ($this->filteredLocales as $locale) {
@@ -418,6 +420,7 @@ class CProductLivewire extends Component
                 'price' => $this->originalPrice ?? null,
                 'discount' => $this->discountPrice ?? null,
                 'stock' => $this->stock ?? 1,
+                'order_limit' => $this->order_limit ?? 1,
                 'on_sale' => $this->is_on_sale ?? 0,
                 'featured' => $this->is_featured ?? 0,
             ]);
@@ -445,8 +448,8 @@ class CProductLivewire extends Component
           
             // Create Product entry
             $product = Product::create([
-                'created_by_id' => 1,
-                'updated_by_id' => 1,
+                'created_by_id' => auth('admin')->id() ?? 1,
+                'updated_by_id' => auth('admin')->id() ?? 1,
                 'brand_id' => $validatedData['selectedBrand'],
                 'variation_id' => $variation->id,
                 'information_id' => $information->id ?? null,
@@ -556,6 +559,7 @@ class CProductLivewire extends Component
         $this->keywords = ""; // Cropped Imgeas
         $this->is_spare_part = 0;
         $this->stock = 1;
+        $this->order_limit = 1;
         $this->is_on_sale = 0;
         $this->is_featured = 0;
         $this->status = 1;

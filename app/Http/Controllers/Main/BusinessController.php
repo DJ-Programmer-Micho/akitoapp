@@ -281,8 +281,16 @@ class BusinessController extends Controller
         $product->productTranslation = $product->productTranslation->first();
         $product->information->informationTranslation = $product->information->informationTranslation->first();
     
+        $seo = [
+            'title' => $product->productTranslation->name ?? 'Akitu Product',
+            'description' => Str::limit($product->productTranslation->description, 160) ?? 'Akitu Product',
+            'keywords' => Str::limit($product->variation->keywords, 160) ?? 'akitu, coffee shop',
+            'image' => app('cloudfront').$product->variation->images[0]->image_path ?? 'default_image_url',
+        ];
+
         // Pass the product and its translation to the view
         return view('mains.pages.product-page-one', [
+            'seo' => $seo,
             'product' => $product,
             'locale' => $locale,
         ]);

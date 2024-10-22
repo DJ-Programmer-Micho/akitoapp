@@ -208,7 +208,7 @@
                                                         <li class="dropdown-divider"></li>
                                                         <li>
                                                             <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'pending')">
-                                                                <span class="text-warning"><i class="fa-regular fa-hourglass-half "></i> {{__('Pending')}}</span>
+                                                                <span class="text-warning"><i class="fa-regular fa-hourglass-half me-1"></i> {{__('Pending')}}</span>
                                                             </button>
                                                             <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'shipping')">
                                                                 <span class="text-primary"><i class="fa-solid fa-truck-moving me-1"></i> {{__('Shipping')}}</span>

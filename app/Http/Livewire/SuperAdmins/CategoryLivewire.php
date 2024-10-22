@@ -205,8 +205,8 @@ class CategoryLivewire extends Component
 
 
             $category = Category::create([
-                'created_by_id' => 1,
-                'updated_by_id' => 1,
+                'created_by_id' => auth('admin')->id() ?? 1,
+                'updated_by_id' => auth('admin')->id() ?? 1,
                 'priority' => Category::max('priority') + 1,
                 'image' => $this->objectName,
             ]);
@@ -284,8 +284,8 @@ class CategoryLivewire extends Component
         }
 
         Category::where('id', $this->category_update->id)->update([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'priority' => $validatedData['priorityEdit'],
             'status' => $validatedData['statusEdit'],
             'image' => $this->objectName ?? $this->objectReader,
@@ -327,8 +327,8 @@ class CategoryLivewire extends Component
         $validatedData = $this->validate($this->rulesForSubCategories());
         try { 
             $subcategory = SubCategory::create([
-                'created_by_id' => 1,
-                'updated_by_id' => 1,
+                'created_by_id' => auth('admin')->id() ?? 1,
+                'updated_by_id' => auth('admin')->id() ?? 1,
                 'category_id' => $this->subaddid,
                 'priority' => $this->priorityEdit,
                 'status' => $this->statusEdit,
@@ -380,8 +380,8 @@ class CategoryLivewire extends Component
         $validatedData = $this->validate($this->rulesForSubCategoriesEdit());
 
         SubCategory::where('id', $this->sub_category_update->id)->update([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'priority' => $validatedData['priorityEdit'],
             'status' => $validatedData['statusEdit'],
             'image' => $this->objectName ?? $this->objectReader,

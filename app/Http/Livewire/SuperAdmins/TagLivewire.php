@@ -137,8 +137,8 @@ class TagLivewire extends Component
         $validatedData = $this->validate($this->rulesForSave());
 
         $tag = Tag::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'priority' => $validatedData['priority'],
             'status' => $validatedData['status'],
         ]);
@@ -186,8 +186,8 @@ class TagLivewire extends Component
         $validatedData = $this->validate($this->rulesForUpdate());
 
         Tag::where('id', $this->tag_update->id)->update([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'priority' => $validatedData['priorityEdit'],
             'status' => $validatedData['statusEdit'],
         ]);

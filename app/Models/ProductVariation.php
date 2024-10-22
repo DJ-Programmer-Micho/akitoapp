@@ -15,7 +15,7 @@ class ProductVariation extends Model
         'price',
         'discount',
         'stock',
-        'on_stock',
+        'order_limit',
         'on_sale',
         'featured',
     ];

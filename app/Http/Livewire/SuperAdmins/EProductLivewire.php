@@ -59,11 +59,11 @@ class EProductLivewire extends Component
     public $keywords; // Cropped Imgeas
     // Sub Form INT
     public $is_spare_part = 0;
-    public $is_on_stock = 1;
     public $is_on_sale = 0;
     public $is_featured = 0;
     public $status = 1;
     public $stock = 1;
+    public $order_limit = 1;
     public $priority = 1;
     public $originalPrice;
     public $discountPrice;
@@ -173,7 +173,7 @@ class EProductLivewire extends Component
         $this->originalPrice = $product->variation->price;
         $this->discountPrice = $product->variation->discount;
         $this->stock = $product->variation->stock;
-        $this->is_on_stock = $product->variation->on_stock;
+        $this->order_limit = $product->variation->order_limit;
         $this->is_on_sale = $product->variation->on_sale;
         $this->is_featured = $product->variation->featured;
         $this->is_spare_part = $product->is_spare_part;
@@ -506,13 +506,13 @@ class EProductLivewire extends Component
                 
                 if ($information) {
                     $information->update([
-                        'updated_by_id' => 1,
+                        'updated_by_id' => auth('admin')->id() ?? 1,
                     ]);
                 } else {
                     // Create new information if it doesn't exist
                     $information = Information::create([
-                        'created_by_id' => 1,
-                        'updated_by_id' => 1,
+                        'created_by_id' => auth('admin')->id() ?? 1,
+                        'updated_by_id' => auth('admin')->id() ?? 1,
                     ]);
                 }
         
@@ -536,7 +536,7 @@ class EProductLivewire extends Component
                 'price' => $this->originalPrice ?? $variation->price,
                 'discount' => $this->discountPrice ?? $variation->discount,
                 'stock' => $this->stock ?? $variation->stock,
-                'on_stock' => $this->is_on_stock ?? $variation->on_stock,
+                'order_limit' => $this->order_limit ?? $variation->order_limit,
                 'on_sale' => $this->is_on_sale ?? $variation->on_sale,
                 'featured' => $this->is_featured ?? $variation->featured,
             ]);
@@ -549,7 +549,7 @@ class EProductLivewire extends Component
 
             // Create Product entry
             $product->update([
-                'updated_by_id' => 1,
+                'updated_by_id' => auth('admin')->id() ?? 1,
                 'brand_id' => $validatedData['selectedBrand'] ?? $product->brand_id,
                 'information_id' => $information->id ?? $product->information_id,
                 'is_spare_part' => $this->is_spare_part,
@@ -726,7 +726,7 @@ class EProductLivewire extends Component
         $this->sku = ""; // Cropped Imgeas
         $this->keywords = ""; // Cropped Imgeas
         $this->is_spare_part = 0;
-        $this->is_on_stock = 1;
+        $this->order_limit = 1;
         $this->is_on_sale = 0;
         $this->is_featured = 0;
         $this->stock = 1;

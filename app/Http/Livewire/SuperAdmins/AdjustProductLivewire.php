@@ -241,6 +241,35 @@ class AdjustProductLivewire extends Component
         }
     }
 
+    public function updateOrderLimitValue(int $p_id, $updateOrderLimit)
+    {
+
+        // Validate if updatedPriority is a number
+        if (!is_numeric($updateOrderLimit)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Invalid priority value')
+            ]);
+            return;
+        }
+    
+        // Find the brand by ID
+        $product = Product::with('variation')->find($p_id);
+        if ($product) {
+            $product->variation->order_limit = $updateOrderLimit;
+            $product->variation->save();
+            
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',  
+                'message' => __('Stock Has Been Updated Successfully')
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
 
     public function toggleColor($colorId)
     {

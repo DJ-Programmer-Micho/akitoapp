@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->decimal('discount', 10, 2)->nullable();
             $table->integer('stock')->default(1);
+            $table->integer('order_limit')->default(1);
             $table->integer('on_sale');
             $table->integer('featured');
 

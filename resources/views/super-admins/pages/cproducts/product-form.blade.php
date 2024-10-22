@@ -584,6 +584,7 @@
                         <!-- end card body -->
                         <div class="card-body">
                             <div class="mb-3">
+                                <label class="form-label" for="meta-title-input">{{__('On Stock')}}</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="basic-addon1">
                                         <i class="fa-solid fa-boxes-stacked"></i>
@@ -595,9 +596,27 @@
                                     wire:model.debounce.500ms="stock" placeholder="1">
                                 </div>
                                 @error('stock')
-                                        <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
-                                            <span class="text-danger">{{ __($message) }}</span>
-                                        </div>
+                                <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                    <span class="text-danger">{{ __($message) }}</span>
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="meta-title-input">{{__('Order Limit')}}</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        <i class="fa-solid fa-gauge-high"></i>
+                                    </span>
+                                    <input type="number"
+                                    class="form-control
+                                    @error('order_limit') is-invalid @enderror
+                                    @if(!$errors->has('order_limit') && !empty($order_limit)) is-valid @endif"
+                                    wire:model.debounce.500ms="order_limit" placeholder="1">
+                                </div>
+                                @error('order_limit')
+                                <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
+                                    <span class="text-danger">{{ __($message) }}</span>
+                                </div>
                                 @enderror
                             </div>
                         </div>

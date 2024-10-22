@@ -35,6 +35,10 @@
                             <input type="text" id="name" class="form-control" wire:model="name" required>
                         </div>
                         <div class="form-group mb-3">
+                            <label for="name">Delivery Cost</label>
+                            <input type="number" id="delivery_cost" class="form-control" wire:model="delivery_cost" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-3">
                             <label for="name">Delivary Team</label>
                             <select class="form-control" wire:model="delivery_team" required>
                                 <option value="" selected>{{__('Select Delivary Team')}}</option>
@@ -122,14 +126,6 @@
                                         <span class="badge bg-danger-subtle text-danger align-middle rounded-pill ms-1">{{ $nonActiveCount }}</span>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link @if($statusFilter === 'edit-mode') active @endif" style="cursor: pointer"
-                                       wire:click="changeTab('edit-mode')"
-                                       role="tab">
-                                        {{__('Edit Mode')}}
-                                        <span class="badge bg-danger-subtle text-danger align-middle rounded-pill ms-1">{{ $nonActiveCount }}</span>
-                                    </a>
-                                </li>
                             </ul>
                         </div>
                     </div>
@@ -144,6 +140,7 @@
                                 <th>{{__('ID')}}</th>
                                 <th>{{__('Name')}}</th>
                                 <th class="text-center">{{__('Delivery Team')}}</th>
+                                <th class="text-center">{{__('Delivery Cost ($)')}}</th>
                                 <th class="text-center">{{__('Digital Payment')}}</th>
                                 <th class="text-center">{{__('Cash On Delivery Payment')}}</th>
                                 <th class="text-center">{{__('Status')}}</th>
@@ -161,6 +158,14 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         {{ $data->driverTeam->team_name }}
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <input type="number" id="cost_{{ $data->id }}" value="{{ $data->delivery_cost }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                            <button type="button" class="btn btn-success btn-icon"  onclick="updateCostValue({{ $data->id }})">
+                                                <i class="fa-solid fa-dollar-sign"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                     <td class="align-middle text-center">
                                         <div class="form-check form-switch align-middle text-center">
@@ -462,5 +467,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
         console.error('Polygon not found for zoneId:', zoneId);
     }
 });
+</script>
+<script>
+    function updateCostValue(itemId) {
+        var input = document.getElementById('cost_' + itemId);
+        var updatedCost = input.value;
+        @this.call('updateCost', itemId, updatedCost);
+    }
 </script>
 @endpush

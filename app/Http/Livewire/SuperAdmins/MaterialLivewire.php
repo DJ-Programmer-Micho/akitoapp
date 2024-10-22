@@ -143,8 +143,8 @@ class MaterialLivewire extends Component
         $validatedData = $this->validate($this->rulesForSave());
 
         $material = VariationMaterial::create([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'code' => $validatedData['code'],
             'priority' => $validatedData['priority'],
             'status' => $validatedData['status'],
@@ -195,8 +195,8 @@ class MaterialLivewire extends Component
         $validatedData = $this->validate($this->rulesForUpdate());
 
         VariationMaterial::where('id', $this->material_update->id)->update([
-            'created_by_id' => 1,
-            'updated_by_id' => 1,
+            'created_by_id' => auth('admin')->id() ?? 1,
+            'updated_by_id' => auth('admin')->id() ?? 1,
             'code' => $validatedData['codeEdit'],
             'priority' => $validatedData['priorityEdit'],
             'status' => $validatedData['statusEdit'],
