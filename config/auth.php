@@ -85,11 +85,6 @@ return [
             'model' => App\Models\Customer::class, // Adjust this to the correct customer model path
         ],
 
-        'drivers' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Driver::class, // Adjust this to the correct customer model path
-        ],
-
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -119,6 +114,13 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'customers' => [
+            'provider' => 'customers', // Ensure this matches the provider for your customers
+            'table' => 'customer_password_resets',
             'expire' => 60,
             'throttle' => 60,
         ],

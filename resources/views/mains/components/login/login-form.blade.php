@@ -53,7 +53,7 @@
                                     <input type="password" class="form-control" id="password-form-signin" name="password-form-signin" autocomplete>
                                     @error('password') <small class="text-danger">{{ $message }}</small> @enderror
                                   </div>
-                                  <a href="#" class="forgot-link">{{__('Forgot Your Password?')}}</a>
+                                  <a href="{{route('password.request',['locale' => app()->getlocale()])}}" class="forgot-link">{{__('Forgot Your Password?')}}</a>
                                 </div>
                                 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                                 <div class="g-recaptcha" id="feedback-recaptcha" data-sitekey="{!! env('GOOGLE_RECAPTCHA_KEY') !!}"></div>

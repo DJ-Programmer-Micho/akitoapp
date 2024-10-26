@@ -61,8 +61,14 @@ Route::get('/auth-logout', [AuthController::class, 'logoutpage'])->name('logoutp
 Route::get('/suspended-account', [AuthController::class, 'suspend'])->name('suspend');
 // CUSTOMER OTP
 Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
-
-// EMAIL
+    
+    // EMAIL FORGET
+    Route::get('uasfdr-oiugo-gfhft-iuyer/password/forgot', [CustomerAuth::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('uasfdr-oiugo-gfhft-iuyer/password/email', [CustomerAuth::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/ytuew-uasfdr-oiugo-gfhft/reset-password/{token}', [CustomerAuth::class, 'showResetForm'])->name('password.reset');
+    Route::post('ytuew-uasfdr-oiugo-gfhft/password/reset', [CustomerAuth::class, 'reset'])->name('password.update');
+    Route::get('/success-reset-password', [CustomerAuth::class, 'successResetMsg'])->name('password.successResetMsg');
+    // EMAIL
 Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
 Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
 Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
@@ -76,7 +82,6 @@ Route::get('/phone-resend-verify-otp/{id}/{phone}', [CustomerAuth::class,'resend
 Route::post('/verify-otp', [CustomerAuth::class,'verifyOTP'])->name('verifyOTP');
 });
 
-// Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 // DASHBOARD - ADMIN
 Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware','superadmincheck','authcheck'])->group(function () {
     Route::get('/', [SuperAdminController::class, 'dashboard'])->name('super.dashboard');

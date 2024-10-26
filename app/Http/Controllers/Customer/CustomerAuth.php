@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Password;
+use App\Notifications\ResetPasswordNotification;
 
 
 
@@ -390,5 +391,57 @@ class CustomerAuth extends Controller
         return redirect()->back(); // Redirect after updating the password
     }
     
+    // app/Http/Controllers/Customer/CustomerAuth.php
+    public function showLinkRequestForm($locale)
+    {
+        return view('mains.components.account.reset-password');
+    }
+
+    public function sendResetLinkEmail($locale, Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:customers,email']);
+
+        // Send the reset link to the customer's email using the 'customers' broker
+        $status = Password::broker('customers')->sendResetLink(
+            $request->only('email'),
+            function ($customer, $token) use ($locale) {
+                $customer->notify(new ResetPasswordNotification($locale, $token));
+            }
+        );
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', __($status))
+            : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function showResetForm($locale, $token)
+    {
+        return view('mains.components.account.update-password', ['token' => $token]); // Create this view
+    }
     
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:customers,email',
+            'password' => 'required|confirmed|min:8',
+            'token' => 'required',
+        ]);
+        
+        // Use the 'customers' broker to reset the password
+        $response = Password::broker('customers')->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($customer, $password) {
+                $customer->password = Hash::make($password);
+                $customer->save();
+            }
+        );
+    
+        return $response == Password::PASSWORD_RESET
+        ? redirect()->route('password.successResetMsg',['locale' => app()->getlocale()])->with('status', trans($response))
+        : back()->withErrors(['email' => trans($response)]);
+    }
+    
+    public function successResetMsg()
+    {
+        return view('mains.components.account.password-check-success'); // Create this view
+    }
 }
