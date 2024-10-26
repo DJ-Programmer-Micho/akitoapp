@@ -64,9 +64,10 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/skins/skin-demo-3.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/demos/demo-3.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/custom.css')}}">
-        <title>{{ $title ?? 'Akitu' }}</title>
+        @stack('styles-ticker')
         @stack('styles-password')
         @livewireStyles
+        <title>{{ $title ?? 'Akitu' }}</title>
     </head>
     <body>
         <div class="page-wrapper">
@@ -95,14 +96,14 @@
         <script src="{{asset('main/assets/js/nouislider.min.js')}}"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+        {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <!-- Main JS File -->
         <script src="{{asset('main/assets/js/telex.js')}}"></script>
         <script src="{{asset('main/assets/js/main.js')}}"></script>
         <script src="{{asset('main/assets/js/demos/demo-3.js')}}"></script>
         <script src="https://www.google.com/recaptcha/api.js?render={{ env('GOOGLE_RECAPTCHA_KEY') }}"></script>
-        @stack("ticker")
+        {{-- @stack("ticker") --}}
         @stack("productView")
         @stack("brandSlider")
         @stack("register")
@@ -110,6 +111,7 @@
         @stack("tab-script")
         @stack("geo")
         @livewireScripts
+        @stack("script-ticker")
 <form id="languageForm" action="{{ route('setLocale') }}" method="post">
     @csrf
     <input type="hidden" name="locale" id="selectedLocale" value="{{ app()->getLocale() }}">
@@ -117,7 +119,6 @@
 <form id="logout-form" action="{{ route('customer.logout', ['locale' => app()->getLocale()]) }}" method="POST" style="display: none;">
     @csrf
 </form>
-
 <script>
     function changeLanguage(locale) {
         document.getElementById('selectedLocale').value = locale;

@@ -64,7 +64,6 @@
                     <h2 class="checkout-title">Select Payment Method:</h2>
 
                     <div class="row px-3">
-
                         @foreach ($paymentList as $index => $payment)
                         <div class="col-lg-6 p-0">
                             <div class="card card-dashboard m-1">
@@ -72,13 +71,23 @@
                                     class="card address-card {{ $paymentSelected == $payment->id ? 'selected' : '' }}" 
                                     wire:click="selectPayment({{ $payment->id }})"
                                     style="cursor: pointer; {{ $paymentSelected == $payment->id ? 'border: 2px solid green;' : '' }} 
-                                    {{ $digitPaymentStatus == 0 && $payment->online == 0 ? 'opacity: 0.5; pointer-events: none;' : '' }}
-                                        {{ $digitPaymentStatus == 1 && $payment->online == 1 ? 'opacity: 0.5; pointer-events: none;' : '' }}
-                                        ">
+                                    @if($payment->online == 1)
+                                     @if($digitPaymentStatus == 0)
+                                     opacity: 0.5; pointer-events: none;
+                                     @endif
+                                    @endif
+                                    @if($payment->online == 0)
+                                     @if($manualePaymentStatus == 0)
+                                     opacity: 0.5; pointer-events: none;
+                                     @endif
+                                    @endif
+                                    ">
+
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $payment->name }}</h5>
                                         <p class="card-text">Fees: {{ $payment->transaction_fee }}</p>
-                                        <input type="radio" name="payment" value="{{ $payment->id }}" wire:model="paymentSelected" class="d-none" @if($digitPaymentStatus == 0) disabled @endif>
+                                        <input type="radio" value="{{ $payment->id }}" wire:model="paymentSelected" class="d-none" @if($digitPaymentStatus == 0) disabled @endif>
+                                        <input type="hidden" name="payment" value="{{ $paymentSelected }}">
                                     </div>
                                 </div>
                             </div>
@@ -109,7 +118,18 @@
                                         {{$item['product']['product_translation'][0]['name'] ?? 'unKnown' }}
                                         </a>
                                     </td>
-                                    <td>${{ (!empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price']) *  $item['quantity']}}</td>
+                                    <td>
+                                        ${{ 
+                                            number_format(
+                                                (
+                                                    $item['product']['customer_discount_price'] ?? 
+                                                    ($item['product']['discount_price'] ?? $item['product']['base_price'])
+                                                ) * $item['quantity'], 
+                                                2
+                                            ) 
+                                        }}
+                                        {{-- ${{ (!empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price']) *  $item['quantity']}} --}}
+                                    </td>
                                 </tr>
                                 @empty
                                 {{__('No Items Are Added')}}
@@ -144,15 +164,20 @@
                                 </tr><!-- End .summary-total -->
                             </tbody>
                         </table><!-- End .table table-summary -->
-                        @if ($digitPaymentStatus)
-                            
-                        <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
-                            <span class="btn-text">Place Order</span>
-                            <span class="btn-hover-text">Proceed to Checkout</span>
-                        </button>
+                        @if (auth('customer')->user()->company_verify == 1)
+                            @if ($inZone)
+                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                                <span class="btn-text">Place Order</span>
+                                <span class="btn-hover-text">Proceed to Checkout</span>
+                            </button>
+                            @else
+                            <div class="text-center mt-1">
+                                <h6 class="text-danger">Please Add Address First</h6>
+                            </div>
+                            @endif
                         @else
                         <div class="text-center mt-1">
-                            <h6 class="text-danger">Please Add Address First</h6>
+                            <h6 class="text-danger">Please Get Verify First</h6>
                         </div>
                         @endif
                     </div><!-- End .summary -->

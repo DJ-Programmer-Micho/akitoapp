@@ -21,7 +21,16 @@
                     </h4>
                     <span class="cart-product-info">
                         <span class="cart-product-qty">{{ $item['quantity'] }}</span>
-                        x ${{ !empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price'] }}
+                        x ${{ 
+                            number_format(
+                                (
+                                    $item['product']['customer_discount_price'] ?? 
+                                    ($item['product']['discount_price'] ?? $item['product']['base_price'])
+                                ), 
+                                2
+                            ) 
+                        }}
+                        
                     </span>
                     <div class="quantity-action d-flex align-items-center">
                         @if($item['quantity'] > 1)

@@ -239,6 +239,17 @@ class EProductLivewire extends Component
                 }
             }
         }
+        $rules['stock'] = 'required|numeric|min:0';
+        $rules['order_limit'] = [
+            'required',
+            'numeric',
+            'min:0',
+            function ($attribute, $value, $fail) {
+                if ($value > $this->stock) {
+                    $fail(__('The order limit cannot be greater than the stock.'));
+                }
+            }
+        ];
         $rules['images'] = 'required';
         $rules['selectedBrand'] = 'required';
         $rules['originalPrice'] = 'required|numeric|min:0';

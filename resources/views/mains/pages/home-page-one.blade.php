@@ -9,7 +9,7 @@
 <div class="main">
     <x-mains.components.intro-section-one :sliders="$sliders"/>
     <div class="bg-light" style="padding-top: 2rem; padding-bottom: 2rem">
-    <x-mains.components.category-anime-one :categoiresData="$categoiresData"/>
+    <x-mains.components.category-anime-one :categoiresData="$categoriesData"/>
     </div>
     <div class="mb-1 mb-lg-3"></div>
     {{-- <x-mains.components.featured-one /> --}}
@@ -25,6 +25,9 @@
         <hr class="mt-3 mb-6">
     </div><!-- End .container --> --}}
     <div class="mt-3"></div>
+    {{-- @php
+        dd($productsCat1);
+    @endphp --}}
     <x-mains.components.category-product-one :productsData="$productsCat1" :title="$productsCat1Title"/>
     <div class="container">
         <hr class="mt-5 mb-6">

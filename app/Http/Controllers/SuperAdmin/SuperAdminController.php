@@ -10,6 +10,9 @@ class SuperAdminController extends Controller
     public function dashboard(){
         return view('super-admins.pages.dashboards.index');
     }
+    public function ticker(){
+        return view('super-admins.pages.tickers.index');
+    }
     public function brand(){
         return view('super-admins.pages.brands.index');
     }

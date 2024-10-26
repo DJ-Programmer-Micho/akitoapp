@@ -59,11 +59,28 @@ Route::get('/lockscreen', [AuthController::class, 'lock'])->name('lockscreen');
 Route::post('/unlock', [AuthController::class, 'unlock'])->name('unlock');
 Route::get('/auth-logout', [AuthController::class, 'logoutpage'])->name('logoutpage');
 Route::get('/suspended-account', [AuthController::class, 'suspend'])->name('suspend');
+// CUSTOMER OTP
+Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
+
+// EMAIL
+Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
+Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
+Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
+Route::get('/resend-verify-otp/{id}/{email}', [CustomerAuth::class,'resendEmailOTP'])->name('resendEmailOTP');
+Route::post('/email-verify-otp', [CustomerAuth::class,'verifyEmailOTP'])->name('verifyEmailOTP');
+// PHONE
+Route::get('/verify-otp/{id}/{phone}', [CustomerAuth::class,'goOTP'])->name('goOTP');
+Route::get('/update-phone-otp/{id}', [CustomerAuth::class,'goRePhoneOTP'])->name('goRePhoneOTP');
+Route::post('/update-phone-otp-ser/{id}', [CustomerAuth::class,'updateRePhoneOTP'])->name('updateRePhoneOTP');
+Route::get('/phone-resend-verify-otp/{id}/{phone}', [CustomerAuth::class,'resendPhoneOTP'])->name('resendPhoneOTP');
+Route::post('/verify-otp', [CustomerAuth::class,'verifyOTP'])->name('verifyOTP');
+});
 
 // Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 // DASHBOARD - ADMIN
 Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware','superadmincheck','authcheck'])->group(function () {
     Route::get('/', [SuperAdminController::class, 'dashboard'])->name('super.dashboard');
+    Route::get('/tickers-managements', [SuperAdminController::class, 'ticker'])->name('super.ticker');
     Route::get('/brands-managements', [SuperAdminController::class, 'brand'])->name('super.brand');
     Route::get('/categories-managements', [SuperAdminController::class, 'category'])->name('super.category');
     Route::get('/tags-managements', [SuperAdminController::class, 'tag'])->name('super.tag');
@@ -98,6 +115,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     });
     Route::prefix('pdf-viewer')->group(function () {
         Route::get('/invoicepdf/{tracking}', [PdfController::class, 'pdfOrderInvoice'])->name('pdf.order.invoice');
+        Route::get('/actionpdf/{tracking}', [PdfController::class, 'pdfOrderAction'])->name('pdf.order.action');
     });
 });
 // DASHBOARD - DRIVER
@@ -137,13 +155,6 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     Route::get('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'edit'])->name('customer.addresses.edit');
     Route::put('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'update'])->name('customer.addresses.update');
     Route::delete('/cust-address/{addressId}/delete', [CustomerAddressController::class, 'destroy'])->name('customer.addresses.delete');
-
-    //OTP
-    Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
-    Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
-    Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
-    Route::get('/resend-verify-otp/{id}/{email}', [CustomerAuth::class,'resendEmailOTP'])->name('resendEmailOTP');
-    Route::post('/email-verify-otp', [CustomerAuth::class,'verifyEmailOTP'])->name('verifyEmailOTP');
 });
 
 Route::get('law/terms-conditions', [LawController::class, 'termsCondition'])->name('law.terms');

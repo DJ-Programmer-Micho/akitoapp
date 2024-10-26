@@ -243,3 +243,58 @@
 .header-6 .header-search-extended .btn {
     height: 30px;
 }
+.text-gold{
+    color: #d4af37;
+}
+
+.table.table-cart .total-col {
+    width:120px;
+}
+
+/* <style> */
+
+/* </style> */
+
+
+
+    .news-ticker-wrapper {
+        background-color: #003465;
+        padding: 10px 0;
+        overflow: hidden;
+    }
+
+    .news-ticker-wrapper .owl-carousel .item {
+        display: inline-block;
+        /* padding: 0 20px; */
+        white-space: nowrap;
+    }
+
+    .news-ticker-wrapper .owl-carousel .item a {
+        text-decoration: none;
+        color: #fff !important;
+    }
+
+    .news-ticker-wrapper .owl-carousel .item:hover {
+        color: #fff;
+    }
+
+    .news-ticker-wrapper {
+    background-color: #003465;
+    padding: 10px 0;
+    overflow: hidden;
+}
+
+.news-ticker-wrapper #tx .telex-item {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.news-ticker-wrapper #tx .telex-item a {
+    text-decoration: none;
+    color: #fff !important;
+}
+
+.news-ticker-wrapper #tx .telex-item:hover {
+    color: #fff;
+}
+

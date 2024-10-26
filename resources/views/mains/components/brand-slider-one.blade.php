@@ -5,8 +5,7 @@
 </div>
 
 <section class="slide-option">
-    <div id="infinite" class="highway-slider">
-        <div class="highway-barrier">
+    <div id="infinite">
             <ul id="brand-list" class="highway-lane">
                 @foreach($brands as $brand)
                 <li class="highway-car">
@@ -24,7 +23,6 @@
                 </li>
                 @endforeach
             </ul>
-        </div>
     </div>
 </section>
 
@@ -74,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Adjust the animation duration based on total brands
     const totalWidth = brandWidth * totalBrands;
-    document.querySelector('.highway-lane').style.animationDuration = `${totalWidth / 100}s`; // Adjusted for faster speed
+    document.querySelector('.highway-lane').style.animationDuration = `${totalWidth / 100}s` * 0.5; // Adjusted for faster speed
 });
 </script>
 @endpush

@@ -211,7 +211,7 @@ class AdjustProductLivewire extends Component
         }
     }
     
-    public function updateStock(int $p_id, $updatedStock)
+    public function updateStock(int $p_id, $updatedStock, $updateOrderLimit)
     {
 
         // Validate if updatedPriority is a number
@@ -222,17 +222,22 @@ class AdjustProductLivewire extends Component
             ]);
             return;
         }
-    
+
         // Find the brand by ID
         $product = Product::with('variation')->find($p_id);
         if ($product) {
             $product->variation->stock = $updatedStock;
-            $product->variation->save();
             
+            if($updatedStock < $updateOrderLimit){
+                $product->variation->order_limit = $updatedStock;
+            }
+            
+            $product->variation->save();
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',  
                 'message' => __('Stock Has Been Updated Successfully')
             ]);
+
         } else {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',  
@@ -241,14 +246,22 @@ class AdjustProductLivewire extends Component
         }
     }
 
-    public function updateOrderLimitValue(int $p_id, $updateOrderLimit)
+    public function updateOrderLimitValue(int $p_id, $updateOrderLimit, $updateStock)
     {
 
         // Validate if updatedPriority is a number
         if (!is_numeric($updateOrderLimit)) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',  
-                'message' => __('Invalid priority value')
+                'message' => __('Invalid Order Limit value')
+            ]);
+            return;
+        }
+
+        if ($updateOrderLimit > $updateStock) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',  
+                'message' => __('Order Limit Should Not Be more Than in stock')
             ]);
             return;
         }

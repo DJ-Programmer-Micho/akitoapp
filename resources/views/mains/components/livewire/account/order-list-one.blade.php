@@ -75,7 +75,9 @@
                             {{$item->created_at}}
                         </td>
                         <td class="align-middle text-center">
-                            <button type="button" class="btn btn-outline-primary">View Details</button>
+                            <a href="{{route('pdf.order.action', ['locale' => app()->getLocale(),'tracking' => $item->tracking_number])}}"  class="btn btn-outline-primary">
+                                {{__('view Details')}}
+                            </a>
                         </td>
                     </tr>
                     @empty

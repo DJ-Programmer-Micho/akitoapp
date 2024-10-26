@@ -7,6 +7,7 @@ use App\Rules\ReCaptcha;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Factory;
 // use App\Services\FirebaseService;
+use App\Services\SinchService;
 use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class CustomerAuth extends Controller
     
         if (Auth::guard('customer')->attempt($credentials)) {
             // Authentication successful
-            return redirect()->route('business.home', ['locale' => 'en']); // Adjust the route as needed
+            return redirect()->route('business.home', ['locale' => app()->getLocale()]); // Adjust the route as needed
         }
     
         // If authentication fails
@@ -169,7 +170,8 @@ class CustomerAuth extends Controller
                 'type' => 'success',
                 'message' => __('PIN CODE SENT!, Please Check Your Email'),
             ]);
-            return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $id, 'email' => $customer->email]);
+            return response()->json(['success' => true]);
+            // return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $id, 'email' => $customer->email]);
         } else {
             return redirect()->back()->with('error', 'User not found.');
         }
@@ -185,9 +187,9 @@ class CustomerAuth extends Controller
             $customer->email_verify = 1;
             $customer->save();
 
-            Auth::guard('customer')->login($customer);
-
-            return redirect()->route('business.home', ['locale' => 'en']);
+            // Auth::guard('customer')->login($customer);
+            // return redirect()->route('business.home', ['locale' => app()->getLocale()]);
+            return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id' => $customer->id,'phone' => $customer->customer_profile->phone_number]);
         }
         session()->flash('alert', [
             'type' => 'error',
@@ -246,6 +248,98 @@ class CustomerAuth extends Controller
         }
     } // END Function (update email)
 
+    public function goOTP($locale, $id, $phone){
+        return view('mains.components.otp.phone-otp',['locale' => app()->getLocale(), 'id'=> $id, 'phone' => $phone]);
+    } // END Function (Register)
+
+    public function goRePhoneOTP($locale, $uid){
+
+        return view('mains.components.otp.re-phone-otp',['id' => $uid]);
+    } // END Function (Register)
+
+    public function updateRePhoneOTP($local, $uid, Request $request){
+        // dd($request->all());
+        $customer = Customer::find($uid);
+        if (!$customer) {
+            return abort(404); // Or handle the case where the user is not found
+        }
+        $new_phone = $request->phone;
+        if (Customer::whereHas('customer_profile', function ($query) use ($new_phone) {
+            $query->where('phone_number', $new_phone);
+        })->exists()) {
+            return redirect()->back()->with('alert', [
+                'type' => 'error',
+                'message' => __('Check Your Phone Numbe, Or Phone Has been Alreary Registerd'),
+            ]);
+        } else {
+            $customer->customer_profile->phone_number = $new_phone;
+            $customer->customer_profile->save();
+
+            return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id' => $customer->id, 'phone' => $new_phone])->with('alert', [
+                'type' => 'success',
+                'message' => __('Phone Updated!'),
+            ]);
+        }
+    } // END Function (update email)
+
+    public function resendPhoneOTP($locale, $id, $phone){
+        $customer = Customer::where('id', $id)->first();
+        if ($customer) {
+            // Send OTP via Sinch
+            $response = SinchService::sendOTP($phone);
+            // dd($response,$phone);
+            if ($response->successful()) {
+                return response()->json(['success' => true]);
+                // return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id'=> $id, 'phone' => $phone])->with('alert', [
+                //     'type' => 'success',
+                //     'message' => __('PIN SENT!, Please check your SMS'),
+                // ]);
+            } else {
+                $clean_phone_number = preg_replace('/[^0-9+]/', '', $customer->customer_profile->phone_number);
+                if (strpos($clean_phone_number, '+') === 0) {
+                    $final_clean_phone_number = '00' . substr($clean_phone_number, 1);
+                } else {
+                    $final_clean_phone_number = $clean_phone_number;
+                }
+                $s_response = SinchService::sendOTP($final_clean_phone_number);
+                if($response->successful()) {
+                    return response()->json(['success' => true]);
+                    // return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id'=> $id, 'phone' => $phone])->with('alert', [
+                    //     'type' => 'success',
+                    //     'message' => __('PIN SENT!, Please check your SMS'),
+                    // ]);
+                } else {
+                    // return $s_response;
+                    return redirect()->back()->with('alert', [
+                        'type' => 'error',
+                        'message' => __('Something Went Wrong!, Please check your phone number or the Phone Number is Already Registered'),
+                    ]);
+                }
+            }  
+        }
+    }
+
+    public function verifyOTP(Request $request)
+    {
+        $enteredOTP = $request->input('entered_otp_code');
+        $customer = Customer::where('id', $request->input('id'))->first();
+        $toNumber = $customer->customer_profile->phone_number;
+
+        $response = SinchService::verifyOTP($toNumber, $enteredOTP);
+
+        if ($response->successful()) {
+            $customer->phone_verify = 1;
+            $customer->save();
+            Auth::guard('customer')->login($customer);
+            return redirect()->route('business.home', ['locale' => app()->getLocale()]);
+        } else {
+            // dd('error');
+            return redirect()->back()->with('alert', [
+                'type' => 'error',
+                'message' => __('Wrong Code!'),
+            ]);
+        }
+    }
 
     public function logout(){
         Auth::guard('customer')->logout();

@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Cart;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\CartItem;
+use App\Models\DiscountRule;
 use App\Models\WishlistItem;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +20,61 @@ class WishlistLivewire extends Component
         $this->loadWishlist();
     }
 
+    private function calculateFinalPrice($product, $customerId) {
+        // Use the original price and discount price if available
+        $basePrice = $product->variation->price; // Original price
+        $discountPrice = $product->variation->discount ?? $basePrice; // Use discounted price if applicable
+
+        // Initialize total discount percentage
+        $totalDiscountPercentage = 0;
+
+        // Check for applicable discounts
+    
+        if ($customerId) {
+            // Fetch discount rules for the customer
+            $discountRules = DiscountRule::where('customer_id', $customerId)
+                ->where(function ($query) use ($product) {
+                    $query->where('product_id', $product->id)
+                        ->orWhere('category_id', $product->categories->first()->id)
+                        ->orWhere('sub_category_id',$product->subCategories->first()->id) // Assuming you have this relation
+                        ->orWhere('brand_id', $product->brand_id);
+                })
+                ->get();
+
+            // Iterate through the discount rules and accumulate applicable discounts
+            foreach ($discountRules as $rule) {
+                // Sum discounts for the same product, brand, category, and subcategory
+                if ($rule->product_id === $product->id && $rule->type === 'product') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Product discount
+                }
+
+                if ($rule->brand_id === $product->brand_id && $rule->type === 'brand') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Brand discount
+                }
+
+                if ($rule->category_id === $product->categories->first()->id && $rule->type === 'category') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Category discount
+                }
+
+                if ($rule->sub_category_id === $product->subCategories->first()->id && $rule->type === 'subcategory') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Subcategory discount
+                }
+            }
+        }
+
+        // Ensure the total discount percentage does not exceed 100%
+        $totalDiscountPercentage = min($totalDiscountPercentage, 100);
+
+        // Calculate the final customer discount price based on the total applicable discounts
+        $customerDiscountPrice = $discountPrice * (1 - ($totalDiscountPercentage / 100));
+        return [
+            'base_price' => $basePrice,
+            'discount_price' => $discountPrice,
+            'customer_discount_price' => $customerDiscountPrice,
+            'total_discount_percentage' => $totalDiscountPercentage
+        ];
+    }
+
     public function loadWishlist()
     {
         $locale = app()->getLocale();
@@ -29,6 +85,20 @@ class WishlistLivewire extends Component
                 $query->where('locale', $locale);
             }, 'product.variation', 'product.variation.images'])
             ->get()
+            ->transform(function ($wishlistItem) use ($customerId) {
+                $product = $wishlistItem->product;
+        
+                // Calculate the discount for the product
+                $discountDetails = $this->calculateFinalPrice($product, $customerId);
+        
+                // Assign calculated discount details to the product
+                $product->base_price = $discountDetails['base_price'];
+                $product->discount_price = $discountDetails['discount_price'];
+                $product->customer_discount_price = $discountDetails['customer_discount_price'];
+                $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
+        
+                return $wishlistItem;
+            })
             ->toArray();
     }
 
@@ -82,7 +152,7 @@ class WishlistLivewire extends Component
                 }])->find($item['product_id']);
 
                 // Check if the product is available in stock
-                if ($product && $product->stock > 0) {
+                if ($product && $product->order_limit > 0) {
                     // Add the product to the cart
                     CartItem::create([
                         'customer_id' => $customerId,

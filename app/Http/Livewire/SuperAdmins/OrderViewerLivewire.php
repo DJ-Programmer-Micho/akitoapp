@@ -382,6 +382,7 @@ private function isCoordinateInsidePolygon($coordinates, $lat, $lng)
         $sum = 0;
         $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->find($this->o_id);
         // Return view with data
+        // dd($order->orderItems);
         foreach($order->orderItems as $item) {
             $sum = $sum + $item->total;
         }

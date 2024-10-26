@@ -95,16 +95,27 @@
                     <p class="text-clamp-2">{{$product->productTranslation->first()->description}}</p>
                 </div><!-- End .product-content -->
                 
-                @if ($product->variation->discount)
-                <div class="product-price">
-                    $ {{$product->variation->discount}}
-                    <span class="mx-2" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
-                        $ {{$product->variation->price}}
-                    </span>
-                </div><!-- End .product-price -->
+                @if ($product->discount_price == $product->customer_discount_price && $product->customer_discount_price != $product->base_price)
+                    <div class="product-price mt-1 fw-bold">
+                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                        $ {{ number_format($product->base_price, 2) }}
+                        </span>
+                        <span>
+                            $ {{ number_format($product->discount_price, 2) }}
+                        </span>
+                    </div><!-- End .product-price -->
+                @elseif ($product->discount_price != $product->customer_discount_price && $product->customer_discount_price != $product->base_price)
+                    <div class="product-price mt-1 fw-bold">
+                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                            $ {{ number_format($product->base_price, 2) }}
+                        </span>
+                        <span class="text-gold" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
+                            <i class="fa-solid fa-star fa-beat-fade"></i>$ {{ number_format($product->customer_discount_price, 2) }}<i class="fa-solid fa-star fa-beat-fade"></i>
+                        </span>
+                    </div><!-- End .product-price -->
                 @else
-                    <div class="product-price">
-                        $ {{$product->variation->price}}
+                    <div class="product-price mt-1 fw-bold">
+                        $ {{ number_format($product->base_price, 2) }}
                     </div><!-- End .product-price -->
                 @endif
 

@@ -212,7 +212,7 @@ class OrderLivewire extends Component
         $this->pAll = $this->pPending + $this->pPayed + $this->pFailed;
         
         // Paginate the results
-        $orders = $query->paginate(15);
+        $orders = $query->orderBy('created_at', 'DESC')->paginate(15);
         // Return view with data
         return view('super-admins.pages.order.order-table', [
             'orderTable' => $orders,

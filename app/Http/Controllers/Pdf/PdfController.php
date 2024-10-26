@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Pdf;
 
 use App\Models\Order;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class PdfController extends Controller
@@ -18,6 +17,21 @@ class PdfController extends Controller
         }
 
         return view('super-admins.pdf.orderinvoice.order-invoice-print',[
+            'orderData' => $order,
+            'subTotal' => $sum,
+        ]);    
+    }
+
+    public function pdfOrderAction($local, $invoiceTracking)
+    {
+        $sum = 0;
+        $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$invoiceTracking)->first();
+        // Return view with data
+        foreach($order->orderItems as $item) {
+            $sum = $sum + $item->total;
+        }
+
+        return view('super-admins.pdf.orderinvoice.order-invoice-action-print',[
             'orderData' => $order,
             'subTotal' => $sum,
         ]);    

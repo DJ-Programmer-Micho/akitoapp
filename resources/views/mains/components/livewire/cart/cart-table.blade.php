@@ -32,7 +32,34 @@
                                         </h3><!-- End .product-title -->
                                     </div><!-- End .product -->
                                 </td>
-                                <td class="total-col align-middle text-center">${{ !empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price'] }}</td>
+                                <td class="total-col align-middle text-center">
+                                    {{-- ${{ !empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price'] }} --}}
+                                    @if ($item['product']['discount_price'] == $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
+                                    <div class="product-price mt-1 fw-bold">
+                                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                                        $ {{ number_format($item['product']['base_price'], 2) }}
+                                        </span>
+                                        <span class="w-100">
+                                            $ {{ number_format($item['product']['discount_price'], 2) }}
+                                        </span>
+                                    </div><!-- End .product-price -->
+                                @elseif ($item['product']['discount_price'] != $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
+                                    <div class="product-price mt-1 fw-bold">
+                                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                                            $ {{ number_format($item['product']['base_price'], 2) }}
+                                        </span>
+                                        <span class="text-gold w-100" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
+                                            <i class="fa-solid fa-star fa-beat-fade"></i>$ {{ number_format($item['product']['customer_discount_price'], 2) }}<i class="fa-solid fa-star fa-beat-fade"></i>
+                                        </span>
+                                    </div><!-- End .product-price -->
+                                @else
+                                    <div class="product-price mt-1 fw-bold">
+                                        <span class="w-100">
+                                            $ {{ number_format($item['product']['base_price'], 2) }}
+                                        </span>
+                                    </div><!-- End .product-price -->
+                                @endif
+                                </td>
                                 <td class="align-middle text-center">
                                     <div class="quantity-action d-flex align-items-center justify-content-center">
                                         @if($item['quantity'] > 1)
@@ -51,7 +78,18 @@
                                     </div>
                                 </td>
                                 
-                                <td class="total-col align-middle text-center">${{ (!empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price']) *  $item['quantity'] }}</td>
+                                <td class="total-col align-middle text-center">
+                                    ${{ 
+                                        number_format(
+                                            (
+                                                $item['product']['customer_discount_price'] ?? 
+                                                ($item['product']['discount_price'] ?? $item['product']['base_price'])
+                                            ) * $item['quantity'], 
+                                            2
+                                        ) 
+                                    }}
+                                    {{-- ${{ (!empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price']) *  $item['quantity'] }} --}}
+                                </td>
                             </tr>
                             @empty
                             {{__('No Items Are Added')}}

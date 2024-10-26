@@ -4,8 +4,8 @@
             <thead>
                 <tr>
                     <th>Product</th>
-                    <th>Price</th>
-                    <th>Stock Status</th>
+                    <th class="text-center">Price</th>
+                    <th class="text-center">Stock Status</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -22,16 +22,44 @@
                                 </a>
                             </figure>
 
-                            <h3 class="product-title">
+                            <h3 class="product-title d-block">
                                 <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}">
-                                    {{$item['product']['product_translation'][0]['name']}}
+                                    <h6 class="mx-1 mb-0"> {{$item['product']['product_translation'][0]['name'] ?? 'unKnown'}}</h6>
+                                    <p class="mx-1 mb-0">{{$item['product']['product_translation'][0]['description'] ?? 'unKnown'}}</p>
                                 </a>
                             </h3><!-- End .product-title -->
                         </div><!-- End .product -->
                     </td>
-                    <td class="price-col">${{ !empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price'] }}</td>
-                    <td class="stock-col">
-                        @if ($item['product']['variation']['stock'])
+
+                    <td class="price-col text-center">
+                    @if ($item['product']['discount_price'] == $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
+                        <div class="product-price mt-1 fw-bold">
+                            <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                            $ {{ number_format($item['product']['base_price'], 2) }}
+                            </span>
+                            <span class="w-100">
+                                $ {{ number_format($item['product']['discount_price'], 2) }}
+                            </span>
+                        </div><!-- End .product-price -->
+                    @elseif ($item['product']['discount_price'] != $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
+                        <div class="product-price mt-1 fw-bold">
+                            <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                                $ {{ number_format($item['product']['base_price'], 2) }}
+                            </span>
+                            <span class="text-gold w-100" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
+                                <i class="fa-solid fa-star fa-beat-fade"></i>$ {{ number_format($item['product']['customer_discount_price'], 2) }}<i class="fa-solid fa-star fa-beat-fade"></i>
+                            </span>
+                        </div><!-- End .product-price -->
+                    @else
+                        <div class="product-price mt-1 fw-bold">
+                            <span class="w-100">
+                                $ {{ number_format($item['product']['base_price'], 2) }}
+                            </span>
+                        </div><!-- End .product-price -->
+                    @endif
+                    </td>
+                    <td class="stock-col text-center">
+                        @if ($item['product']['variation']['order_limit'])
                         <span class="text-success">In Stock</span>
                         @else
                         <span class="text-danger">Out Of Stock</span>

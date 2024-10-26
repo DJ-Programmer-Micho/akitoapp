@@ -2,9 +2,10 @@
 
 namespace App\Http\Livewire\Cart;
 
-use Livewire\Component;
 use App\Models\Product;
+use Livewire\Component;
 use App\Models\CartItem;
+use App\Models\DiscountRule;
 use Illuminate\Support\Facades\Auth;
 
 class CartLivewire extends Component
@@ -20,10 +21,67 @@ class CartLivewire extends Component
         $this->loadCart();
     }
 
+    private function calculateFinalPrice($product, $customerId) {
+        // Use the original price and discount price if available
+        $basePrice = $product->variation->price; // Original price
+        $discountPrice = $product->variation->discount ?? $basePrice; // Use discounted price if applicable
+
+        // Initialize total discount percentage
+        $totalDiscountPercentage = 0;
+
+        // Check for applicable discounts
+    
+        if ($customerId) {
+            // Fetch discount rules for the customer
+            $discountRules = DiscountRule::where('customer_id', $customerId)
+                ->where(function ($query) use ($product) {
+                    $query->where('product_id', $product->id)
+                        ->orWhere('category_id', $product->categories->first()->id)
+                        ->orWhere('sub_category_id',$product->subCategories->first()->id) // Assuming you have this relation
+                        ->orWhere('brand_id', $product->brand_id);
+                })
+                ->get();
+
+            // Iterate through the discount rules and accumulate applicable discounts
+            foreach ($discountRules as $rule) {
+                // Sum discounts for the same product, brand, category, and subcategory
+                if ($rule->product_id === $product->id && $rule->type === 'product') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Product discount
+                }
+
+                if ($rule->brand_id === $product->brand_id && $rule->type === 'brand') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Brand discount
+                }
+
+                if ($rule->category_id === $product->categories->first()->id && $rule->type === 'category') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Category discount
+                }
+
+                if ($rule->sub_category_id === $product->subCategories->first()->id && $rule->type === 'subcategory') {
+                    $totalDiscountPercentage += (float) $rule->discount_percentage; // Subcategory discount
+                }
+            }
+        }
+
+        // Ensure the total discount percentage does not exceed 100%
+        $totalDiscountPercentage = min($totalDiscountPercentage, 100);
+
+        // Calculate the final customer discount price based on the total applicable discounts
+        $customerDiscountPrice = $discountPrice * (1 - ($totalDiscountPercentage / 100));
+        return [
+            'base_price' => $basePrice,
+            'discount_price' => $discountPrice,
+            'customer_discount_price' => $customerDiscountPrice,
+            'total_discount_percentage' => $totalDiscountPercentage
+        ];
+    }
+
+    
     public function loadCart()
     {
         $locale = app()->getLocale(); // Get the current locale
-    
+        $customerId = Auth::guard('customer')->id();
+
         $this->cartItems = CartItem::where('customer_id', Auth::guard('customer')->id())
             ->with(['product' => function ($query) use ($locale) {
                 $query->with(['productTranslation' => function ($subQuery) use ($locale) {
@@ -32,10 +90,24 @@ class CartLivewire extends Component
                 }, 'variation','variation.images']);
             }])
             ->get()
+            ->transform(function ($cartListItems) use ($customerId) {
+                $product = $cartListItems->product;
+        
+                // Calculate the discount for the product
+                $discountDetails = $this->calculateFinalPrice($product, $customerId);
+        
+                // Assign calculated discount details to the product
+                $product->base_price = $discountDetails['base_price'];
+                $product->discount_price = $discountDetails['discount_price'];
+                $product->customer_discount_price = $discountDetails['customer_discount_price'];
+                $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
+        
+                return $cartListItems;
+            })
             ->toArray();
     
         foreach ($this->cartItems as $index => $cartItem) {
-            $availableQty = $cartItem['product']['variation']['stock'] ?? 0;
+            $availableQty = $cartItem['product']['variation']['order_limit'] ?? 0;
     
             if ($cartItem['quantity'] > $availableQty) {
                 if ($availableQty > 0) {
@@ -58,7 +130,7 @@ class CartLivewire extends Component
     {
         try {
             $product = Product::findOrFail($productId);
-            $availableQty = $product->variation->stock ?? 0;
+            $availableQty = $product->variation->order_limit ?? 0;
     
             // Check if the product is already in the cart
             $cartItem = CartItem::where('customer_id', Auth::guard('customer')->id())
@@ -93,13 +165,13 @@ class CartLivewire extends Component
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong')]);
         }
     }
-    
+
 
     public function addToCartDetail($productId, $qty)
     {
         try {
             $product = Product::findOrFail($productId);
-            $availableQty = $product->variation->stock ?? 0;
+            $availableQty = $product->variation->order_limit ?? 0;
     
             // Check if the product is already in the cart
             $cartItem = CartItem::where('customer_id', Auth::guard('customer')->id())
@@ -140,7 +212,7 @@ class CartLivewire extends Component
     {
         try {
             $cartItem = CartItem::findOrFail($cartItemId);
-            $availableQty = $cartItem->product->variation->stock ?? 0; // Fetch available stock
+            $availableQty = $cartItem->product->variation->order_limit ?? 0; // Fetch available stock
     
             if ($quantity > $availableQty) {
                 $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => __('Insufficient Stock')]);
@@ -177,21 +249,29 @@ class CartLivewire extends Component
 
     }
 
+    
     public function calculateTotals()
     {
         $this->totalQuantity = array_sum(array_column($this->cartItems, 'quantity'));
-        $this->totalPrice = array_reduce($this->cartItems, function ($carry, $item) {
-            // Retrieve the current price from the product's variation
-            $productPrice = $item['product']['variation']['price'] ?? 0;
-            
-            // Check if the product is on sale and adjust the price accordingly
-            if (!empty($item['product']['variation']['on_sale'])) {
-                $productPrice = $item['product']['variation']['discount'] ?? $productPrice; // Use the discount if available
-            }
     
-            return $carry + ($item['quantity'] * $productPrice);
-        }, 0);
+        // Initialize total price and total discount
+        $this->totalPrice = 0;
+    
+        // Loop through the cart items to calculate total price and discount
+        foreach ($this->cartItems as $item) {
+            // Initialize variables for pricing
+            $basePrice = $item['product']['variation']['price'] ?? 0;
+            $discountPrice = $item['product']['variation']['discount'] ?? $basePrice;
+            $customerDiscountPrice = $item['product']['customer_discount_price'] ?? null;
+    
+            // Determine the price to use based on priority
+            $finalPrice = $customerDiscountPrice ?? $discountPrice;
+    
+            // Add the product price multiplied by quantity to the total price
+            $this->totalPrice += $item['quantity'] * $finalPrice;
+        }
     }
+    
 
     public function render()
     {

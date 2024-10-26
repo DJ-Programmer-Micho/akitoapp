@@ -398,13 +398,17 @@
         }
         function updateStockValue(itemId) {
             var input = document.getElementById('stock_' + itemId);
+            var input_temp = document.getElementById('order_limit_' + itemId);
             var updateStock = input.value;
-            @this.call('updateStock', itemId, updateStock);
+            var updateOrderLimit = input_temp.value;
+            @this.call('updateStock', itemId, updateStock, updateOrderLimit);
         }
         function updateOrderLimitValue(itemId) {
             var input = document.getElementById('order_limit_' + itemId);
+            var input_temp = document.getElementById('stock_' + itemId);
             var updateOrderLimit = input.value;
-            @this.call('updateOrderLimitValue', itemId, updateOrderLimit);
+            var updateStock = input_temp.value;
+            @this.call('updateOrderLimitValue', itemId, updateOrderLimit, updateStock);
         }
     </script>
     @endpush

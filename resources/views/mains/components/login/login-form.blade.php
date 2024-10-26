@@ -50,7 +50,7 @@
                                         </lord-icon>
                                       </div>
                                     </div>
-                                    <input type="password" class="form-control" id="password-form-signin" name="password-form-signin">
+                                    <input type="password" class="form-control" id="password-form-signin" name="password-form-signin" autocomplete>
                                     @error('password') <small class="text-danger">{{ $message }}</small> @enderror
                                   </div>
                                   <a href="#" class="forgot-link">{{__('Forgot Your Password?')}}</a>

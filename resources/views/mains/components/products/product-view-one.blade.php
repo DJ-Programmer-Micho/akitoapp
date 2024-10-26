@@ -77,17 +77,27 @@
                     </div><!-- End .ratings -->
                     <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
                 </div><!-- End .rating-container --> --}}
-
-                @if ($productDetail->variation->discount)
-                    <div class="product-price">
-                        $ {{$productDetail->variation->discount}}
-                        <span class="mx-2" style="text-decoration: line-through; color: #cc0022; font-size: 16px;">
-                            $ {{$productDetail->variation->price}}
+                @if ($productDetail->discount_price == $productDetail->customer_discount_price && $productDetail->customer_discount_price != $productDetail->base_price)
+                    <div class="product-price mt-1 fw-bold">
+                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                        $ {{ number_format($productDetail->base_price, 2) }}
+                        </span>
+                        <span>
+                            $ {{ number_format($productDetail->discount_price, 2) }}
+                        </span>
+                    </div><!-- End .product-price -->
+                @elseif ($productDetail->discount_price != $productDetail->customer_discount_price && $productDetail->customer_discount_price != $productDetail->base_price)
+                    <div class="product-price mt-1 fw-bold">
+                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                            $ {{ number_format($productDetail->base_price, 2) }}
+                        </span>
+                        <span class="text-gold" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
+                            <i class="fa-solid fa-star fa-beat-fade"></i>$ {{ number_format($productDetail->customer_discount_price, 2) }}<i class="fa-solid fa-star fa-beat-fade"></i>
                         </span>
                     </div><!-- End .product-price -->
                 @else
-                    <div class="product-price">
-                        $ {{$productDetail->variation->price}}
+                    <div class="product-price mt-1 fw-bold">
+                        $ {{ number_format($productDetail->base_price, 2) }}
                     </div><!-- End .product-price -->
                 @endif
             
@@ -146,7 +156,7 @@
                 <div class="details-filter-row details-row-size nav-dir">
                     <label for="qty">{{__('Qty:')}}</label>
                     <div class="product-details-quantity mx-1">
-                        <input type="number" id="qty" class="form-control" value="1" min="1" max="{{$productDetail->variation->stock}}" step="1" data-decimals="0" required>
+                        <input type="number" id="qty" class="form-control" value="1" min="1" max="{{$productDetail->variation->order_limit}}" step="1" data-decimals="0" required>
                     </div><!-- End .product-details-quantity -->
                 </div><!-- End .details-filter-row -->
                 @endif
