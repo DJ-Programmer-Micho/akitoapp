@@ -20,7 +20,7 @@
             <div class="intro-slide">
                 <figure class="slide">
                     <picture>
-                        <img src="{{$slide}}"  alt="Image Desc">
+                        <img src="{{app('cloudfront') .$slide}}"  alt="Image Desc">
                     </picture>
                 </figure><!-- End .slide-image -->
             </div><!-- End .intro-slide -->

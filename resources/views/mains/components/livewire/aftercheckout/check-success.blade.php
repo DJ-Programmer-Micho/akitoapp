@@ -7,7 +7,6 @@
     }
 </style>
 <div class="main">
-    
     <div class="container">
         <div class="row">
             <div class="col-4"></div>
@@ -32,11 +31,9 @@
                         <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">{{__('Shop More')}}</a>
                     </div>
                   </div>
-                <h1></h1>
             </div>
             <div class="col-4"></div>
         </div>
-
     </div>
 </div>
 @endsection

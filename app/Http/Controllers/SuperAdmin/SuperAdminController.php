@@ -111,4 +111,26 @@ class SuperAdminController extends Controller
     public function customerDiscount(){
         return view('super-admins.pages.customerdiscount.index');
     }
+
+    public function settingLogo(){
+        return view('super-admins.pages.setting.logo.index');
+    }
+    public function settingHero(){
+        return view('super-admins.pages.setting.hero.index');
+    }
+    public function settingEmail(){
+        return view('super-admins.pages.setting.email.index');
+    }
+    public function settingInfo(){
+        return view('super-admins.pages.setting.information.index');
+    }
+    public function settingRecaptcha(){
+        return view('super-admins.pages.setting.recaptcha.index');
+    }
+    public function settingBanner(){
+        return view('super-admins.pages.setting.banner.index');
+    }
+    public function settingLanguage(){
+        return view('super-admins.pages.setting.language.index');
+    }
 }

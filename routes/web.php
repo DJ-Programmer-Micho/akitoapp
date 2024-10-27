@@ -28,11 +28,7 @@ use App\Http\Controllers\Customer\CustomerAddressController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->name('setLocale');
-
 
 // routes/web.php
 Route::get('/temp-images/{filename}', function ($filename) {
@@ -48,7 +44,6 @@ Route::get('/temp-images/{filename}', function ($filename) {
     return Response::make($file, 200)->header("Content-Type", $type);
 })->name('temp-images');
 
-
 // DASHBOARD - AUTH
 Route::get('/signin', [AuthController::class, 'signIn'])->name('super.signin');
 Route::post('/signin', [AuthController::class, 'handleSignIn'])->name('super.signin.post');
@@ -59,9 +54,9 @@ Route::get('/lockscreen', [AuthController::class, 'lock'])->name('lockscreen');
 Route::post('/unlock', [AuthController::class, 'unlock'])->name('unlock');
 Route::get('/auth-logout', [AuthController::class, 'logoutpage'])->name('logoutpage');
 Route::get('/suspended-account', [AuthController::class, 'suspend'])->name('suspend');
+
 // CUSTOMER OTP
 Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
-    
     // EMAIL FORGET
     Route::get('uasfdr-oiugo-gfhft-iuyer/password/forgot', [CustomerAuth::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('uasfdr-oiugo-gfhft-iuyer/password/email', [CustomerAuth::class, 'sendResetLinkEmail'])->name('password.email');
@@ -69,17 +64,17 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     Route::post('ytuew-uasfdr-oiugo-gfhft/password/reset', [CustomerAuth::class, 'reset'])->name('password.update');
     Route::get('/success-reset-password', [CustomerAuth::class, 'successResetMsg'])->name('password.successResetMsg');
     // EMAIL
-Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
-Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
-Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
-Route::get('/resend-verify-otp/{id}/{email}', [CustomerAuth::class,'resendEmailOTP'])->name('resendEmailOTP');
-Route::post('/email-verify-otp', [CustomerAuth::class,'verifyEmailOTP'])->name('verifyEmailOTP');
-// PHONE
-Route::get('/verify-otp/{id}/{phone}', [CustomerAuth::class,'goOTP'])->name('goOTP');
-Route::get('/update-phone-otp/{id}', [CustomerAuth::class,'goRePhoneOTP'])->name('goRePhoneOTP');
-Route::post('/update-phone-otp-ser/{id}', [CustomerAuth::class,'updateRePhoneOTP'])->name('updateRePhoneOTP');
-Route::get('/phone-resend-verify-otp/{id}/{phone}', [CustomerAuth::class,'resendPhoneOTP'])->name('resendPhoneOTP');
-Route::post('/verify-otp', [CustomerAuth::class,'verifyOTP'])->name('verifyOTP');
+    Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
+    Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
+    Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
+    Route::get('/resend-verify-otp/{id}/{email}', [CustomerAuth::class,'resendEmailOTP'])->name('resendEmailOTP');
+    Route::post('/email-verify-otp', [CustomerAuth::class,'verifyEmailOTP'])->name('verifyEmailOTP');
+    // PHONE
+    Route::get('/verify-otp/{id}/{phone}', [CustomerAuth::class,'goOTP'])->name('goOTP');
+    Route::get('/update-phone-otp/{id}', [CustomerAuth::class,'goRePhoneOTP'])->name('goRePhoneOTP');
+    Route::post('/update-phone-otp-ser/{id}', [CustomerAuth::class,'updateRePhoneOTP'])->name('updateRePhoneOTP');
+    Route::get('/phone-resend-verify-otp/{id}/{phone}', [CustomerAuth::class,'resendPhoneOTP'])->name('resendPhoneOTP');
+    Route::post('/verify-otp', [CustomerAuth::class,'verifyOTP'])->name('verifyOTP');
 });
 
 // DASHBOARD - ADMIN
@@ -122,6 +117,13 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
         Route::get('/invoicepdf/{tracking}', [PdfController::class, 'pdfOrderInvoice'])->name('pdf.order.invoice');
         Route::get('/actionpdf/{tracking}', [PdfController::class, 'pdfOrderAction'])->name('pdf.order.action');
     });
+    Route::get('/setting-logo', [SuperAdminController::class, 'settingLogo'])->name('setting.logo');
+    Route::get('/setting-hero', [SuperAdminController::class, 'settingHero'])->name('setting.hero');
+    Route::get('/setting-email', [SuperAdminController::class, 'settingEmail'])->name('setting.email');
+    Route::get('/setting-info', [SuperAdminController::class, 'settingInfo'])->name('setting.info');
+    Route::get('/setting-recaptcha', [SuperAdminController::class, 'settingRecaptcha'])->name('setting.recaptcha');
+    Route::get('/setting-banner', [SuperAdminController::class, 'settingBanner'])->name('setting.banner');
+    Route::get('/setting-language', [SuperAdminController::class, 'settingLanguage'])->name('setting.language');
 });
 // DASHBOARD - DRIVER
 Route::prefix('{locale}/drivers')->middleware(['LocalizationMainMiddleware','drivercheck','driverstatuscheck'])->group(function () {
@@ -130,7 +132,6 @@ Route::prefix('{locale}/drivers')->middleware(['LocalizationMainMiddleware','dri
 // HOME - CUSTOEMRS
 Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(function () {
     Route::get('/', [BusinessController::class, 'home'])->name('business.home');
-    Route::get('account', [BusinessController::class, 'account'])->name('business.account');        
     Route::get('about-us', [BusinessController::class, 'aboutus'])->name('business.aboutus');
     Route::get('contact-us', [BusinessController::class, 'contactus'])->name('business.contactus');
     Route::get('faq', [BusinessController::class, 'faq'])->name('business.faq');
@@ -140,26 +141,29 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     Route::get('brands', [BusinessController::class, 'productBrand'])->name('business.brand');
     Route::get('spare', [BusinessController::class, 'productShopSpare'])->name('business.productShopSpare');
     Route::get('product/{slug}', [BusinessController::class, 'productDetail'])->name('business.productDetail');
-    Route::get('wishlist-list', [BusinessController::class, 'wishlist'])->name('business.whishlist');
-    Route::get('view-cart-list', [BusinessController::class, 'viewcart'])->name('business.viewcart');
-    Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
     Route::get('shop-search', [BusinessController::class, 'searchShop'])->name('business.shop.search');
-    // ->middleware('update.product.slug')
-    Route::get('proccess/success', [BusinessController::class, 'checkSuccess'])->name('business.checkout.success');
-    Route::get('proccess/failed', [BusinessController::class, 'checkFaild'])->name('business.checkout.faild');
-
-    Route::post('processing-checkout-list/{digit}/{nvxf}', [BusinessController::class, 'checkoutChecker'])->name('business.checkoutChecker');
-    Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account');
-    Route::post('/avatarupload', [CustomerAuth::class, 'avatarupload'])->name('customer.avatarupload');
+    
     Route::post('/register', [CustomerAuth::class, 'register'])->name('customer.register');
     Route::post('/cust-login', [CustomerAuth::class, 'login'])->name('customer.login');
     Route::post('/cust-logout', [CustomerAuth::class, 'logout'])->name('customer.logout');
-    
-    Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');
-    Route::post('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
-    Route::get('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'edit'])->name('customer.addresses.edit');
-    Route::put('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'update'])->name('customer.addresses.update');
-    Route::delete('/cust-address/{addressId}/delete', [CustomerAddressController::class, 'destroy'])->name('customer.addresses.delete');
+    Route::middleware(['customeridcheck','customercheck'])->group(function () {
+        Route::get('account', [BusinessController::class, 'account'])->name('business.account');        
+        Route::get('proccess/success', [BusinessController::class, 'checkSuccess'])->name('business.checkout.success');
+        Route::get('proccess/failed', [BusinessController::class, 'checkFaild'])->name('business.checkout.faild');
+        Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
+        Route::get('view-cart-list', [BusinessController::class, 'viewcart'])->name('business.viewcart');
+        Route::get('wishlist-list', [BusinessController::class, 'wishlist'])->name('business.whishlist');
+        
+        Route::post('processing-checkout-list/{digit}/{nvxf}', [BusinessController::class, 'checkoutChecker'])->name('business.checkoutChecker');
+        Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account');
+        Route::post('/avatarupload', [CustomerAuth::class, 'avatarupload'])->name('customer.avatarupload');
+        
+        Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');
+        Route::post('/cust-address', [CustomerAddressController::class, 'store'])->name('customer.addresses.store');
+        Route::get('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'edit'])->name('customer.addresses.edit');
+        Route::put('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'update'])->name('customer.addresses.update');
+        Route::delete('/cust-address/{addressId}/delete', [CustomerAddressController::class, 'destroy'])->name('customer.addresses.delete');
+    });
 });
 
 Route::get('law/terms-conditions', [LawController::class, 'termsCondition'])->name('law.terms');
@@ -168,10 +172,3 @@ Route::get('law/privacy-policy', [LawController::class, 'privacyPolicy'])->name(
 Route::get('/', function () {
     return redirect()->to('/en', 301);
 });
-    
-    
-
-
-   
-    // Route::middleware([LocaleRedirectMiddleware::class])->group(function () {
-    // });

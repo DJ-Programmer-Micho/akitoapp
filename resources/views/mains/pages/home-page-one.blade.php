@@ -18,9 +18,6 @@
     <div class="mb-1 mb-lg-3"></div>
     {{-- <x-mains.components.cta-banner-one /> --}}
     {{-- <x-mains.components.deal-time-one /> --}}
-    <div class="bg-light py-4">
-        <x-mains.components.brand-slider-one/>
-    </div>
     {{-- <div class="container">
         <hr class="mt-3 mb-6">
     </div><!-- End .container --> --}}
@@ -28,23 +25,18 @@
     {{-- @php
         dd($productsCat1);
     @endphp --}}
-    <x-mains.components.category-product-one :productsData="$productsCat1" :title="$productsCat1Title"/>
+    @foreach($categoryProducts as $index => $productData)
+    <x-mains.components.banner-width-one :image="$imageBanner[$index]['image']" />
+    <x-mains.components.category-product-one :productsData="$productData['products']" :title="$productData['title']" />
+    
     <div class="container">
         <hr class="mt-5 mb-6">
     </div><!-- End .container -->
-    <x-mains.components.banner-width-one :image="$imageBanner[0]"/>
-    <x-mains.components.category-product-one :productsData="$productsCat2" :title="$productsCat2Title"/>
-    <div class="container">
-        <hr class="mt-5 mb-6">
-    </div><!-- End .container -->
-    <x-mains.components.banner-width-one :image="$imageBanner[1]"/>
+    @endforeach
 
-    <x-mains.components.category-product-one :productsData="$productsCat3" :title="$productsCat3Title"/>
-    <div class="container">
-        <hr class="mt-5 mb-6">
-    </div><!-- End .container -->
-    <x-mains.components.banner-width-one :image="$imageBanner[2]"/>
-
+    <div class="bg-light py-4">
+        <x-mains.components.brand-slider-one/>
+    </div>
     {{-- <x-mains.components.trending-product-one />
     <div class="container">
         <hr class="mt-5 mb-6">

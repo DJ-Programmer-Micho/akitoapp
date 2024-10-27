@@ -14,7 +14,7 @@
                     </span>
                     <div class="icon-box-content">
                         <h3 class="icon-box-title">{{__('Free Shipping')}}</h3><!-- End .icon-box-title -->
-                        <p>{{__('Orders $50 or more')}}</p>
+                        <p>{{__('Orders $100 or more')}}</p>
                     </div><!-- End .icon-box-content -->
                 </div><!-- End .icon-box -->
             </div><!-- End .col-sm-6 col-lg-3 -->

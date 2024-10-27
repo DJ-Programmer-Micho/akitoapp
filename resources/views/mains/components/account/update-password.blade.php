@@ -1,7 +1,9 @@
 @extends('mains.layout.app')
 @section('business-content')
 <div class="main">
-    <div class="container">
+    <x-mains.components.account.image-header-one />
+    <x-mains.components.account.nav-one />
+    <div class="container p-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <h2>{{__('Reset Password')}}</h2>

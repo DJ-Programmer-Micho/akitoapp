@@ -11,7 +11,7 @@
                         <div class="widget-call">
                             <i class="icon-phone"></i>
                             Got Question? Call us 24/7
-                            <a href="tel:009647507747742" style="font-size: 15px">+964 750 774 7742</a>         
+                            <a href="tel:{{app('phoneNumber')}}" style="font-size: 15px">{{app('phoneNumber')}}</a>         
                         </div><!-- End .widget-call -->
                     </div><!-- End .widget about-widget -->
                 </div><!-- End .col-sm-6 col-lg-3 -->
@@ -23,7 +23,7 @@
                         <ul class="widget-list">
                             <li><a href="{{route('business.aboutus',['locale' => app()->getLocale()])}}">About Us</a></li>
                             <li><a href="{{route('business.contactus',['locale' => app()->getLocale()])}}">Contact Us</a></li>
-                            <li><a href="#">Our Services</a></li>
+                            <li><a href="{{route('business.faq',['locale' => app()->getLocale()])}}">Our Services</a></li>
                             {{-- <li><a href="#">How to shop on Akito</a></li> --}}
                             <li><a href="{{route('business.faq',['locale' => app()->getLocale()])}}">FAQ</a></li>
                             {{-- <li><a href="contact.html">Contact us</a></li> --}}
@@ -36,12 +36,12 @@
                         <h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
 
                         <ul class="widget-list">
-                            <li><a href="#">Payment Methods</a></li>
-                            <li><a href="#">Money-back guarantee!</a></li>
-                            <li><a href="#">Returns</a></li>
-                            <li><a href="#">Shipping</a></li>
+                            <li><a href="{{route('business.faq',['locale' => app()->getLocale()])}}">Payment Methods</a></li>
+                            <li><a href="{{route('business.faq',['locale' => app()->getLocale()])}}">Money-back guarantee!</a></li>
+                            <li><a href="{{route('business.faq',['locale' => app()->getLocale()])}}">Returns</a></li>
+                            <li><a href="{{route('business.faq',['locale' => app()->getLocale()])}}">Shipping</a></li>
                             <li><a href="{{route('law.terms')}}" target="_blank">Terms and conditions</a></li>
-                            <li><a href="{{route('law.privacy')}}" target="_blank">">Privacy Policy</a></li>
+                            <li><a href="{{route('law.privacy')}}" target="_blank">Privacy Policy</a></li>
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-6 col-lg-3 -->

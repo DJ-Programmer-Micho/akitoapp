@@ -67,5 +67,7 @@ class Kernel extends HttpKernel
         'update.product.slug' => \App\Http\Middleware\UpdateProductSlug::class,
         'superadmincheck' => \App\Http\Middleware\CheckUserStatus::class,
         'authcheck' => \App\Http\Middleware\AuthCheck::class,
+        'customeridcheck' => \App\Http\Middleware\CustomerCheck::class,
+        'customercheck' => \App\Http\Middleware\CheckCustomerStatus::class,
     ];
 }

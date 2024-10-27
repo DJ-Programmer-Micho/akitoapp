@@ -6,6 +6,14 @@
             <li class="breadcrumb-item">
                 <a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">{{ __('Account') }}</a>
             </li>
+            @elseif(request()->is('*/uasfdr-oiugo-gfhft-iuyer/*'))
+            <li class="breadcrumb-item">
+                <a href="#">{{ __('Reset Password') }}</a>
+            </li>
+            @elseif(request()->is('*/ytuew-uasfdr-oiugo-gfhft/*'))
+            <li class="breadcrumb-item">
+                <a href="#">{{ __('Reset Password') }}</a>
+            </li>
             @else
             <li class="breadcrumb-item">
                 <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}">{{ __('Home') }}</a>

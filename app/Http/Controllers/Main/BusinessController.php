@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\OrderItem;
+use App\Models\WebSetting;
 use App\Models\SubCategory;
 use Illuminate\Support\Str;
 use App\Models\DiscountRule;
@@ -209,9 +210,21 @@ class BusinessController extends Controller
         $locale = app()->getLocale(); // Get the current locale
         
         // Fetch products by category dynamically
-        $productsCat1 = $this->fetchProductsByCategory(2, "Coffee Makers", $locale);
-        $productsCat2 = $this->fetchProductsByCategory(3, "Coffee Beans", $locale);
-        $productsCat3 = $this->fetchProductsByCategory(4, "Syrup", $locale); // Assuming category ID 4 for Syrup
+        // $productsCat1 = $this->fetchProductsByCategory(2, "Coffee Makers", $locale);
+        // $productsCat2 = $this->fetchProductsByCategory(3, "Coffee Beans", $locale);
+        // $productsCat3 = $this->fetchProductsByCategory(4, "Syrup", $locale); // Assuming category ID 4 for Syrup
+
+        $settings = WebSetting::find(1);
+
+        $bannerImages = json_decode($settings->banner_images, true);
+
+        // Initialize an array to store product data by category
+        $categoryProducts = [];
+        foreach ($bannerImages as $banner) {
+            $categoryId = $banner['category_id'];
+            $categoryProducts[] = $this->fetchProductsByCategory($categoryId, "", $locale);
+        }
+        $sliders = $settings->hero_images[$locale] ?? [];
 
         // Fetch category data
         $categoriesData = Cache::remember("categories_data_$locale", 60, function () use ($locale) {
@@ -223,22 +236,25 @@ class BusinessController extends Controller
         });
 
         // Slider and Banner images
-        $sliders = $this->getSliderImages();
-        $imagesBanner = $this->getBannerImages();
+        $heroImages = json_decode($settings->hero_images, true); // Decode JSON to an associative array
+        $sliders = collect($heroImages[$locale] ?? []);
+        // $sliders = $this->getSliderImages();
+        // $imagesBanner = $this->getBannerImages();
 
         // Featured and On Sale products
         $featured = $this->fetchProducts('featured', 'Featured');
         $on_sale = $this->fetchProducts('on_sale', 'On Sale');
 
         return view('mains.pages.home-page-one', [
-            'productsCat1' => $productsCat1['products'],
-            'productsCat1Title' => $productsCat1['title'],
-            'productsCat2' => $productsCat2['products'],
-            'productsCat2Title' => $productsCat2['title'],
-            'productsCat3' => $productsCat3['products'],
-            'productsCat3Title' => $productsCat3['title'],
+            // 'productsCat1' => $productsCat1['products'],
+            // 'productsCat1Title' => $productsCat1['title'],
+            // 'productsCat2' => $productsCat2['products'],
+            // 'productsCat2Title' => $productsCat2['title'],
+            // 'productsCat3' => $productsCat3['products'],
+            // 'productsCat3Title' => $productsCat3['title'],
+            'categoryProducts' => $categoryProducts,
             'categoriesData' => $categoriesData,
-            'imageBanner' => $imagesBanner,
+            'imageBanner' => $bannerImages,
             'featured_products' => $featured,
             'on_sale_products' => $on_sale,
             'sliders' => $sliders,
@@ -424,14 +440,14 @@ class BusinessController extends Controller
         ];
     }
 
-    private function getBannerImages()
-    {
-        return [
-            app('cloudfront') . 'web-setting/banners/banner7.png',
-            app('cloudfront') . 'web-setting/banners/banner8.png',
-            app('cloudfront') . 'web-setting/banners/banner9.png',
-        ];
-    }
+    // private function getBannerImages()
+    // {
+    //     return [
+    //         app('cloudfront') . 'web-setting/banners/banner7.png',
+    //         app('cloudfront') . 'web-setting/banners/banner8.png',
+    //         app('cloudfront') . 'web-setting/banners/banner9.png',
+    //     ];
+    // }
 
     public function aboutus(){
         return view('mains.pages.aboutus-page-one', [

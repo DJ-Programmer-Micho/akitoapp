@@ -28,11 +28,11 @@
 
                                     <li>
                                         <i class="icon-phone"></i>
-                                        <a href="tel:009647507747742">+964 750 774 7742</a>
+                                        <a href="tel:{{app('phoneNumber')}}">{{app('phoneNumber')}}</a>
                                     </li>
                                     <li>
                                         <i class="icon-envelope"></i>
-                                        <a href="mailto:info@akitu-co.com">info@akitu-co.com</a>
+                                        <a href="mailto:{{app('emailAddress')}}">{{app('emailAddress')}}</a>
                                     </li>
                                 </ul><!-- End .contact-list -->
                             </div><!-- End .contact-info -->
@@ -44,15 +44,15 @@
                                 <ul class="contact-list">
                                     <li>
                                         <i class="icon-map-marker"></i>
-                                        100m Empire Pearl, Erbil 44001, Iraq
+                                        {{app('address')}}
                                     </li>
                                     <li>
                                         <i class="icon-calendar"></i>
-                                        <span class="text-dark">Saturday-Thursday</span> <br>
+                                        <span class="text-dark">{{app('workingDays')}}</span> <br>
                                     </li>
                                     <li>
                                         <i class="icon-clock-o"></i>
-                                        <span class="text-dark">9am-7pm UTC+3</span> <br>
+                                        <span class="text-dark">{{app('workingTime')}}</span> <br>
                                     </li>
                                 </ul><!-- End .contact-list -->
                             </div><!-- End .contact-info -->

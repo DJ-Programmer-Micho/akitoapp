@@ -4,21 +4,19 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 
-class AuthCheck
+class CustomerCheck
 {
     public function handle($request, Closure $next)
     {
-        if (Auth::guard('admin')->check()) {
+        if (Auth::guard('customer')->check()) {
             return $next($request);
         } else {
+            // Uncomment this if a session check is needed
             // if (!session()->has('user_data')) {
-            //     // If the session has expired or 'user_data' is missing, redirect to the sign-in page
             //     return redirect('/signin');
             // }
-            
-            return redirect('/signin');
+            return redirect()->route('business.home', ['locale' => app()->getLocale()]);
         }
     }
 }

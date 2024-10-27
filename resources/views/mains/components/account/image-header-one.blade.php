@@ -8,6 +8,14 @@
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('My Cart')}}</span></h1>
         @elseif(request()->is('*/wishlist-list'))
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('My Wishlist')}}</span></h1>
+        @elseif(request()->is('*/email-verify-otp/*'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Email OTP')}}</span></h1>
+        @elseif(request()->is('*/verify-otp/*'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Phone OTP')}}</span></h1>
+        @elseif(request()->is('*/uasfdr-oiugo-gfhft-iuyer/*'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Forgot Password')}}</span></h1>
+        @elseif(request()->is('*/ytuew-uasfdr-oiugo-gfhft/*'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Reset Password')}}</span></h1>
         @else
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Address')}}</span></h1>
         @endif

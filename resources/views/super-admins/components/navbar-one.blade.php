@@ -2,18 +2,18 @@
     <!-- LOGO -->
     <div class="navbar-brand-box">
         <!-- Dark Logo-->
-        <a href="index.html" class="logo logo-dark">
+        <a href="/" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="27">
+                <img src="{{app('logo_57')}}" alt="Akito" height="27">
             </span>
             <span class="logo-lg">
                 <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="42">
             </span>
         </a>
         <!-- Light Logo-->
-        <a href="index.html" class="logo logo-light">
+        <a href="/" class="logo logo-light">
             <span class="logo-sm">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="27">
+                <img src="{{app('logo_57')}}" alt="Akito" height="27">
             </span>
             <span class="logo-lg">
                 <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="42">
@@ -30,7 +30,7 @@
             <div id="two-column-menu">
             </div>
             <ul class="navbar-nav" id="navbar-nav">
-                <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                <li class="menu-title"><span data-key="t-menu">{{__('Side Bar')}}</span></li>
                 @if (hasRole([1]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
@@ -48,7 +48,7 @@
                 @if (hasRole([1,2,5,6,7]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarPreperties" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPreperties">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-dashboards">{{__('Properties')}}</span>
+                        <i class="bx bx-list-ul"></i> <span data-key="t-dashboards">{{__('Properties')}}</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarPreperties">
                         <ul class="nav nav-sm flex-column">
@@ -80,7 +80,7 @@
                 @if (hasRole([1,2,5,6,7]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarProducts" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarProducts">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Product Management')}}</span>
+                        <i class="bx bx-spreadsheet"></i> <span data-key="t-products">{{__('Product Management')}}</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarProducts">
                         <ul class="nav nav-sm flex-column">
@@ -107,7 +107,7 @@
                 @if (hasRole([1,3,4,5,6,7]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarZones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarZones">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Order Management')}}</span>
+                        <i class="bx bx-border-bottom"></i> <span data-key="t-products">{{__('Order Management')}}</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarZones">
                         <ul class="nav nav-sm flex-column">
@@ -120,17 +120,17 @@
                 @endif
                 @if (hasRole([1,3,5,6,7]))
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarZones" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarZones">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Delivery Management')}}</span>
+                    <a class="nav-link menu-link" href="#sidebarDelivery" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDelivery">
+                        <i class="bx bxs-car"></i> <span data-key="t-products">{{__('Delivery Management')}}</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarZones">
+                    <div class="collapse menu-dropdown" id="sidebarDelivery">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.deliveryZones', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Delivery Zones')}}</a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.shippingCost', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-zone">{{__('Shipping Costs')}}</a>
-                            </li>
+                            </li> --}}
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
@@ -138,7 +138,7 @@
                 @if (hasRole([1,3]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarCustomers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarCustomers">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Customer Management')}}</span>
+                        <i class="bx bx-male-female"></i> <span data-key="t-products">{{__('Customer Management')}}</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarCustomers">
                         <ul class="nav nav-sm flex-column">
@@ -155,7 +155,7 @@
                 @if (hasRole([1,3]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Users Management')}}</span>
+                        <i class="bx bxs-user-account"></i> <span data-key="t-products">{{__('Users Management')}}</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarUsers">
                         <ul class="nav nav-sm flex-column">
@@ -171,14 +171,16 @@
                 @endif
                 @if (hasRole([1,3,8]))
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarUsers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarUsers">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Tasks')}}</span>
+                    <a class="nav-link menu-link" href="#sidebarTasks" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarTasks">
+                        <i class="bx bx-task"></i> <span data-key="t-products">{{__('Tasks')}}</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarUsers">
+                    <div class="collapse menu-dropdown" id="sidebarTasks">
                         <ul class="nav nav-sm flex-column">
+                            @if (hasRole([8]))
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('driver.task', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Driver Task')}}</a>
                             </li>
+                            @endif
                             @if (hasRole([1,3]))
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('driver.task.all', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('All Driver Tasks')}}</a>
@@ -191,19 +193,31 @@
                 @if (hasRole([1,3,8]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarWebSetting" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarWebSetting">
-                        <i class="bx bxs-dashboard"></i> <span data-key="t-products">{{__('Web Setting')}}</span>
+                        <i class="bx bx-wrench"></i> <span data-key="t-products">{{__('Web Setting')}}</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarWebSetting">
                         <ul class="nav nav-sm flex-column">
+                            @if (hasRole([1]))
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('driver.task', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Email')}}</a>
-                            </li>
-                            @if (hasRole([1,3]))
-                            <li class="nav-item">
-                                <a wire:navigate href="{{ route('driver.task.all', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Language')}}</a>
+                                <a wire:navigate href="{{ route('setting.email', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Email')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('driver.task.all', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Images')}}</a>
+                                <a wire:navigate href="{{ route('setting.logo', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Logo - App Icon')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.hero', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Hero - Sliders')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.banner', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Category Banner')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.info', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Information')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.language', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Languages')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.recaptcha', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Google Recaptcha')}}</a>
                             </li>
                             @endif
                         </ul>
