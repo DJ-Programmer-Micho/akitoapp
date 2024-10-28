@@ -251,6 +251,41 @@
     width:120px;
 }
 
+[lang="ar"] .mmenu-btn,
+[lang="ku"] .mmenu-btn {
+    right: unset;
+    left: 1rem;
+}
+
+[lang="ar"] .mobile-menu li a,
+[lang="ku"] .mobile-menu li a {
+    padding: 1rem 1.5rem 1rem 2rem;
+}
+
+[lang="ar"] .mobile-menu-container ul,
+[lang="ku"] .mobile-menu-container ul {
+    text-align: right;
+    direction: rtl;
+    list-style-position: inside; /* Optional: Adjusts the position of list markers */
+}
+
+[lang="ar"] .mmenu-active .mobile-menu-container,
+[lang="ku"] .mmenu-active .mobile-menu-container {
+    visibility: visible;
+    transform: translateX(-280px); /* Move menu into view from the right */
+}
+
+[lang="ar"] .mobile-menu-container,
+[lang="ku"] .mobile-menu-container {
+    position: fixed;
+    left: unset;
+    right: -280px; /* Initially hide the menu to the right */
+}
+
+[lang="ar"] .mmenu-active .page-wrapper,
+[lang="ku"] .mmenu-active .page-wrapper {
+    transform: translateX(-200px);
+}
 /* <style> */
 
 /* </style> */

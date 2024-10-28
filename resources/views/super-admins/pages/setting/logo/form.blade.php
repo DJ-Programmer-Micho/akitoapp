@@ -157,9 +157,9 @@
         imageId: 'sample_image_logo_image',
         cropBtnClass: '.crop-btn',
         livewireEvent: 'updateCroppedLogoImg',
-        aspectRatio: 600 / 180,
-        cropWidth: 600,
-        cropHeight: 180,
+        aspectRatio: 1603 / 667,
+        cropWidth: 1603,
+        cropHeight: 667,
         fileInputId: 'croppedLogoImg'
     });
 
@@ -229,7 +229,7 @@ function setupCropModal({
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             fileInput.files = dataTransfer.files;
-        }, 'image/jpeg');
+        }, 'image/png');
     });
 
     modalElement.querySelector('[data-dismiss="modal"]').addEventListener('click', function () {

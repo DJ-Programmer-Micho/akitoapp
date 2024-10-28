@@ -5,7 +5,7 @@
     <x-mains.components.account.nav-one />
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-3 border">
+            <div class="col-12 col-sm-3 border">
                 <form action="{{ route('verifyEmailOTP', ['locale' => app()->getLocale()]) }}" method="post">
                     @csrf
                     <div class="form-content">

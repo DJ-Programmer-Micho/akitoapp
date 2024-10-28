@@ -7,7 +7,7 @@
     {{-- <h1>{{__('Email OTP Code')}}</h1> --}}
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-3 border">
+            <div class="col-12 col-sm-3 border">
                 <form action="{{route('verifyOTP',['locale' => app()->getLocale()])}}" method="post">
                     @csrf
                     <div class="form-content">
@@ -17,10 +17,10 @@
                             <input type="hidden" name="id" value="{{ $id }}">
                         </div>
                         <div id="choice" class="form-group">
-                            <a id="no" href="{{ route('goRePhoneOTP', ['locale' => app()->getLocale(), 'id' => $id]) }}" class="btn btn-primary" style="margin-top: 3px; width: 49%;">
+                            <a id="noPhone" href="{{ route('goRePhoneOTP', ['locale' => app()->getLocale(), 'id' => $id]) }}" class="btn btn-primary" style="margin-top: 3px; width: 49%;">
                                {{__(' No!')}}
                             </a>
-                            <button id="yes" type="button" class="btn btn-outline-primary" style="margin-top: 3px; width: 49%;" 
+                            <button id="yesPhone" type="button" class="btn btn-outline-primary" style="margin-top: 3px; width: 49%;" 
                                 data-resend-url="{{ route('resendPhoneOTP', ['locale' => app()->getLocale(), 'id'=> $id, 'phone' => $phone]) }}">
                                 {{__('Yes!')}}
                             </button>
@@ -32,7 +32,7 @@
                             </div>
 
                             <p style="font-size: 16px;">
-                                <span style="font-size:10pt">Please Check Your Email</span><br>
+                                <span style="font-size:10pt">Please Check Your SMS</span><br>
                                 <span style="font-size:8pt">Please Wait before clicking again.</span>
                                 <span id="countdown" style="font-size:8pt"></span>
                                 <br>
@@ -57,18 +57,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         const otpShow = document.getElementById('otp-show');
         const options = document.getElementById('choice');
-        const yesButton = document.getElementById('yes');
-        const noButton = document.getElementById('no');
+        const yesPhoneButton = document.getElementById('yesPhone');
+        const noPhoneButton = document.getElementById('noPhone');
         const countdownElement = document.getElementById('countdown');
         const resendLink = document.getElementById('resendLink');
-        const countdownKey = 'otpCountdown';
+        const countdownKeyPhone = 'otpCountdown';
         let countdownTimer;
     
         // Function to start and display countdown
         function startCountdown(seconds) {
             clearInterval(countdownTimer);
             const endTime = Date.now() + seconds * 1000;
-            localStorage.setItem(countdownKey, endTime); // Store end time
+            localStorage.setItem(countdownKeyPhone, endTime); // Store end time
     
             countdownTimer = setInterval(() => {
                 const timeLeft = Math.floor((endTime - Date.now()) / 1000);
@@ -81,9 +81,9 @@
                     clearInterval(countdownTimer);
                     countdownElement.style.display = 'none';
                     resendLink.style.display = 'block';
-                    localStorage.removeItem(countdownKey); // Clear storage after countdown ends
-                    yesButton.disabled = false;
-                    noButton.disabled = false;
+                    localStorage.removeItem(countdownKeyPhone); // Clear storage after countdown ends
+                    yesPhoneButton.disabled = false;
+                    noPhoneButton.disabled = false;
                     otpShow.classList.add('d-none');
                     options.classList.remove('d-none');
                 }
@@ -92,29 +92,29 @@
     
         // Restore countdown from localStorage on page load
         function restoreCountdown() {
-            const endTime = localStorage.getItem(countdownKey);
+            const endTime = localStorage.getItem(countdownKeyPhone);
             if (endTime) {
                 const timeLeft = Math.floor((endTime - Date.now()) / 1000);
                 if (timeLeft > 0) {
                     otpShow.classList.remove('d-none');
                     options.classList.add('d-none');
-                    yesButton.disabled = true;
-                    noButton.disabled = true;
+                    yesPhoneButton.disabled = true;
+                    noPhoneButton.disabled = true;
                     startCountdown(timeLeft);
                 } else {
-                    localStorage.removeItem(countdownKey); // Clear expired countdown on load
+                    localStorage.removeItem(countdownKeyPhone); // Clear expired countdown on load
                 }
             }
         }
     
         // AJAX request to resend OTP and start countdown when "Yes" is clicked
-        yesButton.addEventListener('click', function() {
+        yesPhoneButton.addEventListener('click', function() {
             otpShow.classList.remove('d-none');
             options.classList.add('d-none');
-            yesButton.disabled = true;
-            noButton.disabled = true;
+            yesPhoneButton.disabled = true;
+            noPhoneButton.disabled = true;
     
-            const resendUrl = yesButton.getAttribute('data-resend-url');
+            const resendUrl = yesPhoneButton.getAttribute('data-resend-url');
             fetch(resendUrl, {
                 method: 'GET',
                 headers: {

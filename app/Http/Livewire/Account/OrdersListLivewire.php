@@ -7,11 +7,14 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\CartItem;
 use App\Models\OrderItem;
+use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
 class OrdersListLivewire extends Component
 {
-    public $orderTable = [];
+    use WithPagination;
+    public $perPage = 10;
+    protected $orderTable = [];
 
     public function mount()
     {
@@ -28,9 +31,14 @@ class OrdersListLivewire extends Component
                 $subQuery->where('locale', $locale);
             }, 'variation', 'variation.images']);
         }])
-        ->get();
+        ->orderBy('created_at', 'DESC')
+        ->paginate($this->perPage);
     }
 
+    public function updatingPage()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {

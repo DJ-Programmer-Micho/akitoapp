@@ -7,7 +7,7 @@
                 <img src="{{app('logo_57')}}" alt="Akito" height="27">
             </span>
             <span class="logo-lg">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="42">
+                <img src="{{ app('main_logo') }}" alt="Akito" height="42">
             </span>
         </a>
         <!-- Light Logo-->
@@ -16,7 +16,7 @@
                 <img src="{{app('logo_57')}}" alt="Akito" height="27">
             </span>
             <span class="logo-lg">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="42">
+                <img src="{{ app('main_logo') }}" alt="Akito" height="42">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -148,6 +148,11 @@
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.customerRanking', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Customers Ranking')}}</a>
                             </li>
+                            @if (hasRole([1,2]))
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.customerDiscount', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Customers Discount')}}</a>
+                            </li>
+                            @endif
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->

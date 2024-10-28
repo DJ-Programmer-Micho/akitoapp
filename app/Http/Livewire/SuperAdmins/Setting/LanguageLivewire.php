@@ -43,9 +43,9 @@ class LanguageLivewire extends Component
         }
 
         // Save the translations back to JSON files
-        file_put_contents(resource_path('lang/en.json'), json_encode($en, JSON_PRETTY_PRINT));
-        file_put_contents(resource_path('lang/ar.json'), json_encode($ar, JSON_PRETTY_PRINT));
-        file_put_contents(resource_path('lang/ku.json'), json_encode($ku, JSON_PRETTY_PRINT));
+        file_put_contents(resource_path('lang/en.json'), json_encode($en, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        file_put_contents(resource_path('lang/ar.json'), json_encode($ar, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        file_put_contents(resource_path('lang/ku.json'), json_encode($ku, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         session()->flash('message', 'Translations saved successfully.');
     }

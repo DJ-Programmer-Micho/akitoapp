@@ -1,11 +1,11 @@
 <footer class="footer bg-light">
 {{-- <footer class="footer" style="background-color: #eb4034; color: white;"> --}}
     <div class="footer-middle">
-        <div class="container">
+        <div class="container nav-dir">
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
-                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" class="footer-logo" width="105" height="25">
+                        <img src="{{ app('main_logo') }}" alt="Akito" class="footer-logo" width="105" height="25">
                         <p>Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.</p>
 
                         <div class="widget-call">

@@ -232,6 +232,7 @@ class BusinessController extends Controller
                 ->with(['categoryTranslation' => function ($query) use ($locale) {
                     $query->where('locale', $locale);
                 }])
+                ->orderBy('priority', 'ASC')
                 ->get();
         });
 
@@ -431,14 +432,14 @@ class BusinessController extends Controller
         ];
     }
 
-    private function getSliderImages()
-    {
-        return [
-            app('cloudfront') . 'web-setting/sliders/slide1.jpg',
-            app('cloudfront') . 'web-setting/sliders/slide2.jpg',
-            app('cloudfront') . 'web-setting/sliders/slide3.jpg',
-        ];
-    }
+    // private function getSliderImages()
+    // {
+    //     return [
+    //         app('cloudfront') . 'web-setting/sliders/slide1.jpg',
+    //         app('cloudfront') . 'web-setting/sliders/slide2.jpg',
+    //         app('cloudfront') . 'web-setting/sliders/slide3.jpg',
+    //     ];
+    // }
 
     // private function getBannerImages()
     // {

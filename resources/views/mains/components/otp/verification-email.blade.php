@@ -341,7 +341,7 @@
                             <tr>
                                 <td style="text-align: center;">
                                     <div class="text-author">
-                                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito"
+                                        <img src="{{ app('main_logo') }}" alt="Akito"
                                             style="width: 100px; max-width: 600px; height: auto; margin: auto; display: block;">
                                         <h3 class="name">{{$otpCode}}</h3>
                                     </div>

@@ -7,19 +7,19 @@
             <div class="navbar-brand-box horizontal-logo">
                 <a href="index.html" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="27">
+                        <img src="{{ app('main_logo') }}" alt="Akito" height="27">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="42">
+                        <img src="{{ app('main_logo') }}" alt="Akito" height="42">
                     </span>
                 </a>
                 <!-- Light Logo-->
                 <a href="index.html" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="27">
+                        <img src="{{ app('main_logo') }}" alt="Akito" height="27">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" height="42">
+                        <img src="{{ app('main_logo') }}" alt="Akito" height="42">
                     </span>
                 </a>
             </div>

@@ -2,13 +2,13 @@
     <div class="container">
         <div class="header-left">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="150" height="30">
+                <img src="{{ app('main_logo') }}" alt="Akito" width="150" height="30">
             </a>
 
         </div>
         <div class="header-center">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo d-lg-none">
-                <img src="{{ app('cloudfront').'web-setting/logo3.png' }}" alt="Akito" width="150" height="30">
+                <img src="{{ app('main_logo') }}" alt="Akito" width="150" height="30">
             </a>
         </div><!-- End .header-left -->
 
@@ -27,24 +27,44 @@
             @livewire('cart.wishlist-livewire')
             @livewire('cart.cart-livewire')
             <div class="dropdown cart-dropdown re">
-                <lord-icon
-                    src="https://cdn.lordicon.com/bgebyztw.json"
-                    trigger="loop"
-                    delay="2000"
-                    state="hover-looking-around"
-                    colors="primary:#3080e8,secondary:#000000"
-                    style="width:40px;height:40px">
-                </lord-icon>
                 @auth('customer')
-                <p style="color: #003465; white-space: nowrap;">{{auth()->guard('customer')->user()->customer_profile->first_name . ' ' . auth()->guard('customer')->user()->customer_profile->last_name}}</p>
+                    @if (auth()->guard('customer')->user()->customer_profile && auth()->guard('customer')->user()->customer_profile->avatar)
+                        <img src="{{ app('cloudfront').auth()->guard('customer')->user()->customer_profile->avatar }}" 
+                            alt="{{ auth()->guard('customer')->user()->customer_profile->first_name ?? 'Unknown Customer' }}" 
+                            class="img-fluid rounded-circle" 
+                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid white; object-position: center;">                                                 
+                    @else
+                        <lord-icon
+                            src="https://cdn.lordicon.com/bgebyztw.json"
+                            trigger="loop"
+                            delay="2000"
+                            state="hover-looking-around"
+                            colors="primary:#3080e8,secondary:#000000"
+                            style="width:40px;height:40px">
+                        </lord-icon>                   
+                    @endif
+                @else
+                    <lord-icon
+                        src="https://cdn.lordicon.com/bgebyztw.json"
+                        trigger="loop"
+                        delay="2000"
+                        state="hover-looking-around"
+                        colors="primary:#3080e8,secondary:#000000"
+                        style="width:40px;height:40px">
+                    </lord-icon>
                 @endauth
+                <div class="d-none d-sm-block">
+                    @auth('customer')
+                    <p style="color: #003465; white-space: nowrap;">{{auth()->guard('customer')->user()->customer_profile->first_name . ' ' . auth()->guard('customer')->user()->customer_profile->last_name}}</p>
+                    @endauth
+                </div>
                 <div class="dropdown-menu p-0" style="width: 150px">
                     <nav class="side-nav">
                         @auth('customer')
                         <ul class="menu-vertical sf-arrows">
-                            <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">Dashboard</a></li>
-                            <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">Wishlist</a></li>
-                            <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">View Cart</a></li>
+                            <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">{{__('Dashboard')}}</a></li>
+                            <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">{{__('Wishlist')}}</a></li>
+                            <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">{{__('View Cart')}}</a></li>
                             <li><a href="{{ route('business.checkout', ['locale' => app()->getLocale()]) }}">Check Out</a></li>
                             <li class="item-lead"><a href="#signout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign Out</a></li>
                         </ul><!-- End .menu-vertical -->

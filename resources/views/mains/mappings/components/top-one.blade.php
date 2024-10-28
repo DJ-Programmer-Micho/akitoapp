@@ -6,7 +6,7 @@
                 <li>
                     <a href="#">Links</a>
                     <ul>
-                        <li><a href="tel:009647507747742"><i class="fa-solid fa-phone"></i>Call: +964 750 774 7742</a></li>
+                        <li><a href="tel:{{app('phoneNumber')}}"><i class="fa-solid fa-phone mx-1"></i> Call: {{app('phoneNumber')}}</a></li>
                     </ul>
                 </li>
             </ul><!-- End .top-menu -->

@@ -26,6 +26,7 @@ class GridOne extends Component
                 }
             ])
             ->where('status', 1)
+            ->orderBy('priority', 'ASC')
             ->get();
         });
     }

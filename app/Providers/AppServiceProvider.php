@@ -74,6 +74,9 @@ class AppServiceProvider extends ServiceProvider
             return 'https://d1h4q8vrlfl3k9.cloudfront.net/users/user.png';
         });
 
+        $this->app->singleton('main_logo', function () use ($settings) {
+            return $this->getLogoUrl($settings->logo_image);
+        });
         $this->app->singleton('logo_72', function () use ($settings) {
             return $this->getLogoUrl($settings->app_icon);
         });

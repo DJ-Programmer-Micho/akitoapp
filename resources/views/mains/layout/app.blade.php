@@ -32,7 +32,7 @@
 
         <meta name='og:title' content="{{$seo['title'] ?? 'Akitu'}}">
         <meta name='og:description' content="{{$seo['description'] ?? 'Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
-        <meta name='og:image' content="{{$seo['image'] ?? app('cloudfront').'web-setting/logo3.png'}}">
+        <meta name='og:image' content="{{$seo['image'] ?? app('main_logo')}}">
         <meta name='og:type' content='eCommerce'>
         <meta name='og:url' content='http://akitu-co.com/'>
         <meta name='og:site_name' content='Akitu'>
