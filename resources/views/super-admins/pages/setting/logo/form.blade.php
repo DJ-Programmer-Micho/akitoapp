@@ -170,9 +170,9 @@
         imageId: 'sample_image_icon_image',
         cropBtnClass: '.crop-btn',
         livewireEvent: 'updateCroppedIconImg',
-        aspectRatio: 1,
-        cropWidth: 180,
-        cropHeight: 180,
+        aspectRatio: 1 / 1,
+        cropWidth: 1024,
+        cropHeight: 1024,
         fileInputId: 'croppedIconImg'
     });
 });
