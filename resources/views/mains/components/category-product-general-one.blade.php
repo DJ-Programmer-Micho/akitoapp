@@ -1,6 +1,6 @@
 <div class="container top">
     <div class="heading my-5">
-        <h2 class="title text-center">{{__($title)}}</h2><!-- End .title -->
+        <h2 class="title text-center" style="font-size: 40px">{{__($title)}}</h2><!-- End .title -->
     </div><!-- End .heading -->
 
     <div class="tab-content tab-content-carousel just-action-icons-sm">
@@ -116,7 +116,7 @@
                                             $ {{ number_format($product->base_price, 2) }}
                                         </span>
                                         <span class="text-gold" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
-                                            <i class="fa-solid fa-star fa-beat-fade"></i>$ {{ number_format($product->customer_discount_price, 2) }}<i class="fa-solid fa-star fa-beat-fade"></i>
+                                            {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}$ {{ number_format($product->customer_discount_price, 2) }}{{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
                                         </span>
                                     </div><!-- End .product-price -->
                                 @else

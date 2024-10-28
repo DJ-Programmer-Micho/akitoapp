@@ -2,13 +2,13 @@
     <div class="container">
         <div class="header-left">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}">
-                <img src="{{ app('main_logo') }}" alt="Akito" width="150" height="30">
+                <img src="{{ app('main_logo') }}" alt="Akito" width="140" height="30">
             </a>
 
         </div>
         <div class="header-center">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo d-lg-none">
-                <img src="{{ app('main_logo') }}" alt="Akito" width="150" height="30">
+                <img src="{{ app('main_logo') }}" alt="Akito" width="140" height="30">
             </a>
         </div><!-- End .header-left -->
 
@@ -32,7 +32,7 @@
                         <img src="{{ app('cloudfront').auth()->guard('customer')->user()->customer_profile->avatar }}" 
                             alt="{{ auth()->guard('customer')->user()->customer_profile->first_name ?? 'Unknown Customer' }}" 
                             class="img-fluid rounded-circle" 
-                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid white; object-position: center;">                                                 
+                            style="min-width: 60px; max-width: 61px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid white; object-position: center;">                                                 
                     @else
                         <lord-icon
                             src="https://cdn.lordicon.com/bgebyztw.json"
@@ -53,11 +53,6 @@
                         style="width:40px;height:40px">
                     </lord-icon>
                 @endauth
-                <div class="d-none d-sm-block">
-                    @auth('customer')
-                    <p style="color: #003465; white-space: nowrap;">{{auth()->guard('customer')->user()->customer_profile->first_name . ' ' . auth()->guard('customer')->user()->customer_profile->last_name}}</p>
-                    @endauth
-                </div>
                 <div class="dropdown-menu p-0" style="width: 150px">
                     <nav class="side-nav">
                         @auth('customer')
@@ -78,6 +73,11 @@
                     </nav><!-- End .side-nav -->
                 </div><!-- End .dropdown-menu -->
             </div><!-- End .cart-dropdown -->
+            <div class="d-none d-sm-block">
+                @auth('customer')
+                <p style="color: #003465; white-space: nowrap;">{{auth()->guard('customer')->user()->customer_profile->first_name . ' ' . auth()->guard('customer')->user()->customer_profile->last_name}}</p>
+                @endauth
+            </div>
         </div>
     </div><!-- End .container -->
 </div><!-- End .header-middle -->

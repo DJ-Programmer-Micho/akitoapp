@@ -47,7 +47,7 @@
                                 $ {{ number_format($item['product']['base_price'], 2) }}
                             </span>
                             <span class="text-gold w-100" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
-                                <i class="fa-solid fa-star fa-beat-fade"></i>$ {{ number_format($item['product']['customer_discount_price'], 2) }}<i class="fa-solid fa-star fa-beat-fade"></i>
+                                {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}$ {{ number_format($item['product']['customer_discount_price'], 2) }}{{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
                             </span>
                         </div><!-- End .product-price -->
                     @else

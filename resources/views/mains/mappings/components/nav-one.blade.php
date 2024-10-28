@@ -4,9 +4,9 @@
         <div class="{{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'header-right' : 'header-left' }}">
             <nav class="main-nav">
                 <ul class="menu nav-dir sf-arrows">
-                    {{-- <li class="{{ request()->is(app()->getLocale() . '/') || request()->is(app()->getLocale()) ? 'active' : '' }}">
+                    <li class="{{ request()->is(app()->getLocale() . '/') || request()->is(app()->getLocale()) ? 'active' : '' }}">
                         <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}">{{ __('Home') }}</a>
-                    </li> --}}
+                    </li>
                     <li class="{{ request()->is(app()->getLocale() . '/shop') ? 'active' : '' }}">
                         <a class="nav-font" href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">{{ __('Shop') }}</a>
                     </li>

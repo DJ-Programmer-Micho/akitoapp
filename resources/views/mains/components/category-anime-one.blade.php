@@ -1,6 +1,6 @@
-<div class="container top mt-5">
-    <div class="heading my-3">
-            <h2 class="title text-center">{{__('Categories')}}</h2><!-- End .title -->
+<div class="container top mt-1">
+    <div class="heading mb-3">
+            <h2 class="title text-center" style="font-size: 40px">{{__('Categories')}}</h2><!-- End .title -->
     </div><!-- End .heading -->
 
     <div class="tab-content tab-content-carousel just-action-icons-sm">

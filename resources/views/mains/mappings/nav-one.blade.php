@@ -3,7 +3,7 @@
         <span class="mobile-menu-close"><i class="icon-close"></i></span>
         
         <form action="{{ route('business.shop.search',['locale' => app()->getLocale()]) }}" method="get" class="mobile-search">
-            <label for="mobile-search" class="sr-only">Search</label>
+            <label for="mobile-search" class="sr-only">{{__('Search')}}</label>
                 <input type="text" class="form-control" name="q" id="q" placeholder="{{__('Search product ...')}}" required>
                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
         </form>
@@ -21,9 +21,9 @@
             <div class="tab-pane fade show active" id="mobile-menu-tab" role="tabpanel" aria-labelledby="mobile-menu-link">
                 <nav class="mobile-nav">
                     <ul class="mobile-menu">
-                        {{-- <li class="{{ request()->is(app()->getLocale() . '/') || request()->is(app()->getLocale()) ? 'active' : '' }}">
+                        <li class="{{ request()->is(app()->getLocale() . '/') || request()->is(app()->getLocale()) ? 'active' : '' }}">
                             <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}">{{ __('Home') }}</a>
-                        </li> --}}
+                        </li>
                         <li class="{{ request()->is(app()->getLocale() . '/shop') ? 'active' : '' }}">
                             <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">{{ __('Shop') }}</a>
                         </li>

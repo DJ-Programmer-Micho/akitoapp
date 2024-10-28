@@ -333,3 +333,13 @@
     color: #fff;
 }
 
+.hover-phone:hover, .hover-phone a:hover{
+    color: #fff!important;
+    background-color: #004f99;
+}
+
+.lang .dropdown-item:focus, .dropdown-item:hover {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #004f99;
+}
