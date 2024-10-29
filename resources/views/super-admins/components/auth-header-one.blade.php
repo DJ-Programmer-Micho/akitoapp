@@ -17,7 +17,7 @@
                         <img src="{{ app('main_logo') }}" alt="" height="40">
                     </a>
                 </div>
-                <p class="mt-3 fs-15 fw-medium">Premium Admin</p>
+                <p class="mt-3 fs-15 fw-medium">{{__('Premium Admin')}}</p>
             </div>
         </div>
     </div>

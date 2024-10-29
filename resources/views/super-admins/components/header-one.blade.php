@@ -186,10 +186,10 @@
                         <div class="p-3">
                             <div class="row align-items-center">
                                 <div class="col">
-                                    <h6 class="m-0 fs-16 fw-semibold text-white"> Notifications </h6>
+                                    <h6 class="m-0 fs-16 fw-semibold text-white"> {{__('Notifications')}} </h6>
                                 </div>
                                 <div class="col-auto dropdown-tabs">
-                                    <span class="badge bg-light-subtle text-body fs-13"> 4 New</span>
+                                    <span class="badge bg-light-subtle text-body fs-13"> {{$notificationsCount}} {{__('New')}}</span>
                                 </div>
                             </div>
                         </div>
@@ -198,7 +198,7 @@
                             <ul class="nav nav-tabs dropdown-tabs nav-tabs-custom" data-dropdown-tabs="true" id="notificationItemsTab" role="tablist">
                                 <li class="nav-item waves-effect waves-light">
                                     <a class="nav-link active" data-bs-toggle="tab" href="#all-noti-tab" role="tab" aria-selected="true">
-                                        All (4)
+                                        {{__('All')}} ({{$notificationsCount}})
                                     </a>
                                 </li>
                                 {{-- <li class="nav-item waves-effect waves-light">
@@ -233,7 +233,7 @@
                                     </div>
                                 </div>
                                 @empty
-                                Nothing
+                                {{__('No Notifications')}}
                                 @endforelse
                                 {{-- <div class="text-reset notification-item d-block dropdown-item position-relative">
                                     <div class="d-flex">
@@ -314,7 +314,7 @@
                             </div>
 
                         </div>
-
+{{-- 
                         <div class="tab-pane fade py-2 ps-2" id="messages-tab" role="tabpanel" aria-labelledby="messages-tab">
                             <div data-simplebar style="max-height: 300px;" class="pe-2">
                                 <div class="text-reset notification-item d-block dropdown-item">
@@ -423,7 +423,7 @@
                             <div class="d-flex text-muted justify-content-center">
                                 Select <div id="select-content" class="text-body fw-semibold px-1">0</div> Result <button type="button" class="btn btn-link link-danger p-0 ms-3" data-bs-toggle="modal" data-bs-target="#removeNotificationModal">Remove</button>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -444,9 +444,9 @@
                     {{-- <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
                     <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
                     <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a> --}}
-                    @if (hasRole([1, 2, 6]))
-                    <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>$5971.67</b></span></a>
-                    @endif
+                    {{-- @if (hasRole([1, 2, 6])) --}}
+                    {{-- <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>$5971.67</b></span></a> --}}
+                    {{-- @endif --}}
                     {{-- <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end">New</span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a> --}}
                     <a class="dropdown-item" href="{{ route('lockscreen') }}"><i class="mdi mdi-lock text-warning fs-16 align-middle me-1"></i> <span class="align-middle text-warning">{{__('Lock screen')}}</span></a>
                     <a class="dropdown-item" href="{{ route('super.signout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="mdi mdi-logout text-danger fs-16 align-middle me-1"></i> <span class="align-middle text-danger" data-key="t-logout">{{__('Logout')}}</span></a>
