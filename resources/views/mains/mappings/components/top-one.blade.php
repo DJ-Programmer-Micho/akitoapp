@@ -40,21 +40,21 @@
 
             <div class="header-dropdown">
                 <div class="lang dropdown-item p-0 text-white" style="display: flex">
-                    <img 
+                    {{-- <img 
                     class="mr-2 p-0 my-auto" 
                     src="{{ asset('lang/' . str_replace('_', '-', app()->getLocale()) . '.png') }}" 
                     width="30" 
                     alt="{{ str_replace('_', '-', app()->getLocale()) }}" 
-                    style="border: 1px solid #fff; border-radius: 5px; object-fit: cover; height: 20px; align-items: center">
-                    <span>{{ __(str_replace('_', '-', app()->getLocale())) }}</span>
+                    style="border: 1px solid #fff; border-radius: 5px; object-fit: cover; height: 20px; align-items: center"> --}}
+                    <span style="cursor: pointer">{{ __(str_replace('_', '-', app()->getLocale())) }}</span>
                 </div>
                 <div class="header-menu px-3" style="z-index: 10000">
                     <ul>
                         @foreach (config('app.locales') as $locale)
                         <li>
-                            <a class="dropdown-item text-dark" onclick="changeLanguage('{{ $locale }}')">
-                                <img class="mr-2" src="{{ asset('lang/'.$locale.'.png') }}" width="20" alt="{{ $locale }}"> 
-                                <span class="w-100 mx-1">{{ __(strtoupper($locale)) }}</span>
+                            <a class="dropdown-item" onclick="changeLanguage('{{ $locale }}')">
+                                {{-- <img class="mr-2" src="{{ asset('lang/'.$locale.'.png') }}" width="20" alt="{{ $locale }}">  --}}
+                                <span class="w-100 mx-1 text">{{ __(strtoupper($locale)) }}</span>
                             </a>
                         </li>
                         @endforeach

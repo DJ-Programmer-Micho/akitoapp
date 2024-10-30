@@ -1,4 +1,4 @@
-<div class="header-middle">
+<div class="header-middle my-5">
     <div class="container">
         <div class="header-left">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}">

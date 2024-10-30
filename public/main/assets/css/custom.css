@@ -22,7 +22,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
+.header-menu span{
+    color: #000;
+}
+.header-menu span:hover{
+    color: #fff;
+}
 .product.product-list {
     box-shadow: none;
     padding-bottom: 1rem;
@@ -342,4 +347,18 @@
     color: #16181b;
     text-decoration: none;
     background-color: #004f99;
+}
+
+.footer {
+    color: white;
+    background-color: #003465;
+}
+.footer .widget-title {
+    color: white;
+}
+.footer a:hover{
+    color: white;
+}
+.footer p{
+    color: white;
 }

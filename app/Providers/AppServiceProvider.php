@@ -77,6 +77,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('main_logo', function () use ($settings) {
             return $this->getLogoUrl($settings->logo_image);
         });
+        $this->app->singleton('negative_logo', function () use ($settings) {
+            return $this->getLogoUrl($settings->logo_negative_image);
+        });
         $this->app->singleton('logo_72', function () use ($settings) {
             return $this->getLogoUrl($settings->app_icon);
         });
