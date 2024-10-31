@@ -42,7 +42,7 @@ class TeleNotifyCustomerNew extends Notification
     public function toTelegram($notifiable)
     {
 
-        $order_url = env('APP_URL_LOCALE') . '/super-admin/customer-profile/' . $this->o_id;
+        $customer_url = env('APP_URL_LOCALE') . '/super-admin/customer-profile/' . $this->o_id;
         // $customer_url = 'http://127.0.0.1:8000/en' . '/super-admin/customer-profile/' . $this->o_id;
         $registrationId = '#'.$this->o_id;
         // $registration3Id = $this->tracking_number;
