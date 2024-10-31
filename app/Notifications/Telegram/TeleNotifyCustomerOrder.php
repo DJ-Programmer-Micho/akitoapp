@@ -68,9 +68,9 @@ class TeleNotifyCustomerOrder extends Notification
 
     // Add shipping and total cost
     $content .= "*" . '-----------------' . "*\n" 
-        . "*" . 'Shipping Cost: ' . $this->shipping_cost . "*\n"
-        . "*" . 'Sub sTotal: ' . $this->total_cost - $this->shipping_cost . "*\n"
-        . "*" . 'Grand Total: ' . $this->total_cost . "*\n";
+        . "*" . 'Shipping Cost: $' . number_format($this->shipping_cost) . "*\n"
+        . "*" . 'Sub sTotal: $' . number_format($this->total_cost - $this->shipping_cost) . "*\n"
+        . "*" . 'Grand Total: $' . number_format($this->total_cost) . "*\n";
 
        return TelegramMessage::create()
         ->to(env('TELEGRAM_BOT_GROUP_ID'))
