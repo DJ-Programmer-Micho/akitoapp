@@ -27,8 +27,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use App\Events\EventCustomerOrderCheckout;
+use Illuminate\Support\Facades\Notification;
 use App\Events\EventNotifyCustomerOrderCheckout;
 use App\Notifications\NotifyCustomerOrderCheckout;
+use App\Notifications\Telegram\TeleNotifyCustomerOrder;
 
 class BusinessController extends Controller
 {
@@ -1194,6 +1196,23 @@ class BusinessController extends Controller
                             }
                         } catch (\Exception $e) {
                         }
+
+                        try{
+                            Notification::route('toTelegram', null)
+                            ->notify(new TeleNotifyCustomerOrder(
+                                $order->id,
+                                $order->tracking_number,
+                                $customerP->first_name .' '. $customerP->last_name,
+                                $customerP->phone_number,
+                                $cartItems,
+                                $validatedData['shipping_amount'],
+                                $validatedData['total_amount'],
+                            ));
+                            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
+                        }  catch (\Exception $e) {
+                            
+                        }
+
                         DB::commit();
                         CartItem::where('customer_id', $customer->id)->delete();
                         $sum = 0;
@@ -1202,7 +1221,7 @@ class BusinessController extends Controller
                         foreach($order->orderItems as $item) {
                             $sum = $sum + $item->total;
                         }
-                        Mail::to($customer->email)->send(new EmailInvoiceActionMail($order, $sum));
+                        // Mail::to($customer->email)->send(new EmailInvoiceActionMail($order, $sum));
                         return redirect()->route('business.checkout.success',['locale' => app()->getLocale()]);
                         // return 'Cash On Delivery';
                     } catch (\Exception $e) {

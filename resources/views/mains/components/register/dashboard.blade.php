@@ -47,18 +47,44 @@
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="username">Username *</label>
+                                <input type="text" id="username" name="username" class="form-control" value="{{ old('first_name', $customer->username ?? '') }}" required>
+                                @error('username')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div class="col-md-6 col-sm-12">
+                                <label for="email">Email address *</label>
+                                <input type="email" id="email" name="email" class="form-control" value="{{ old('email', $customer->email ?? '') }}" required>
+                                @error('email')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <label for="business_module">Business Module *</label>
+                                <select name="business_module" class="form-control" id="business_module" required>
+                                    <option value="Personal" selected>Personal</option>
+                                    <option value="Agency">Agency</option>
+                                    <option value="Coffee Shop">Coffee Shop</option>
+                                    <option value="Restaurant">Restaurant</option>
+                                    <option value="Hotel">Hotel</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                @error('business_module')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
+                            <div id="brand_name_field" class="col-md-6 col-sm-12">
+                                <label for="brand_name">Brand Name *</label>
+                                <input type="text" id="brand_name" name="brand_name" class="form-control" value="{{ old('brand_name', $customer->customer_profile->brand_name ?? '') }}" required>
+                                @error('brand_name')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
-                        <label for="username">Username *</label>
-                        <input type="text" id="username" name="username" class="form-control" value="{{ old('first_name', $customer->username ?? '') }}" required>
-                        @error('username')
-                        <div class="text-danger">{{ $message }}</div>
-                        @enderror
-            
-                        <label for="email">Email address *</label>
-                        <input type="email" id="email" name="email" class="form-control" value="{{ old('email', $customer->email ?? '') }}" required>
-                        @error('email')
-                        <div class="text-danger">{{ $message }}</div>
-                        @enderror
                     </div>
                 </div>
             
@@ -129,17 +155,17 @@
                 <span class="danger" style="font-size: 12px">{{__('Please Check reCaptcha')}}</span><br>
                 @enderror
                 <div class="form-check">
-                    <input style="margin-left: -1.25rem" type="checkbox" value="" id="terms_conditions">
-                    <label class="form-check-label" for="defaultCheck1">
-                        I have read and agree to <a href="{{route('law.terms')}}" target="_blank" style="text-decoration: underline">Akitu's Term & Condition</a>
+                    <input style="margin-left: -1.25rem" type="checkbox" name="terms_conditions" id="terms_conditions" required>
+                    <label class="form-check-label" for="terms_conditions">
+                        I have read and agree to <a href="{{route('law.terms')}}" target="_blank" style="text-decoration: underline">Akitu's Terms & Conditions</a>
                     </label>
-                  </div>
+                </div>
                 <div class="form-check">
-                    <input style="margin-left: -1.25rem" type="checkbox" value="" id="privacu_policy">
-                    <label class="form-check-label" for="defaultCheck1">
-                        I have read and agree to Akitu's <a href="http://" style="text-decoration: underline">Privacy Policy</a>
+                    <input style="margin-left: -1.25rem" type="checkbox" name="privacy_policy" id="privacy_policy" required>
+                    <label class="form-check-label" for="privacy_policy">
+                        I have read and agree to Akitu's <a href="{{route('law.privacy')}}" style="text-decoration: underline">Privacy Policy</a>
                     </label>
-                  </div>
+                </div>
                 <button type="submit" id="submitButton" class="btn btn-outline-primary-2">
                     <span>Register</span>
                     <i class="icon-long-arrow-right"></i>
@@ -283,5 +309,26 @@ FilePond.registerPlugin(
       submitForm();
     });
   });
+</script>
+<script>
+    $(document).ready(function() {
+        // Function to check the selected value and show/hide fields accordingly
+        function toggleFields() {
+            var businessModule = $('#business_module').val();
+            if (businessModule === 'Personal') {
+                $('#brand_name_field').hide();
+            } else {
+                $('#brand_name_field').show();
+            }
+        }
+
+        // Initial check when the page loads
+        toggleFields();
+
+        // Listen for changes in the address type dropdown
+        $('#business_module').change(function() {
+            toggleFields();
+        });
+    });
 </script>
 @endpush

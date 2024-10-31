@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('customer_id')->references('id')->on('customers')->onDelete('cascade')->onUpdate('cascade');
             $table->string('first_name');
             $table->string('last_name');
+            $table->enum('business_module', [
+                'Personal', 'Agency', 'Restaurant', 'Coffee Shop', 'Hotel', 'Other'
+            ])->nullable();
+            $table->string('brand_name')->nullable();
             $table->string('country');
             $table->string('city');
             $table->string('address');

@@ -14,6 +14,8 @@ class CustomerProfile extends Model
         'customer_id',
         'first_name',
         'last_name',
+        'business_module', 
+        'brand_name',  
         'country',
         'city',
         'address',

@@ -71,17 +71,7 @@ class CategoryLivewire extends Component
                 'min:2',
                 Rule::unique('category_translations', 'name')
                     ->where('locale', $locale)
-                    ->ignore($this->category_update->id, 'category_id')
             ];
-    
-            // Add custom uniqueness check across locales
-            $rules['names.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
-                foreach ($this->filteredLocales as $otherLocale) {
-                    if ($locale !== $otherLocale && $this->names[$locale] === $this->names[$otherLocale]) {
-                        $fail(__('The :attribute must be unique across different languages.'));
-                    }
-                }
-            };
         }
         return $rules;
     }

@@ -6,8 +6,9 @@ use App\Models\Customer;
 use App\Rules\ReCaptcha;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Factory;
-// use App\Services\FirebaseService;
+
 use App\Services\SinchService;
+use Illuminate\Support\Facades\DB;
 use App\Mail\EmailVerificationMail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Notification;
 use App\Notifications\ResetPasswordNotification;
+use App\Notifications\Telegram\TeleNotifyCustomerNew;
+
 
 
 
@@ -68,14 +72,14 @@ class CustomerAuth extends Controller
     }
 
     public function register(Request $request)
-    {
-
+    {        
         // Validate the request data
         $validatedData = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:customers,username',
             'email' => 'required|email|unique:customers,email',
+            'business_module' => 'required|string|max:255',
             'phone_number' => 'required|string|max:15|unique:customer_profiles,phone_number', // Checking uniqueness in 'customer_profiles' table
             'country' => 'required|string|max:255',
             'city' => 'required|string|max:255',
@@ -83,20 +87,44 @@ class CustomerAuth extends Controller
             'zip_code' => 'required|string|max:10',
             'password' => 'required|string|min:8|confirmed', // 'password' and 'password_confirmation' should match
             'profile_picture_data' => 'nullable|string', // This will be your base64 encoded image
-            'g-recaptcha-response' => ['required', new ReCaptcha]
+            'g-recaptcha-response' => ['required', new ReCaptcha],
+            'terms_conditions' => 'accepted',
+            'privacy_policy' => 'accepted', 
         ]);
+        
+        // Add conditional validation for brand_name based on business_module
+        if ($request->business_module !== 'Personal') {
+            $validatedData = array_merge($validatedData, $request->validate([
+                'brand_name' => 'required|string|max:255|unique:customer_profiles,brand_name',
+            ]));
+        } else {
+            // brand_name is not required if business_module is Personal
+            $validatedData['brand_name'] = $request->input('brand_name', null); // Default to null if not present
+        }
 
-
-
-
+        
         try {
+            DB::beginTransaction();
+            // Store customer in Firebase Authentication
+            $firebase = (new Factory)->withServiceAccount(base_path('resources/credentials/firebase_credentials.json')); // Path to your Firebase credentials
+            $auth = $firebase->createAuth();
+
+            $firebaseUser = $auth->createUser([
+                'email' => $validatedData['email'],
+                'password' => $validatedData['password'],
+                'displayName' => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
+            ]);
+
+
+
             // Create new customer in the database
             $customer = Customer::create([
                 'email' => $validatedData['email'],
                 'username' => $validatedData['username'],
                 'password' => Hash::make($validatedData['password']),
                 'status' => 1, // Default status
-                'phone_verify' => 1, // OTP non-functional for now
+                'phone_verify' => 0, // OTP non-functional for now
+                'uid' => $firebaseUser->uid, // OTP non-functional for now
                 // 'phone_otp_number' and 'phone_verified_at' are left for future implementation
             ]);
 
@@ -104,12 +132,12 @@ class CustomerAuth extends Controller
                 $this->handleCroppedImage($validatedData['profile_picture_data'], $validatedData['first_name'] ?? 'fuser', $validatedData['last_name'] ?? 'luser');
             }
 
-            
-
             // Create customer profile
             $customer->customer_profile()->create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
+                'business_module' => $validatedData['business_module'],
+                'brand_name' => $validatedData['brand_name'] ?? null,
                 'country' => $validatedData['country'],
                 'city' => $validatedData['city'],
                 'address' => $validatedData['address'],
@@ -117,28 +145,40 @@ class CustomerAuth extends Controller
                 'phone_number' => $validatedData['phone_number'], // Store phone number in profile too
                 'avatar' => $this->objectName ?? null, // Store profile picture path in AWS S3 if uploaded
             ]);
+
             try {
                 if($this->objectName) {
                     $croppedImage = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $this->objectData));
                     Storage::disk('s3')->put($this->objectName, $croppedImage , 'public');
-                } else {
-                    $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Uplaod The Image')]);
-                    return;
-                }
+                } 
+                // else {
+                //     $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Uplaod The Image')]);
+                //     return;
+                // }
             } catch (\Exception $e) {
                 $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
             }
 
-            // Store customer in Firebase Authentication
-            $firebase = (new Factory)->withServiceAccount(base_path('resources/credentials/firebase_credentials.json')); // Path to your Firebase credentials
-            $auth = $firebase->createAuth();
-            $firebaseUser = $auth->createUser([
-                'email' => $validatedData['email'],
-                'password' => $validatedData['password'],
-                'displayName' => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
-            ]);
+
+
+            try{
+                Notification::route('toTelegram', null)
+                ->notify(new TeleNotifyCustomerNew(
+                    $customer->id,
+                    $customer->customer_profile->first_name .' '. $customer->customer_profile->last_name,
+                    $customer->customer_profile->phone_number,
+                    $customer->customer_profile->business_module,
+                    $customer->customer_profile->brand_name,
+                ));
+                $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
+            }  catch (\Exception $e) {
+                
+            }
+
+            DB::commit(); 
 
         } catch (\Exception $e) {
+            DB::rollBack();
             // If an error occurs during Firebase user creation, rollback
             if (isset($firebaseUser)) {
                 $auth->deleteUser($firebaseUser->uid); // Delete Firebase user if created
@@ -146,8 +186,7 @@ class CustomerAuth extends Controller
 
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
-        
-        // Redirect or return success message
+
         return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $customer->id, 'email' => $customer->email]);
         // return redirect()->route('business.account', ['locale' => app()->getLocale()]);
     }
@@ -215,33 +254,17 @@ class CustomerAuth extends Controller
                 'message' => __('Check Your Email Spelling, Or Email Has been Alreary Registerd'),
             ]);
         } else {
+
+            $firebase = (new Factory)->withServiceAccount(base_path('resources/credentials/firebase_credentials.json'));
+            $auth = $firebase->createAuth();
+
+            $auth->updateUser($customer->uid, [
+                'email' => $new_email,
+            ]);
+
             $customer->email = $new_email;
             $customer->save();
 
-            // try {
-            //     $firebaseAuth = $firebaseService->getAuth();
-                
-            //     // Assuming you store Firebase UID in the customer record
-            //     $firebaseAuth->updateUser($customer->firebase_uid, [
-            //         'email' => $new_email
-            //     ]);
-        
-            //     // If successful, update the local database
-            //     $customer->email = $new_email;
-            //     $customer->save();
-        
-            //     return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $customer->id, 'email' => $new_email])->with('alert', [
-            //         'type' => 'success',
-            //         'message' => __('Email Updated!'),
-            //     ]);
-            // } catch (\Kreait\Firebase\Exception\AuthException $e) {
-            //     // Handle Firebase errors
-            //     return redirect()->back()->with('alert', [
-            //         'type' => 'error',
-            //         'message' => __('Failed to update email in Firebase: ') . $e->getMessage(),
-            //     ]);
-            // }
-            
             return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $customer->id, 'email' => $new_email])->with('alert', [
                 'type' => 'success',
                 'message' => __('Email Updated!'),
