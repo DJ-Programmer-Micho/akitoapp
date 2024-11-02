@@ -15,10 +15,10 @@ class AuthCheck
         } else {
             // if (!session()->has('user_data')) {
             //     // If the session has expired or 'user_data' is missing, redirect to the sign-in page
-            //     return redirect('/signin');
+            //     return redirect('/signin-akitu-a');
             // }
             
-            return redirect('/signin');
+            return redirect('/signin-akitu-a');
         }
     }
 }

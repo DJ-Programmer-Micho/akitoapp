@@ -34,7 +34,7 @@ class CheckUserStatus
             
             return $next($request);
         } else {
-            return redirect('/signin');
+            return redirect('/signin-akitu-a');
         }
     }
 }

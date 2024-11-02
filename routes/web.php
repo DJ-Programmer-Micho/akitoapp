@@ -45,8 +45,8 @@ Route::get('/temp-images/{filename}', function ($filename) {
 })->name('temp-images');
 
 // DASHBOARD - AUTH
-Route::get('/signin', [AuthController::class, 'signIn'])->name('super.signin');
-Route::post('/signin', [AuthController::class, 'handleSignIn'])->name('super.signin.post');
+Route::get('/signin-akitu-a', [AuthController::class, 'signIn'])->name('super.signin');
+Route::post('/signin-akitu-a', [AuthController::class, 'handleSignIn'])->name('super.signin.post');
 Route::get('/password-reset', [AuthController::class, 'passwordReset'])->name('super.password.reset');
 Route::post('/password-reset', [AuthController::class, 'sendResetLinkEmail'])->name('super.password.email');
 Route::post('/logout', [AuthController::class, 'signOut'])->name('super.signout');
