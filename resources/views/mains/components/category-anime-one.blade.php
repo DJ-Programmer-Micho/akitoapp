@@ -1,6 +1,10 @@
 <div class="container top mt-1">
     <div class="heading mb-3">
-            <h2 class="title text-center" style="font-size: 40px">{{__('Categories')}}</h2><!-- End .title -->
+            <h2 class="title text-center" style="font-size: 40px">
+                <i class="fa-solid fa-angles-down fa-bounce"></i>
+                {{__('Categories')}}
+                <i class="fa-solid fa-angles-down fa-bounce"></i>
+            </h2><!-- End .title -->
     </div><!-- End .heading -->
 
     <div class="tab-content tab-content-carousel just-action-icons-sm">

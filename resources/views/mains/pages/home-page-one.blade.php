@@ -46,8 +46,8 @@
         <hr class="mt-5 mb-0">
     </div><!-- End .container --> --}}
     <x-mains.components.service-view-one />
-    <div class="bg-light" style="padding-top: 2rem; padding-bottom: 2rem">
+    {{-- <div class="bg-light" style="padding-top: 2rem; padding-bottom: 2rem"> --}}
     {{-- <x-mains.components.cta-coupon-one /> --}}
-    </div>
+    {{-- </div> --}}
 </div>
 @endsection

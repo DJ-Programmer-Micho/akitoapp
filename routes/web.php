@@ -155,7 +155,7 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
         Route::get('wishlist-list', [BusinessController::class, 'wishlist'])->name('business.whishlist');
         
         Route::post('processing-checkout-list/{digit}/{nvxf}', [BusinessController::class, 'checkoutChecker'])->name('business.checkoutChecker');
-        Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account');
+        Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account.post');
         Route::post('/avatarupload', [CustomerAuth::class, 'avatarupload'])->name('customer.avatarupload');
         
         Route::get('/cust-address', [CustomerAddressController::class, 'index'])->name('customer.address');

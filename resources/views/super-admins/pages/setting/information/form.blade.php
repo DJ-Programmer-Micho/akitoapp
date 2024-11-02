@@ -31,9 +31,15 @@
                             </div>
                         
                             <div class="form-group">
-                                <label for="phone_number">Phone Number</label>
+                                <label for="phone_number">Phone Number 1</label>
                                 <input type="text" id="phone_number" wire:model="phone_number" class="form-control mb-3">
                                 @error('phone_number') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone_number_2">Phone Number 2</label>
+                                <input type="text" id="phone_number_2" wire:model="phone_number_2" class="form-control mb-3">
+                                @error('phone_number_2') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                         
                             <div class="form-group">
@@ -82,6 +88,12 @@
                                 <label for="tiktok_url">TikTok URL</label>
                                 <input type="url" id="tiktok_url" wire:model="tiktok_url" class="form-control mb-3">
                                 @error('tiktok_url') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="snapchat_url">SnapChat URL</label>
+                                <input type="url" id="snapchat_url" wire:model="snapchat_url" class="form-control mb-3">
+                                @error('snapchat_url') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                         </form>
                     </div>

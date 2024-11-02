@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
@@ -52,37 +51,36 @@ class AuthController extends Controller
     public function lock()
     {
         // Store user data in the session before logging out
-        $user = auth()->user();
-
+        $user = auth('admin')->user();
         if ($user) {
-            $user = User::with('profile')->find($user->id);
-            // Now you can safely access $user->profile or handle if $user->profile is null
+            $userLock = User::with('profile')->find($user->id);
+    
+            $avatar = optional($userLock->profile)->avatar 
+                ? app('cloudfront') . $userLock->profile->avatar 
+                : app('userImg'); // Use default image if no avatar exists
+            
+            session([
+                'user_data' => [
+                    'email' => $userLock->email,
+                    'avatar' => $avatar,
+                    'name' => optional($userLock->profile)->first_name . ' ' . optional($userLock->profile)->last_name,
+                ],
+                'last_page_url' => url()->previous() // Store the last page URL
+            ]);
+    
+            // Log out the user
+            session()->regenerateToken(); // Regenerate session token for security
+            Auth::guard('admin')->logout();
+            return view('super-admins.auth.lock-one'); // Display lock screen
+    
         } else {
-            dd('no');
-            // Handle the case where the user is not authenticated
-            return redirect()->route('login')->with('alert', [
+            return redirect()->route('super.signin')->with('alert', [
                 'type' => 'error',
                 'message' => 'You must be logged in to access this page.',
             ]);
         }
-        $avatar = optional($user->profile)->avatar 
-        ? app('cloudfront') . $user->profile->avatar 
-        : app('userImg'); // Use default image if no avatar exists
-        
-        session([
-            'user_data' => [
-                'email' => $user->email,
-                'avatar' => $avatar,
-                'name' => $user->profile->first_name . ' ' . $user->profile->last_name,
-            ],
-            'last_page_url' => url()->previous() // Store the last page URL
-        ]);
-
-        // Log out the user
-        Auth::guard('admin')->logout();
-        session()->regenerateToken(); // Regenerate session token for security
-        return view('super-admins.auth.lock-one'); // Display lock screen
     }
+    
 
 
     public function unlock(Request $request)

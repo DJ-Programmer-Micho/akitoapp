@@ -111,7 +111,7 @@
                                                                 dd($data->productTranslation);
                                                             @endphp --}}
                                                             <h6 class="mb-0">{{ $data->profile->first_name . ' ' . $data->profile->last_name ?? 'unKnown' }}</h6>
-                                                            <p class="mb-0">{{__('Position: Admin')}}</p>
+                                                            <p class="mb-0">{{__('Position:')}} {{$data->profile->position}}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -159,9 +159,9 @@
                                                                     <i class="fa-regular fa-pen-to-square me-2"></i>{{__('Edit')}}</button>
                                                                 </li>
                                                                 <li class="dropdown-divider"></li>
-                                                                <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteUserModal" wire:click="removeUser({{ $data->id }})">
+                                                                {{-- <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteUserModal" wire:click="removeUser({{ $data->id }})">
                                                                     <i class="fa-regular fa-trash-can me-2"></i>{{__('Delete')}}</button>
-                                                                </li>
+                                                                </li> --}}
 
                                                             </ul>
                                                         </div>
@@ -367,8 +367,8 @@
                                         <div class="col-6">
                                             <div class="form-check">
                                                 <input wire:model="roles" class="form-check-input" type="checkbox" value="5" id="role-create-action">
-                                                <label class="form-check-label" for="role-create-action">Create Action</label>
-                                                <p>Responsible for entering data in the application.</p>
+                                                <label class="form-check-label" for="role-create-action">Designer</label>
+                                                <p>Responsible for entering Images data in the application.</p>
                                             </div>
                                         </div>
                                         <div class="col-6">

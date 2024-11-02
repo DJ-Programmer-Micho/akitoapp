@@ -114,8 +114,8 @@
                                                 <div class="col-6">
                                                     <div class="form-check">
                                                         <input wire:model="rolesEdit" class="form-check-input" type="checkbox" value="5" id="role-create-action">
-                                                        <label class="form-check-label" for="role-create-action">Create Action</label>
-                                                        <p>Responsible for entering data in the application.</p>
+                                                        <label class="form-check-label" for="role-create-action">Designer</label>
+                                                        <p>Responsible for Images data in the application.</p>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">

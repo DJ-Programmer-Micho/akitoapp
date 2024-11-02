@@ -162,7 +162,7 @@ class UserLivewire extends Component
                 Storage::disk('s3')->put($this->objectName, $croppedImage, 'public');
             } else {
                 $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong, Please Upload The Image')]);
-                return;
+                // return;
             }
     
             // Create a new user in Firebase

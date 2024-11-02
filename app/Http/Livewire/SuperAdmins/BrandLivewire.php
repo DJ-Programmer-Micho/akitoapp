@@ -95,6 +95,7 @@ class BrandLivewire extends Component
                 'min:1',
                 Rule::unique('brand_translations', 'name')
                     ->where('locale', $locale)
+                    ->ignore($this->brand_update->id, 'brand_id')
             ];
         }
         $rules['priorityEdit'] = ['required'];

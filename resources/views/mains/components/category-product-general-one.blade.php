@@ -1,6 +1,12 @@
 <div class="container top">
     <div class="heading my-5">
-        <h2 class="title text-center" style="font-size: 40px">{{__($title)}}</h2><!-- End .title -->
+        <h2 class="title text-center py-3" style="font-size: 40px;">
+            <span class="py-4">
+                <i class="fa-solid fa-angles-down fa-bounce"></i>
+                {{__($title)}}
+                <i class="fa-solid fa-angles-down fa-bounce"></i>
+            </span>
+        </h2><!-- End .title -->
     </div><!-- End .heading -->
 
     <div class="tab-content tab-content-carousel just-action-icons-sm">

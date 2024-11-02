@@ -7,19 +7,19 @@
             <div class="navbar-brand-box horizontal-logo">
                 <a href="index.html" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="{{ app('main_logo') }}" alt="Akito" height="27">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="27">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ app('main_logo') }}" alt="Akito" height="42">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="42">
                     </span>
                 </a>
                 <!-- Light Logo-->
                 <a href="index.html" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="{{ app('main_logo') }}" alt="Akito" height="27">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="27">
                     </span>
                     <span class="logo-lg">
-                        <img src="{{ app('main_logo') }}" alt="Akito" height="42">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="42">
                     </span>
                 </a>
             </div>
@@ -221,7 +221,7 @@
                                 @forelse ($notifications as $notification)
                                 <div class="text-reset notification-item d-block dropdown-item position-relative">
                                     <div class="notification">
-                                        {{ $notification->data['message'] }}<br>
+                                        {{ $notification->data['message'] }} <small class="text-secondary">{{$notification->created_at->diffForHumans()}}</small><br>
                                         <button type="button" wire:click="markAsRead('{{ $notification->id }}')" class="btn btn-soft-success btn-sm">
                                             <i class="fa-solid fa-check"></i>
                                         </button>

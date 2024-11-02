@@ -46,7 +46,7 @@
                     <div class="card-body">
                         <div class="row">
                             @forelse ($base64Images[$lang] ?? [] as $index => $base64data)
-                                <div class="col-4 mb-3">
+                                <div wire:key="base64-{{ $lang }}-{{ $index }}" class="col-4 mb-3">
                                     <div wire:ignore.self class="img-container position-relative">
                                         <img src="{{ $base64data }}" alt="{{ $lang }}" class="img-thumbnail w-100">
                                         <button wire:click="removeHeroImage('{{ $lang }}', {{ $index }}, false)" type="button" class="btn btn-danger position-absolute" style="top: 5px; right: 5px;">X</button>
@@ -61,7 +61,7 @@
                             @endforelse
 
                             @foreach ($uploadedImages[$lang] ?? [] as $index => $filename)
-                                <div class="col-4 mb-3">
+                                <div wire:key="uploaded-{{ $lang }}-{{ $index }}" class="col-4 mb-3">
                                     <div wire:ignore.self class="img-container position-relative">
                                         <img src="{{ app('cloudfront') . $filename }}" alt="{{ $lang }}" class="img-thumbnail w-100">
                                         <button wire:click="removeHeroImage('{{ $lang }}', {{ $index }}, true)" type="button" class="btn btn-danger position-absolute" style="top: 5px; right: 5px;">X</button>

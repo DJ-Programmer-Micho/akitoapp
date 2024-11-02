@@ -11,6 +11,7 @@ class InformationLivewire extends Component
     public $app_icon;
     public $email_address;
     public $phone_number;
+    public $phone_number_2;
     public $address;
     public $working_days;
     public $working_time;
@@ -18,6 +19,7 @@ class InformationLivewire extends Component
     public $facebook_url;
     public $instagram_url;
     public $tiktok_url;
+    public $snapchat_url;
 
     public function mount()
     {
@@ -28,12 +30,14 @@ class InformationLivewire extends Component
             $this->app_icon = $settings->app_icon;
             $this->email_address = $settings->email_address;
             $this->phone_number = $settings->phone_number;
+            $this->phone_number_2 = $settings->phone_number_2;
             $this->address = $settings->address;
             $this->working_days = $settings->working_days;
             $this->working_time = $settings->working_time;
             $this->facebook_url = $settings->facebook_url;
             $this->instagram_url = $settings->instagram_url;
             $this->tiktok_url = $settings->tiktok_url;
+            $this->snapchat_url = $settings->snapchat_url;
         }
     }
 
@@ -42,12 +46,14 @@ class InformationLivewire extends Component
         $this->validate([
             'email_address' => 'nullable|email',
             'phone_number' => 'nullable|string|max:20',
+            'phone_number_2' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'working_days' => 'nullable|string|max:50',
             'working_time' => 'nullable|string|max:50',
             'facebook_url' => 'nullable|string|max:50',
             'instagram_url' => 'nullable|string|max:50',
             'tiktok_url' => 'nullable|string|max:50',
+            'snapchat_url' => 'nullable|string|max:50',
         ]);
 
         WebSetting::updateOrCreate(['id' => 1], [
@@ -55,12 +61,14 @@ class InformationLivewire extends Component
             'app_icon' => $this->app_icon,
             'email_address' => $this->email_address,
             'phone_number' => $this->phone_number,
+            'phone_number_2' => $this->phone_number_2,
             'address' => $this->address,
             'working_days' => $this->working_days,
             'working_time' => $this->working_time,
             'facebook_url' => $this->facebook_url,
             'instagram_url' => $this->instagram_url,
             'tiktok_url' => $this->tiktok_url,
+            'snapchat_url' => $this->snapchat_url,
         ]);
 
         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Settings updated successfully!')]);

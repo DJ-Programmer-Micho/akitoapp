@@ -63,6 +63,28 @@
             <div class="col-xl-6 col-lg-12">
                 <div class="card bg-dark text-white">
                     <div class="card-body">
+                        <h4 class="text-white">{{__('Company Negative Logo')}}</h4>
+                        <div class="row">
+                            <div class="col-12">
+                                <small class="bg-danger text-white px-2 rounded">{{__('The Image Size Should be from')}}<b>{{__('(600px X 180px)')}}</b> {{__('to')}} <b>{{__('(1180px X 360px)')}}</b></small>
+                                <label for="img">{{__('Upload Image')}}</label>
+                                <input type="file" name="logoNegativeImg" id="logoNegativeImg" class="form-control" style="height: auto">
+                                @error('objectNameNegativeLogo') <span class="text-danger">{{ $message }}</span> @enderror
+                                <input type="file" name="croppedlogoNegativeImg" id="croppedlogoNegativeImg" style="display: none;">
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3 d-flex justify-content-center mt-1">
+                                    <img id="showlogoNegativeImg" class="img-thumbnail rounded" src="{{ $tempImgNegativeLogo }}" style="width: 600px; height: 180px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-12">
+                <div class="card bg-dark text-white">
+                    <div class="card-body">
                         <h4 class="text-white">{{__('Company App Icon')}}</h4>
                         <div class="row">
                             <div class="col-12">
@@ -99,6 +121,36 @@
                         <div class="row">
                             <div class="col-md-8">
                                 <img src="" id="sample_image_logo_image" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    {{-- <button type="button" id="crop" class="btn btn-primary">Crop</button> --}}
+                    <button type="button" class="btn btn-primary crop-btn" data-index="">{{__('Crop')}}</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('Cancel')}}</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <div class="modal fade blockm" id="modal_logo_negative_image" tabindex="-2" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-target="#modal_logo_negative_image">
+        <div class="modal-dialog modal-lg text-white" role="document">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{__('Crop Image Before Upload')}}</h5>
+                    <button type="button" class="btn btn-danger close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-container">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <img src="" id="sample_image_logo_negative_image" />
                             </div>
                             <div class="col-md-4">
                                 <div class="preview"></div>
@@ -161,6 +213,18 @@
         cropWidth: 1603,
         cropHeight: 667,
         fileInputId: 'croppedLogoImg'
+    });
+
+    setupCropModal({
+        inputId: 'logoNegativeImg',
+        modalId: 'modal_logo_negative_image',
+        imageId: 'sample_image_logo_negative_image',
+        cropBtnClass: '.crop-btn',
+        livewireEvent: 'updateCroppedlogoNegativeImg',
+        aspectRatio: 1603 / 667,
+        cropWidth: 1603,
+        cropHeight: 667,
+        fileInputId: 'croppedlogoNegativeImg'
     });
 
     // Icon Modal Crop

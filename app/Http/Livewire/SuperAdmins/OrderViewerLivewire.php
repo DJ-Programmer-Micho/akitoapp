@@ -75,7 +75,7 @@ class OrderViewerLivewire extends Component
                             $order->tracking_number,
                             $order->id, 
                             $order->status, 
-                            "Order ID {$order->tracking_number} Payment has been updated to {$order->payment_status}", 
+                            "Order ID [#{$order->tracking_number}] Payment has been updated to {$order->payment_status}", 
                         ));
                     }
                 }
@@ -87,7 +87,7 @@ class OrderViewerLivewire extends Component
                         $order->tracking_number,
                         $order->id, 
                         $order->status,
-                        "Order ID {$order->tracking_number} Payment has been updated to {$order->payment_status}!",
+                        "Order ID [#{$order->tracking_number}] Payment has been updated to {$order->payment_status}!",
                     ));
                 }
     

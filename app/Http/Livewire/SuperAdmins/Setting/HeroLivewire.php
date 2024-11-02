@@ -45,57 +45,60 @@ class HeroLivewire extends Component
 
     public function removeHeroImage($language, $index, $isUploaded = false)
     {
+        $this->imagesToDelete[$language] ??= [];
+    
         if ($isUploaded) {
-            // Remove from uploaded images and mark for deletion
             $this->imagesToDelete[$language][] = $this->uploadedImages[$language][$index];
             unset($this->uploadedImages[$language][$index]);
             $this->uploadedImages[$language] = array_values($this->uploadedImages[$language]);
         } else {
-            // Remove from base64 images
             unset($this->base64Images[$language][$index]);
             $this->base64Images[$language] = array_values($this->base64Images[$language]);
         }
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Image removed successfully for ' . __($language))]);
+    
+        $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Image removed successfully for ' . __($language))]);
     }
 
     public function save()
     {
-        $newUploadedImages = $this->uploadedImages; // Preserve existing images from DB
-    
+        $newUploadedImages = $this->uploadedImages;
+        
         foreach ($this->base64Images as $language => $images) {
             foreach ($images as $base64data) {
-                // Decode and save base64 images
-                $imageData = explode(',', $base64data);
-                $imageType = explode(';', explode(':', $imageData[0])[1])[0];
-                $imageExtension = str_replace('image/', '', $imageType);
-                $filename = 'web-setting/' . uniqid() . '.' . $imageExtension;
-    
-                Storage::disk('s3')->put($filename, base64_decode($imageData[1]), 'public');
-                $newUploadedImages[$language][] = $filename;
-            }
-        }
-    
-        // Delete flagged images from storage
-        foreach ($this->imagesToDelete as $language => $images) {
-            foreach ($images as $filename) {
-                Storage::disk('s3')->delete($filename);
-                if (($key = array_search($filename, $newUploadedImages[$language])) !== false) {
-                    unset($newUploadedImages[$language][$key]);
+                if (isset($imageData[1])) {
+                    $imageData = explode(',', $base64data);
+                    $imageType = explode(';', explode(':', $imageData[0])[1])[0];
+                    $imageExtension = str_replace('image/', '', $imageType);
+                    $filename = 'web-setting/sliders/' . uniqid() . '.' . $imageExtension;
+
+                    Storage::disk('s3')->put($filename, base64_decode($imageData[1]), 'public');
+                    $newUploadedImages[$language][] = $filename;
                 }
             }
         }
-    
-        // Save updated images to the database
+
+        foreach ($this->imagesToDelete as $language => $images) {
+            foreach ($images as $filename) {
+                Storage::disk('s3')->delete($filename);
+                $newUploadedImages[$language] = array_values(array_filter(
+                    $newUploadedImages[$language],
+                    fn($file) => $file !== $filename
+                ));
+            }
+        }
+        
         WebSetting::updateOrCreate(
             ['id' => 1],
             ['hero_images' => json_encode($newUploadedImages)]
         );
-    
-        // Clear only images marked for deletion
+
         $this->imagesToDelete = [];
-        $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => 'Hero slider updated successfully.']);
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => 'Hero slider updated successfully.'
+        ]);
     }
-    
+        
 
     public function render()
     {

@@ -1,5 +1,4 @@
-
-{{-- FOR THE TABS BETWEEN FEATURED AND ON SALE --}}
+{{-- NOT USED COMPONENT --}}
 <div class="container featured">
     <ul class="nav nav-pills nav-border-anim nav-big justify-content-center mb-3" role="tablist">
         <li class="nav-item">

@@ -38,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
             return $settings->phone_number ?? '009647507747742'; // Fallback to default
         });
 
+        $this->app->singleton('phoneNumber2', function () use ($settings) {
+            return $settings->phone_number_2 ?? '009647507747742'; // Fallback to default
+        });
+
         $this->app->singleton('emailAddress', function () use ($settings) {
             return $settings->email_address ?? 'default_email@example.com'; // Fallback to default
         });
@@ -64,6 +68,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton('tiktokUrl', function () use ($settings) {
             return $settings->tiktok_url ?? 'https://tiktok.com'; // Fallback to default
+        });
+
+        $this->app->singleton('snapchatUrl', function () use ($settings) {
+            return $settings->snapchat_url ?? 'https://snapchat.com'; // Fallback to default
         });
 
         $this->app->singleton('cloudfront', function () {

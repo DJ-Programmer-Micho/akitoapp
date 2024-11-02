@@ -106,7 +106,7 @@
                                 </tr>
                             @empty
                                 <tr class="align-middle text-center">
-                                    <td colspan="4" class="text-center">{{__('No Categories Available')}}</td>
+                                    <td colspan="5" class="text-center">{{__('No Categories Available')}}</td>
                                 </tr>
                             @endforelse
                         </tbody>

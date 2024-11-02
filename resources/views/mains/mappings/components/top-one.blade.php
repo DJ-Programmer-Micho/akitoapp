@@ -17,6 +17,7 @@
                 <a href="{{app('facebookUrl')}}" class="social-icon social-facebook" title="Facebook" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
                 <a href="{{app('instagramUrl')}}" class="social-icon social-instagram" title="Instagram" target="_blank"><i class="fa-brands fa-instagram"></i></a>
                 <a href="{{app('tiktokUrl')}}" class="social-icon social-tiktok" title="TikTok" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="{{app('snapchatUrl')}}" class="social-icon social-snapchat" title="SnapChat" target="_blank"><i class="fa-brands fa-snapchat"></i></a>
                 {{-- <a href="#" class="social-icon social-pinterest" title="Instagram" target="_blank"><i class="icon-pinterest-p"></i></a> --}}
             </div><!-- End .soial-icons -->
             <ul class="top-menu top-link-menu">

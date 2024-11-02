@@ -26,8 +26,10 @@ class WebSetting extends Model
         'facebook_url',
         'instagram_url',
         'tiktok_url',
+        'snapchat_url',
         'email_address',
         'phone_number',
+        'phone_number_2',
         'address',
         'working_days', // Sat - Thu
         'working_time', // 9am - 7pm UTC +3

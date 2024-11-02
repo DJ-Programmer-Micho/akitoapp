@@ -7,7 +7,7 @@
                 <div class="demo-bg-wrapper-page">
                     <span class="demo-bg-page" style="background-image: url('{{ app('cloudfront').$brand->image }}');"></span>
                 </div>
-                <h6 class="text-center mt-1">{{ $brand->brandTranslation->name }}</h6>
+                {{-- <h6 class="text-center mt-1">{{ $brand->brandTranslation->name }}</h6> --}}
             </a>
         </div><!-- End .demo-item -->
         @endforeach

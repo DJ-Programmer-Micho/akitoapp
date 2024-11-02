@@ -1,3 +1,4 @@
+{{-- NOT USED COMPONENT --}}
 <div class="container trending">
     <div class="heading heading-flex mb-3">
         <div class="heading-left">

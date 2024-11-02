@@ -8,10 +8,15 @@
                         <img src="{{ app('negative_logo') }}" alt="Akito" class="footer-logo" width="105" height="25">
                         <p>{{__('Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.')}}</p>
 
+                        <div class="widget-call mb-1">
+                            <i class="icon-phone"></i>
+                            {{__('Dubai Call Center')}}
+                            <a href="tel:{{app('phoneNumber')}}" style="font-size: 15px; color: white">{{app('phoneNumber')}}</a>         
+                        </div><!-- End .widget-call -->
                         <div class="widget-call">
                             <i class="icon-phone"></i>
-                            {{__('Got Question? Call us 24/7')}}
-                            <a href="tel:{{app('phoneNumber')}}" style="font-size: 15px; color: white">{{app('phoneNumber')}}</a>         
+                            {{__('Iraq Call Center')}}
+                            <a href="tel:{{app('phoneNumber2')}}" style="font-size: 15px; color: white">{{app('phoneNumber2')}}</a>         
                         </div><!-- End .widget-call -->
                     </div><!-- End .widget about-widget -->
                 </div><!-- End .col-sm-6 col-lg-3 -->

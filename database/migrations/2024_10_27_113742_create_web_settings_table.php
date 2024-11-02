@@ -40,8 +40,12 @@ return new class extends Migration
             $table->string('facebook_url')->nullable();
             $table->string('instagram_url')->nullable();
             $table->string('tiktok_url')->nullable();
+            $table->string('snapchat_url')->nullable();
+
+
             $table->string('email_address')->nullable();
             $table->string('phone_number')->nullable();
+            $table->string('phone_number_2')->nullable();
             $table->string('address')->nullable();
             $table->string('working_days')->nullable();
             $table->string('working_time')->nullable();

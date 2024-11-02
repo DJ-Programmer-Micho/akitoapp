@@ -61,13 +61,14 @@ class BannerLivewire extends Component
         $this->validate([
             'images.*.category_id' => 'required|integer',
         ]);
-
+    
+        // Delete images marked for deletion from S3
         foreach ($this->imagesToDelete as $image) {
             $this->deleteImage($image);
         }
-
+    
         $storedImages = [];
-
+    
         foreach ($this->images as $index => $imageData) {
             // Save image only if there's a base64 string
             if (isset($this->base64Images[$index]) && $this->base64Images[$index]) {
@@ -83,30 +84,36 @@ class BannerLivewire extends Component
                 ];
             }
         }
-
+    
         // Update the database
         WebSetting::updateOrCreate(['id' => 1], [
             'banner_images' => json_encode($storedImages),
         ]);
-
+    
+        // Clear the imagesToDelete array after saving
+        $this->imagesToDelete = [];
+        
         $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Settings updated successfully!')]);
     }
+    
+    private function deleteImage($imagePath)
+    {
+        if (Storage::disk('s3')->exists($imagePath)) {
+            Storage::disk('s3')->delete($imagePath);
+        }
+    }
+    
 
     private function storeBase64Image($base64data)
     {
         $imageData = explode(',', $base64data);
         $imageType = explode(';', explode(':', $imageData[0])[1])[0];
         $imageExtension = str_replace('image/', '', $imageType);
-        $filename = 'web-setting/banner_' . uniqid() . '.' . $imageExtension;
+        $filename = 'web-setting/banners/banner_' . uniqid() . '.' . $imageExtension;
 
         Storage::disk('s3')->put($filename, base64_decode($imageData[1]), 'public');
 
         return $filename;
-    }
-
-    private function deleteImage($imagePath)
-    {
-        Storage::disk('s3')->delete($imagePath);
     }
 
     public function render()
