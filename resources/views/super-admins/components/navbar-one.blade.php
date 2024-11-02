@@ -195,7 +195,7 @@
                     </div>
                 </li> <!-- end Dashboard Menu -->
                 @endif
-                @if (hasRole([1,3,8]))
+                @if (hasRole([1,2,5,6]))
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarWebSetting" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarWebSetting">
                         <i class="bx bx-wrench"></i> <span data-key="t-products">{{__('Web Setting')}}</span>
@@ -207,6 +207,16 @@
                                 <a wire:navigate href="{{ route('setting.email', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Email')}}</a>
                             </li>
                             <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.recaptcha', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Google Recaptcha')}}</a>
+                            </li>
+                            @endif
+                            @if (hasRole([1,2]))
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.info', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Information')}}</a>
+                            </li>
+                            @endif
+                            @if (hasRole([1,5,6]))
+                            <li class="nav-item">
                                 <a wire:navigate href="{{ route('setting.logo', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Logo - App Icon')}}</a>
                             </li>
                             <li class="nav-item">
@@ -216,13 +226,7 @@
                                 <a wire:navigate href="{{ route('setting.banner', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Category Banner')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a wire:navigate href="{{ route('setting.info', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Information')}}</a>
-                            </li>
-                            <li class="nav-item">
                                 <a wire:navigate href="{{ route('setting.language', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Languages')}}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a wire:navigate href="{{ route('setting.recaptcha', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Google Recaptcha')}}</a>
                             </li>
                             @endif
                         </ul>
