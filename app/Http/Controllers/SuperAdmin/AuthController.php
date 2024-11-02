@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -51,14 +52,23 @@ class AuthController extends Controller
     public function lock()
     {
         // Store user data in the session before logging out
-        $user = Auth::guard('admin')->user();
-    
-        if ($user->profile->avatar) {
-            $avatar = app('cloudfront') . $user->profile->avatar;
+        $user = auth()->user();
+
+        if ($user) {
+            $user = User::with('profile')->find($user->id);
+            // Now you can safely access $user->profile or handle if $user->profile is null
         } else {
-            $avatar = app('userImg');
+            dd('no');
+            // Handle the case where the user is not authenticated
+            return redirect()->route('login')->with('alert', [
+                'type' => 'error',
+                'message' => 'You must be logged in to access this page.',
+            ]);
         }
-    
+        $avatar = optional($user->profile)->avatar 
+        ? app('cloudfront') . $user->profile->avatar 
+        : app('userImg'); // Use default image if no avatar exists
+        
         session([
             'user_data' => [
                 'email' => $user->email,
@@ -67,7 +77,7 @@ class AuthController extends Controller
             ],
             'last_page_url' => url()->previous() // Store the last page URL
         ]);
-    
+
         // Log out the user
         Auth::guard('admin')->logout();
         session()->regenerateToken(); // Regenerate session token for security
