@@ -7,9 +7,7 @@
 @push('super_script')
 <script>
     window.addEventListener('close-modal', event => {
-        $('#addSizeModal').modal('hide');
-        $('#updateSizeModal').modal('hide');
-        $('#deleteSizeModal').modal('hide');
+        $('#deleteProductModal').modal('hide');
     })
 </script>
 @endpush

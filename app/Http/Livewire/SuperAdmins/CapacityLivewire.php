@@ -73,14 +73,18 @@ class CapacityLivewire extends Component
                 'required',
                 'string',
                 'min:1',
-                Rule::unique('capacity_translations', 'name')
+                Rule::unique('variation_capacity_translations', 'name')
                     ->where('locale', $locale)
             ];
-
+    
+            // Add a closure to ensure capacities are compared only if they exist
             $rules['capacities.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
-                foreach ($this->filteredLocales as $otherLocale) {
-                    if ($locale !== $otherLocale && $this->capacities[$locale] === $this->capacities[$otherLocale]) {
-                        $fail(__('The :attribute must be unique across different languages.'));
+                // Check that capacities exist for the locale before accessing
+                if (isset($this->capacities[$locale])) {
+                    foreach ($this->filteredLocales as $otherLocale) {
+                        if ($locale !== $otherLocale && isset($this->capacities[$otherLocale]) && $this->capacities[$locale] === $this->capacities[$otherLocale]) {
+                            $fail(__('The :attribute must be unique across different languages.'));
+                        }
                     }
                 }
             };
@@ -90,7 +94,6 @@ class CapacityLivewire extends Component
         $rules['status'] = ['required'];
         return $rules;
     }
-    
     protected function rulesForUpdate()
     {
         $rules = [];

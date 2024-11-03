@@ -564,7 +564,7 @@ class EProductLivewire extends Component
                 'brand_id' => $validatedData['selectedBrand'] ?? $product->brand_id,
                 'information_id' => $information->id ?? $product->information_id,
                 'is_spare_part' => $this->is_spare_part,
-                'priority' => $this->is_spare_part ?? $product->is_spare_part,
+                'priority' => $this->priority ?? $product->priority,
                 'status' => $this->status ?? $product->status,
             ]);
 
@@ -711,7 +711,7 @@ class EProductLivewire extends Component
 
             }
 
-            // return redirect()->route('super.product.table', ['locale' => app()->getLocale()]);
+            return redirect()->route('super.product.table', ['locale' => app()->getLocale()]);
         } catch (\Exception $e) {
             $this->dispatchBrowserEvent('alert', ['type' => 'error',  'message' => __('Something Went Wrong ' . $e)]);
             DB::rollBack();

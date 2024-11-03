@@ -226,7 +226,6 @@ class BusinessController extends Controller
             $categoryId = $banner['category_id'];
             $categoryProducts[] = $this->fetchProductsByCategory($categoryId, "", $locale);
         }
-        $sliders = $settings->hero_images[$locale] ?? [];
 
         // Fetch category data
         $categoriesData = Cache::remember("categories_data_$locale", 60, function () use ($locale) {
@@ -239,8 +238,15 @@ class BusinessController extends Controller
         });
 
         // Slider and Banner images
-        $heroImages = json_decode($settings->hero_images, true); // Decode JSON to an associative array
+        $heroImages = json_decode($settings->hero_images, true); // true for associative array
+
+        // Collect images based on locale
         $sliders = collect($heroImages[$locale] ?? []);
+    
+        // Sort by priority, ensuring that priority is treated as an integer
+        $sortedSliders = $sliders->sortBy(function ($item) {
+            return (int) $item['priority']; // Cast priority to integer
+        })->values()->all();
         // $sliders = $this->getSliderImages();
         // $imagesBanner = $this->getBannerImages();
 
@@ -260,7 +266,7 @@ class BusinessController extends Controller
             'imageBanner' => $bannerImages,
             'featured_products' => $featured,
             'on_sale_products' => $on_sale,
-            'sliders' => $sliders,
+            'sliders' => $sortedSliders,
         ]);
     }
 
@@ -307,7 +313,13 @@ class BusinessController extends Controller
             'variation.sizes',
             'variation.materials',
             'variation.capacities',
-            'variation.images',
+            'variation.images' => function ($query) {
+                // Here you can filter the images based on your requirements
+                $query->where(function ($query) {
+                    $query->where('priority', 0)
+                          ->orWhere('is_primary', 1);
+                });
+            },
             'brand.brandTranslation' => function ($query) use ($locale) {
                 $query->where('locale', $locale);
             },
@@ -587,7 +599,13 @@ class BusinessController extends Controller
                 'variation.sizes',
                 'variation.materials',
                 'variation.capacities',
-                'variation.images',
+                'variation.images' => function ($query) {
+                    // Here you can filter the images based on your requirements
+                    $query->where(function ($query) {
+                        $query->where('priority', 0)
+                              ->orWhere('is_primary', 1);
+                    });
+                },
                 'brand.brandtranslation' => function ($query) {
                     $query->where('locale', app()->getLocale());
                 },
@@ -785,7 +803,13 @@ class BusinessController extends Controller
                         'variation.sizes',
                         'variation.materials',
                         'variation.capacities',
-                        'variation.images',
+                        'variation.images' => function ($query) {
+                            // Here you can filter the images based on your requirements
+                            $query->where(function ($query) {
+                                $query->where('priority', 0)
+                                      ->orWhere('is_primary', 1);
+                            });
+                        },
                         'brand.brandtranslation' => function ($query) {
                             $query->where('locale', app()->getLocale());
                         },
@@ -966,7 +990,13 @@ class BusinessController extends Controller
                 'variation.sizes',
                 'variation.materials',
                 'variation.capacities',
-                'variation.images',
+                'variation.images' => function ($query) {
+                    // Here you can filter the images based on your requirements
+                    $query->where(function ($query) {
+                        $query->where('priority', 0)
+                              ->orWhere('is_primary', 1);
+                    });
+                },
                 'brand.brandtranslation' => function ($query) {
                     $query->where('locale', app()->getLocale());
                 },

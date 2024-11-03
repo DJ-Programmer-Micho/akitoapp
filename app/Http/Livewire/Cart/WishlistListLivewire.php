@@ -83,7 +83,13 @@ class WishlistListLivewire extends Component
         $this->wishlistItems = WishlistItem::where('customer_id', $customerId)
             ->with(['product.productTranslation' => function ($query) use ($locale) {
                 $query->where('locale', $locale);
-            }, 'product.variation', 'product.variation.images'])
+            }, 'product.variation', 'product.variation.images'=> function ($imageQuery) {
+                // Filter images to include only those with priority 0 or is_primary 1
+                $imageQuery->where(function ($imageQuery) {
+                    $imageQuery->where('priority', 0)
+                               ->orWhere('is_primary', 1);
+                });
+            }])
             ->get()
             ->transform(function ($wishlistItem) use ($customerId) {
                 $product = $wishlistItem->product;

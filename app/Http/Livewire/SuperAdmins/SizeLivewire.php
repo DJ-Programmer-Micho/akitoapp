@@ -76,11 +76,15 @@ class SizeLivewire extends Component
                 Rule::unique('variation_size_translations', 'name')
                 ->where('locale', $locale)
             ];
-
+    
+            // Add a closure to ensure sizes are compared only if they exist
             $rules['sizes.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
-                foreach ($this->filteredLocales as $otherLocale) {
-                    if ($locale !== $otherLocale && $this->sizes[$locale] === $this->sizes[$otherLocale]) {
-                        $fail(__('The :attribute must be unique across different languages.'));
+                // Check that sizes exist for the locale before accessing
+                if (isset($this->sizes[$locale])) {
+                    foreach ($this->filteredLocales as $otherLocale) {
+                        if ($locale !== $otherLocale && isset($this->sizes[$otherLocale]) && $this->sizes[$locale] === $this->sizes[$otherLocale]) {
+                            $fail(__('The :attribute must be unique across different languages.'));
+                        }
                     }
                 }
             };
@@ -90,7 +94,6 @@ class SizeLivewire extends Component
         $rules['status'] = ['required'];
         return $rules;
     }
-    
     protected function rulesForUpdate()
     {
         $rules = [];

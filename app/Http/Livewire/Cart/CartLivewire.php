@@ -87,7 +87,15 @@ class CartLivewire extends Component
                 $query->with(['productTranslation' => function ($subQuery) use ($locale) {
                     // Fetch the translation for the current locale
                     $subQuery->where('locale', $locale);
-                }, 'variation','variation.images']);
+                }, 
+                'variation', 
+                'variation.images' => function ($imageQuery) {
+                    // Filter images to include only those with priority 0 or is_primary 1
+                    $imageQuery->where(function ($imageQuery) {
+                        $imageQuery->where('priority', 0)
+                                   ->orWhere('is_primary', 1);
+                    });
+                }]);
             }])
             ->get()
             ->transform(function ($cartListItems) use ($customerId) {

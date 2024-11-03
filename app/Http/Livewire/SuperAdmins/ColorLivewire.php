@@ -75,20 +75,27 @@ class ColorLivewire extends Component
                 'string',
                 'min:1',
                 Rule::unique('variation_color_translations', 'name')
-                ->where('locale', $locale)
+                    ->where('locale', $locale)
             ];
-
+    
+            // Add a closure to ensure colors are compared only if they exist
             $rules['colors.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
-                foreach ($this->filteredLocales as $otherLocale) {
-                    if ($locale !== $otherLocale && $this->colors[$locale] === $this->colors[$otherLocale]) {
-                        $fail(__('The :attribute must be unique across different languages.'));
+                // Check that colors exist for the locale before accessing
+                if (isset($this->colors[$locale])) {
+                    foreach ($this->filteredLocales as $otherLocale) {
+                        if ($locale !== $otherLocale && isset($this->colors[$otherLocale]) && $this->colors[$locale] === $this->colors[$otherLocale]) {
+                            $fail(__('The :attribute must be unique across different languages.'));
+                        }
                     }
                 }
             };
         }
-        $rules['code'] = ['required','regex:/^#?[0-9A-Fa-f]+$/'];
+        
+        // Regex validation for code to allow hex colors
+        $rules['code'] = ['required', 'regex:/^#?[0-9A-Fa-f]+$/'];
         $rules['priority'] = ['required'];
         $rules['status'] = ['required'];
+        
         return $rules;
     }
     

@@ -149,7 +149,7 @@
                                                                     </a>
                                                                 </li>
                                                                 <li class="dropdown-divider"></li>
-                                                                <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteSizeModal" wire:click="removeSize({{ $data->id }})">
+                                                                <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteProductModal" wire:click="removeProduct({{ $data->id }})">
                                                                     <i class="fa-regular fa-trash-can me-2"></i>{{__('Delete')}}</button>
                                                                 </li>
                                                             </ul>
@@ -383,7 +383,38 @@
                 <!-- end card -->
             </div>
         </div>
+
+        <div wire:ignore.self class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel"
+            aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog text-white">
+                <div class="modal-content bg-dark">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteProductModalLabel">{{__('Delete Product')}}</h5>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" wire:click="closeModal"
+                            aria-label="Close"><i class="fas fa-times"></i></button>
+                    </div>
+                    <form wire:submit.prevent="destroyProduct">
+                        <div class="modal-body @if(app()->getLocale() != 'en') ar-shift @endif">
+                            <p>{{ __('Are you sure you want to delete this Product?') }}</p>
+                            <p>{{ __('Please enter the in below to confirm:')}}</p>
+                            <p>{{$showTextTemp}}</p>
+                            <input type="text" wire:model="productNameToDelete" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" wire:click="closeModal"
+                                data-dismiss="modal">{{__('Cancel')}}</button>
+                                <button type="submit" class="btn btn-danger" wire:disabled="!confirmDelete || productNameToDelete !== $showTextTemp">
+                                    {{ __('Yes! Delete') }}
+                                </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> 
+
     </div>
+
+
     @push('tProductScripts')
     <script>
         function updatePriorityValue(itemId) {

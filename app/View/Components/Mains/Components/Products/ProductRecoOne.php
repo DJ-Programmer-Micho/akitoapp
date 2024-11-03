@@ -42,7 +42,13 @@ class ProductRecoOne extends Component
             },
             'variation.materials',
             'variation.capacities',
-            'variation.images',
+            'variation.images' => function ($query) {
+                // Here you can filter the images based on your requirements
+                $query->where(function ($query) {
+                    $query->where('priority', 0)
+                          ->orWhere('is_primary', 1);
+                });
+            },
             'brand.brandTranslation' => function ($query) {
                 $query->where('locale', $this->locale);
             },
@@ -88,7 +94,13 @@ class ProductRecoOne extends Component
             },
             'variation.materials',
             'variation.capacities',
-            'variation.images',
+            'variation.images' => function ($query) {
+                // Here you can filter the images based on your requirements
+                $query->where(function ($query) {
+                    $query->where('priority', 0)
+                          ->orWhere('is_primary', 1);
+                });
+            },
             'brand.brandTranslation' => function ($query) {
                 $query->where('locale', $this->locale);
             },

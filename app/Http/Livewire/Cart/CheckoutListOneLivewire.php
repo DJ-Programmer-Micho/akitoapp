@@ -219,7 +219,18 @@ class CheckoutListOneLivewire extends Component
                 $query->with(['productTranslation' => function ($subQuery) use ($locale) {
                     // Fetch the translation for the current locale
                     $subQuery->where('locale', $locale);
-                }, 'variation','variation.images','categories','categories.categoryTranslation']);
+                }, 'variation', 
+        'categories.categoryTranslation' => function ($categoryQuery) use ($locale) {
+            // Optional: Filter category translations by locale if needed
+            $categoryQuery->where('locale', $locale);
+        },
+        'variation.images' => function ($imageQuery) {
+            // Filter images to include only those with priority 0 or is_primary 1
+            $imageQuery->where(function ($query) {
+                $query->where('priority', 0)
+                      ->orWhere('is_primary', 1);
+            });
+        }]);
             }])
             ->get()
             ->transform(function ($cartListItems) use ($customerId) {

@@ -8,12 +8,16 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
 use App\Models\SubCategory;
-use App\Models\VariationColor;
+use Illuminate\Support\Str;
+use App\Models\ProductImage;
 use App\Models\VariationSize;
+use App\Models\VariationColor;
+use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
-use Illuminate\Support\Str;
+use App\Models\ProductTranslation;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TProductLivewire extends Component
 {
@@ -182,7 +186,83 @@ class TProductLivewire extends Component
         $this->statusFilter = $status;
         $this->page = 1;
     }
+
+    // DELETE
+    public $product_selected_id_delete;
+    public $product_name_selected_delete;
+    public $productNameToDelete;
+    public $showTextTemp;
+    public $confirmDelete;
+    public function removeProduct(int $id)
+    {
+        $this->product_selected_id_delete = Product::find($id);
+        $this->product_name_selected_delete = ProductTranslation::where('product_id', $id)
+            ->where('locale', app()->getLocale())
+            ->first() ?? "Delete";
+
+        if ($this->product_name_selected_delete) {
+            $this->showTextTemp = $this->product_name_selected_delete->name;
+            $this->confirmDelete = true;
+        } else {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Record Not Found')]);
+        }
+    }
+
+    public function destroyProduct()
+    {
+        if ($this->confirmDelete && $this->productNameToDelete === $this->showTextTemp) {
+            try {
+                // First, delete variations and their associated images
+                $variations = ProductVariation::where('id', $this->product_selected_id_delete->variation_id)->get();
     
+                foreach ($variations as $variation) {
+                    // Retrieve associated images for each variation
+                    $images = ProductImage::where('variation_id', $variation->id)->get();
+    
+                    foreach ($images as $image) {
+                        // Delete image from S3
+                        if ($image->image_path) {
+                            Storage::disk('s3')->delete($image->image_path);
+                        }
+                        // Now delete the image record itself
+                        $image->delete();
+                    }
+    
+                    // Now delete the variation itself
+                    $variation->delete();
+                }
+    
+                // Delete the main product image
+                if ($this->product_selected_id_delete->image) {
+                    Storage::disk('s3')->delete($this->product_selected_id_delete->image);
+                }
+    
+                // Finally, delete the product itself
+                $this->product_selected_id_delete->delete();
+                $this->closeModal();
+                $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Product Deleted Successfully')]);
+    
+                // Reset the confirmation and other properties
+                $this->confirmDelete = false;
+                $this->product_selected_id_delete = null;
+                $this->product_name_selected_delete = null;
+                $this->productNameToDelete = '';
+                $this->showTextTemp = null;
+    
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Try Reload the Page: ' . $e->getMessage())]);
+                return;
+            }
+        } else {
+            $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => __('Operation Failed')]);
+        }
+    }
+    
+    public function closeModal()
+    {
+        $this->dispatchBrowserEvent('close-modal');
+    }
+ 
     public function render()
     {
         // Calculate active and non-active counts
@@ -267,6 +347,13 @@ class TProductLivewire extends Component
                 });
             })
     
+            ->with(['variation.images' => function ($query) {
+                $query->where(function ($query) {
+                    $query->where('priority', 0)
+                          ->orWhere('is_primary', 1);
+                });
+            }])
+
             // Apply sorting and pagination
             ->orderBy($this->sortBy)
             ->paginate($this->items)->withQueryString();
@@ -276,7 +363,4 @@ class TProductLivewire extends Component
             'tableData' => $productsQuery,
         ]);
     }
-    
-    
-    
 }

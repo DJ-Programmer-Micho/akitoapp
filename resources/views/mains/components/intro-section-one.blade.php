@@ -16,14 +16,13 @@
                 "autoplayHoverPause": true
             }'>
             @foreach ($sliders as $slide)
-                
-            <div class="intro-slide">
-                <figure class="slide">
-                    <picture>
-                        <img src="{{app('cloudfront') .$slide}}"  alt="Image Desc">
-                    </picture>
-                </figure><!-- End .slide-image -->
-            </div><!-- End .intro-slide -->
+                <div class="intro-slide">
+                    <figure class="slide">
+                        <picture>
+                            <img src="{{ app('cloudfront') . $slide['filename'] }}" alt="Akitu-co">
+                        </picture>
+                    </figure><!-- End .slide-image -->
+                </div><!-- End .intro-slide -->
             @endforeach
         </div>
         {{-- <span class="slider-loader"></span><!-- End .slider-loader --> --}}

@@ -564,6 +564,10 @@ class CProductLivewire extends Component
         $this->selectedCapacities = []; // Capacities Selected
         $this->selectedTags = [];
         $this->images = []; // Cropped Imgeas
+        $this->productDescriptions = [];
+        $this->productInformations = [];
+        $this->productShip = [];
+        $this->faqs = [];
         $this->sku = ""; // Cropped Imgeas
         $this->keywords = ""; // Cropped Imgeas
         $this->is_spare_part = 0;

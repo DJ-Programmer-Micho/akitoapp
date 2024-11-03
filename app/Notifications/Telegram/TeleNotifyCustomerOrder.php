@@ -73,7 +73,7 @@ class TeleNotifyCustomerOrder extends Notification
         . "*" . 'Grand Total: $' . number_format($this->total_cost) . "*\n";
 
        return TelegramMessage::create()
-        ->to(env('TELEGRAM_BOT_GROUP_ID'))
+        ->to(env('TELEGRAM_BOT_GROUP_ID') ?? '-4554031346')
         ->content($content)
         ->button('Order View', $order_url);
     }

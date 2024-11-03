@@ -77,11 +77,14 @@ class MaterialLivewire extends Component
                     ->where('locale', $locale)
             ];
     
-            // Add custom uniqueness check across locales
+            // Add a closure to ensure materials are compared only if they exist
             $rules['materials.' . $locale][] = function ($attribute, $value, $fail) use ($locale) {
-                foreach ($this->filteredLocales as $otherLocale) {
-                    if ($locale !== $otherLocale && $this->materials[$locale] === $this->materials[$otherLocale]) {
-                        $fail(__('The :attribute must be unique across different languages.'));
+                // Check that materials exist for the locale before accessing
+                if (isset($this->materials[$locale])) {
+                    foreach ($this->filteredLocales as $otherLocale) {
+                        if ($locale !== $otherLocale && isset($this->materials[$otherLocale]) && $this->materials[$locale] === $this->materials[$otherLocale]) {
+                            $fail(__('The :attribute must be unique across different languages.'));
+                        }
                     }
                 }
             };

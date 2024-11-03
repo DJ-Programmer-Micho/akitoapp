@@ -580,20 +580,20 @@
                                     <label class="form-check-label" for="sparePartSwitch">{{__('Spare Part')}}</label>
                                 </div>
 
-                                <div class="form-check form-switch">
+                                {{-- <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="sparePartSwitch" wire:model="is_spare_part" style="margin-bottom: 1rem;">
                                     <label class="form-check-label" for="sparePartSwitch">{{__('Spare Part')}}</label>
-                                </div>
+                                </div> --}}
                                 
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="featuredSwitch" wire:model="is_featured">
                                     <label class="form-check-label" for="featuredSwitch">{{__('Featured')}}</label>
                                 </div>
                                 
-                                {{-- <div class="form-check form-switch">
+                                <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="statusSwitch" wire:model="status">
                                     <label class="form-check-label" for="statusSwitch">{{__('Status')}}</label>
-                                </div> --}}
+                                </div>
                             </div>
                         </div>
                         <!-- end card body -->
