@@ -158,131 +158,100 @@
 @push('brandScripts')
 
 <script>
-       document.addEventListener('livewire:load', function () {
-    const modalUpdate = new bootstrap.Modal(document.getElementById('modalUpdate'));
-    let cropperUpdate;
-    const profilePicture = document.querySelector('.profile-picture-update');
-
-    function initializeCropper() {
-        $('#modalUpdate').on('shown.bs.modal', function () {
+    document.addEventListener('livewire:load', function () {
+        const modalUpdate = new bootstrap.Modal(document.getElementById('modalUpdate'));
+        let cropperUpdate;
+        const profilePicture = document.querySelector('.profile-picture-update');
+    
+        function initializeCropper() {
             const image = document.getElementById('sample_image_update');
-            if (cropperUpdate) {
-                cropperUpdate.destroy();
-            }
+            if (cropperUpdate) cropperUpdate.destroy(); // Clean up any existing cropper instance
             cropperUpdate = new Cropper(image, {
                 aspectRatio: 1 / 1,
                 viewMode: 1,
                 preview: '.previewUpdate'
             });
-        });
-    }
-
-    function handleFileInputChange() {
-        $('#brandImgUpdate').change(function (event) {
-            profilePicture.style.backgroundImage = `url('')`;
-            const image = document.getElementById('sample_image_update');
-            const files = event.target.files;
-            const maxSize = 2 * 1024 * 1024; // 2MB limit
-
-            if (files && files.length > 0) {
-                const file = files[0];
-
-                // Check if file size exceeds 2MB
-                if (file.size > maxSize) {
-                    alert('Image size exceeds 2MB. Please upload a smaller file.');
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    image.src = reader.result;
-                    modalUpdate.show();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    function handleCropButtonClick() {
-        $('.crop-btn').off('click').on('click', function () {
-            if (!cropperUpdate) {
-                return;
-            }
-
-            const canvasUpdate = cropperUpdate.getCroppedCanvas({
-                width: 512,
-                    height: 512,
-                    // png
-                    fillColor: 'rgba(255, 255, 255, 0)',
-            });
-
-            if (!canvasUpdate) {
-                console.error("Cropped canvas not generated.");
-                return;
-            }
-
-            canvasUpdate.toBlob(function (blob) {
-                const url = URL.createObjectURL(blob);
-
-                const reader = new FileReader();
-                reader.onloadend = function () {
-                    const base64data = reader.result;
-                    modalUpdate.hide();
-
-                    
-                    profilePicture.style.backgroundImage = `url(${base64data})`;
-
-                    // Emit Livewire event
-                    livewire.emit('imgCrop', base64data);
-
-                    // Cleanup
-                    if (cropperUpdate) {
-                        cropperUpdate.destroy();
-                        document.getElementById('brandImgUpdate').value = null;
+        }
+    
+        function handleFileInputChange() {
+            $('#brandImgUpdate').change(function (event) {
+                const image = document.getElementById('sample_image_update');
+                const files = event.target.files;
+                const maxSize = 2 * 1024 * 1024; // 2MB limit
+    
+                if (files && files.length > 0) {
+                    const file = files[0];
+                    if (file.size > maxSize) {
+                        alert('Image size exceeds 2MB. Please upload a smaller file.');
+                        return;
                     }
-                };
-                reader.readAsDataURL(blob);
-
-                // Optional: Handle file input update
-                // const fileInput = document.getElementById('croppedbrandImgUpdate');
-                // const dataTransfer = new DataTransfer();
-                // dataTransfer.items.add(new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' }));
-                // fileInput.files = dataTransfer.files;
-
-                modalUpdate.hide();
-                cleanupCropper();
-            }, 'image/png');
-        });
-    }
-
-    $('#modalUpdate').on('shown.bs.modal', function () {
-        const image = document.getElementById('sample_image_update');
-        if (image.complete) {
+    
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                        image.src = reader.result;
+                        image.onload = function () { // Ensure the image is fully loaded
+                            modalUpdate.show();
+                        };
+                    };
+                    reader.onerror = function () {
+                        console.error("Error reading file.");
+                        alert("Failed to load image. Please try another file.");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    
+        $('#modalUpdate').on('shown.bs.modal', function () {
             initializeCropper();
-        } else {
-            image.onload = initializeCropper;
+        });
+    
+        function handleCropButtonClick() {
+            $('.crop-btn').off('click').on('click', function () {
+                if (!cropperUpdate) return;
+    
+                const canvasUpdate = cropperUpdate.getCroppedCanvas({
+                    width: 512,
+                    height: 512,
+                    fillColor: 'rgba(255, 255, 255, 0)',
+                });
+    
+                if (canvasUpdate) {
+                    canvasUpdate.toBlob(function (blob) {
+                        const reader = new FileReader();
+                        reader.onloadend = function () {
+                            const base64data = reader.result;
+                            modalUpdate.hide();
+                            profilePicture.style.backgroundImage = `url(${base64data})`;
+    
+                            // Emit Livewire event
+                            Livewire.emit('imgCrop', base64data);
+    
+                            // Cleanup cropper and reset file input
+                            cleanupCropper();
+                        };
+                        reader.readAsDataURL(blob);
+                    }, 'image/png');
+                } else {
+                    console.error("Cropped canvas not generated.");
+                }
+            });
         }
-    });
-
-    // Initialize everything
-    // initializeCropper();
-    handleFileInputChange();
-    handleCropButtonClick();
-
-    function cleanupCropper() {
-        if (cropperUpdate) {
-            cropperUpdate.destroy();
-            document.getElementById('brandImg').value = null;
+    
+        function cleanupCropper() {
+            if (cropperUpdate) cropperUpdate.destroy();
+            document.getElementById('brandImgUpdate').value = null;
         }
-    }
-
-    Livewire.on('resetEditData', () => {
-        // Call your JavaScript function here
-        const profilePicture = document.querySelector('.profile-picture-update');
-        profilePicture.style.backgroundImage = ``;
+    
+        // Initialize event listeners
+        handleFileInputChange();
+        handleCropButtonClick();
+    
+        Livewire.on('resetEditData', () => {
+            profilePicture.style.backgroundImage = '';
+            cleanupCropper();
+        });
     });
-});
-
     </script>
-
+    
 @endpush
