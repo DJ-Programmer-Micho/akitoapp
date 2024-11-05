@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class OrdersListLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     public $perPage = 10;
     protected $orderTable = [];
 

@@ -156,7 +156,7 @@
                         </div>
                         <div class="d-flex justify-content-end">
                             <div class="pagination-wrap hstack gap-2">
-                                {{ $orderTable->links('pagination::bootstrap-4') }}
+                                {{ $orderTable->links() }}
                                 {{-- <a class="page-item pagination-prev disabled" href="#">
                                     Previous
                                 </a>

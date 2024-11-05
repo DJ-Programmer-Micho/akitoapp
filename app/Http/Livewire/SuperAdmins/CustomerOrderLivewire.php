@@ -5,9 +5,13 @@ namespace App\Http\Livewire\SuperAdmins;
 use App\Models\Order;
 use Livewire\Component;
 use App\Models\Customer;
+use Livewire\WithPagination;
 
 class CustomerOrderLivewire extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+    
     public $oPending = 0;
     public $oShipping = 0;
     public $oDelivered = 0;

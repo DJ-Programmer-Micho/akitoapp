@@ -12,6 +12,7 @@ use App\Models\TickerTranslation;
 class TickerLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     protected $queryString = ['statusFilter', 'page'];
     // INT
     public $filteredLocales;

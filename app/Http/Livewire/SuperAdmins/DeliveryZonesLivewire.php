@@ -10,6 +10,7 @@ use Livewire\WithPagination;
 class DeliveryZonesLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     public $name;
     public $coordinates;
     public $delivery_team;

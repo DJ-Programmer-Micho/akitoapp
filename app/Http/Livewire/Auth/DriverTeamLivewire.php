@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 class DriverTeamLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     protected $queryString = ['page'];
     protected $glang;
     // INT

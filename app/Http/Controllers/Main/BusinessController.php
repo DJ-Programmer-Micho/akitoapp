@@ -578,16 +578,11 @@ class BusinessController extends Controller
         $colorIds = $request->query('colors', []);
         $capacityIds = $request->query('capacities', []);
         $materialIds = $request->query('materials', []);
-        $minPrice = $request->query('min_price', 0);
-        $maxPrice = $request->query('max_price', 1000);
+        $minPrice = floatval($request->query('min_price', 0));
+        $maxPrice = floatval($request->query('max_price', 1000));
         $sortBy = $request->query('sortby', 'priority');
         $grid = $request->query('grid', 4);
-        $currentPage = $request->query('page', 1);
-        
-        // Convert price filter values to numeric
-        $minPrice = floatval(str_replace('$', '', $minPrice));
-        $maxPrice = floatval(str_replace('$', '', $maxPrice));
-        
+    
         // Base query to get products
         $productQuery = Product::select('products.*', 'product_variations.price as variation_price')
             ->join('product_variations', 'products.variation_id', '=', 'product_variations.id')
@@ -600,10 +595,8 @@ class BusinessController extends Controller
                 'variation.materials',
                 'variation.capacities',
                 'variation.images' => function ($query) {
-                    // Here you can filter the images based on your requirements
                     $query->where(function ($query) {
-                        $query->where('priority', 0)
-                              ->orWhere('is_primary', 1);
+                        $query->where('priority', 0)->orWhere('is_primary', 1);
                     });
                 },
                 'brand.brandtranslation' => function ($query) {
@@ -621,45 +614,17 @@ class BusinessController extends Controller
             ])
             ->where('products.status', 1)
             ->where('products.is_spare_part', 0);
-        
+    
         // Apply filters to the query
-        $productQuery->when($brandIds, function ($query, $brandIds) {
-            return $query->whereIn('products.brand_id', $brandIds);
-        })
-        ->when($categoryIds, function ($query, $categoryIds) {
-            return $query->whereHas('categories', function ($q) use ($categoryIds) {
-                $q->whereIn('category_id', $categoryIds);
-            });
-        })
-        ->when($subCategoryIds, function ($query, $subCategoryIds) {
-            return $query->whereHas('subCategories', function ($q) use ($subCategoryIds) {
-                $q->whereIn('sub_category_id', $subCategoryIds);
-            });
-        })
-        ->when($sizeIds, function ($query, $sizeIds) {
-            return $query->whereHas('variation.sizes', function ($q) use ($sizeIds) {
-                $q->whereIn('variation_size_id', $sizeIds);
-            });
-        })
-        ->when($colorIds, function ($query, $colorIds) {
-            return $query->whereHas('variation.colors', function ($q) use ($colorIds) {
-                $q->whereIn('variation_color_id', $colorIds);
-            });
-        })
-        ->when($capacityIds, function ($query, $capacityIds) {
-            return $query->whereHas('variation.capacities', function ($q) use ($capacityIds) {
-                $q->whereIn('variation_capacity_id', $capacityIds);
-            });
-        })
-        ->when($materialIds, function ($query, $materialIds) {
-            return $query->whereHas('variation.materials', function ($q) use ($materialIds) {
-                $q->whereIn('variation_material_id', $materialIds);
-            });
-        })
-        ->when([$minPrice, $maxPrice], function ($query) use ($minPrice, $maxPrice) {
-            return $query->whereBetween('product_variations.price', [$minPrice, $maxPrice]);
-        });
-        
+        $productQuery->when($brandIds, fn($query, $brandIds) => $query->whereIn('products.brand_id', $brandIds))
+            ->when($categoryIds, fn($query, $categoryIds) => $query->whereHas('categories', fn($q) => $q->whereIn('category_id', $categoryIds)))
+            ->when($subCategoryIds, fn($query, $subCategoryIds) => $query->whereHas('subCategories', fn($q) => $q->whereIn('sub_category_id', $subCategoryIds)))
+            ->when($sizeIds, fn($query, $sizeIds) => $query->whereHas('variation.sizes', fn($q) => $q->whereIn('variation_size_id', $sizeIds)))
+            ->when($colorIds, fn($query, $colorIds) => $query->whereHas('variation.colors', fn($q) => $q->whereIn('variation_color_id', $colorIds)))
+            ->when($capacityIds, fn($query, $capacityIds) => $query->whereHas('variation.capacities', fn($q) => $q->whereIn('variation_capacity_id', $capacityIds)))
+            ->when($materialIds, fn($query, $materialIds) => $query->whereHas('variation.materials', fn($q) => $q->whereIn('variation_material_id', $materialIds)))
+            ->when([$minPrice, $maxPrice], fn($query) => $query->whereBetween('product_variations.price', [$minPrice, $maxPrice]));
+    
         // Apply sorting
         $productQuery->when($sortBy, function ($query, $sortBy) {
             switch ($sortBy) {
@@ -672,13 +637,13 @@ class BusinessController extends Controller
                 case 'created_at_asc':
                     return $query->orderBy('products.created_at', 'asc');
                 default:
-                    return $query->orderBy('products.priority', 'asc'); // Default sorting by priority
+                    return $query->orderBy('products.priority', 'asc');
             }
         });
-        
+    
         // Get the filtered products with pagination
-        $products = $productQuery->paginate(12);
-        
+        $products = $productQuery->paginate(1);
+    
         // Loop through each product and calculate the final price with discounts
         $products->getCollection()->transform(function ($product) use ($request) {
             $discountDetails = $this->calculateFinalPrice($product, $request->user('customer')->id ?? null);
@@ -689,74 +654,47 @@ class BusinessController extends Controller
             return $product;
         });
 
-        // Get the available filters
-        $brandIdsFromProducts = $products->pluck('brand_id')->unique();
-        $categoryIdsFromProducts = $products->flatMap(function ($product) {
-            return $product->categories->pluck('id');
-        })->unique();
-        $subCategoryIdsFromProducts = $products->flatMap(function ($product) {
-            return $product->subCategories->pluck('id');
-        })->unique();
-        $sizeIdsFromProducts = $products->flatMap(function ($product) {
-            return $product->variation->sizes->pluck('id');
-        })->unique();
-        $colorIdsFromProducts = $products->flatMap(function ($product) {
-            return $product->variation->colors->pluck('id');
-        })->unique();
-        $capacityIdsFromProducts = $products->flatMap(function ($product) {
-            return $product->variation->capacities->pluck('id');
-        })->unique();
-        $materialIdsFromProducts = $products->flatMap(function ($product) {
-            return $product->variation->materials->pluck('id');
-        })->unique();
-        
+        // Query for Brands
         $brands = Brand::where('status', 1)
-            ->whereIn('id', $brandIdsFromProducts)
-            ->with(['brandtranslation' => function ($query) {
-                $query->where('locale', app()->getLocale());
-            }])
+            ->whereHas('product', fn($q) => $q->where('is_spare_part', 0))
+            ->with('brandtranslation')
             ->get();
         
+        // Query for Categories
         $categories = Category::where('status', 1)
-            ->whereIn('id', $categoryIdsFromProducts)
-            ->with(['categoryTranslation' => function ($query) {
-                $query->where('locale', app()->getLocale());
-            }])
+            ->whereHas('product', fn($q) => $q->where('is_spare_part', 0))
+            ->with('categoryTranslation')
             ->get();
         
+        // Query for SubCategories
         $subCategories = SubCategory::where('status', 1)
-            ->whereIn('id', $subCategoryIdsFromProducts)
-            ->with(['subCategoryTranslation' => function ($query) {
-                $query->where('locale', app()->getLocale());
-            }])
+            ->whereHas('product', fn($q) => $q->where('is_spare_part', 0))
+            ->with('subCategoryTranslation')
             ->get();
         
+        // Query for Colors with Variations relationship
         $colors = VariationColor::where('status', 1)
-            ->whereIn('id', $colorIdsFromProducts)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 0))
+            ->get();
+        
+        // Query for Sizes
+        $sizes = VariationSize::where('status', 1)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 0))
+            ->with('variationSizeTranslation')
+            ->get();
+        
+        // Query for Capacities
+        $capacities = VariationCapacity::where('status', 1)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 0))
+            ->with('variationCapacityTranslation')
+            ->get();
+        
+        // Query for Materials
+        $materials = VariationMaterial::where('status', 1)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 0))
+            ->with('variationMaterialTranslation')
             ->get();
 
-            $sizes = VariationSize::where('status', 1)
-            ->whereIn('id', $sizeIdsFromProducts)
-            ->with(['variationSizeTranslation' => function ($query) {
-                $query->where('locale', app()->getLocale());
-            }])
-            ->get();
-        
-        $capacities = VariationCapacity::where('status', 1)
-            ->whereIn('id', $capacityIdsFromProducts)
-            ->with(['variationCapacityTranslation' => function ($query) {
-                $query->where('locale', app()->getLocale());
-            }])
-            ->get();
-        
-        $materials = VariationMaterial::where('status', 1)
-            ->whereIn('id', $materialIdsFromProducts)
-            ->with(['variationMaterialTranslation' => function ($query) {
-                $query->where('locale', app()->getLocale());
-            }])
-            ->get();
-        
-        
         return view('mains.pages.product-shop-one', [
             'products' => $products,
             'brands' => $brands,
@@ -772,194 +710,136 @@ class BusinessController extends Controller
         ]);
     }
     
+    
     public function productShopSpare(Request $request)
     {
-                // Get all active filters from the request
-                $brandIds = $request->query('brands', []);
-                $categoryIds = $request->query('categories', []);
-                $subCategoryIds = $request->query('subcategories', []);
-                $sizeIds = $request->query('sizes', []);
-                $colorIds = $request->query('colors', []);
-                $capacityIds = $request->query('capacities', []);
-                $materialIds = $request->query('materials', []);
-                $minPrice = $request->query('min_price', 0);
-                $maxPrice = $request->query('max_price', 1000);
-                $sortBy = $request->query('sortby', 'priority');
-                $grid = $request->query('grid', 4);
-                $currentPage = $request->query('page', 1);
-                
-                // Convert price filter values to numeric
-                $minPrice = floatval(str_replace('$', '', $minPrice));
-                $maxPrice = floatval(str_replace('$', '', $maxPrice));
-                
-                // Base query to get products
-                $productQuery = Product::select('products.*', 'product_variations.price as variation_price')
-                    ->join('product_variations', 'products.variation_id', '=', 'product_variations.id')
-                    ->with([
-                        'productTranslation' => function ($query) {
-                            $query->where('locale', app()->getLocale());
-                        },
-                        'variation.colors',
-                        'variation.sizes',
-                        'variation.materials',
-                        'variation.capacities',
-                        'variation.images' => function ($query) {
-                            // Here you can filter the images based on your requirements
-                            $query->where(function ($query) {
-                                $query->where('priority', 0)
-                                      ->orWhere('is_primary', 1);
-                            });
-                        },
-                        'brand.brandtranslation' => function ($query) {
-                            $query->where('locale', app()->getLocale());
-                        },
-                        'categories.categoryTranslation' => function ($query) {
-                            $query->where('locale', app()->getLocale());
-                        },
-                        'tags.tagTranslation' => function ($query) {
-                            $query->where('locale', app()->getLocale());
-                        },
-                        'subCategories.subCategoryTranslation' => function ($query) {
-                            $query->where('locale', app()->getLocale());
-                        },
-                    ])
-                    ->where('products.status', 1)
-                    ->where('products.is_spare_part', 1);
-                
-                // Apply filters to the query
-                $productQuery->when($brandIds, function ($query, $brandIds) {
-                    return $query->whereIn('products.brand_id', $brandIds);
-                })
-                ->when($categoryIds, function ($query, $categoryIds) {
-                    return $query->whereHas('categories', function ($q) use ($categoryIds) {
-                        $q->whereIn('category_id', $categoryIds);
+                       // Get all active filters from the request
+        $brandIds = $request->query('brands', []);
+        $categoryIds = $request->query('categories', []);
+        $subCategoryIds = $request->query('subcategories', []);
+        $sizeIds = $request->query('sizes', []);
+        $colorIds = $request->query('colors', []);
+        $capacityIds = $request->query('capacities', []);
+        $materialIds = $request->query('materials', []);
+        $minPrice = floatval($request->query('min_price', 0));
+        $maxPrice = floatval($request->query('max_price', 1000));
+        $sortBy = $request->query('sortby', 'priority');
+        $grid = $request->query('grid', 4);
+    
+        // Base query to get products
+        $productQuery = Product::select('products.*', 'product_variations.price as variation_price')
+            ->join('product_variations', 'products.variation_id', '=', 'product_variations.id')
+            ->with([
+                'productTranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+                'variation.colors',
+                'variation.sizes',
+                'variation.materials',
+                'variation.capacities',
+                'variation.images' => function ($query) {
+                    $query->where(function ($query) {
+                        $query->where('priority', 0)->orWhere('is_primary', 1);
                     });
-                })
-                ->when($subCategoryIds, function ($query, $subCategoryIds) {
-                    return $query->whereHas('subCategories', function ($q) use ($subCategoryIds) {
-                        $q->whereIn('sub_category_id', $subCategoryIds);
-                    });
-                })
-                ->when($sizeIds, function ($query, $sizeIds) {
-                    return $query->whereHas('variation.sizes', function ($q) use ($sizeIds) {
-                        $q->whereIn('variation_size_id', $sizeIds);
-                    });
-                })
-                ->when($colorIds, function ($query, $colorIds) {
-                    return $query->whereHas('variation.colors', function ($q) use ($colorIds) {
-                        $q->whereIn('variation_color_id', $colorIds);
-                    });
-                })
-                ->when($capacityIds, function ($query, $capacityIds) {
-                    return $query->whereHas('variation.capacities', function ($q) use ($capacityIds) {
-                        $q->whereIn('variation_capacity_id', $capacityIds);
-                    });
-                })
-                ->when($materialIds, function ($query, $materialIds) {
-                    return $query->whereHas('variation.materials', function ($q) use ($materialIds) {
-                        $q->whereIn('variation_material_id', $materialIds);
-                    });
-                })
-                ->when([$minPrice, $maxPrice], function ($query) use ($minPrice, $maxPrice) {
-                    return $query->whereBetween('product_variations.price', [$minPrice, $maxPrice]);
-                });
-                
-                // Apply sorting
-                $productQuery->when($sortBy, function ($query, $sortBy) {
-                    switch ($sortBy) {
-                        case 'price_asc':
-                            return $query->orderBy('variation_price', 'asc');
-                        case 'price_desc':
-                            return $query->orderBy('variation_price', 'desc');
-                        case 'created_at_desc':
-                            return $query->orderBy('products.created_at', 'desc');
-                        case 'created_at_asc':
-                            return $query->orderBy('products.created_at', 'asc');
-                        default:
-                            return $query->orderBy('products.priority', 'asc'); // Default sorting by priority
-                    }
-                });
-                
-                // Get the filtered products with pagination
-                $products = $productQuery->paginate(12);
-                
-                $products->getCollection()->transform(function ($product) use ($request) {
-                    $discountDetails = $this->calculateFinalPrice($product, $request->user('customer')->id ?? null);
-                    $product->base_price = $discountDetails['base_price'];
-                    $product->discount_price = $discountDetails['discount_price'];
-                    $product->customer_discount_price = $discountDetails['customer_discount_price'];
-                    $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
-                    return $product;
-                });
+                },
+                'brand.brandtranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+                'categories.categoryTranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+                'tags.tagTranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+                'subCategories.subCategoryTranslation' => function ($query) {
+                    $query->where('locale', app()->getLocale());
+                },
+            ])
+            ->where('products.status', 1)
+            ->where('products.is_spare_part', 1);
+    
+        // Apply filters to the query
+        $productQuery->when($brandIds, fn($query, $brandIds) => $query->whereIn('products.brand_id', $brandIds))
+            ->when($categoryIds, fn($query, $categoryIds) => $query->whereHas('categories', fn($q) => $q->whereIn('category_id', $categoryIds)))
+            ->when($subCategoryIds, fn($query, $subCategoryIds) => $query->whereHas('subCategories', fn($q) => $q->whereIn('sub_category_id', $subCategoryIds)))
+            ->when($sizeIds, fn($query, $sizeIds) => $query->whereHas('variation.sizes', fn($q) => $q->whereIn('variation_size_id', $sizeIds)))
+            ->when($colorIds, fn($query, $colorIds) => $query->whereHas('variation.colors', fn($q) => $q->whereIn('variation_color_id', $colorIds)))
+            ->when($capacityIds, fn($query, $capacityIds) => $query->whereHas('variation.capacities', fn($q) => $q->whereIn('variation_capacity_id', $capacityIds)))
+            ->when($materialIds, fn($query, $materialIds) => $query->whereHas('variation.materials', fn($q) => $q->whereIn('variation_material_id', $materialIds)))
+            ->when([$minPrice, $maxPrice], fn($query) => $query->whereBetween('product_variations.price', [$minPrice, $maxPrice]));
+    
+        // Apply sorting
+        $productQuery->when($sortBy, function ($query, $sortBy) {
+            switch ($sortBy) {
+                case 'price_asc':
+                    return $query->orderBy('variation_price', 'asc');
+                case 'price_desc':
+                    return $query->orderBy('variation_price', 'desc');
+                case 'created_at_desc':
+                    return $query->orderBy('products.created_at', 'desc');
+                case 'created_at_asc':
+                    return $query->orderBy('products.created_at', 'asc');
+                default:
+                    return $query->orderBy('products.priority', 'asc');
+            }
+        });
+    
+        // Get the filtered products with pagination
+        $products = $productQuery->paginate(12);
+    
+        // Loop through each product and calculate the final price with discounts
+        $products->getCollection()->transform(function ($product) use ($request) {
+            $discountDetails = $this->calculateFinalPrice($product, $request->user('customer')->id ?? null);
+            $product->base_price = $discountDetails['base_price'];
+            $product->discount_price = $discountDetails['discount_price'];
+            $product->customer_discount_price = $discountDetails['customer_discount_price'];
+            $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
+            return $product;
+        });
 
-                // Get the available filters
-                $brandIdsFromProducts = $products->pluck('brand_id')->unique();
-                $categoryIdsFromProducts = $products->flatMap(function ($product) {
-                    return $product->categories->pluck('id');
-                })->unique();
-                $subCategoryIdsFromProducts = $products->flatMap(function ($product) {
-                    return $product->subCategories->pluck('id');
-                })->unique();
-                $sizeIdsFromProducts = $products->flatMap(function ($product) {
-                    return $product->variation->sizes->pluck('id');
-                })->unique();
-                $colorIdsFromProducts = $products->flatMap(function ($product) {
-                    return $product->variation->colors->pluck('id');
-                })->unique();
-                $capacityIdsFromProducts = $products->flatMap(function ($product) {
-                    return $product->variation->capacities->pluck('id');
-                })->unique();
-                $materialIdsFromProducts = $products->flatMap(function ($product) {
-                    return $product->variation->materials->pluck('id');
-                })->unique();
-                
-                $brands = Brand::where('status', 1)
-                    ->whereIn('id', $brandIdsFromProducts)
-                    ->with(['brandtranslation' => function ($query) {
-                        $query->where('locale', app()->getLocale());
-                    }])
-                    ->get();
-                
-                $categories = Category::where('status', 1)
-                    ->whereIn('id', $categoryIdsFromProducts)
-                    ->with(['categoryTranslation' => function ($query) {
-                        $query->where('locale', app()->getLocale());
-                    }])
-                    ->get();
-                
-                $subCategories = SubCategory::where('status', 1)
-                    ->whereIn('id', $subCategoryIdsFromProducts)
-                    ->with(['subCategoryTranslation' => function ($query) {
-                        $query->where('locale', app()->getLocale());
-                    }])
-                    ->get();
-                
-                $colors = VariationColor::where('status', 1)
-                    ->whereIn('id', $colorIdsFromProducts)
-                    ->get();
+
+        // Query for Brands
+        $brands = Brand::where('status', 1)
+            ->whereHas('product', fn($q) => $q->where('is_spare_part', 1))
+            ->with('brandtranslation')
+            ->get();
         
-                    $sizes = VariationSize::where('status', 1)
-                    ->whereIn('id', $sizeIdsFromProducts)
-                    ->with(['variationSizeTranslation' => function ($query) {
-                        $query->where('locale', app()->getLocale());
-                    }])
-                    ->get();
-                
-                $capacities = VariationCapacity::where('status', 1)
-                    ->whereIn('id', $capacityIdsFromProducts)
-                    ->with(['variationCapacityTranslation' => function ($query) {
-                        $query->where('locale', app()->getLocale());
-                    }])
-                    ->get();
-                
-                $materials = VariationMaterial::where('status', 1)
-                    ->whereIn('id', $materialIdsFromProducts)
-                    ->with(['variationMaterialTranslation' => function ($query) {
-                        $query->where('locale', app()->getLocale());
-                    }])
-                    ->get();
+        // Query for Categories
+        $categories = Category::where('status', 1)
+            ->whereHas('product', fn($q) => $q->where('is_spare_part', 1))
+            ->with('categoryTranslation')
+            ->get();
         
-        return view('mains.pages.product-shop-spare-one', [
+        // Query for SubCategories
+        $subCategories = SubCategory::where('status', 1)
+            ->whereHas('product', fn($q) => $q->where('is_spare_part', 1))
+            ->with('subCategoryTranslation')
+            ->get();
+        
+        // Query for Colors with Variations relationship
+        $colors = VariationColor::where('status', 1)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 1))
+            ->get();
+        
+        // Query for Sizes
+        $sizes = VariationSize::where('status', 1)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 1))
+            ->with('variationSizeTranslation')
+            ->get();
+        
+        // Query for Capacities
+        $capacities = VariationCapacity::where('status', 1)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 1))
+            ->with('variationCapacityTranslation')
+            ->get();
+        
+        // Query for Materials
+        $materials = VariationMaterial::where('status', 1)
+            ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 1))
+            ->with('variationMaterialTranslation')
+            ->get();
+
+        return view('mains.pages.product-shop-one', [
             'products' => $products,
             'brands' => $brands,
             'categories' => $categories,

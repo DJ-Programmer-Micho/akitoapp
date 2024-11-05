@@ -4,12 +4,16 @@ namespace App\Http\Livewire\SuperAdmins;
 
 use App\Models\Product;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 
 class RecommendProductLivewire extends Component
 {
-    use WithFileUploads;
 
+    use WithFileUploads;
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+    
     public $activeCount;
     public $nonActiveCount;
     public $glang;

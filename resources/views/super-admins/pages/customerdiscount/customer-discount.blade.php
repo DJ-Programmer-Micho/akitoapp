@@ -199,7 +199,7 @@
                                 </table>
                             </div>
                             <div class="d-flex justify-content-end">
-                                {{ $discountRules->links('pagination::bootstrap-4') }}
+                                {{ $discountRules->links() }}
                             </div>
                         </div>
                     </div>

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 class combineDriverTeamAddLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     protected $queryString = ['page'];
     protected $glang;
     // INT

@@ -577,7 +577,7 @@ class CProductLivewire extends Component
         $this->is_featured = 0;
         $this->status = 1;
         $this->originalPrice = '';
-        $this->discountPrice = "";
+        $this->discountPrice = null;
         $this->discountPercentage = "";
         foreach ($this->filteredLocales as $locale) {
             $this->products[$locale] = ''; // or any default value

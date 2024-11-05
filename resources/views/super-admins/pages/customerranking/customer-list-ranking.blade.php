@@ -170,7 +170,7 @@
                                 </table>
                             </div>
                             <div class="d-flex justify-content-end">
-                                {{ $tableData->links('pagination::bootstrap-4') }}
+                                {{ $tableData->links() }}
                             </div>
                         </div>
                     </div>

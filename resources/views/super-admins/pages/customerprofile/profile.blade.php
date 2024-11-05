@@ -333,7 +333,7 @@
                                                 @endforeach
                                             </div>
                                             <div>
-                                                {{ $orderTable->links('pagination::bootstrap-4') }}
+                                                {{ $orderTable->links() }}
                                             </div>
                                             <!--end tab-pane-->
                                         </div>

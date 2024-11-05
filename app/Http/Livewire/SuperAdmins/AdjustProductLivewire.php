@@ -8,15 +8,19 @@ use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
 use App\Models\SubCategory;
-use App\Models\VariationColor;
+use Illuminate\Support\Str;
+use Livewire\WithPagination;
 use App\Models\VariationSize;
+use App\Models\VariationColor;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
 class AdjustProductLivewire extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+
     public $brandIds = [];
     public $categoryIds = [];
     public $subCategoryIds = [];
@@ -27,7 +31,7 @@ class AdjustProductLivewire extends Component
     public $minPrice = 0;
     public $maxPrice = 1000;
     public $sortBy = 'priority';
-    public $items = 10;
+    public $items = 1;
     public $activeCount;
     public $nonActiveCount;
 

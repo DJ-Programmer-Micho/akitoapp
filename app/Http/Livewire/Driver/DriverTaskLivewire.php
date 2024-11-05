@@ -4,9 +4,13 @@ namespace App\Http\Livewire\Driver;
 
 use App\Models\Order;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class DriverTaskLivewire extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+    
     public $oPending = 0;
     public $oShipping = 0;
     public $oDelivered = 0;

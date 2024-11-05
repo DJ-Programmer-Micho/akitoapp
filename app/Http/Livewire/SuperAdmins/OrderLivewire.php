@@ -5,11 +5,14 @@ namespace App\Http\Livewire\SuperAdmins;
 use App\Models\User;
 use App\Models\Order;
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Events\EventOrderStatusUpdated;
 use App\Notifications\NotifyOrderStatusChanged;
 
 class OrderLivewire extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     public $oPending = 0;
     public $oShipping = 0;
     public $oDelivered = 0;

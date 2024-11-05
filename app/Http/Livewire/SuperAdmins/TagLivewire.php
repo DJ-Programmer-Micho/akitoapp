@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class TagLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     protected $queryString = ['statusFilter', 'page'];
     // INT
     public $filteredLocales;

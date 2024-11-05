@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Storage;
 class BrandLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+    
     protected $queryString = ['statusFilter', 'page'];
     // INT
     public $filteredLocales;

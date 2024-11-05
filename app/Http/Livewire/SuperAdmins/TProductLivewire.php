@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Support\Str;
 use App\Models\ProductImage;
+use Livewire\WithPagination;
 use App\Models\VariationSize;
 use App\Models\VariationColor;
 use App\Models\ProductVariation;
@@ -21,6 +22,9 @@ use Illuminate\Support\Facades\Storage;
 
 class TProductLivewire extends Component
 {
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+    
     public $brandIds = [];
     public $categoryIds = [];
     public $subCategoryIds = [];

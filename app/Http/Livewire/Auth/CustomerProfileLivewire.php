@@ -18,6 +18,7 @@ use Kreait\Firebase\Contract\Auth as FirebaseAuth;
 class CustomerProfileLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     protected $fAuth;
     public $c_id;
     // INT

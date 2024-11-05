@@ -11,6 +11,7 @@ use App\Models\VariationMaterialTranslation;
 class MaterialLivewire extends Component
 {
     use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     protected $queryString = ['statusFilter', 'page'];
     // INT
     public $filteredLocales;

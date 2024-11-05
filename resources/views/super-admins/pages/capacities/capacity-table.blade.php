@@ -153,7 +153,7 @@
                                 </table>
                             </div>
                             <div class="mt-4">
-                                {{ $tableData->links('pagination::bootstrap-4') }}
+                                {{ $tableData->links() }}
                             </div>
                             @else
                             <div class="tab-pane">

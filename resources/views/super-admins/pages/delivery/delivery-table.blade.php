@@ -225,7 +225,7 @@
                     </table>
                 </div>
                 <div class="mt-4">
-                    {{-- {{ $zones->links('pagination::bootstrap-4') }} --}}
+                    {{ $zones->links() }}
                 </div>
                 @else
                 <div class="tab-pane">
