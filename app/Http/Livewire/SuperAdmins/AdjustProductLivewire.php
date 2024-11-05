@@ -31,7 +31,7 @@ class AdjustProductLivewire extends Component
     public $minPrice = 0;
     public $maxPrice = 1000;
     public $sortBy = 'priority';
-    public $items = 1;
+    public $items = 15;
     public $activeCount;
     public $nonActiveCount;
 

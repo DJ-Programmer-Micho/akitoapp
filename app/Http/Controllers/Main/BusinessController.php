@@ -642,7 +642,7 @@ class BusinessController extends Controller
         });
     
         // Get the filtered products with pagination
-        $products = $productQuery->paginate(1);
+        $products = $productQuery->paginate(12);
     
         // Loop through each product and calculate the final price with discounts
         $products->getCollection()->transform(function ($product) use ($request) {
