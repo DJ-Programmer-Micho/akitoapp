@@ -98,7 +98,7 @@
                                 </thead>
                                 <tbody class="list form-check-all">
                                     @forelse ($orderTable as $order)
-                                    <tr>
+                                    <tr wire:key="order-{{ $order->id }}">
                                         {{-- <th scope="row">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="checkAll" value="option1">

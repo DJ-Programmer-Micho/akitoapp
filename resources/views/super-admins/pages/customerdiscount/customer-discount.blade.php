@@ -90,7 +90,7 @@
                                     </thead>
                                     <tbody class="list form-check-all">
                                         @forelse($discountRules as $data)
-                                        <tr>
+                                        <tr wire:key="custdist-{{ $data->id }}">
                                             <td class="customer_name @empty($data->customer->customer_profile->first_name) text-danger @endif align-middle">
                                                 <div class="d-flex align-items-center justify-content-between">
                                                     <div class="d-flex align-items-center">

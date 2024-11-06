@@ -93,7 +93,7 @@
                                     </thead>
                                     <tbody>
                                         @forelse($tableData as $data)
-                                            <tr>
+                                            <tr wire:key="tags-{{ $data->id }}">
                                                 <td class="@empty($data->tagtranslation->first()->name)  text-danger @endif align-middle">{{ $data->tagtranslation->first()->name ?? 'unKnown' }}</td>
                                                 <td class="align-middle text-center">
                                                     <span class="badge {{ $data->status ? 'bg-success' : 'bg-danger' }} p-2" style="font-size: 0.7rem;">

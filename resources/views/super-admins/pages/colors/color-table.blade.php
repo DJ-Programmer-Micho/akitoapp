@@ -94,7 +94,7 @@
                                     </thead>
                                     <tbody>
                                         @forelse($tableData as $data)
-                                            <tr>
+                                            <tr wire:key="color-{{ $data->id }}">
                                                 <td class="@empty($data->variationColorTranslation->name)  text-danger @endif align-middle">{{ $data->variationColorTranslation->name ?? 'unKnown' }}</td>
                                                 <td class="align-middle text-center d-flex justify-content-center align-items-center">
                                                     <div style="background-color: {{$data->code}}; width: 25px; height: 25px;" class="rounded-circle border border-white m-2"></div>

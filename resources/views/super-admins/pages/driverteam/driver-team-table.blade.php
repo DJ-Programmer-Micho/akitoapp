@@ -84,7 +84,7 @@
                                     </thead>
                                     <tbody>                          
                                         @forelse($tableData as $data)
-                                            <tr>
+                                            <tr wire:key="driver-{{ $data->id }}">
                                                 <td class="align-middle text-center">
                                                         {{ $data->team_name }}
                                                 </td>

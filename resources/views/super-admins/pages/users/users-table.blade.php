@@ -99,7 +99,7 @@
                                     </thead>
                                     <tbody>                          
                                         @forelse($tableData as $data)
-                                            <tr>
+                                            <tr wire:key="data-{{ $data->id }}">
                                                 <td class="@empty($data->profile->first_name) text-danger @endif align-middle">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-shrink-0 me-2">

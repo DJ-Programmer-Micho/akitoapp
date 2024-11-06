@@ -74,7 +74,7 @@
                                     </thead>
                                     <tbody>
                                         @forelse($tableData as $data)
-                                            <tr>
+                                            <tr wire:key="reco-{{ $data->id }}">
                                                 <td class="@empty($data->productTranslation->first()->name) text-danger @endif align-middle">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-shrink-0 me-2">

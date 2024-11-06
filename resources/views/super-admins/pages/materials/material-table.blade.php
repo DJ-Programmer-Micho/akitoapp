@@ -94,7 +94,7 @@
                                     </thead>
                                     <tbody>
                                         @forelse($tableData as $data)
-                                            <tr>
+                                            <tr wire:key="material-{{ $data->id }}">
                                                 <td class="@empty($data->variationMaterialTranslation->name)  text-danger @endif align-middle">{{ $data->variationMaterialTranslation->name ?? 'unKnown' }}</td>
                                                 <td class="align-middle"><b>{{ $data->code }}</b></td>
                                                 <td class="align-middle text-center">

@@ -86,7 +86,7 @@
                                     </thead>
                                     <tbody>
                                         @forelse($tableData as $data)
-                                            <tr>
+                                            <tr wire:key="product-{{ $data->id }}">
                                                 <td class="@empty($data->productTranslation->first()->name) text-danger @endif align-middle">
                                                     <div class="d-flex align-items-center">
                                                         <div class="flex-shrink-0 me-2">
@@ -164,10 +164,10 @@
                                                                         <i class="fa-regular fa-pen-to-square me-2"></i>{{__('Edit')}}
                                                                     </a>
                                                                 </li>
-                                                                <li class="dropdown-divider"></li>
+                                                                {{-- <li class="dropdown-divider"></li>
                                                                 <li><button type="button" class="dropdown-item edit-list" data-bs-toggle="modal" data-bs-target="#deleteSizeModal" wire:click="removeSize({{ $data->id }})">
                                                                     <i class="fa-regular fa-trash-can me-2"></i>{{__('Delete')}}</button>
-                                                                </li>
+                                                                </li> --}}
                                                             </ul>
                                                         </div>
                                                     </span>

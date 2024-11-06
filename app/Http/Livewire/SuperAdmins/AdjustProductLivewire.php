@@ -7,14 +7,11 @@ use App\Models\Brand;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Category;
-use App\Models\SubCategory;
-use Illuminate\Support\Str;
 use Livewire\WithPagination;
 use App\Models\VariationSize;
 use App\Models\VariationColor;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
-use Illuminate\Support\Facades\DB;
 
 class AdjustProductLivewire extends Component
 {

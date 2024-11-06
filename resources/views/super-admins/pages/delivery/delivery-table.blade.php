@@ -149,7 +149,7 @@
                         </thead>
                         <tbody>
                             @forelse($zones as $index => $data)
-                                <tr>
+                                <tr wire:key="zone-{{ $data->id }}">
                                     <td class="align-middle text-center">
                                         {{ $index + 1 }}
                                     </td>

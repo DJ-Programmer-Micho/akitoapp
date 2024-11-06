@@ -101,7 +101,7 @@
                                     </thead>
                                     <tbody class="list form-check-all">
                                         @forelse($tableData as $data)
-                                        <tr>
+                                        <tr wire:key="custrank-{{ $data->id }}">
                                             <td class="customer_name @empty($data->customer_profile->first_name) text-danger @endif align-middle">
                                                 <div class="d-flex align-items-center">
                                                     <img src="{{ $data->customer_profile && $data->customer_profile->avatar ? app('cloudfront').$data->customer_profile->avatar : $customerImg }}" 
