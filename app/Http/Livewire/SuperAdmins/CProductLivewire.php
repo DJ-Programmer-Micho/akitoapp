@@ -489,6 +489,17 @@ class CProductLivewire extends Component
                 ]);
             }
     
+            $imagesCollection = collect($this->images);
+
+            $hasPrimaryImage = $imagesCollection->contains(function($value, $key) {
+                return $key === 0;
+            });
+            
+            // If no image has index 0, set the first image in the collection to have index 0
+            if (!$hasPrimaryImage && $imagesCollection->isNotEmpty()) {
+                $this->images = $imagesCollection->values()->all(); // Re-index and convert back to an array
+            }
+            
             // Upload images to S3 and create ProductImage entries
             foreach ($this->images as $index => $image) {
                 // Generate a unique name for each image

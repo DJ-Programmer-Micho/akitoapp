@@ -189,8 +189,21 @@
 .social-icons {
     padding: 10px;
 }
+[lang="ar"] .custom-control-label::before, 
+[lang="ku"] .custom-control-label::before {
+    left: unset;
+    right: 0rem;
+}
+[lang="ar"] .custom-control-label::after, 
+[lang="ku"] .custom-control-label::after {
+    left: unset;
+    right: 0rem;
+}
 
-
+[lang="ar"] .sidebar-shop .custom-control-label, 
+[lang="ku"] .sidebar-shop .custom-control-label {
+    padding-right: 2.5rem;
+}
 [lang="ar"] .detail-icon .heart-icon,
 [lang="ku"] .detail-icon .heart-icon {
     right: unset;

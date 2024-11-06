@@ -615,6 +615,31 @@ class EProductLivewire extends Component
             //     }
             // }
 
+            $validImages = collect($this->images)->filter(function($image) {
+                return !$image['is_removed']; // Exclude removed images
+            })->values()->all(); // Re-index the valid images
+            
+            // Check if any valid image already has priority 0
+            $hasPrimaryImage = collect($validImages)->contains(function($image) {
+                return $image['priority'] === 0;
+            });
+            
+            // If no valid image has priority 0, set the first valid image to priority 0
+            if (!$hasPrimaryImage && !empty($validImages)) {
+                // Set the first valid image's priority to 0
+                $validImages[0]['priority'] = 0; 
+            }
+            
+            // Now update the images array with the adjusted valid images
+            $this->images = collect($this->images)->map(function($image) use ($validImages) {
+                // Find the corresponding valid image for each original image
+                $validImage = collect($validImages)->firstWhere('id', $image['id']);
+                if ($validImage) {
+                    $image['priority'] = $validImage['priority'];
+                }
+                return $image;
+            })->all();
+
             foreach ($this->images as $index => $image) {
                 // Check if the image is marked as removed
                 if ($image['is_removed']) {
