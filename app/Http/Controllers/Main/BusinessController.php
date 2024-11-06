@@ -657,19 +657,25 @@ class BusinessController extends Controller
         // Query for Brands
         $brands = Brand::where('status', 1)
             ->whereHas('product', fn($q) => $q->where('is_spare_part', 0))
-            ->with('brandtranslation')
+            ->with(['brandtranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Categories
         $categories = Category::where('status', 1)
             ->whereHas('product', fn($q) => $q->where('is_spare_part', 0))
-            ->with('categoryTranslation')
+            ->with(['categoryTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for SubCategories
         $subCategories = SubCategory::where('status', 1)
             ->whereHas('product', fn($q) => $q->where('is_spare_part', 0))
-            ->with('subCategoryTranslation')
+            ->with(['subCategoryTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Colors with Variations relationship
@@ -680,19 +686,25 @@ class BusinessController extends Controller
         // Query for Sizes
         $sizes = VariationSize::where('status', 1)
             ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 0))
-            ->with('variationSizeTranslation')
+            ->with(['variationSizeTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Capacities
         $capacities = VariationCapacity::where('status', 1)
             ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 0))
-            ->with('variationCapacityTranslation')
+            ->with(['variationCapacityTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Materials
         $materials = VariationMaterial::where('status', 1)
             ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 0))
-            ->with('variationMaterialTranslation')
+            ->with(['variationMaterialTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
 
         return view('mains.pages.product-shop-one', [
@@ -801,19 +813,25 @@ class BusinessController extends Controller
         // Query for Brands
         $brands = Brand::where('status', 1)
             ->whereHas('product', fn($q) => $q->where('is_spare_part', 1))
-            ->with('brandtranslation')
+            ->with(['brandtranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Categories
         $categories = Category::where('status', 1)
             ->whereHas('product', fn($q) => $q->where('is_spare_part', 1))
-            ->with('categoryTranslation')
+            ->with(['categoryTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for SubCategories
         $subCategories = SubCategory::where('status', 1)
             ->whereHas('product', fn($q) => $q->where('is_spare_part', 1))
-            ->with('subCategoryTranslation')
+            ->with(['subCategoryTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Colors with Variations relationship
@@ -824,19 +842,25 @@ class BusinessController extends Controller
         // Query for Sizes
         $sizes = VariationSize::where('status', 1)
             ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 1))
-            ->with('variationSizeTranslation')
+            ->with(['variationSizeTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Capacities
         $capacities = VariationCapacity::where('status', 1)
             ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 1))
-            ->with('variationCapacityTranslation')
+            ->with(['variationCapacityTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
         
         // Query for Materials
         $materials = VariationMaterial::where('status', 1)
             ->whereHas('productVariations.product', fn($q) => $q->where('is_spare_part', 1))
-            ->with('variationMaterialTranslation')
+            ->with(['variationMaterialTranslation' => function($query) {
+                $query->where('locale', app()->getLocale());
+            }])
             ->get();
 
         return view('mains.pages.product-shop-one', [
