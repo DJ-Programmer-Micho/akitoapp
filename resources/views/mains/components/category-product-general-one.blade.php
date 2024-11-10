@@ -2,9 +2,9 @@
     <div class="heading my-5">
         <h2 class="title text-center py-3" style="font-size: 40px;">
             <span class="py-4">
-                <i class="fa-solid fa-angles-down fa-bounce"></i>
+                {{-- <i class="fa-solid fa-angles-down fa-bounce"></i> --}}
                 {{__($title)}}
-                <i class="fa-solid fa-angles-down fa-bounce"></i>
+                {{-- <i class="fa-solid fa-angles-down fa-bounce"></i> --}}
             </span>
         </h2><!-- End .title -->
     </div><!-- End .heading -->

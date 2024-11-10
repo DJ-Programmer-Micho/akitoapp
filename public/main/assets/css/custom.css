@@ -217,8 +217,8 @@
 }
 
 .image-preview-slider{
-    border: 1px dashed #003465;
-    border-radius: 24px;
+    border: 1px solid #003465;
+    border-radius: 1px;
 }
 [lang="ar"] .custom-table-info table,
 [lang="ku"] .custom-table-info table {
