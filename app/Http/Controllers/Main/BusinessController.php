@@ -224,7 +224,8 @@ class BusinessController extends Controller
         $categoryProducts = [];
         foreach ($bannerImages as $banner) {
             $categoryId = $banner['category_id'];
-            $categoryProducts[] = $this->fetchProductsByCategory($categoryId, "", $locale);
+            $subCategoryId = $banner['sub_category_id'] ?? null;
+            $categoryProducts[] = $this->fetchProductsByCategory($categoryId, $subCategoryId, "", $locale);
         }
 
         // Fetch category data
@@ -270,14 +271,19 @@ class BusinessController extends Controller
         ]);
     }
 
-    private function fetchProductsByCategory($categoryId, $defaultTitle, $locale)
+    private function fetchProductsByCategory($categoryId, $subCategoryId = null, $defaultTitle, $locale)
     {
         $customerId = auth('customer')->user()->id ?? null; // Assuming customer is logged in
-        return Cache::remember("active_products_category_{$categoryId}_$locale", 60, function () use ($categoryId, $locale, $defaultTitle, $customerId) {
+        return Cache::remember("active_products_category_{$categoryId}_$locale", 60, function () use ($categoryId, $subCategoryId, $locale, $defaultTitle, $customerId) {
             $products = Product::with($this->productRelationships($locale))
                 ->where('status', 1)
                 ->whereHas('categories', function ($query) use ($categoryId) {
                     $query->where('categories.id', $categoryId);
+                })
+                ->when($subCategoryId, function ($query) use ($subCategoryId) {
+                    $query->whereHas('subCategories', function ($subQuery) use ($subCategoryId) {
+                        $subQuery->where('sub_categories.id', $subCategoryId);
+                    });
                 })
                 ->get()
                 ->map(function ($product) use ($customerId) {

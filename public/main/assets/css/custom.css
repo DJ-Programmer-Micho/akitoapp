@@ -375,3 +375,16 @@
 .footer p{
     color: white;
 }
+
+@media (max-width: 576px) {
+    .page-link.page-link-prev, .page-link.page-link-next {
+        min-width: 0;
+    }
+    .page-link-prev .nav-txt, .page-link-next .nav-txt {
+        display: none;
+        padding: 0;
+    }
+    .page-link.page-link-prev, .page-link.page-link-next {
+        padding: 0;
+    }
+}

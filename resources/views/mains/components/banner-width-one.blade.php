@@ -1,4 +1,4 @@
-<div class="container-fluid p-0">
+<div class=" p-0">
     <div class="full-width-background">
         <img src="{{ app('cloudfront') . $image }}" alt="Akitu_Banner_Image" style="width: 100%; max-height: 300px; object-fit: cover;">
     </div>
