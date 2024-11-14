@@ -3,9 +3,9 @@
     <div class="widget widget-clean">
         <label>{{__('Filters:')}}</label>
         @if(request()->is('*/shop'))
-        <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">{{__('Clean All')}}</a>
+        <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">{{__('Clean All')}}</a>
         @else
-        <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}" class="sidebar-filter-clear">{{__('Clean All')}}</a>
+        <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">{{__('Clean All')}}</a>
         @endif
     </div><!-- End .widget widget-clean -->
     @if(request()->is('*/shop'))
@@ -69,7 +69,7 @@
             </a>
         </h3><!-- End .widget-title -->
 
-        <div class="collapse show" id="widget-size">
+        <div class="collapse" id="widget-size">
             <div class="widget-body">
                 <div class="filter-items">
                     @foreach ($sizes as $index => $size)
@@ -93,7 +93,7 @@
             </a>
         </h3><!-- End .widget-title -->
 
-        <div class="collapse show" id="widget-color">
+        <div class="collapse" id="widget-color">
             <div class="widget-body">
                 <div class="filter-colors">
                     {{-- class="selected" --}}
@@ -120,7 +120,7 @@
             </a>
         </h3><!-- End .widget-title -->
 
-        <div class="collapse show" id="widget-capacity">
+        <div class="collapse" id="widget-capacity">
             <div class="widget-body">
                 <div class="filter-items">
                     @foreach ($capacities as $index => $capacity)
@@ -144,7 +144,7 @@
             </a>
         </h3><!-- End .widget-title -->
 
-        <div class="collapse show" id="widget-material">
+        <div class="collapse" id="widget-material">
             <div class="widget-body">
                 <div class="filter-items">
                     @foreach ($materials as $index => $material)

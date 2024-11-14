@@ -57,7 +57,7 @@
             <div class="product-details">
                 <div class="nav-dir">
                     <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $productDetail->brand->id]) }}">
-                        <img src="{{ app('cloudfront').$productDetail->brand->image ?? 'default.jpg'}}" alt="{{$productDetail->brand->brandTranslation->name}}" width="80">
+                        <img src="{{ app('cloudfront').$productDetail->brand->image ?? 'default.jpg'}}" alt="{{$productDetail->brand->brandTranslation->name}}" width="120">
                     </a>
                 </div>
                 <h6 class="nav-dir">
@@ -67,6 +67,10 @@
                     /
                     <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $productDetail->categories[0]->id]) }}">
                         {{$productDetail->categories[0]->categoryTranslation->name}}
+                    </a>
+                    /
+                    <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $productDetail->categories[0]->id, 'subcategories[]' => $productDetail->subCategories[0]->id]) }}">
+                        {{$productDetail->subCategories[0]->subCategoryTranslation->name}}
                     </a>
                 </h6><!-- End .product-title -->
                 <h1 class="product-title px-0"><b>{{$productDetail->productTranslation->name}}</b></h1><!-- End .product-title -->

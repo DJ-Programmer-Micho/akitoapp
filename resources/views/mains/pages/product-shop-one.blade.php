@@ -12,7 +12,7 @@
                     <x-mains.components.shops.product-navigate-one :products="$products" />
                 </div>
                 <aside class="col-lg-3 order-lg-first">
-                    <x-mains.components.shops.aside-filter-one :brands="$brands" :categories="$categories" :sub-category="$subCategory" :sizes="$sizes" :colors="$colors" :capacities="$capacities" :materials="$materials" :minPrice="$minPrice" :maxPrice="$maxPrice"/>
+                    <x-mains.components.shops.aside-filter-one :brands="$brands" :categories="$categories" :sub-category="$subCategories" :sizes="$sizes" :colors="$colors" :capacities="$capacities" :materials="$materials" :minPrice="$minPrice" :maxPrice="$maxPrice"/>
                 </aside>
             </div>
         </div>
