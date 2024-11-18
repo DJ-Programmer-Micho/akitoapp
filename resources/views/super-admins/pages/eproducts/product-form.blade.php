@@ -170,6 +170,11 @@
                                         {{__('Capacity')}}
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#variation-intensity" role="tab">
+                                        {{__('Intensity')}}
+                                    </a>
+                                </li>
                                 {{-- <li class="nav-item">
                                     <a class="nav-link" data-bs-toggle="tab" href="#variation-sku" role="tab">
                                         {{__('SKU')}}
@@ -366,7 +371,36 @@
                                     </table>
                                 </div>
                                 <!-- end tab pane -->
-
+                                <div wire:ignore.self class="tab-pane" id="variation-intensity" role="tabpanel">
+                                    <button type="button" class="btn btn-success mb-3" wire:click="addIntensitySelect">{{__('Add Intensity')}}</button>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>{{__('Choose a Intensity')}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($selectedIntensities as $index => $selectedIntensity)
+                                                <tr>
+                                                    <!-- Select color dropdown -->
+                                                    <td>
+                                                        <select class="form-select" wire:model="selectedIntensities.{{ $index }}.intensity_id">
+                                                            <option value="">{{__('Select Intensity')}}</option>
+                                                            @foreach ($intensities as $intensity)
+                                                                <option value="{{ $intensity->id }}">
+                                                                    {{ $intensity->min }} / {{ $intensity->max }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-danger" wire:click="removeIntensitySelect({{ $index }})">{{__('Remove')}}</button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                                 {{-- <div wire:ignore.self class="tab-pane" id="variation-sku" role="tabpanel">
                                     <div class="row">
                                         <div class="col-lg-6">

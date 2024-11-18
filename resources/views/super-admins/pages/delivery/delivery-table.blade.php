@@ -225,7 +225,7 @@
                     </table>
                 </div>
                 <div class="mt-4">
-                    {{ $zones->links() }}
+                    {{-- {{ $zones->links('') }} --}}
                 </div>
                 @else
                 <div class="tab-pane">

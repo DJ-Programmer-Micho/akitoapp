@@ -28,6 +28,9 @@ class SuperAdminController extends Controller
     public function size(){
         return view('super-admins.pages.sizes.index');
     }
+    public function intensity(){
+        return view('super-admins.pages.intensities.index');
+    }
     public function material(){
         return view('super-admins.pages.materials.index');
     }

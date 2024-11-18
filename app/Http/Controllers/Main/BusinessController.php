@@ -518,6 +518,9 @@ class BusinessController extends Controller
             'variation.capacities.variationCapacityTranslation' => function ($query) use ($locale) {
                 $query->where('locale', $locale);
             },
+            'variation.intensity' => function ($query) use ($locale) {
+                
+            },
             'variation.images'=> function ($query) {
                 $query->orderBy('priority'); // Order images by priority
             },

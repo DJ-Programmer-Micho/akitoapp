@@ -83,6 +83,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::get('/tickers-managements', [SuperAdminController::class, 'ticker'])->name('super.ticker');
     Route::get('/brands-managements', [SuperAdminController::class, 'brand'])->name('super.brand');
     Route::get('/categories-managements', [SuperAdminController::class, 'category'])->name('super.category');
+    Route::get('/intensities-managements', [SuperAdminController::class, 'intensity'])->name('super.intensity');
     Route::get('/tags-managements', [SuperAdminController::class, 'tag'])->name('super.tag');
     Route::get('/colors-managements', [SuperAdminController::class, 'color'])->name('super.color');
     Route::get('/sizes-managements', [SuperAdminController::class, 'size'])->name('super.size');

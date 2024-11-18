@@ -30,4 +30,5 @@ class ProductVariation extends Model
     public function sizes() { return $this->belongsToMany(VariationSize::class, 'product_variation_size'); }
     public function materials() { return $this->belongsToMany(VariationMaterial::class, 'product_variation_material'); }
     public function capacities() { return $this->belongsToMany(VariationCapacity::class, 'product_variation_capacity'); }
+    public function intensity() { return $this->belongsToMany(VariationIntensity::class, 'product_variation_intensity'); }
 }

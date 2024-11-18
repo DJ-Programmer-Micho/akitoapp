@@ -19,6 +19,7 @@ use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use App\Models\ProductTranslation;
+use App\Models\VariationIntensity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\InformationTranslation;
@@ -36,6 +37,7 @@ class EProductLivewire extends Component
     public $sizes;
     public $materials;
     public $capacities;
+    public $intensities;
     public $currentValidation = "store";
     // INT
     public $filteredLocales;
@@ -53,6 +55,7 @@ class EProductLivewire extends Component
     public $selectedMaterials = []; // Materials Selected
     public $selectedSizes = []; // Sizes Selected
     public $selectedCapacities = []; // Capacities Selected
+    public $selectedIntensities = []; // Intesities Selected
     public $selectedTags = [];
     public $images = []; // Cropped Imgeas
     public $sku; // Cropped Imgeas
@@ -199,6 +202,10 @@ class EProductLivewire extends Component
 
         $this->selectedCapacities = $product->variation->capacities->map(function ($capacity) {
             return ['capacity_id' => $capacity->id];
+        })->toArray();
+
+        $this->selectedIntensities = $product->variation->intensity->map(function ($intensity) {
+            return ['intensity_id' => $intensity->id];
         })->toArray();
     }
     
@@ -366,6 +373,8 @@ class EProductLivewire extends Component
         $this->capacities = VariationCapacity::with(['variationCapacityTranslation' => function ($query) {
             $query->where('locale', app()->getLocale());
         }])->get();
+
+        $this->intensities = VariationIntensity::get();
     }
 
      // CRUD Handler
@@ -410,6 +419,23 @@ class EProductLivewire extends Component
          $this->selectedCapacities = array_values($this->selectedCapacities); // Re-index the array
      }
 
+     public function addIntensitySelect()
+     {
+         if (count($this->selectedIntensities) === 0) {
+             $this->selectedIntensities[] = ['intensity_id' => null]; // Add a new empty selection
+         } else {
+             $this->dispatchBrowserEvent('alert', [
+                 'type' => 'warning',
+                 'message' => __('Only one Intensity selection is allowed.')
+             ]);
+         }
+     }
+  
+     public function removeIntensitySelect($index)
+     {
+         unset($this->selectedIntensities[$index]); // Remove the specific row
+         $this->selectedIntensities = array_values($this->selectedIntensities); // Re-index the array
+     }
     // Add a new FAQ entry
     public function addFaq()
     {
@@ -557,6 +583,7 @@ class EProductLivewire extends Component
             $variation->sizes()->sync(array_column($this->selectedSizes, 'size_id') ?? []);
             $variation->materials()->sync(array_column($this->selectedMaterials, 'material_id') ?? []);
             $variation->capacities()->sync(array_column($this->selectedCapacities, 'capacity_id') ?? []);
+            $variation->intensity()->sync(array_column($this->selectedIntensities, 'intensity_id') ?? []);
 
             // Create Product entry
             $product->update([
@@ -757,6 +784,7 @@ class EProductLivewire extends Component
         $this->selectedMaterials = []; // Materials Selected
         $this->selectedSizes = []; // Sizes Selected
         $this->selectedCapacities = []; // Capacities Selected
+        $this->selectedIntensities = []; // Capacities Selected
         $this->selectedTags = [];
         $this->images = []; // Cropped Imgeas
         $this->sku = ""; // Cropped Imgeas

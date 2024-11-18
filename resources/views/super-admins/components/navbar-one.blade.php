@@ -59,6 +59,9 @@
                                 <a wire:navigate href="{{ route('super.category', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-category">{{__('Categories')}}</a>
                             </li>
                             <li class="nav-item">
+                                <a wire:navigate href="{{ route('super.intensity', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-sizes">{{__('Coffee Intensity')}}</a>
+                            </li>
+                            <li class="nav-item">
                                 <a wire:navigate href="{{ route('super.tag', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tag">{{__('Product Tags')}}</a>
                             </li>
                             <li class="nav-item">

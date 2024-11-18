@@ -46,7 +46,7 @@
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{app('logo_72')}}">
         <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{app('logo_57')}}">
         <link rel="apple-touch-icon-precomposed" href="{{app('logo_1024')}}">
-    
+
         <link rel="stylesheet" href="{{asset('main/assets/vendor/line-awesome/line-awesome/line-awesome/css/line-awesome.min.css')}}">
         <!-- Plugins CSS File -->
         <link rel="stylesheet" href="{{asset('main/assets/css/bootstrap.min.css')}}">
@@ -54,6 +54,7 @@
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/magnific-popup/magnific-popup.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/jquery.countdown.css')}}">
         <link rel="stylesheet" href="{{asset('main/assets/css/plugins/nouislider/nouislider.css')}}">
+        <link rel="stylesheet" href="{{asset('main/assets/css/apexcharts.css')}}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -94,6 +95,7 @@
         <script src="{{asset('main/assets/js/jquery.magnific-popup.min.js')}}"></script>
         <script src="{{asset('main/assets/js/jquery.countdown.min.js')}}"></script>
         <script src="{{asset('main/assets/js/nouislider.min.js')}}"></script>
+        <script src="{{asset('main/assets/js/apexcharts.min.js')}}"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
         {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> --}}

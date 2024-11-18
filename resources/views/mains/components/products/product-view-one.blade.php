@@ -110,6 +110,7 @@
                 <div class="product-content">
                     <p style="font-size: 14pt">{{$productDetail->productTranslation->description}}</p>
                 </div><!-- End .product-content -->
+                <div id="chart" class="p-0 m-0"></div>
 
                 @if ($productDetail->variation->colors->count() > 1)
                 <div class="details-filter-row details-row-size nav-dir">
@@ -332,4 +333,86 @@ function addToCartDetail(productId) {
     Livewire.emit('addToCartDetail', productId, qty);
 }
 </script>
+
+@if (count($productDetail->variation->intensity) >= 1)
+<script>
+var intensityData = {{$productDetail->variation->intensity[0]->min}}/{{$productDetail->variation->intensity[0]->max}} * 100; 
+var color = null;
+function funcColor(val) {
+    if (val <= 25) {
+        return '#007b00'; // Green
+    } else if (val <= 50) {
+        return '#f9a603'; // Yellow
+    } else if (val <= 75) {
+        return '#ff7722'; // Orange
+    } else {
+        return '#9B1C31'; // Red
+    }
+}
+color = funcColor(intensityData)
+var options = {
+        series: [intensityData],
+        chart: {
+        height: 250,
+        type: 'radialBar',
+        offsetY: -10
+    },
+    plotOptions: {
+        radialBar: {
+        startAngle: -90,
+        endAngle: 90,
+        dataLabels: {
+            name: {
+            fontSize: '16px',
+            color: '#003465',
+            offsetY: 45
+            },
+            value: {
+            offsetY: 0,
+            fontSize: '20px',
+            color: color,
+            formatter: function (val) {
+                const fraction = (val / 100) * {{$productDetail->variation->intensity[0]->max}};
+                return fraction.toFixed(0) + '/' + {{$productDetail->variation->intensity[0]->max}}; // Format the fraction
+            }
+            }
+        }
+        }
+    },
+    // fill: {
+    //   type: 'gradient',
+    //   gradient: {
+    //       shade: 'dark',
+    //       shadeIntensity: 0.15,
+    //       inverseColors: false,
+    //       opacityFrom: 1,
+    //       opacityTo: 1,
+    //       stops: [0, 50, 65, 91]
+    //   },
+    // },
+    fill: {
+        colors: [
+            function({ value }) {
+                if (value <= 25) {
+                    return '#007b00'; // Green
+                } else if (value <= 50) {
+                    return '#f9a603'; // Yellow
+                } else if (value <= 75) {
+                    return '#ff7722'; // Orange
+                } else {
+                    return '#9B1C31'; // Red
+                }
+            }
+        ]
+    },
+    stroke: {
+        dashArray: 4
+    },
+    labels: ['Intensity'],
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+</script>
+@endif
 @endpush
