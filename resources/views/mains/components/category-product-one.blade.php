@@ -28,7 +28,7 @@
             </div>
             @endfor
         </div>
-            <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+            <div class="owl-carousel owl-full carousel-equal-height carousel-with-shadow @if(count($productsData) < 6) d-flex justify-content-center @endif" data-toggle="owl" 
                 data-owl-options='{
                     "nav": true, 
                     "dots": false,
