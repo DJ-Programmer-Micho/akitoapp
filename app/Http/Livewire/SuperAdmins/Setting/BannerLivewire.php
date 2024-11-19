@@ -28,36 +28,46 @@ class BannerLivewire extends Component
         $settings = WebSetting::find(1);
         if ($settings && $settings->banner_images) {
             $this->images = json_decode($settings->banner_images, true);
-        
-            // Initialize missing sub_category_id for images if not set
+    
+            // Initialize missing `sub_category_id` for images if not set
             foreach ($this->images as &$image) {
                 if (!array_key_exists('sub_category_id', $image)) {
                     $image['sub_category_id'] = null;
                 }
             }
-            $this->fetchSubCategoriesForImages();
         } else {
             // Initialize with an empty image entry if none exist
             $this->images = [['image' => null, 'category_id' => null, 'sub_category_id' => null]];
         }
-        
+    
         // Load categories with translations
         $this->categories = Category::with(['categoryTranslation' => function ($query) {
             $query->where('locale', app()->getLocale());
         }])->has('categoryTranslation')->get();
-        
+    
+        // Initialize subcategories for images
+        $this->initializeSubCategories();
+    
         // Initialize base64 images to match the number of images
         $this->base64Images = array_fill(0, count($this->images), null);
     }
-    private function fetchSubCategoriesForImages()
+    
+    private function initializeSubCategories()
     {
+        // Initialize subcategories for each image based on its category
         foreach ($this->images as $index => $image) {
-            // Fetch subcategories only for images that have a category_id
-            if (!empty($image['category_id']) && empty($image['sub_category_id'])) {
-                $this->fetchSubCategories($index); // This method will fetch subcategories for this index
+            $categoryId = $image['category_id'] ?? null;
+            if ($categoryId) {
+                $this->subCategories[$index] = SubCategory::where('category_id', $categoryId)
+                    ->with(['subCategoryTranslation' => function ($query) {
+                        $query->where('locale', app()->getLocale());
+                    }])->get()->toArray();
+            } else {
+                $this->subCategories[$index] = [];
             }
         }
     }
+
     public function fetchSubCategories($index)
     {
         $categoryId = $this->images[$index]['category_id'] ?? null;
@@ -92,15 +102,34 @@ class BannerLivewire extends Component
         $this->subCategories[] = [];
     }
 
+    // public function removeImage($index, $isUploaded = false)
+    // {
+    //     if ($isUploaded) {
+    //         $this->imagesToDelete[] = $this->images[$index]['image'];
+    //         unset($this->images[$index]);
+    //     }
+    //     unset($this->base64Images[$index]);
+    //     $this->base64Images = array_values($this->base64Images);
+    //     $this->images = array_values($this->images);
+    //     $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Image removed successfully.')]);
+    // }
+
     public function removeImage($index, $isUploaded = false)
     {
-        if ($isUploaded) {
+        if ($isUploaded && !empty($this->images[$index]['image'])) {
             $this->imagesToDelete[] = $this->images[$index]['image'];
-            unset($this->images[$index]);
         }
+
+        // Remove the image and corresponding data
+        unset($this->images[$index]);
         unset($this->base64Images[$index]);
-        $this->base64Images = array_values($this->base64Images);
+        unset($this->subCategories[$index]);
+
+        // Re-index arrays to maintain proper alignment
         $this->images = array_values($this->images);
+        $this->base64Images = array_values($this->base64Images);
+        $this->subCategories = array_values($this->subCategories);
+
         $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => __('Image removed successfully.')]);
     }
 

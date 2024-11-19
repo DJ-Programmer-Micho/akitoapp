@@ -255,13 +255,8 @@ class BusinessController extends Controller
         $featured = $this->fetchProducts('featured', 'Featured');
         $on_sale = $this->fetchProducts('on_sale', 'On Sale');
 
+        // dd($categoryProducts, $categoriesData);
         return view('mains.pages.home-page-one', [
-            // 'productsCat1' => $productsCat1['products'],
-            // 'productsCat1Title' => $productsCat1['title'],
-            // 'productsCat2' => $productsCat2['products'],
-            // 'productsCat2Title' => $productsCat2['title'],
-            // 'productsCat3' => $productsCat3['products'],
-            // 'productsCat3Title' => $productsCat3['title'],
             'categoryProducts' => $categoryProducts,
             'categoriesData' => $categoriesData,
             'imageBanner' => $bannerImages,
@@ -274,7 +269,7 @@ class BusinessController extends Controller
     private function fetchProductsByCategory($categoryId, $subCategoryId = null, $defaultTitle, $locale)
     {
         $customerId = auth('customer')->user()->id ?? null; // Assuming customer is logged in
-        return Cache::remember("active_products_category_{$categoryId}_$locale", 60, function () use ($categoryId, $subCategoryId, $locale, $defaultTitle, $customerId) {
+        return Cache::remember("active_products_category_{$categoryId}_{$subCategoryId}_$locale", 60, function () use ($categoryId, $subCategoryId, $locale, $defaultTitle, $customerId) {
             $products = Product::with($this->productRelationships($locale))
                 ->where('status', 1)
                 ->whereHas('categories', function ($query) use ($categoryId) {
@@ -294,11 +289,8 @@ class BusinessController extends Controller
                     return $product;
                 });
     
-            // Check if any product exists before trying to access categories
             $firstProduct = $products->first();
-            $categoryTitle = $firstProduct && $firstProduct->categories->first() 
-                ? $firstProduct->categories->first()->categoryTranslation->title 
-                : $defaultTitle;
+            $categoryTitle = $firstProduct?->categories->first()?->categoryTranslation->title ?? $defaultTitle;
     
             return [
                 'products' => $products,
@@ -306,6 +298,7 @@ class BusinessController extends Controller
             ];
         });
     }
+    
     
     
 
