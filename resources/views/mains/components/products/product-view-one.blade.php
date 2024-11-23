@@ -106,11 +106,80 @@
                 @endif
             
 
-
                 <div class="product-content">
-                    <p style="font-size: 14pt">{{$productDetail->productTranslation->description}}</p>
+                    <p style="font-size: 12pt">{{$productDetail->productTranslation->description}}</p>
                 </div><!-- End .product-content -->
-                <div id="chart" class="p-0 m-0"></div>
+                {{-- <div id="chart" class="p-0 m-0"></div> --}}
+                @if (count($productDetail->variation->intensity) >= 1)
+                <div class="container-sm">
+                    <div class="row align-items-center">
+                
+                        <!-- Progress Circle -->
+                        <div class="col-12 col-sm-4 text-center">
+                            <div class="progress-container mx-auto mb-0">
+                                <svg viewBox="0 0 100 100" class="progress-circle">
+                                    <!-- Placeholder for dynamic segments -->
+                                </svg>
+                                <div class="progress-text" id="progress-text">0/0</div>
+                            </div>
+                            <span><b>{{__('INTENSITY')}}</b></span>
+                        </div>
+                
+                        <!-- First Icon -->
+                        @if ($productDetail->variation->capacities->count() >= 1)
+                        @php
+                            $variationCapacity = $productDetail->variation->capacities->first()->variationCapacityTranslation->name;
+                            $variationCapacityCode = $productDetail->variation->capacities->first()->code;
+                        @endphp
+                        @if (preg_match('/^#cp_\d+/', $variationCapacityCode)) <!-- Check for #cp_* pattern -->
+                        @php
+                            // Extract the number (capsules) from the size
+                            preg_match('/\d+/', $variationCapacity, $matches);
+                            $capsuleCount = $matches[0] ?? '75'; // Default to 100 if no match found
+                        @endphp
+                        <div class="col-12 col-sm-4 text-center">
+                            <div class="icon-container">
+                                <div class="icon-wrapper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" viewBox="0 0 16 16">
+                                        <path d="M2.95.4a1 1 0 0 1 .8-.4h8.5a1 1 0 0 1 .8.4l2.85 3.8a.5.5 0 0 1 .1.3V15a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4.5a.5.5 0 0 1 .1-.3zM7.5 1H3.75L1.5 4h6zm1 0v3h6l-2.25-3zM15 5H1v10h14z" />
+                                    </svg>
+                                    <span class="icon-text">{{ $capsuleCount }}</span>
+                                    <span class="icon-text-12">{{__('Capsules')}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        @endif
+                
+                        <!-- Second Icon -->
+                        @if ($productDetail->variation->sizes->count() >= 1)
+                        @php
+                            $variationSize = $productDetail->variation->sizes->first()->variationSizeTranslation->name;
+                            $variationSizeCode = $productDetail->variation->sizes->first()->code;
+                        @endphp
+                        @if (preg_match('/^#cc_\d+/', $variationSizeCode)) <!-- Check for #cp_* pattern -->
+                        @php
+                            // Extract the number (capsules) from the size
+                            preg_match('/\d+/', $variationSize, $matches);
+                            $ccCount = $matches[0] ?? '75'; // Default to 100 if no match found
+                        @endphp
+                        <div class="col-12 col-sm-4 text-center">
+                            <div class="icon-container">
+                                <div class="icon-wrapper">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6zM13 12.5a2 2 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5M2.64 13.825 1.123 7h11.754l-1.517 6.825A1.5 1.5 0 0 1 9.896 15H4.104a1.5 1.5 0 0 1-1.464-1.175"/>
+                                        <path d="m4.4.8-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 3.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 3.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 3 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 4.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 6.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 6.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 6 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 7.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.252.382l-.019.025-.005.008-.002.002A.5.5 0 0 1 9.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 9.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 9 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 10.4.8"/>
+                                    </svg>
+                                    <span class="icon-text-2">{{ $ccCount }} CC</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        @endif
+                    </div>
+                </div>
+                @endif
+                
 
                 @if ($productDetail->variation->colors->count() > 1)
                 <div class="details-filter-row details-row-size nav-dir">
@@ -336,6 +405,67 @@ function addToCartDetail(productId) {
 
 @if (count($productDetail->variation->intensity) >= 1)
 <script>
+function createCircularProgressSegments(minValue, maxValue) {
+    const svg = document.querySelector('.progress-circle');
+    svg.innerHTML = ''; // Clear previous segments
+
+    const radius = 45;
+    const gapAngle = 4; // Gap angle in degrees
+    const totalAngle = 360; // Full circle
+    const segmentAngle = (totalAngle - maxValue * gapAngle) / maxValue;
+
+    for (let i = 0; i < maxValue; i++) {
+        const startAngle = i * (segmentAngle + gapAngle);
+        const endAngle = startAngle + segmentAngle;
+
+        // Convert polar coordinates to Cartesian points
+        const start = polarToCartesian(50, 50, radius, endAngle);
+        const end = polarToCartesian(50, 50, radius, startAngle);
+
+        const largeArcFlag = segmentAngle > 180 ? 1 : 0;
+
+        // Define path for the segment
+        const pathData = `
+            M ${start.x} ${start.y}
+            A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}
+        `;
+
+        // Background segment
+        const bgSegment = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        bgSegment.setAttribute('d', pathData.trim());
+        bgSegment.setAttribute('class', 'segment segment-bg');
+        svg.appendChild(bgSegment);
+
+        // Filled segment (conditionally filled)
+        const fillSegment = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        fillSegment.setAttribute('d', pathData.trim());
+        fillSegment.setAttribute('class', 'segment segment-filled');
+        fillSegment.style.stroke = i < minValue ? '#003465' : 'transparent';
+        svg.appendChild(fillSegment);
+    }
+
+    // Update progress text
+    const progressText = document.getElementById('progress-text');
+    progressText.textContent = `${minValue}/${maxValue}`;
+}
+
+// Convert polar coordinates to Cartesian
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+    const angleInRadians = (angleInDegrees - 90) * (Math.PI / 180);
+    return {
+        x: centerX + radius * Math.cos(angleInRadians),
+        y: centerY + radius * Math.sin(angleInRadians),
+    };
+}
+
+// Initial render
+createCircularProgressSegments({{$productDetail->variation->intensity[0]->min}}, {{$productDetail->variation->intensity[0]->max}});
+
+</script>
+@endif
+
+{{-- @if (count($productDetail->variation->intensity) >= 1)
+<script>
 var intensityData = {{$productDetail->variation->intensity[0]->min}}/{{$productDetail->variation->intensity[0]->max}} * 100; 
 var color = null;
 function funcColor(val) {
@@ -379,17 +509,6 @@ var options = {
         }
         }
     },
-    // fill: {
-    //   type: 'gradient',
-    //   gradient: {
-    //       shade: 'dark',
-    //       shadeIntensity: 0.15,
-    //       inverseColors: false,
-    //       opacityFrom: 1,
-    //       opacityTo: 1,
-    //       stops: [0, 50, 65, 91]
-    //   },
-    // },
     fill: {
         colors: [
             function({ value }) {
@@ -414,5 +533,5 @@ var options = {
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
 </script>
-@endif
+@endif --}}
 @endpush

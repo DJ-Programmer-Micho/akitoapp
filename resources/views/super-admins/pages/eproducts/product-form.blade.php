@@ -204,7 +204,7 @@
                                                             <option value="">Select Color</option>
                                                             @foreach ($colors as $color)
                                                                 <option value="{{ $color->id }}">
-                                                                    {{ $color->variationColorTranslation->first()->name }}
+                                                                    {{ $color->variationColorTranslation->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -251,7 +251,7 @@
                                                             <option value="">Select Material</option>
                                                             @foreach ($materials as $material)
                                                                 <option value="{{ $material->id }}">
-                                                                    {{ $material->variationMaterialTranslation->first()->name }}
+                                                                    {{ $material->variationMaterialTranslation->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -297,7 +297,7 @@
                                                             <option value="">Select size</option>
                                                             @foreach ($sizes as $size)
                                                                 <option value="{{ $size->id }}">
-                                                                    {{ $size->variationSizeTranslation->first()->name }}
+                                                                    {{ $size->variationSizeTranslation->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
@@ -344,7 +344,7 @@
                                                             <option value="">Select Capacity</option>
                                                             @foreach ($capacities as $capacity)
                                                                 <option value="{{ $capacity->id }}">
-                                                                    {{ $capacity->variationCapacityTranslation->first()->name }}
+                                                                    {{ $capacity->variationCapacityTranslation->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
