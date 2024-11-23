@@ -400,8 +400,8 @@
 /********* INTENSITY LEVEL **********/
 .progress-container {
     position: relative;
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -464,15 +464,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     position: relative;
     text-align: center;
 }
 
 .icon-svg {
-    width: 100px; /* Adjust as needed */
-    height: 100px;
+    width: 80px; /* Adjust as needed */
+    height: 80px;
     fill: #003465; /* Adjust the color of the SVG */
 }
 
@@ -481,7 +481,7 @@
     top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 16px; /* Adjust text size */
+    font-size: 14px; /* Adjust text size */
     color: #003465; /* Adjust text color */
 }
 
@@ -490,7 +490,7 @@
     top: 65%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 16px; /* Adjust text size */
+    font-size: 14px; /* Adjust text size */
     color: #003465; /* Adjust text color */
 }
 
@@ -499,6 +499,6 @@
     top: 60%;
     left: 45%;
     transform: translate(-50%, -50%);
-    font-size: 16px; /* Adjust text size */
+    font-size: 14px; /* Adjust text size */
     color: #003465; /* Adjust text color */
 }

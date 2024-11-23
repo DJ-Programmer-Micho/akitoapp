@@ -110,12 +110,60 @@
                     <p style="font-size: 12pt">{{$productDetail->productTranslation->description}}</p>
                 </div><!-- End .product-content -->
                 {{-- <div id="chart" class="p-0 m-0"></div> --}}
+
+                @if ($productDetail->variation->colors->count() > 1)
+                <div class="details-filter-row details-row-size nav-dir m-0">
+                    <label>{{__('Color:')}}</label>
+
+                    <div class="product-nav product-nav-thumbs">
+                        @foreach ($productDetail->variation->colors as $color)
+                        <a href="#">
+                            <div style="height: 100%; width: 100%; background-color: {{$color->code}};border: 1px solid black"></div>
+                        </a>
+                        @endforeach
+                    </div><!-- End .product-nav -->
+                </div><!-- End .details-filter-row -->
+                @endif
+
+                @if ($productDetail->variation->sizes->count() >= 1)
+                <div class="details-filter-row details-row-size nav-dir m-0">
+                    <label for="size">{{__('Size:')}}</label>
+                    <p class="mx-1"><b>{{$productDetail->variation->sizes->first()->variationSizeTranslation->name}}</b></p>
+                    {{-- <div class="select-custom mx-1">
+                        <select name="size" id="size" class="form-control">
+                            <option value="#" selected="selected">{{__('Select a size')}}</option>
+                            @foreach ($productDetail->variation->sizes as $size)
+                            <option value="{{$size->id}}">{{$size->variationSizeTranslation->name}}</option>
+                            @endforeach
+                        </select>
+                    </div><!-- End .select-custom --> --}}
+
+                    {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
+                </div><!-- End .details-filter-row -->
+                @endif
+                @if ($productDetail->variation->capacities->count() >= 1)
+                <div class="details-filter-row details-row-size nav-dir m-0">
+                    <label for="size">{{__('Capacity:')}}</label>
+                    <p class="mx-1"><b>{{$productDetail->variation->capacities->first()->variationCapacityTranslation->name}}</b></p>
+                    {{-- <div class="select-custom mx-1">
+                        <select name="capacity" id="capacity" class="form-control">
+                            <option value="#" selected="selected">{{__('Select a Capacity')}}</option>
+                            @foreach ($productDetail->variation->capacities as $capacity)
+                            <option value="{{$capacity->id}}">{{$capacity->variationCapacityTranslation->name}}</option>
+                            @endforeach
+                        </select>
+                    </div><!-- End .select-custom --> --}}
+                    {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
+                </div><!-- End .details-filter-row -->
+                @endif
+
                 @if (count($productDetail->variation->intensity) >= 1)
+                <hr>
                 <div class="container-sm">
                     <div class="row align-items-center">
                 
                         <!-- Progress Circle -->
-                        <div class="col-12 col-sm-4 text-center">
+                        <div class="col-4 text-center">
                             <div class="progress-container mx-auto mb-0">
                                 <svg viewBox="0 0 100 100" class="progress-circle">
                                     <!-- Placeholder for dynamic segments -->
@@ -137,7 +185,7 @@
                             preg_match('/\d+/', $variationCapacity, $matches);
                             $capsuleCount = $matches[0] ?? '75'; // Default to 100 if no match found
                         @endphp
-                        <div class="col-12 col-sm-4 text-center">
+                        <div class="col-4 text-center">
                             <div class="icon-container">
                                 <div class="icon-wrapper">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" viewBox="0 0 16 16">
@@ -163,7 +211,7 @@
                             preg_match('/\d+/', $variationSize, $matches);
                             $ccCount = $matches[0] ?? '75'; // Default to 100 if no match found
                         @endphp
-                        <div class="col-12 col-sm-4 text-center">
+                        <div class="col-4 text-center">
                             <div class="icon-container">
                                 <div class="icon-wrapper">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon-svg" viewBox="0 0 16 16">
@@ -179,55 +227,9 @@
                     </div>
                 </div>
                 @endif
-                
-
-                @if ($productDetail->variation->colors->count() > 1)
-                <div class="details-filter-row details-row-size nav-dir">
-                    <label>{{__('Color:')}}</label>
-
-                    <div class="product-nav product-nav-thumbs">
-                        @foreach ($productDetail->variation->colors as $color)
-                        <a href="#">
-                            <div style="height: 100%; width: 100%; background-color: {{$color->code}};border: 1px solid black"></div>
-                        </a>
-                        @endforeach
-                    </div><!-- End .product-nav -->
-                </div><!-- End .details-filter-row -->
-                @endif
-
-                @if ($productDetail->variation->sizes->count() >= 1)
-                <div class="details-filter-row details-row-size nav-dir">
-                    <label for="size">{{__('Size:')}}</label>
-                    <p class="mx-1"><b>{{$productDetail->variation->sizes->first()->variationSizeTranslation->name}}</b></p>
-                    {{-- <div class="select-custom mx-1">
-                        <select name="size" id="size" class="form-control">
-                            <option value="#" selected="selected">{{__('Select a size')}}</option>
-                            @foreach ($productDetail->variation->sizes as $size)
-                            <option value="{{$size->id}}">{{$size->variationSizeTranslation->name}}</option>
-                            @endforeach
-                        </select>
-                    </div><!-- End .select-custom --> --}}
-
-                    {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
-                </div><!-- End .details-filter-row -->
-                @endif
-                @if ($productDetail->variation->capacities->count() >= 1)
-                <div class="details-filter-row details-row-size nav-dir">
-                    <label for="size">{{__('Capacity:')}}</label>
-                    <p class="mx-1"><b>{{$productDetail->variation->capacities->first()->variationCapacityTranslation->name}}</b></p>
-                    {{-- <div class="select-custom mx-1">
-                        <select name="capacity" id="capacity" class="form-control">
-                            <option value="#" selected="selected">{{__('Select a Capacity')}}</option>
-                            @foreach ($productDetail->variation->capacities as $capacity)
-                            <option value="{{$capacity->id}}">{{$capacity->variationCapacityTranslation->name}}</option>
-                            @endforeach
-                        </select>
-                    </div><!-- End .select-custom --> --}}
-                    {{-- <a href="#" class="size-guide"><i class="icon-th-list"></i>size guide</a> --}}
-                </div><!-- End .details-filter-row -->
-                @endif
+                <hr>
                 @if ($productDetail->variation->stock)
-                <div class="details-filter-row details-row-size nav-dir">
+                <div class="details-filter-row details-row-size nav-dir mt-1">
                     <label for="qty">{{__('Qty:')}}</label>
                     <div class="product-details-quantity mx-1">
                         <input type="number" id="qty" class="form-control" value="1" min="1" max="{{$productDetail->variation->order_limit}}" step="1" data-decimals="0" required>
