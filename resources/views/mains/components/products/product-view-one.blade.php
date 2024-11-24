@@ -172,7 +172,7 @@
                             </div>
                             <span><b>{{__('INTENSITY')}}</b></span>
                         </div>
-                        @endphp
+                        @endif
                         <!-- First Icon -->
                         @if ($productDetail->variation->capacities->count() >= 1)
                         @php
