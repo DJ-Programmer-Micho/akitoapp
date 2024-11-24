@@ -157,11 +157,11 @@
                 </div><!-- End .details-filter-row -->
                 @endif
 
-                @if (count($productDetail->variation->intensity) >= 1)
+                @if (count($productDetail->variation->intensity) >= 1 || $productDetail->variation->capacities->count() >= 1 || $productDetail->variation->sizes->count() >= 1)
                 <hr>
                 <div class="container-sm">
                     <div class="row align-items-center">
-                
+                        @if (count($productDetail->variation->intensity) >= 1)
                         <!-- Progress Circle -->
                         <div class="col-4 text-center">
                             <div class="progress-container mx-auto mb-0">
@@ -172,7 +172,7 @@
                             </div>
                             <span><b>{{__('INTENSITY')}}</b></span>
                         </div>
-                
+                        @endphp
                         <!-- First Icon -->
                         @if ($productDetail->variation->capacities->count() >= 1)
                         @php
