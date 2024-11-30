@@ -904,7 +904,7 @@ class BusinessController extends Controller
         }
     
         // Get the filtered products with pagination
-        $products = $productQuery->paginate(3)->appends(['q' => $searchQuery]);
+        $products = $productQuery->paginate(10)->appends(['q' => $searchQuery]);
 
         $products->getCollection()->transform(function ($product) use ($request) {
             $discountDetails = $this->calculateFinalPrice($product, $request->user('customer')->id ?? null);
