@@ -649,7 +649,7 @@ class BusinessController extends Controller
             'capacityIds' => $request->query('capacities', []),
             'materialIds' => $request->query('materials', []),
             'minPrice' => floatval($request->query('min_price', 0)),
-            'maxPrice' => floatval($request->query('max_price', 1000)),
+            'maxPrice' => floatval($request->query('max_price', 5000)),
             'sortBy' => $request->query('sortby', 'priority'),
             'grid' => $request->query('grid', 4),
         ];
@@ -904,7 +904,7 @@ class BusinessController extends Controller
         }
     
         // Get the filtered products with pagination
-        $products = $productQuery->paginate(3);
+        $products = $productQuery->paginate(3)->appends(['q' => $searchQuery]);
 
         $products->getCollection()->transform(function ($product) use ($request) {
             $discountDetails = $this->calculateFinalPrice($product, $request->user('customer')->id ?? null);
@@ -920,7 +920,7 @@ class BusinessController extends Controller
             'searchQuery' => $searchQuery,
         ]);
     }
-    
+
     
     public function account(){        
         $isLoggedIn = Auth::guard('customer')->check();
