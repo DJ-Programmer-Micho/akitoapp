@@ -280,6 +280,7 @@ class BusinessController extends Controller
                         $subQuery->where('sub_categories.id', $subCategoryId);
                     });
                 })
+                ->orderBy('priority', 'ASC')
                 ->get()
                 ->map(function ($product) use ($customerId) {
                     $finalPrices = $this->calculateFinalPrice($product, $customerId);

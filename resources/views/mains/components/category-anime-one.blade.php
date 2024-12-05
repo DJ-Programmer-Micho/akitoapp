@@ -29,7 +29,6 @@
                 "dots": true,
                 "rtl": {{ app()->getLocale() === 'ar' || app()->getLocale() === 'ku' ? 'true' : 'false' }},
                 "lazyLoad": true,
-                {{-- "margin": 20, --}}
                 "loop": false,
                 "responsive": {
                     "0": {
