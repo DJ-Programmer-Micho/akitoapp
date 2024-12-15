@@ -83,6 +83,15 @@
         {{-- <x-mains.mappings.nav-one /> --}}
         {{-- @livewire('main.auth.form-one') --}}
         {{-- @livewire('main.pop.news-one') --}}
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-5W49056DDZ"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-5W49056DDZ');
+        </script>
         <!-- Plugins JS File -->
         <script src="{{asset('main/assets/js/jquery.min.js')}}"></script>
         <script src="{{asset('main/assets/js/bootstrap.bundle.min.js')}}"></script>
