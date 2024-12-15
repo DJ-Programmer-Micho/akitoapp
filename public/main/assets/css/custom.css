@@ -505,12 +505,14 @@
 
 
 /* RTL styles (Arabic, Kurdish, etc.) */
-[lang="ar"] .owl-carousel .owl-nav .owl-prev {
+[lang="ar"] .owl-carousel .owl-nav .owl-prev,
+[lang="ku"] .owl-carousel .owl-nav .owl-prev {
     left: auto;
     right: 0; /* Move prev button to the right */
     transform: rotate(180deg); /* Flip icon */
 }
-[lang="ar"] .owl-carousel .owl-nav .owl-next {
+[lang="ar"] .owl-carousel .owl-nav .owl-next,
+[lang="ku"] .owl-carousel .owl-nav .owl-next {
     right: auto;
     left: 0; /* Move next button to the left */
     transform: rotate(180deg); /* Flip icon */

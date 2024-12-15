@@ -39,7 +39,7 @@
 
         <meta name="news_keywords" content="{{$seo['keywords'] ?? 'akitu'}}">
         <meta name='keywords' content='{{$seo['keywords'] ?? 'akitu'}}'>
-
+        <meta name="google-site-verification" content="3vvBxZ-Qxu0d3DsF4ycREMvZSzw8l_tPZlksjWh5UXY" />
         <link rel="shortcut icon" href="{{app('logo_72')}}">
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{app('logo_144')}}">
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{app('logo_114')}}">
