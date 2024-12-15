@@ -27,6 +27,10 @@ use App\Http\Controllers\Customer\CustomerAddressController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// SITEMAPS
+Route::get("sitemap_en.xml" , function () { return \Illuminate\Support\Facades\Redirect::to('sitemap_en.xml'); });
+Route::get("sitemap_ar.xml" , function () { return \Illuminate\Support\Facades\Redirect::to('sitemap_ar.xml'); });
+Route::get("sitemap_ku.xml" , function () { return \Illuminate\Support\Facades\Redirect::to('sitemap_ku.xml'); });
 
 Route::post('/set-locale', [LocalizationMainMiddleware::class, 'setLocale'])->name('setLocale');
 
