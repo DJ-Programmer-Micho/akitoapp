@@ -1,8 +1,7 @@
 <div class="container top">
-    {{-- <div class="heading my-5">
-        <h2 class="title text-center">{{__('You May Also Like')}}</h2><!-- End .title -->
-    </div><!-- End .heading --> --}}
-
+    <div class="heading my-5">
+        <h2 class="title text-center">{{__($titleName)}}</h2><!-- End .title -->
+    </div><!-- End .heading -->
     <div class="tab-content tab-content-carousel just-action-icons-sm">
         <div class="row featured-products-loader">
             @for ($i = 0; $i < 4; $i++)

@@ -54,9 +54,9 @@
                         </div><!-- End .megamenu -->
                     </li>
                     
-                    <li class="{{ request()->is(app()->getLocale() . '/spare') ? 'active' : '' }}">
+                    {{-- <li class="{{ request()->is(app()->getLocale() . '/spare') ? 'active' : '' }}">
                         <a class="nav-font" href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">{{ __('Spare Parts') }}</a>
-                    </li>
+                    </li> --}}
                 </ul><!-- End .menu -->
             </nav><!-- End .main-nav -->
 

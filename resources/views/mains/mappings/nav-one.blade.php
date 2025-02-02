@@ -27,9 +27,9 @@
                         <li class="{{ request()->is(app()->getLocale() . '/shop') ? 'active' : '' }}">
                             <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}">{{ __('Shop') }}</a>
                         </li>
-                        <li class="{{ request()->is(app()->getLocale() . '/spare') ? 'active' : '' }}">
+                        {{-- <li class="{{ request()->is(app()->getLocale() . '/spare') ? 'active' : '' }}">
                             <a href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">{{ __('Spare Parts') }}</a>
-                        </li>
+                        </li> --}}
                         <li class="megamenu-container {{ request()->is(app()->getLocale() . '/categories') ? 'active' : '' }}">
                             <a href="{{ route('business.category', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Categories') }}</a>
                             <ul class="nav-dir">

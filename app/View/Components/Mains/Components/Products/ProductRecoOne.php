@@ -13,10 +13,13 @@ class ProductRecoOne extends Component
 {
     public $recommends;
     public $locale;
+    public $productId;
+    public $titleName;
 
     public function __construct($locale, $id)
     {
         $this->locale = $locale;
+        $this->productId = $id;
 
         // Fetch recommended product IDs based on the provided product ID
         $recommendedProductIds = ProductRecommendation::where('product_id', $id)
@@ -25,8 +28,10 @@ class ProductRecoOne extends Component
 
             if(!empty($recommendedProductIds)) {
                 $this->recommends = $this->getRecommendedProducts($recommendedProductIds);
+                $this->titleName = "You May Also Like";
             } else {
                 $this->recommends = $this->getRecommendedProductsNotDefined();
+                $this->titleName = "Related Products";
             }
     }
 
@@ -84,6 +89,20 @@ class ProductRecoOne extends Component
 
     private function getRecommendedProductsNotDefined()
     {
+        // Load the current product along with its sub-categories
+        $currentProduct = Product::with('subCategories')->find($this->productId);
+        if (!$currentProduct) {
+            // If the current product cannot be found, return an empty collection
+            return collect();
+        }
+
+        // Get an array of the current product's sub-category IDs
+        $subCategoryIds = $currentProduct->subCategories->pluck('id')->toArray();
+
+        // Query for products that:
+        // - Have status = 1
+        // - Are not the current product itself
+        // - Belong to at least one of the same sub-categories
         $recommendedProducts = Product::with([
             'productTranslation' => function ($query) {
                 $query->where('locale', $this->locale);
@@ -95,10 +114,9 @@ class ProductRecoOne extends Component
             'variation.materials',
             'variation.capacities',
             'variation.images' => function ($query) {
-                // Here you can filter the images based on your requirements
                 $query->where(function ($query) {
                     $query->where('priority', 0)
-                          ->orWhere('is_primary', 1);
+                        ->orWhere('is_primary', 1);
                 });
             },
             'brand.brandTranslation' => function ($query) {
@@ -115,24 +133,32 @@ class ProductRecoOne extends Component
             }
         ])
         ->where('status', 1)
+        ->where('id', '<>', $this->productId) // Exclude current product
+        ->whereHas('subCategories', function ($query) use ($subCategoryIds) {
+            $query->whereIn('sub_categories.id', $subCategoryIds);
+        })
         ->limit(8)
         ->get();
 
-
+        // Transform each product to add discount details
         $recommendedProducts->transform(function ($product) {
             $customerId = request()->user('customer')->id ?? null;
             $discountDetails = $this->calculateFinalPrice($product, $customerId);
-    
-            // Assign calculated discount details to the product
-            $product->base_price = $discountDetails['base_price'];
-            $product->discount_price = $discountDetails['discount_price'];
-            $product->customer_discount_price = $discountDetails['customer_discount_price'];
+
+            // Assign the calculated discount details to the product
+            $product->base_price                = $discountDetails['base_price'];
+            $product->discount_price            = $discountDetails['discount_price'];
+            $product->customer_discount_price   = $discountDetails['customer_discount_price'];
             $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
-    
+
             return $product;
         });
+
+        // Return the products (remove or comment out dd() for production)
+        // dd($recommendedProducts);
         return $recommendedProducts;
     }
+
 
     private function calculateFinalPrice($product, $customerId) {
         // Use the original price and discount price if available
@@ -197,6 +223,7 @@ class ProductRecoOne extends Component
     {
         return view('mains.components.products.product-reco-one', [
             'recommends' => $this->recommends,
+            'title_name' => $this->titleName,
         ]);
     }
 }
