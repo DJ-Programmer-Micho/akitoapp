@@ -751,6 +751,7 @@ class BusinessController extends Controller
             ->whereHas('product', function($query) use ($sparepart) { // Use $sparepart here
                 $query->where('is_spare_part', $sparepart);
             })
+            ->orderBy("priority","asc")
             ->get(),
 
         'brands' => Brand::where('status', 1)
@@ -760,6 +761,7 @@ class BusinessController extends Controller
             ->with(['brandtranslation' => function($query) {
                 $query->where('locale', app()->getLocale());
             }])
+            ->orderBy("priority","asc")
             ->get(),
 
         'subCategories' => SubCategory::where('status', 1)
@@ -774,6 +776,7 @@ class BusinessController extends Controller
             ->with(['subCategoryTranslation' => function($query) {
                 $query->where('locale', app()->getLocale());
             }])
+            ->orderBy("priority","asc")
             ->get(),
 
         'sizes' => VariationSize::where('status', 1)
@@ -788,6 +791,7 @@ class BusinessController extends Controller
             ->with(['variationSizeTranslation' => function($query) {
                 $query->where('locale', app()->getLocale());
             }])
+            ->orderBy("priority","asc")
             ->get(),
 
         'colors' => VariationColor::where('status', 1)
@@ -810,6 +814,7 @@ class BusinessController extends Controller
             ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
                 $q->where('is_spare_part', $sparepart);
             })
+            ->orderBy("priority","asc")
             ->get(),
 
         'materials' => VariationMaterial::where('status', 1)
@@ -821,6 +826,7 @@ class BusinessController extends Controller
             ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
                 $q->where('is_spare_part', $sparepart);
             })
+            ->orderBy("priority","asc")
             ->get(),
     ];
 }

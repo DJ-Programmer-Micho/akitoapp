@@ -308,6 +308,54 @@ class CustomerProfileLivewire extends Component
         }
     }
 
+    public function updateEmailStatus(int $id)
+    {
+        // Find the brand by ID, if not found return an error
+        $customerEmailStatus = Customer::find($id);
+    
+        if ($customerEmailStatus) {
+            // Toggle the status (0 to 1 and 1 to 0)
+            $customerEmailStatus->email_verify = !$customerEmailStatus->email_verify;
+            $customerEmailStatus->save();
+    
+            // Dispatch a browser event to show success message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => __('Status Updated Successfully')
+            ]);
+        } else {
+            // Dispatch a browser event to show error message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
+
+    public function updatePhoneStatus(int $id)
+    {
+        // Find the brand by ID, if not found return an error
+        $customerPhoneStatus = Customer::find($id);
+    
+        if ($customerPhoneStatus) {
+            // Toggle the status (0 to 1 and 1 to 0)
+            $customerPhoneStatus->phone_verify = !$customerPhoneStatus->phone_verify;
+            $customerPhoneStatus->save();
+    
+            // Dispatch a browser event to show success message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => __('Status Updated Successfully')
+            ]);
+        } else {
+            // Dispatch a browser event to show error message
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Record Not Found')
+            ]);
+        }
+    }
+
     // Render
     public function render(){        
         $query = Customer::with(['customer_profile'])->where('id', $this->c_id)->first();

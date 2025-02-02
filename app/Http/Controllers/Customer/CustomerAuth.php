@@ -49,7 +49,7 @@ class CustomerAuth extends Controller
     
         // If authentication fails
         return back()->withErrors([
-            'email-form-signin' => 'Invalid email or password.',
+            'login' => 'Invalid email or password.',
         ])->withInput();
     }
     
@@ -235,6 +235,7 @@ dd($e);
             'type' => 'error',
             'message' => __('PIN CODE NOT CORRECT!'),
         ]);
+        return redirect()->back();
     }
 
     public function goReEmailOTP($local, $uid){
@@ -326,7 +327,7 @@ dd($e);
                     $final_clean_phone_number = $clean_phone_number;
                 }
                 $s_response = SinchService::sendOTP($final_clean_phone_number);
-                if($response->successful()) {
+                if($s_response->successful()) {
                     return response()->json(['success' => true]);
                     // return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id'=> $id, 'phone' => $phone])->with('alert', [
                     //     'type' => 'success',
@@ -387,7 +388,10 @@ dd($e);
 
     public function updatePassword()
     {
-        $customer = Auth::guard('customer');
+        $customer = Auth::guard('customer')->user();
+        if (!$customer) {
+            return redirect()->back()->with('error', 'User not authenticated.');
+        }
     
         // Validation logic
         $data = request()->validate([

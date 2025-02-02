@@ -70,6 +70,24 @@
                                                         @endif
                                                         </button>
                                                     </li>
+                                                    <label class="mx-2 text-muted">Customer Email Status</label>
+                                                    <li><button class="dropdown-item" type="button" wire:click="updateEmailStatus({{ $query->id }})">
+                                                        @if ( $query->email_verify == 1)
+                                                        <span class="text-danger"><i class="fa-solid fa-xmark me-2"></i> {{__('BLOCK')}}</span>
+                                                        @else
+                                                        <span class="text-success"><i class="fa-solid fa-check me-2"></i> {{__('Active')}}</span>
+                                                        @endif
+                                                        </button>
+                                                    </li>
+                                                    <label class="mx-2 text-muted">Customer Phone Status</label>
+                                                    <li><button class="dropdown-item" type="button" wire:click="updatePhoneStatus({{ $query->id }})">
+                                                        @if ( $query->phone_verify == 1)
+                                                        <span class="text-danger"><i class="fa-solid fa-xmark me-2"></i> {{__('BLOCK')}}</span>
+                                                        @else
+                                                        <span class="text-success"><i class="fa-solid fa-check me-2"></i> {{__('Active')}}</span>
+                                                        @endif
+                                                        </button>
+                                                    </li>
                                                     <li class="dropdown-divider"></li>
                                                     <label class="mx-2 text-muted">Company Status</label>
                                                     <li>
@@ -101,7 +119,7 @@
                                                     <tr>
                                                         <th class="ps-0" scope="row">Email Verification :</th>
                                                         <td>
-                                                            @if ( $query->phone_verify == 1)
+                                                            @if ( $query->email_verify == 1)
                                                             <span class="text-success"><i class="fa-solid fa-check me-2"></i> {{__('Verified')}}</span>
                                                             @else
                                                             <span class="text-danger"><i class="fa-solid fa-xmark me-2"></i> {{__('Not Verified')}}</span>
