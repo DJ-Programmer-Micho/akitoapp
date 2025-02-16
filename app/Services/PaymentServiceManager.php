@@ -58,7 +58,7 @@ class PaymentServiceManager
     //////////////////////////////
     public function processPayment()
     {
-        Log::info($this->paymentMethod);
+        // Log::info($this->paymentMethod);
         switch ($this->paymentMethod) {
             case 'Areeba':
                 return $this->processAreebaPayment();
@@ -98,7 +98,7 @@ class PaymentServiceManager
             "refundableFor" => "PT24H",
         ];
         $paymentResponse = Http::withOptions([
-            'verify' => false // SSL BYPASS
+            'verify' => true // SSL BYPASS
         ])->withHeaders([
             'Authorization' => "Bearer $accessToken",
             'Content-Type' => 'application/json'
@@ -132,7 +132,7 @@ class PaymentServiceManager
     private function getFIBToken()
     {
         $tokenResponse = Http::withOptions([
-            'verify' => false // SSL BYPASS
+            'verify' => ture // SSL BYPASS
         ])->asForm()->post('https://fib.stage.fib.iq/auth/realms/fib-online-shop/protocol/openid-connect/token', [
             'grant_type' => 'client_credentials',
             'client_id' => env('FIB_CLIENT_ID'),
@@ -159,7 +159,7 @@ class PaymentServiceManager
             }
 
             $statusResponse = Http::withToken($accessToken)
-                ->withoutVerifying() // SSL BYPASS
+                // ->withoutVerifying() // SSL BYPASS
                 ->get("https://fib.stage.fib.iq/protected/v1/payments/{$paymentId}/status");
 
             if (!$statusResponse->successful()) {
