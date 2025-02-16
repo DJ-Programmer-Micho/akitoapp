@@ -84,7 +84,7 @@ class PaymentServiceManager
         }
 
         $iq_currency = round($this->amount * $exchangeRate);
-        
+        Log::info($iq_currency);
         $paymentData = [
             "monetaryValue" => [
                 "amount" => $iq_currency,
