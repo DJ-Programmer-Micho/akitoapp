@@ -58,6 +58,7 @@ class PaymentServiceManager
     //////////////////////////////
     public function processPayment()
     {
+        Log::info($this->paymentMethod);
         switch ($this->paymentMethod) {
             case 'Areeba':
                 return $this->processAreebaPayment();
