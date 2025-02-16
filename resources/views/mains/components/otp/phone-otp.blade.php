@@ -63,6 +63,11 @@
         const resendLink = document.getElementById('resendLink');
         const countdownKeyPhone = 'otpCountdown';
         let countdownTimer;
+
+        otpShowOTP.classList.remove('d-none');
+        optionsOTP.classList.add('d-none');
+        yesPhoneButton.disabled = true;
+        noPhoneButton.disabled = true;
     
         // Function to start and display countdown
         function startCountdown(seconds) {
