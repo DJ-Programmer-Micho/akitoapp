@@ -183,6 +183,11 @@ class CustomerAuth extends Controller
             if (isset($firebaseUser)) {
                 $auth->deleteUser($firebaseUser->uid); // Delete Firebase user if created
             }
+
+        session()->flash('alert', [
+            'type' => 'error',
+            'message' => __($e->getMessage()),
+        ]);
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
 
