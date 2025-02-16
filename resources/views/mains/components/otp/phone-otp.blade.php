@@ -16,7 +16,7 @@
                             <input type="phone" class="form-control" name="phone" value="{{ $phone }}" readonly>
                             <input type="hidden" name="id" value="{{ $id }}">
                         </div>
-                        <div id="choice" class="form-group">
+                        <div id="choiceOTP" class="form-group">
                             <a id="noPhone" href="{{ route('goRePhoneOTP', ['locale' => app()->getLocale(), 'id' => $id]) }}" class="btn btn-primary" style="margin-top: 3px; width: 49%;">
                                {{__(' No!')}}
                             </a>
@@ -25,7 +25,7 @@
                                 {{__('Yes!')}}
                             </button>
                         </div>
-                        <div id="otp-show" class="d-none">
+                        <div id="otp-show-otp" class="d-none">
                             <div class="form-group">
                                 <label for="entered_otp_code">Enter OTP Code:</label>
                                 <input id="entered_email_otp_code" type="text" class="form-control" name="entered_otp_code" required>
@@ -55,8 +55,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const otpShow = document.getElementById('otp-show');
-        const options = document.getElementById('choice');
+        const otpShowOTP = document.getElementById('otp-show-otp');
+        const optionsOTP = document.getElementById('choiceOTP');
         const yesPhoneButton = document.getElementById('yesPhone');
         const noPhoneButton = document.getElementById('noPhone');
         const countdownElement = document.getElementById('countdown');
@@ -84,8 +84,8 @@
                     localStorage.removeItem(countdownKeyPhone); // Clear storage after countdown ends
                     yesPhoneButton.disabled = false;
                     noPhoneButton.disabled = false;
-                    otpShow.classList.add('d-none');
-                    options.classList.remove('d-none');
+                    otpShowOTP.classList.add('d-none');
+                    optionsOTP.classList.remove('d-none');
                 }
             }, 1000);
         }
@@ -96,8 +96,8 @@
             if (endTime) {
                 const timeLeft = Math.floor((endTime - Date.now()) / 1000);
                 if (timeLeft > 0) {
-                    otpShow.classList.remove('d-none');
-                    options.classList.add('d-none');
+                    otpShowOTP.classList.remove('d-none');
+                    optionsOTP.classList.add('d-none');
                     yesPhoneButton.disabled = true;
                     noPhoneButton.disabled = true;
                     startCountdown(timeLeft);
@@ -109,8 +109,8 @@
     
         // AJAX request to resend OTP and start countdown when "Yes" is clicked
         yesPhoneButton.addEventListener('click', function() {
-            otpShow.classList.remove('d-none');
-            options.classList.add('d-none');
+            otpShowOTP.classList.remove('d-none');
+            optionsOTP.classList.add('d-none');
             yesPhoneButton.disabled = true;
             noPhoneButton.disabled = true;
     
