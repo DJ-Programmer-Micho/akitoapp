@@ -132,7 +132,7 @@ class PaymentServiceManager
     private function getFIBToken()
     {
         $tokenResponse = Http::withOptions([
-            'verify' => ture // SSL BYPASS
+            'verify' => true // SSL BYPASS
         ])->asForm()->post('https://fib.stage.fib.iq/auth/realms/fib-online-shop/protocol/openid-connect/token', [
             'grant_type' => 'client_credentials',
             'client_id' => env('FIB_CLIENT_ID'),
