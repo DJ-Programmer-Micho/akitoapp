@@ -154,7 +154,7 @@ class PaymentServiceManager
             $accessToken = $this->getFIBToken(); // Securely get token
 
             if (!$accessToken) {
-                // Log::error("FIB Payment Status Error: Failed to get access token");
+                Log::error("FIB Payment Status Error: Failed to get access token");
                 return false;
             }
 
