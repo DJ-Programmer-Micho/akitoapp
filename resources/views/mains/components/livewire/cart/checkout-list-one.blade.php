@@ -9,6 +9,7 @@
                 padding: 2rem 2.8rem 2rem;
             }
         </style>
+
         <form action="{{ route('business.checkoutChecker', ['locale' => app()->getLocale(), 'digit' => $digitPaymentStatus ?? 'none', 'nvxf' => auth()->guard('customer')->user()->id])}}" method="POST">
             @csrf
             <div class="row">
@@ -24,7 +25,7 @@
                                 <div 
                                     class="card address-card {{ $addressSelected == $address->id ? 'selected' : '' }}" 
                                     wire:click="selectAddress({{ $address->id }})"
-                                    style="cursor: pointer; {{ $addressSelected == $address->id ? 'border: 2px solid green;' : '' }}"
+                                    style="cursor: pointer; {{ $addressSelected == $address->id ? 'border: 2px solid green; background-color: #03810311' : '' }}"
                                     >
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $address->type }}</h5>
@@ -70,7 +71,7 @@
                                 <div 
                                     class="card address-card {{ $paymentSelected == $payment->id ? 'selected' : '' }}" 
                                     wire:click="selectPayment({{ $payment->id }})"
-                                    style="cursor: pointer; {{ $paymentSelected == $payment->id ? 'border: 2px solid green;' : '' }} 
+                                    style="cursor: pointer; {{ $paymentSelected == $payment->id ? 'border: 2px solid green; background-color: #03810311' : '' }} 
                                     @if($payment->online == 1)
                                      @if($digitPaymentStatus == 0)
                                      opacity: 0.5; pointer-events: none;
@@ -85,10 +86,16 @@
 
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $payment->name }}</h5>
-                                        <p class="card-text">Fees: {{ $payment->transaction_fee }}</p>
+                                        <p class="card-text"><b>Fees: {{ $payment->transaction_fee }}%</b></p>
                                         <input type="radio" value="{{ $payment->id }}" wire:model="paymentSelected" class="d-none" @if($digitPaymentStatus == 0) disabled @endif>
                                         <input type="hidden" name="payment" value="{{ $paymentSelected }}">
                                     </div>
+                                    @if($payment->addon_identifier)
+                                    <img src="{{ app('cloudfront') . $payment->addon_identifier }}" 
+                                        class="position-absolute" 
+                                        style="right: 10px; top: 50%; transform: translateY(-50%); width: 70px; height: auto;"
+                                        alt="Payment Logo">
+                                @endif
                                 </div>
                             </div>
                         </div><!-- End .col-lg-6 -->
@@ -105,7 +112,7 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>Total</th>
+                                    <th>QTY X Item</th>
                                 </tr>
                             </thead>
 
@@ -119,12 +126,12 @@
                                         </a>
                                     </td>
                                     <td>
-                                        ${{ 
+                                        {{$item['quantity']}} X ${{ 
                                             number_format(
                                                 (
                                                     $item['product']['customer_discount_price'] ?? 
                                                     ($item['product']['discount_price'] ?? $item['product']['base_price'])
-                                                ) * $item['quantity'], 
+                                                ), 
                                                 2
                                             ) 
                                         }}
@@ -150,26 +157,39 @@
                                 </tr><!-- End .summary-total --> --}}
                                 <tr class="summary-total-f">
                                     <td>Payment Fees:</td>
-                                    <td>${{ $transactionFee }}</td>
+                                    @if ($transactionFee > 0)
+                                    <td>{{ number_format($transactionFee) }}%</td>
+                                    @else
+                                    <td class="text-success"><b>No Fees</b></td>
+                                    @endif
                                 </tr><!-- End .summary-total -->
                                 <tr class="summary-total-f">
                                     <td>Shipping:</td>
                                     <input type="hidden" name="shipping_amount" value="{{$deliveryCharge}}">
+                                    @if ($deliveryCharge > 0)
                                     <td>${{$deliveryCharge}}</td>
+                                    @else
+                                    <td class="text-danger"><b>FREE</b></td>
+                                    @endif
                                 </tr><!-- End .summary-total -->
                                 <tr class="summary-total-f">
-                                    <td>Total:</td>
-                                    <input type="hidden" name="total_amount" value="{{$totalListPrice + $transactionFee + $deliveryCharge}}">
-                                    <td><b>${{ $totalListPrice + $transactionFee + $deliveryCharge}}</b></td>
+                                    <td>Grand Total:</td>
+                                    <input type="hidden" name="total_amount" value="{{$totalListPrice + $deliveryCharge + (($totalListPrice) * $transactionFee / 100)}}">
+                                    <td><b>${{number_format($totalListPrice + $deliveryCharge + (($totalListPrice) * $transactionFee / 100), 2)}}</b></td>
                                 </tr><!-- End .summary-total -->
                             </tbody>
                         </table><!-- End .table table-summary -->
+
                         @if (auth('customer')->user()->company_verify == 1)
                             @if ($inZone)
-                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                            <!-- Button with a loader -->
+                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" id="order-btn" style="display: none;">
                                 <span class="btn-text">Place Order</span>
                                 <span class="btn-hover-text">Proceed to Checkout</span>
                             </button>
+                            <div id="loading" class="text-center mb-1">
+                                <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+                            </div>
                             @else
                             <div class="text-center mt-1">
                                 <h6 class="text-danger">Please Add Address First</h6>
@@ -180,6 +200,30 @@
                             <h6 class="text-danger">Please Get Verify First</h6>
                         </div>
                         @endif
+
+                        <!-- JavaScript to Show Button After Page Fully Loads -->
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                // Initial page load: Hide loader and show button
+                                toggleCheckoutButton();
+                        
+                                // Listen for Livewire updates
+                                Livewire.hook('message.processed', (message, component) => {
+                                    toggleCheckoutButton();
+                                });
+                        
+                                function toggleCheckoutButton() {
+                                    let orderBtn = document.getElementById("order-btn");
+                                    let loadingSpinner = document.getElementById("loading");
+                        
+                                    if (orderBtn && loadingSpinner) {
+                                        orderBtn.style.display = "block";
+                                        loadingSpinner.style.display = "none";
+                                    }
+                                }
+                            });
+                        </script>
+                                           
                     </div><!-- End .summary -->
                 </aside><!-- End .col-lg-3 -->
             </div><!-- End .row -->

@@ -136,4 +136,7 @@ class SuperAdminController extends Controller
     public function settingLanguage(){
         return view('super-admins.pages.setting.language.index');
     }
+    public function settingPrice(){
+        return view('super-admins.pages.setting.checkout.index');
+    }
 }

@@ -98,7 +98,19 @@
                                                                 </th>
                                                                 <th style="padding: 5px;">
                                                                     <p style="color: #878a99; font-size: 13px; margin-bottom: 2px; font-weight: 400;">Payment Method</p>
-                                                                    <span>{{$orderData->payment_status}}</span>
+                                                                    @if ($orderData->payment_status == "pending")
+                                                                    <span style="color: #4169e1 ">
+                                                                        {{strtoupper($orderData->payment_status)}}
+                                                                    </span>
+                                                                    @elseif($orderData->payment_status == "successful")
+                                                                    <span style="color: #136207 ">
+                                                                        {{strtoupper($orderData->payment_status)}}
+                                                                    </span>
+                                                                    @else
+                                                                    <span style="color: #cc0022">
+                                                                        {{strtoupper($orderData->payment_status)}}
+                                                                    </span>
+                                                                    @endif
                                                                 </th>
                                                             </tr>
                                                         </tbody>
@@ -107,7 +119,7 @@
                                             </tr>
                                             <tr style="font-family: 'Roboto', sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                                 <td class="content-block" style="font-family: 'Roboto', sans-serif; box-sizing: border-box; font-size: 15px; vertical-align: top; margin: 0; padding: 0 0 12px;" valign="top">
-                                                    <h6 style="font-family: 'Roboto', sans-serif; font-size: 15px; text-decoration-line: underline;margin-bottom: 15px;">Her'e what you ordered:</h6>
+                                                    <h6 style="font-family: 'Roboto', sans-serif; font-size: 15px; text-decoration-line: underline;margin-bottom: 15px;">Here what you ordered:</h6>
                                                     <table style="width:100%;" cellspacing="0" cellpadding="0">
                                                         <thead style="text-align: left;">
                                                             <th style="padding: 8px;border-bottom: 1px solid #e9ebec;">Product Details</th>

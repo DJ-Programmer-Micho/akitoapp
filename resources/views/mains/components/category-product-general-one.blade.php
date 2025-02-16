@@ -17,7 +17,7 @@
             <div class="col-3">
                 <div class="product product-2">
                     <div class="card" aria-hidden="true">
-                        <img src="https://placehold.co/600x400?text=Loading..." class="card-img-top" alt="...">
+                        <img loading="lazy" src="https://placehold.co/600x400?text=Loading..." class="card-img-top" alt="...">
                         <div class="card-body">
                           <h5 class="card-title placeholder-glow">
                             <span class="placeholder col-6"></span>
@@ -74,7 +74,7 @@
                             </div>
                             
                             <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}">
-                                <img src="{{ app('cloudfront') . ($product->variation->images->first()->image_path ?? 'path/to/default/image.jpg') }}" alt="{{ $product->productTranslation->first()->name ?? 'Product Image' }}" class="product-image">
+                                <img loading="lazy" src="{{ app('cloudfront') . ($product->variation->images->first()->image_path ?? 'path/to/default/image.jpg') }}" alt="{{ $product->productTranslation->first()->name ?? 'Product Image' }}" class="product-image">
                             </a>
             
                             @guest('customer')

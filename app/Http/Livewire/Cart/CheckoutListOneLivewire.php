@@ -6,6 +6,7 @@ use App\Models\Zone;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\CartItem;
+use App\Models\WebSetting;
 use App\Models\DiscountRule;
 use App\Models\ShippingCost;
 use App\Models\PaymentMethods;
@@ -27,6 +28,7 @@ class CheckoutListOneLivewire extends Component
     public $addressList;
     public $paymentList;
     
+    public $deliveryLimit;
     public $addressSelected;
     public $paymentSelected;
 
@@ -58,6 +60,7 @@ class CheckoutListOneLivewire extends Component
 
         $this->loadCartList();
         $this->calculateTotals();
+        $this->deliveryLimit = WebSetting::find(1)->free_delivery;
     }
     
     protected function loadZoneData()
@@ -135,7 +138,6 @@ class CheckoutListOneLivewire extends Component
         // $this->calculateShippingCosts(); // Update shipping costs based on the new address
     }
 
-
     public function loadPayments() {
         $this->paymentList = PaymentMethods::where('active', true)->get();
     }
@@ -149,7 +151,7 @@ class CheckoutListOneLivewire extends Component
         if ($paymentMethod) {
             $this->transactionFee = $paymentMethod->transaction_fee;
         }
-
+        $this->digitPaymentStatus = $paymentId;
         // Recalculate the total
         $this->calculateTotals();
     }
@@ -252,56 +254,6 @@ class CheckoutListOneLivewire extends Component
         $this->calculateTotals(); // Calculate totals after loading cart items
     }
     
-        // is for calculating from COMPANY to CUSTOMER HOUSE (KM DISTANCE)
-    // public function calculateShippingCosts()
-    // {
-    //     // Company address coordinates
-    //     $companyLat = 36.22202;
-    //     $companyLng = 43.99596;
-
-    //     // Get the selected address coordinates
-    //     $address = CustomerAddress::find($this->addressSelected);
-    //     if (!$address) {
-    //         $this->deliveryCharge = 0; // No delivery charge if no address is selected
-    //         return;
-    //     }
-
-    //     $customerLat = $address->latitude;
-    //     $customerLng = $address->longitude;
-
-    //     // Call Google Distance Matrix API
-    //     $apiKey = 'AIzaSyCQuIFgYGBzpKpzzp3puSrqzL6uK7sXiTo'; // Ensure you have this in your .env file
-    //     $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins={$customerLat},{$customerLng}&destinations={$companyLat},{$companyLng}&key={$apiKey}";
-
-    //     $response = Http::get($url);
-    //     $data = $response->json();
-
-    //     if ($data['status'] == 'OK' && isset($data['rows'][0]['elements'][0]['distance']['value'])) {
-    //         $distanceInMeters = $data['rows'][0]['elements'][0]['distance']['value'];
-
-    //         // Fetch shipping cost settings
-    //         $shippingCost = ShippingCost::first(); // Assuming you have one shipping cost configuration
-    //         if ($shippingCost) {
-    //             // Calculate the delivery charge based on the first km and additional km costs
-    //             if ($distanceInMeters <= 1000) {
-    //                 $this->deliveryCharge = $shippingCost->first_km_cost;
-    //             } else {
-    //                 $additionalKm = ceil(($distanceInMeters - 1000) / 1000); // Additional kilometers
-    //                 $this->deliveryCharge = $shippingCost->first_km_cost + ($additionalKm * $shippingCost->additional_km_cost);
-    //             }
-
-    //             // Free delivery if the charge exceeds the specified amount
-    //             if ($this->deliveryCharge >= $shippingCost->free_delivery_over) {
-    //                 $this->deliveryCharge = 0;
-    //             }
-    //         } else {
-    //             $this->deliveryCharge = 5; // Default charge if no shipping cost configuration exists
-    //         }
-    //     } else {
-    //         $this->deliveryCharge = 5; // Default charge if API call fails
-    //     }
-    // }
-    
     // FOR THE DISCOUNT CALCULATIONS TOTAL
     public function calculateTotals()
     {
@@ -335,7 +287,7 @@ class CheckoutListOneLivewire extends Component
     
     public function render()
     {
-        if($this->totalListPrice > 100){
+        if($this->totalListPrice > $this->deliveryLimit){
             $this->deliveryCharge = 0;
         }
         return view('mains.components.livewire.cart.checkout-list-one', [

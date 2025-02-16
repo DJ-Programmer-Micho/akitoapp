@@ -10,12 +10,12 @@
 
                         <div class="widget-call mb-1">
                             <i class="icon-phone"></i>
-                            {{__('Dubai Call Center')}}
+                            {{__('Call Center')}}
                             <a href="tel:{{app('phoneNumber')}}" style="font-size: 15px; color: white">{{app('phoneNumber')}}</a>         
                         </div><!-- End .widget-call -->
                         <div class="widget-call">
                             <i class="icon-phone"></i>
-                            {{__('Iraq Call Center')}}
+                            {{__('Call Center')}}
                             <a href="tel:{{app('phoneNumber2')}}" style="font-size: 15px; color: white">{{app('phoneNumber2')}}</a>         
                         </div><!-- End .widget-call -->
                     </div><!-- End .widget about-widget -->

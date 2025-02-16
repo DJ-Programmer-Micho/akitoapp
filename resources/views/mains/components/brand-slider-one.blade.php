@@ -10,7 +10,7 @@
                 @foreach($brands as $brand)
                 <li class="highway-car">
                     <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $brand->id]) }}">
-                        <img src="{{ app('cloudfront') . $brand->image }}" alt="{{ $brand->brandtranslation->name ?? 'Unknown Brand' }}" style="max-width: 100%; height: 120px;">
+                        <img loading="lazy" src="{{ app('cloudfront') . $brand->image }}" alt="{{ $brand->brandtranslation->name ?? 'Unknown Brand' }}" style="max-width: 100%; height: 120px;">
                     </a>
                 </li>
                 @endforeach
@@ -18,7 +18,7 @@
                 @foreach($brands as $brand)
                 <li class="highway-car">
                     <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $brand->id]) }}">
-                        <img src="{{ app('cloudfront') . $brand->image }}" alt="{{ $brand->brandtranslation->name ?? 'Unknown Brand' }}" style="max-width: 100%; height: 120px;">
+                        <img loading="lazy" src="{{ app('cloudfront') . $brand->image }}" alt="{{ $brand->brandtranslation->name ?? 'Unknown Brand' }}" style="max-width: 100%; height: 120px;">
                     </a>
                 </li>
                 @endforeach

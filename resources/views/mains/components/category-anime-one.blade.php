@@ -52,7 +52,7 @@
             <figure class="product-media-custom">
                 <div class="image-container">
                     <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $category->id]) }}">
-                        <img src="{{ app('cloudfront') . ($category->image ?? 'path/to/default/image.jpg') }}" alt="{{ $category->categoryTranslation->name ?? 'category Image' }}" class="product-image-category">
+                        <img loading="lazy" src="{{ app('cloudfront') . ($category->image ?? 'path/to/default/image.jpg') }}" alt="{{ $category->categoryTranslation->name ?? 'category Image' }}" class="product-image-category">
                     </a>
                 </div>
                 <div class="text-container">

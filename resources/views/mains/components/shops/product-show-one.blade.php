@@ -12,7 +12,7 @@
                     @endif
                 </div>
                 <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}">
-                    <img src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->first()->name[0]}}" class="product-image">
+                    <img loading="lazy" src="{{app('cloudfront').$product->variation->images[0]->image_path ?? "sdf"}}" alt="{{$product->productTranslation->first()->name[0]}}" class="product-image">
                 </a>
                 @guest('customer')
                 <div class="heart-icon">
@@ -64,7 +64,7 @@
                 <div class="product-nav product-nav-thumbs">
                     @foreach ($product->variation->images->take(3) as $index => $image)
                     <a href="{{ route('business.productDetail', ['locale' => app()->getLocale(),'slug' => $product->productTranslation->first()->slug])}}" class="active">
-                        <img src="{{app('cloudfront').$image->image_path ?? "sdf"}}" alt="product desc">
+                        <img loading="lazy" src="{{app('cloudfront').$image->image_path ?? "sdf"}}" alt="product desc">
                     </a>
                     @endforeach
                 </div><!-- End .product-nav -->

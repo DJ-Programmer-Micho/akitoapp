@@ -4,16 +4,19 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LawController;
 use Illuminate\Support\Facades\Response;
-use App\Http\Controllers\Driver\DriverController;
 use App\Http\Controllers\Pdf\PdfController;
+use App\Http\Controllers\Main\OrderController;
 use App\Http\Controllers\Customer\CustomerAuth;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Driver\DriverController;
 use App\Http\Controllers\Main\BusinessController;
 use App\Http\Middleware\LocaleRedirectMiddleware;
 use App\Http\Controllers\SuperAdmin\AuthController;
 use App\Http\Middleware\LocalizationMainMiddleware;
+use App\Http\Controllers\Gateaway\PaymentController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Gateaway\TransactionController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\Customer\CustomerAddressController;
 
@@ -27,6 +30,11 @@ use App\Http\Controllers\Customer\CustomerAddressController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// FIB Payment Method
+// Route::post('fib/callback', [FibCallbackController::class, 'handle'])->name('fib.callback');
+// Route::get('/payment/fib/{paymentId}', [BusinessController::class, 'showFIBPaymentPage'])
+//     ->name('payment.fib');
+
 // SITEMAPS
 Route::get("sitemap_en.xml" , function () { return \Illuminate\Support\Facades\Redirect::to('sitemap_en.xml'); });
 Route::get("sitemap_ar.xml" , function () { return \Illuminate\Support\Facades\Redirect::to('sitemap_ar.xml'); });
@@ -129,6 +137,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::get('/setting-recaptcha', [SuperAdminController::class, 'settingRecaptcha'])->name('setting.recaptcha');
     Route::get('/setting-banner', [SuperAdminController::class, 'settingBanner'])->name('setting.banner');
     Route::get('/setting-language', [SuperAdminController::class, 'settingLanguage'])->name('setting.language');
+    Route::get('/setting-prices', [SuperAdminController::class, 'settingPrice'])->name('setting.price');
 });
 // DASHBOARD - DRIVER
 Route::prefix('{locale}/drivers')->middleware(['LocalizationMainMiddleware','drivercheck','driverstatuscheck'])->group(function () {
@@ -147,19 +156,29 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     Route::get('spare', [BusinessController::class, 'productShopSpare'])->name('business.productShopSpare');
     Route::get('product/{slug}', [BusinessController::class, 'productDetail'])->name('business.productDetail');
     Route::get('shop-search', [BusinessController::class, 'searchShop'])->name('business.shop.search');
-    
+    Route::get('/order-view/{tracking}', [PdfController::class, 'pdfOrderView'])->name('pdf.order.customer');
+    Route::get('/order-cancel-pre-view/{tracking}', [PdfController::class, 'pdfOrderViewCancel'])->name('pdf.order.customer.cancel');
     Route::post('/register', [CustomerAuth::class, 'register'])->name('customer.register');
     Route::post('/cust-login', [CustomerAuth::class, 'login'])->name('customer.login');
     Route::post('/cust-logout', [CustomerAuth::class, 'logout'])->name('customer.logout');
     Route::middleware(['customeridcheck','customercheck'])->group(function () {
         Route::get('account', [BusinessController::class, 'account'])->name('business.account');        
-        Route::get('proccess/success', [BusinessController::class, 'checkSuccess'])->name('business.checkout.success');
-        Route::get('proccess/failed', [BusinessController::class, 'checkFaild'])->name('business.checkout.faild');
-        Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
         Route::get('view-cart-list', [BusinessController::class, 'viewcart'])->name('business.viewcart');
         Route::get('wishlist-list', [BusinessController::class, 'wishlist'])->name('business.whishlist');
-        
+        Route::get('checkout-list', [BusinessController::class, 'checkout'])->name('business.checkout');
+        Route::get('/checkout/order/{orderId}', [BusinessController::class, 'checkoutOrder'])->name('business.checkout.order');
+        //POST METHODE
         Route::post('processing-checkout-list/{digit}/{nvxf}', [BusinessController::class, 'checkoutChecker'])->name('business.checkoutChecker');
+        Route::post('processing-checkout-old-list/{digit}/{orderId}/{grandTotalUpdated}', [BusinessController::class, 'checkoutExistingOrder'])->name('business.checkoutExistingOrder');
+        Route::get('proccess/success', [BusinessController::class, 'checkSuccess'])->name('business.checkout.success');
+        Route::get('proccess/failed', [BusinessController::class, 'checkFaild'])->name('business.checkout.failed');
+
+        
+        Route::post('/checkout/{orderId}', [PaymentController::class, 'checkout'])->name('checkout');
+        Route::get('/payment/success', [PaymentController::class, 'digitSuccess'])->name('digit.payment.success');
+        Route::get('/payment/cancel', [PaymentController::class, 'digitCancel'])->name('digit.payment.cancel');
+        Route::get('/payment/error', [PaymentController::class, 'digitError'])->name('digit.payment.error');
+        
         Route::post('/account', [CustomerAuth::class, 'updatePassword'])->name('business.account.post');
         Route::post('/avatarupload', [CustomerAuth::class, 'avatarupload'])->name('customer.avatarupload');
         
@@ -168,8 +187,24 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
         Route::get('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'edit'])->name('customer.addresses.edit');
         Route::put('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'update'])->name('customer.addresses.update');
         Route::delete('/cust-address/{addressId}/delete', [CustomerAddressController::class, 'destroy'])->name('customer.addresses.delete');
-    });
+
+        Route::get('/payment/status/{paymentId}/{paymentMethod}', [PaymentController::class, 'checkFIBPaymentStatus'])->name('payment.status');
+
+    // Payment Process
+    Route::get('/payment/process/{orderId}/{paymentId}/{paymentMethod}', [PaymentController::class, 'processFrontPayment'])->name('payment.process');
+
+    // FIB Payment Routes
+    Route::get('/payment/fib/{paymentId}', [PaymentController::class, 'showFIBPaymentPage'])->name('payment.fib');
+    // Route::get('/payment/status/{paymentId}', [PaymentController::class, 'checkFIBPaymentStatus'])->name('payment.status');
+    
+    // Areeba & ZainCash Payment Routes
+    // Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+    // Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+    // Route::get('/payment/error', [PaymentController::class, 'error'])->name('payment.error');
 });
+});
+Route::post('/payment/cancel-timeout/{paymentId}', [PaymentController::class, 'cancelPayment'])->name('time.payment.cancel');
+Route::post('/payment/cancel-by-user/{orderId}', [OrderController::class, 'cancelOrder'])->name('action.payment.cancel');
 
 Route::get('law/terms-conditions', [LawController::class, 'termsCondition'])->name('law.terms');
 Route::get('law/privacy-policy', [LawController::class, 'privacyPolicy'])->name('law.privacy');

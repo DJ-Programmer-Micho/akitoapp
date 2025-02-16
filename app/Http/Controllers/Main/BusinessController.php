@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\WebSetting;
 use App\Models\SubCategory;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use App\Models\DiscountRule;
 use Illuminate\Http\Request;
@@ -21,11 +22,15 @@ use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Mail\EmailInvoiceActionMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
+use App\Services\PaymentServiceManager;
+use Illuminate\Support\Facades\Redirect;
 use App\Events\EventCustomerOrderCheckout;
 use Illuminate\Support\Facades\Notification;
 use App\Events\EventNotifyCustomerOrderCheckout;
@@ -977,160 +982,212 @@ class BusinessController extends Controller
         ]);
     }
 
-    public function checkoutChecker($locale, $digit, $nvxf, Request $request){
-        if(Auth::guard('customer')->check()) {
-            $customer = Auth::guard('customer')->user();
-            if($customer->status == 1 && $customer->id == $nvxf){
-                if($digit == 0) {
-                    try {
-                        //code...
-                        $validatedData = $request->validate([
-                            'shipping_amount' => 'required|string|max:255',
-                            'total_amount' => 'required|string|max:255',
-                            'address' => 'required|string|max:255',
-                            'payment' => 'required|string|max:255',
-                        ]);
-
-                        $customerP = Auth::guard('customer')->user()->customer_profile;
-                        $customerA = Auth::guard('customer')->user()->customer_addresses->where('id',$validatedData['address'])->first();
-                        $paymentType = PaymentMethods::where('id', $validatedData['payment'])->first()->name;
-                        // $cartItems = CartItem::with('product','product.variation','product.productTranslation')->where('customer_id',$customer->id)->get();
-                        $random_number = Str::random(6);
-                        $customerId = $customer->id;
-                        $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation')
-                        ->where('customer_id', $customer->id)
-                        ->get()
-                        ->transform(function ($item) use ($customerId) {
-                            $product = $item->product;
-
-                            // Calculate the discount for the product
-                            $discountDetails = $this->calculateFinalPrice($product, $customerId);
-
-                            // Assign calculated discount details to the product
-                            $product->base_price = $discountDetails['base_price'];
-                            $product->discount_price = $discountDetails['discount_price'];
-                            $product->customer_discount_price = $discountDetails['customer_discount_price'];
-                            $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
-
-                            // Set the product price in the cart item based on customer-specific discount or general discount
-                            $finalPrice = $product->customer_discount_price ?? $product->discount_price ?? $product->base_price;
-                            $item->final_price = $finalPrice;
-
-                            return $item;
-                        });
-
-                        DB::beginTransaction();
-                        $order = Order::create([
-                            'customer_id' => $customer->id,
-                            'first_name' =>  $customerP->first_name,
-                            'last_name' => $customerP->last_name,
-                            'email' => $customer->email,
-                            'country' => $customerA->country,
-                            'city' => $customerA->city,
-                            'address' => $customerA->address,
-                            'zip_code' => $customerA->zip_code,
-                            'latitude' => $customerA->latitude,
-                            'longitude' => $customerA->longitude,
-                            'phone_number' => $customerA->phone_number,
-                            'payment_method' => $paymentType,
-                            'payment_status' => 'pending',
-                            'status' => 'pending', 
-                            'tracking_number' => $random_number,
-                            'discount' => null, 
-                            'shipping_amount' => $validatedData['shipping_amount'], // ***********************
-                            'total_amount' => $validatedData['total_amount'] // ***********************
-                        ]);
-
-                        foreach ($cartItems as $item) {
-
-                            // $pPrice = $item->product->variation->discount ? $item->product->variation->discount : $item->product->variation->price;
-                            $pPrice = $item->final_price;
-                            
-                            OrderItem::create([
-                                'order_id' => $order->id,
-                                'product_id' => $item->product_id, // Assuming you're getting product_id
-                                'quantity' => $item->quantity,
-                                'product_name' => $item->product->productTranslation[0]->name,
-                                'price' => $pPrice,
-                                'total' => $item->quantity * $pPrice, // Calculate total for this item
-                            ]);
-                        }
-
-                        try {
-                            $adminUsers = User::whereHas('roles', function ($query) {
-                                $query->where('name', 'Administrator')
-                                      ->orWhere('name', 'Data Entry Specialist')
-                                      ->orWhere('name', 'Finance Manager')
-                                      ->orWhere('name', 'Order Processor');
-                            })->whereDoesntHave('roles', function ($query) {
-                                $query->where('name', 'Driver');
-                            })->get();
-                
-                            foreach ($adminUsers as $admin) {
-                                if (!$admin->notifications()->where('data->order_id', $order->tracking_number)
-                                    ->where('data->tracking_number', $random_number)->exists()) {
-                                    $admin->notify(new NotifyCustomerOrderCheckout(
-                                        $order->tracking_number, 
-                                        $order->id,
-                                        $customerP->first_name .' '. $customerP->last_name, 
-                                        "New Order has Been Submitted By {$customerP->first_name} {$customerP->last_name} Order ID: [#{$random_number}]", 
-                                    ));
-                                }
-                            }
-                            try {
-                            broadcast(new EventCustomerOrderCheckout($random_number, $customerP->first_name .' '. $customerP->last_nam))->toOthers();    
-                            } catch (\Exception $e) {
-                                // DO NOTHING
-                            }
-                        } catch (\Exception $e) {
-                        }
-
-                        try{
-                            Notification::route('toTelegram', null)
-                            ->notify(new TeleNotifyCustomerOrder(
-                                $order->id,
-                                $order->tracking_number,
-                                $customerP->first_name .' '. $customerP->last_name,
-                                $customerP->phone_number,
-                                $cartItems,
-                                $validatedData['shipping_amount'],
-                                $validatedData['total_amount'],
-                            ));
-                            $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
-                        }  catch (\Exception $e) {
-                            
-                        }
-
-                        DB::commit();
-                        CartItem::where('customer_id', $customer->id)->delete();
-                        $sum = 0;
-                        $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$random_number)->first();
-                        // Return view with data
-                        foreach($order->orderItems as $item) {
-                            $sum = $sum + $item->total;
-                        }
-                        // Mail::to($customer->email)->send(new EmailInvoiceActionMail($order, $sum));
-                        return redirect()->route('business.checkout.success',['locale' => app()->getLocale()]);
-                        // return 'Cash On Delivery';
-                    } catch (\Exception $e) {
-                        DB::rollBack();
-                        dd($e);
-                        return redirect()->route('business.checkout.faild',['locale' => app()->getLocale()]);
-                    }
-                } else {
-                    return 'PAYMENT = Digital Payment';
-                }
-            } else {
-                return 'err2';
-            } 
-        } else {
-            return 'err1';
+    
+    public function checkoutChecker($locale, $digit, $nvxf, Request $request)
+    {
+        if (!Auth::guard('customer')->check()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
-        // return view('mains.pages.checkout-page-one', [
 
-        // ]);
+        $customer = Auth::guard('customer')->user();
+        if ($customer->status != 1 || $customer->id != $nvxf) {
+            return response()->json(['error' => 'Invalid customer'], 403);
+        }
+
+        try {
+        // ✅ Validate Request Data
+        $validatedData = $request->validate([
+            'shipping_amount' => 'required|string|max:255',
+            'total_amount' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'payment' => 'required|integer|exists:payment_methods,id',
+        ]);
+
+        // ✅ Retrieve Active Payment Method
+        $paymentMethod = PaymentMethods::where('id', $validatedData['payment'])
+            ->where('active', 1)
+            ->first();
+
+        if (!$paymentMethod) {
+            return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                ->withErrors(['payment' => 'Selected payment method is not available.']);
+        }
+
+        // ✅ Retrieve Customer Details
+        $customerP = $customer->customer_profile;
+        $customerA = $customer->customer_addresses->where('id', $validatedData['address'])->first();
+        $trackingNumber = Str::random(6);
+
+        // ✅ Retrieve Cart Items & Apply Discounts
+        $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation')
+            ->where('customer_id', $customer->id)
+            ->get()
+            ->transform(function ($item) use ($customer) {
+                $product = $item->product;
+                $discountDetails = $this->calculateFinalPrice($product, $customer->id);
+                $item->final_price = $discountDetails['customer_discount_price'] ?? $discountDetails['discount_price'] ?? $discountDetails['base_price'];
+                return $item;
+            });
+
+        DB::beginTransaction();
+
+        // ✅ Create Order
+        $order = Order::create([
+            'customer_id' => $customer->id,
+            'first_name' => $customerP->first_name,
+            'last_name' => $customerP->last_name,
+            'email' => $customer->email,
+            'country' => $customerA->country,
+            'city' => $customerA->city,
+            'address' => $customerA->address,
+            'zip_code' => $customerA->zip_code,
+            'latitude' => $customerA->latitude,
+            'longitude' => $customerA->longitude,
+            'phone_number' => $customerA->phone_number,
+            'payment_method' => $paymentMethod->name,
+            'payment_status' => 'pending',
+            'status' => 'pending',
+            'tracking_number' => $trackingNumber,
+            'shipping_amount' => $validatedData['shipping_amount'],
+            'total_amount' => $validatedData['total_amount']
+        ]);
+
+        // ✅ Store Order Items
+        foreach ($cartItems as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity,
+                'product_name' => $item->product->productTranslation[0]->name,
+                'price' => $item->final_price,
+                'total' => $item->quantity * $item->final_price,
+            ]);
+        }
+
+        // ✅ Handle Cash On Delivery
+        if ($paymentMethod->online == 0) {
+            DB::commit();
+            CartItem::where('customer_id', Auth::guard('customer')->id())->delete();
+            return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+        }
+
+            $paymentService = PaymentServiceManager::getInstance()
+                ->setOrder($order)
+                ->setPaymentMethod($paymentMethod->name)
+                ->setAmount($order->total_amount);
+                
+            $paymentResponse = $paymentService->processPayment();
+
+            if (!$paymentResponse) {
+                Log::error("PaymentServiceManager instance is null!");
+                return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
+            }
+            DB::commit();
+            CartItem::where('customer_id', $customer->id)->delete();
+            return redirect()->route('payment.process', 
+            ['locale' => app()->getLocale(), 'orderId' => $order->id,'paymentId' => $paymentResponse['paymentId'], 'paymentMethod' => $digit]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Checkout Error: " . $e->getMessage());
+            // return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+            //     ->withErrors(['error' => 'Payment processing failed.']);
+        }
     }
 
+    public function checkoutExistingOrder($locale, $digit, $orderId, $grandTotalUpdated, Request $request)
+    {
+        if (!Auth::guard('customer')->check()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $customer = Auth::guard('customer')->user();
+
+        try {
+            // ✅ Retrieve Existing Order
+            $order = Order::where('id', $orderId)
+                ->where('customer_id', $customer->id)
+                ->whereIn('payment_status', ['pending', 'failed']) // Correct
+                ->first();
+            if (!$order) {
+                return response()->json(['error' => 'Order not found or already processed'], 404);
+            }
+
+            // ✅ Retrieve Active Payment Method
+            $paymentMethod = PaymentMethods::where('id',$digit)
+                ->where('active', 1)
+                ->first();
+
+            if (!$paymentMethod) {
+                return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                    ->withErrors(['payment' => 'Selected payment method is not available.']);
+            }
+            DB::beginTransaction();
+
+            // ✅ Update `updated_at` timestamp
+            $order->touch();
+
+            // ✅ Process Payment
+            if ($paymentMethod->online == 0) {
+                DB::commit();
+                CartItem::where('customer_id', Auth::guard('customer')->id())->delete();
+                return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+            }
+            $paymentService = PaymentServiceManager::getInstance()
+                ->setOrder($order)
+                ->setPaymentMethod($paymentMethod->name)
+                ->setAmount($grandTotalUpdated);
+            
+            $paymentResponse = $paymentService->processPayment();
+                // dd($paymentResponse);
+
+            if (!$paymentResponse) {
+                Log::error("PaymentServiceManager instance is null!");
+                return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('payment.process', [
+                'locale' => app()->getLocale(),
+                'orderId' => $order->id,
+                'paymentId' => $paymentResponse['paymentId'],
+                'paymentMethod' => $digit
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Checkout Existing Order Error: " . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while processing the order'], 500);
+        }
+    }
+    
+    public function checkoutOrder($locale, $orderId)
+    {
+        $isLoggedIn = Auth::guard('customer')->check();
+        if (!$isLoggedIn) {
+            return redirect()->route('business.home', ['locale' => $locale]);
+        }
+
+        $order = Order::where('id', $orderId)
+            ->where('customer_id', Auth::guard('customer')->id())
+            // ->where('payment_status', 'pending') // Ensure it's unpaid
+            ->first();
+
+        if (!$order) {
+            return redirect()->route('business.checkout.failed', ['locale' => $locale])
+                ->withErrors(['error' => 'Order not found or already paid.']);
+        }
+
+        // Fetch available payment methods
+        $paymentList = PaymentMethods::where('active', 1)->get();
+
+        // Pass order details to the checkout page
+        return view('mains.pages.checkout-page-old-one', compact('order', 'paymentList'));
+    }
+
+
+    
     public function checkSuccess(){
         return view('mains.components.livewire.aftercheckout.check-success', [
             
@@ -1142,3 +1199,215 @@ class BusinessController extends Controller
         ]);
     }
 }
+
+
+
+// public function checkoutChecker($locale, $digit, $nvxf, Request $request){
+    //     if(Auth::guard('customer')->check()) {
+    //         $customer = Auth::guard('customer')->user();
+    //         if($customer->status == 1 && $customer->id == $nvxf){
+    //             if($digit == 0) {
+    //                 try {
+    //                     //code...
+    //                     $validatedData = $request->validate([
+    //                         'shipping_amount' => 'required|string|max:255',
+    //                         'total_amount' => 'required|string|max:255',
+    //                         'address' => 'required|string|max:255',
+    //                         'payment' => 'required|string|max:255',
+    //                     ]);
+
+    //                     $customerP = Auth::guard('customer')->user()->customer_profile;
+    //                     $customerA = Auth::guard('customer')->user()->customer_addresses->where('id',$validatedData['address'])->first();
+    //                     $paymentType = PaymentMethods::where('id', $validatedData['payment'])->first()->name;
+    //                     // $cartItems = CartItem::with('product','product.variation','product.productTranslation')->where('customer_id',$customer->id)->get();
+    //                     $random_number = Str::random(6);
+    //                     $customerId = $customer->id;
+    //                     $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation')
+    //                     ->where('customer_id', $customer->id)
+    //                     ->get()
+    //                     ->transform(function ($item) use ($customerId) {
+    //                         $product = $item->product;
+
+    //                         // Calculate the discount for the product
+    //                         $discountDetails = $this->calculateFinalPrice($product, $customerId);
+
+    //                         // Assign calculated discount details to the product
+    //                         $product->base_price = $discountDetails['base_price'];
+    //                         $product->discount_price = $discountDetails['discount_price'];
+    //                         $product->customer_discount_price = $discountDetails['customer_discount_price'];
+    //                         $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
+
+    //                         // Set the product price in the cart item based on customer-specific discount or general discount
+    //                         $finalPrice = $product->customer_discount_price ?? $product->discount_price ?? $product->base_price;
+    //                         $item->final_price = $finalPrice;
+
+    //                         return $item;
+    //                     });
+
+    //                     DB::beginTransaction();
+    //                     $order = Order::create([
+    //                         'customer_id' => $customer->id,
+    //                         'first_name' =>  $customerP->first_name,
+    //                         'last_name' => $customerP->last_name,
+    //                         'email' => $customer->email,
+    //                         'country' => $customerA->country,
+    //                         'city' => $customerA->city,
+    //                         'address' => $customerA->address,
+    //                         'zip_code' => $customerA->zip_code,
+    //                         'latitude' => $customerA->latitude,
+    //                         'longitude' => $customerA->longitude,
+    //                         'phone_number' => $customerA->phone_number,
+    //                         'payment_method' => $paymentType,
+    //                         'payment_status' => 'pending',
+    //                         'status' => 'pending', 
+    //                         'tracking_number' => $random_number,
+    //                         'discount' => null, 
+    //                         'shipping_amount' => $validatedData['shipping_amount'], // ***********************
+    //                         'total_amount' => $validatedData['total_amount'] // ***********************
+    //                     ]);
+
+    //                     foreach ($cartItems as $item) {
+
+    //                         // $pPrice = $item->product->variation->discount ? $item->product->variation->discount : $item->product->variation->price;
+    //                         $pPrice = $item->final_price;
+                            
+    //                         OrderItem::create([
+    //                             'order_id' => $order->id,
+    //                             'product_id' => $item->product_id, // Assuming you're getting product_id
+    //                             'quantity' => $item->quantity,
+    //                             'product_name' => $item->product->productTranslation[0]->name,
+    //                             'price' => $pPrice,
+    //                             'total' => $item->quantity * $pPrice, // Calculate total for this item
+    //                         ]);
+    //                     }
+
+    //                     try {
+    //                         $adminUsers = User::whereHas('roles', function ($query) {
+    //                             $query->where('name', 'Administrator')
+    //                                   ->orWhere('name', 'Data Entry Specialist')
+    //                                   ->orWhere('name', 'Finance Manager')
+    //                                   ->orWhere('name', 'Order Processor');
+    //                         })->whereDoesntHave('roles', function ($query) {
+    //                             $query->where('name', 'Driver');
+    //                         })->get();
+                
+    //                         foreach ($adminUsers as $admin) {
+    //                             if (!$admin->notifications()->where('data->order_id', $order->tracking_number)
+    //                                 ->where('data->tracking_number', $random_number)->exists()) {
+    //                                 $admin->notify(new NotifyCustomerOrderCheckout(
+    //                                     $order->tracking_number, 
+    //                                     $order->id,
+    //                                     $customerP->first_name .' '. $customerP->last_name, 
+    //                                     "New Order has Been Submitted By {$customerP->first_name} {$customerP->last_name} Order ID: [#{$random_number}]", 
+    //                                 ));
+    //                             }
+    //                         }
+    //                         try {
+    //                         broadcast(new EventCustomerOrderCheckout($random_number, $customerP->first_name .' '. $customerP->last_nam))->toOthers();    
+    //                         } catch (\Exception $e) {
+    //                             // DO NOTHING
+    //                         }
+    //                     } catch (\Exception $e) {
+    //                     }
+
+    //                     try{
+    //                         Notification::route('toTelegram', null)
+    //                         ->notify(new TeleNotifyCustomerOrder(
+    //                             $order->id,
+    //                             $order->tracking_number,
+    //                             $customerP->first_name .' '. $customerP->last_name,
+    //                             $customerP->phone_number,
+    //                             $cartItems,
+    //                             $validatedData['shipping_amount'],
+    //                             $validatedData['total_amount'],
+    //                         ));
+    //                         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
+    //                     }  catch (\Exception $e) {
+                            
+    //                     }
+
+    //                     DB::commit();
+    //                     CartItem::where('customer_id', $customer->id)->delete();
+    //                     $sum = 0;
+    //                     $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$random_number)->first();
+    //                     // Return view with data
+    //                     foreach($order->orderItems as $item) {
+    //                         $sum = $sum + $item->total;
+    //                     }
+    //                     // Mail::to($customer->email)->send(new EmailInvoiceActionMail($order, $sum));
+    //                     return redirect()->route('business.checkout.success',['locale' => app()->getLocale()]);
+    //                     // return 'Cash On Delivery';
+    //                 } catch (\Exception $e) {
+    //                     DB::rollBack();
+    //                     dd($e);
+    //                     return redirect()->route('business.checkout.faild',['locale' => app()->getLocale()]);
+    //                 }
+    //             } else {
+    //                 $random_number = Str::random(6);
+    //                 // return 'PAYMENT = Digital Payment';
+    //                 // 1) Get a token from FIB
+    //                 $fibService = new \App\Services\FibService();
+    //                 $clientId     = config('fib.client_id');     // or env('FIB_CLIENT_ID')
+    //                 $clientSecret = config('fib.client_secret'); // or env('FIB_CLIENT_SECRET')
+
+    //                 $accessToken = $fibService->getAccessToken($clientId, $clientSecret);
+    //                 if (!$accessToken) {
+    //                     // handle error
+    //                     return redirect()->route('business.checkout.faild', ['locale' => app()->getLocale()])
+    //                                     ->withErrors(['fib' => 'Unable to get token from FIB.']);
+    //                 }
+
+    //                 // 2) Prepare your Payment creation payload
+    //                 // e.g. if user’s total is 500 IQD
+    //                 $fibPayload = [
+    //                     "monetaryValue" => [
+    //                         "amount" => $validatedData['total_amount'],  // must be string e.g. "500.00"
+    //                         "currency" => "IQD"
+    //                     ],
+    //                     "statusCallbackUrl" => route('fib.callback'),   // define your route for status
+    //                     "description" => "Order #{$random_number}",     // up to 50 chars
+    //                     "expiresIn" => "PT15M",                         // default 15 minutes
+    //                     "category" => "ECOMMERCE",                      // or POS, etc.
+    //                     "refundableFor" => "PT24H"                      // default 24 hours
+    //                 ];
+
+    //                 // 3) Create the payment in FIB
+    //                 $createResp = $fibService->createPayment($accessToken, $fibPayload);
+    //                 if (!$createResp) {
+    //                     // handle error
+    //                     return redirect()->route('business.checkout.faild', ['locale' => app()->getLocale()])
+    //                                     ->withErrors(['fib' => 'Unable to create FIB payment.']);
+    //                 }
+
+    //                 // 4) The response typically includes:
+    //                 //   paymentId, readableCode, qrCode (base64 image),
+    //                 //   personalAppLink, businessAppLink, etc.
+    //                 $paymentId    = $createResp['paymentId']    ?? null;
+    //                 $qrCode       = $createResp['qrCode']       ?? null;
+    //                 $readableCode = $createResp['readableCode'] ?? null;
+    //                 $appLink      = $createResp['personalAppLink'] ?? null;
+    //                 // etc.
+
+    //                 // 5) Save $paymentId to your order record or session
+    //                 // e.g. $order->fib_payment_id = $paymentId; $order->save();
+
+    //                 // If user is on a mobile phone with FIB app installed,
+    //                 // you can redirect them to $appLink.
+    //                 // Otherwise display the $qrCode so user can scan it from phone.
+    //                 return view('business.checkout.fib', [
+    //                     'order'     => $order,
+    //                     'qrCode'    => $qrCode,
+    //                     'appLink'   => $appLink,
+    //                     'readableCode' => $readableCode,
+    //                 ]);
+    //             }
+    //         } else {
+    //             return 'err2';
+    //         } 
+    //     } else {
+    //         return 'err1';
+    //     }
+    //     // return view('mains.pages.checkout-page-one', [
+
+    //     // ]);
+    // }

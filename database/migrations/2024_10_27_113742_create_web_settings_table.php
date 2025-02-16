@@ -41,8 +41,9 @@ return new class extends Migration
             $table->string('instagram_url')->nullable();
             $table->string('tiktok_url')->nullable();
             $table->string('snapchat_url')->nullable();
-
-
+            
+            
+            // Information settings
             $table->string('email_address')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('phone_number_2')->nullable();
@@ -50,6 +51,10 @@ return new class extends Migration
             $table->string('working_days')->nullable();
             $table->string('working_time')->nullable();
             $table->boolean('is_maintenance_mode')->default(false);
+            
+            // checkout settings
+            $table->string('free_delivery')->nullable();
+            $table->string('exchange_price')->nullable();
 
             $table->timestamps();
         });

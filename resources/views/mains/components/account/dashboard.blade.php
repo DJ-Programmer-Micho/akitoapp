@@ -23,7 +23,7 @@
                             <a class="nav-link" id="tab-password-link" data-toggle="tab" href="#tab-password" role="tab" aria-controls="tab-password" aria-selected="false">Change Password</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Sign Out</a>
+                            <a class="nav-link" href="#">{{_('Sign Out')}}</a>
                         </li>
                     </ul>
                 </aside><!-- End .col-lg-3 -->
@@ -35,7 +35,7 @@
                                 <div class="col-4">
                                     <div class="card card-dashboard">
                                         <div class="card-head">
-                                            <h3 class="card-title p-2">Orders</h3><!-- End .card-title -->
+                                            <h3 class="card-title p-2">{{__('Orders')}}</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
                                             <p class="card-title">{{$totalPendingAndShipping}}</p><!-- End .card-title -->
@@ -45,7 +45,7 @@
                                 <div class="col-4">
                                     <div class="card card-dashboard">
                                         <div class="card-head">
-                                            <h3 class="card-title p-2">Pending</h3><!-- End .card-title -->
+                                            <h3 class="card-title p-2">{{__('Pending')}}</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
                                             <p class="card-title">{{$totalPending}}</p><!-- End .card-title -->
@@ -55,7 +55,7 @@
                                 <div class="col-4">
                                     <div class="card card-dashboard">
                                         <div class="card-head">
-                                            <h3 class="card-title p-2">Shipping</h3><!-- End .card-title -->
+                                            <h3 class="card-title p-2">{{__('Shipping')}}</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
                                             <p class="card-title">{{$totalShipping}}</p><!-- End .card-title -->
@@ -102,37 +102,50 @@
             </div><!-- End .row -->
         </div><!-- End .container -->
     </div><!-- End .dashboard -->
-@push('tab-script')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get the active tab from localStorage
-        const activeTab = localStorage.getItem('activeTab') || 'tab-dashboard';
-
-        // Hide all tab panes and remove active class from all links
-        document.querySelectorAll('.tab-pane').forEach(tab => {
-            tab.classList.remove('show', 'active');
-        });
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-
-        // Show the active tab based on localStorage
-        const selectedTab = document.querySelector(`#${activeTab}`);
-        if (selectedTab) {
-            selectedTab.classList.add('show', 'active');
-            const activeLink = document.querySelector(`a[href="#${activeTab}"]`);
-            activeLink.classList.add('active');
-        }
-
-        // Add event listeners for tab links
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function () {
-                const selectedTabId = this.getAttribute('href').substring(1);
-                localStorage.setItem('activeTab', selectedTabId);
+    @push('tab-script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if the page is accessed from "Track Your Order" button
+            if (window.location.hash === '#tab-orders') {
+                localStorage.setItem('activeTab', 'tab-orders');
+            }
+    
+            // Get the active tab from localStorage
+            const activeTab = localStorage.getItem('activeTab') || 'tab-dashboard';
+    
+            // Hide all tab panes and remove active class from all links
+            document.querySelectorAll('.tab-pane').forEach(tab => {
+                tab.classList.remove('show', 'active');
             });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+    
+            // Show the active tab based on localStorage
+            const selectedTab = document.querySelector(`#${activeTab}`);
+            if (selectedTab) {
+                selectedTab.classList.add('show', 'active');
+                const activeLink = document.querySelector(`a[href="#${activeTab}"]`);
+                if (activeLink) activeLink.classList.add('active');
+            }
+    
+            // Add event listeners for tab links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function () {
+                    const selectedTabId = this.getAttribute('href').substring(1);
+                    localStorage.setItem('activeTab', selectedTabId);
+                });
+            });
+    
+            // Listen for "Track Your Order" button click
+            document.querySelector('.track-order')?.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent default navigation
+                localStorage.setItem('activeTab', 'tab-orders'); // Set the orders tab
+                window.location.href = this.href + '#tab-orders'; // Redirect with hash
+            });
+    
         });
-    });
-</script>
-
-@endpush
+    </script>
+    @endpush
+    
 </div><!-- End .page-content -->

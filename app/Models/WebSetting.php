@@ -34,5 +34,7 @@ class WebSetting extends Model
         'working_days', // Sat - Thu
         'working_time', // 9am - 7pm UTC +3
         'is_maintenance_mode',
+        'free_delivery',
+        'exchange_price',
     ];
 }
