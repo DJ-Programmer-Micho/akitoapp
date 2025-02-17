@@ -213,6 +213,11 @@
                                 <a wire:navigate href="{{ route('setting.recaptcha', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Google Recaptcha')}}</a>
                             </li>
                             @endif
+                            @if (hasRole([1,3]))
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.price', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Checkout Prices')}}</a>
+                            </li>
+                            @endif
                             @if (hasRole([1,2]))
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('setting.info', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Information')}}</a>
