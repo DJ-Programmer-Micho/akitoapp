@@ -59,27 +59,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const noButton = document.getElementById('no');
     const countdownElement = document.getElementById('countdown');
     const resendLink = document.getElementById('resendLink');
-    const countdownKey = 'otpCountdown';
+    const countdownKeyEmail = 'otpCountdownEmail';
     let countdownTimer;
 
-    // Function to start and display countdown
     function startCountdown(seconds) {
         clearInterval(countdownTimer);
         const endTime = Date.now() + seconds * 1000;
-        localStorage.setItem(countdownKey, endTime); // Store end time
+        localStorage.setItem(countdownKeyEmail, endTime);
 
         countdownTimer = setInterval(() => {
             const timeLeft = Math.floor((endTime - Date.now()) / 1000);
-
             if (timeLeft > 0) {
-                const minutes = Math.floor(timeLeft / 60);
-                const remainingSeconds = timeLeft % 60;
-                countdownElement.textContent = `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+                countdownElement.textContent = `${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' : ''}${timeLeft % 60}`;
             } else {
                 clearInterval(countdownTimer);
                 countdownElement.style.display = 'none';
                 resendLink.style.display = 'block';
-                localStorage.removeItem(countdownKey); // Clear storage after countdown ends
+                localStorage.removeItem(countdownKeyEmail);
                 yesButton.disabled = false;
                 noButton.disabled = false;
                 otpShow.classList.add('d-none');
@@ -88,9 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 
-    // Restore countdown from localStorage on page load
     function restoreCountdown() {
-        const endTime = localStorage.getItem(countdownKey);
+        const endTime = localStorage.getItem(countdownKeyEmail);
         if (endTime) {
             const timeLeft = Math.floor((endTime - Date.now()) / 1000);
             if (timeLeft > 0) {
@@ -100,12 +95,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 noButton.disabled = true;
                 startCountdown(timeLeft);
             } else {
-                localStorage.removeItem(countdownKey); // Clear expired countdown on load
+                localStorage.removeItem(countdownKeyEmail);
             }
         }
     }
 
-    // AJAX request to resend OTP and start countdown when "Yes" is clicked
     yesButton.addEventListener('click', function() {
         otpShow.classList.remove('d-none');
         options.classList.add('d-none');
@@ -115,23 +109,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const resendUrl = yesButton.getAttribute('data-resend-url');
         fetch(resendUrl, {
             method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                startCountdown(300); // Start 5-minute countdown
-                // alert(data.message); // Success message
-            } else {
-                // alert(data.message); // Error message if user not found
+                startCountdown(300);
             }
         })
         .catch(error => console.error('Error:', error));
     });
 
-    // Initialize countdown on page load
     restoreCountdown();
 });
 </script>
