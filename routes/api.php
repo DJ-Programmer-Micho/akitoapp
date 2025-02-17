@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Gateaway\CallBackController;
+use App\Http\Controllers\Api\V1\Main\BusinessControllerApi;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,4 +33,20 @@ Route::post('/payment/callback/{provider}', [CallBackController::class, 'handleC
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+// 'http://minemenu.com/api/v1/doodle?lang=en'
+// Home Page 
+Route::prefix('v1')->middleware(['LocalizationMainMiddleware'])->group(function () {
+    Route::get('/home', [BusinessControllerApi::class, 'homeApi'])->name('api.business.home');
+});
+
+
+// Shop Page 
+Route::prefix('/v1')->group(function () {
+    
+});
+
+// Home Page 
+Route::prefix('/v1')->group(function () {
+
 });

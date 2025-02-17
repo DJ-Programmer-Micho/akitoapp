@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Main;
 
-use App\Models\User;
 use App\Models\Brand;
 use App\Models\Order;
 use App\Models\Product;
@@ -11,216 +10,26 @@ use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\WebSetting;
 use App\Models\SubCategory;
-use App\Models\Transaction;
 use Illuminate\Support\Str;
 use App\Models\DiscountRule;
 use Illuminate\Http\Request;
 use App\Models\VariationSize;
 use App\Models\PaymentMethods;
 use App\Models\VariationColor;
-use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Mail\EmailInvoiceActionMail;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use App\Services\PaymentServiceManager;
-use Illuminate\Support\Facades\Redirect;
-use App\Events\EventCustomerOrderCheckout;
-use Illuminate\Support\Facades\Notification;
-use App\Events\EventNotifyCustomerOrderCheckout;
-use App\Notifications\NotifyCustomerOrderCheckout;
-use App\Notifications\Telegram\TeleNotifyCustomerOrder;
+
 
 class BusinessController extends Controller
 {
-    // public function home() {
-    //     $locale = app()->getLocale();  // Get the current locale
-    
-    //     // Fetch products for the first category
-    //     $productsCat1 = Cache::remember("active_products_category_1_$locale", 60, function () use ($locale) {
-    //         return Product::with([
-    //             'productTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'variation.colors',
-    //             'variation.sizes',
-    //             'variation.materials',
-    //             'variation.capacities',
-    //             'variation.images',
-    //             'brand.brandTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'categories.categoryTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'tags.tagTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             }
-    //         ])
-    //         ->where('status', 1)
-    //         ->whereHas('categories', function ($query) {
-    //             $query->where('categories.id', 2);
-    //         })
-    //         ->get();
-    //     });
-    
-    //     // $productsCat1Title = $productsCat1->first()->categories->first()->categoryTranslation->title ?? __("messages.category_1_title");
-    //     $productsCat1Title = "Coffee Makers";
-    
-    //     // Fetch products for the second category
-    //     $productsCat2 = Cache::remember("active_products_category_2_$locale", 60, function () use ($locale) {
-    //         return Product::with([
-    //             'productTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'variation.colors',
-    //             'variation.sizes',
-    //             'variation.materials',
-    //             'variation.capacities',
-    //             'variation.images',
-    //             'brand.brandTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'categories.categoryTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'tags.tagTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             }
-    //         ])
-    //         ->where('status', 1)
-    //         ->whereHas('categories', function ($query) {
-    //             $query->where('categories.id', 3);
-    //         })
-    //         ->get();
-    //     });
-    
-    //     // $productsCat2Title = $productsCat2->first()->categories->first()->categoryTranslation->title ?? __("messages.category_2_title");
-    //     $productsCat2Title = "Coffee Beans";
-    
-    //     // Fetch products for the third category
-    //     $productsCat3 = Cache::remember("active_products_category_3_$locale", 60, function () use ($locale) {
-    //         return Product::with([
-    //             'productTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'variation.colors',
-    //             'variation.sizes',
-    //             'variation.materials',
-    //             'variation.capacities',
-    //             'variation.images',
-    //             'brand.brandTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'categories.categoryTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             },
-    //             'tags.tagTranslation' => function ($query) use ($locale) {
-    //                 $query->where('locale', $locale);
-    //             }
-    //         ])
-    //         ->where('status', 1)
-    //         ->whereHas('categories', function ($query) {
-    //             $query->where('categories.id', 2);
-    //         })
-    //         ->get();
-    //     });
-    
-    //     // $productsCat3Title = $productsCat3->first()->categories->first()->categoryTranslation->title ?? __("messages.category_3_title");
-    //     $productsCat3Title = "Syrup";
-
-    //     $categoiresData = Category::where('status', 1)->with(['categoryTranslation' => function ($query) {
-    //         $query->where('locale', app()->getLocale());
-    //     }])
-    //     ->get();
-        
-    //     $sliders = [];
-    //     $sliders = [
-    //         app('cloudfront') . 'web-setting/sliders/slide1.jpg',
-    //         app('cloudfront') . 'web-setting/sliders/slide2.jpg',
-    //         app('cloudfront') . 'web-setting/sliders/slide3.jpg',
-    //     ];
-        
-
-    //     $imagesBanner = [];
-    //     $imagesBanner = [
-    //         app('cloudfront') . 'web-setting/banners/banner7.png',
-    //         app('cloudfront') . 'web-setting/banners/banner8.png',
-    //         app('cloudfront') . 'web-setting/banners/banner9.png',
-    //     ];
-
-    //     $featured = $this->fetchProducts('featured', 'Featured');
-    //     $on_sale = $this->fetchProducts('on_sale', 'On Sale');
-
-    //     return view('mains.pages.home-page-one', [
-    //         'productsCat1' => $productsCat1,
-    //         'productsCat1Title' => $productsCat1Title,
-    //         'productsCat2' => $productsCat2,
-    //         'productsCat2Title' => $productsCat2Title,
-    //         'productsCat3' => $productsCat3,
-    //         'productsCat3Title' => $productsCat3Title,
-    //         'categoiresData' => $categoiresData,
-    //         'imageBanner' => $imagesBanner,
-    //         'featured_products' => $featured,
-    //         'on_sale_products' => $on_sale,
-    //         'sliders' => $sliders,
-    //     ]);
-    // }
-
-    // private function fetchProducts($type, $title)
-    // {
-    //     $locale = app()->getLocale();
-    //     $products = Product::with([
-    //         'productTranslation' => function ($query) use ($locale) {
-    //             $query->where('locale', $locale);
-    //         },
-    //         'variation.colors',
-    //         'variation.sizes',
-    //         'variation.materials',
-    //         'variation.capacities',
-    //         'variation.images',
-    //         'brand.brandTranslation' => function ($query) use ($locale) {
-    //             $query->where('locale', $locale);
-    //         },
-    //         'categories.categoryTranslation' => function ($query) use ($locale) {
-    //             $query->where('locale', $locale);
-    //         },
-    //         'tags.tagTranslation' => function ($query) use ($locale) {
-    //             $query->where('locale', $locale);
-    //         }
-    //     ])
-    //     ->where('status', 1)
-    //     ->whereHas('variation', function ($query) use ($type) {
-    //         $query->where($type, 1);
-    //     })
-    //     ->whereHas('brand', function ($query) {
-    //         $query->where('status', 1);
-    //     })
-    //     ->whereHas('categories', function ($query) {
-    //         $query->where('status', 1);
-    //     })
-    //     ->get();
-
-    //     return [
-    //         'products' => $products,
-    //         'title' => $title,
-    //     ];
-    // }
-    
     public function home() {
         $locale = app()->getLocale(); // Get the current locale
-        
-        // Fetch products by category dynamically
-        // $productsCat1 = $this->fetchProductsByCategory(2, "Coffee Makers", $locale);
-        // $productsCat2 = $this->fetchProductsByCategory(3, "Coffee Beans", $locale);
-        // $productsCat3 = $this->fetchProductsByCategory(4, "Syrup", $locale); // Assuming category ID 4 for Syrup
-
         $settings = WebSetting::find(1);
 
         $bannerImages = json_decode($settings->banner_images, true);
@@ -365,36 +174,6 @@ class BusinessController extends Controller
             'title' => $title,
         ];
     }
-
-    // private function calculateFinalPrice($product, $customerId)
-    // {
-    //     $basePrice = $product->variation->discount ?? $product->variation->price; // Use original price
-    //     $discountPrice = $product->variation->discount; // Use discounted price
-    //     $customerDiscountPrice = null; // Default for customer discount
-    
-    //     // Check for applicable discounts
-    //     if ($customerId) {
-    //         $discountRule = DiscountRule::where('customer_id', $customerId)
-    //             ->where(function ($query) use ($product) {
-    //                 $query->where('product_id', $product->id)
-    //                     ->orWhere('category_id', $product->categories->first()->id)
-    //                     ->orWhere('brand_id', $product->brand_id);
-    //             })
-    //             ->first();
-    
-    //         // Apply discount rule if found
-    //         if ($discountRule) {
-    //             $discountPercentage = $discountRule->discount_percentage;
-    //             $customerDiscountPrice = $basePrice - ($basePrice * ($discountPercentage / 100));
-    //         }
-    //     }
-    
-    //     return [
-    //         'base_price' => $basePrice,
-    //         'discount_price' => $discountPrice,
-    //         'customer_discount_price' => $customerDiscountPrice,
-    //     ];
-    // }
     
     private function calculateFinalPrice($product, $customerId) {
         // Use the original price and discount price if available
@@ -450,24 +229,6 @@ class BusinessController extends Controller
             'total_discount_percentage' => $totalDiscountPercentage
         ];
     }
-
-    // private function getSliderImages()
-    // {
-    //     return [
-    //         app('cloudfront') . 'web-setting/sliders/slide1.jpg',
-    //         app('cloudfront') . 'web-setting/sliders/slide2.jpg',
-    //         app('cloudfront') . 'web-setting/sliders/slide3.jpg',
-    //     ];
-    // }
-
-    // private function getBannerImages()
-    // {
-    //     return [
-    //         app('cloudfront') . 'web-setting/banners/banner7.png',
-    //         app('cloudfront') . 'web-setting/banners/banner8.png',
-    //         app('cloudfront') . 'web-setting/banners/banner9.png',
-    //     ];
-    // }
 
     public function aboutus(){
         return view('mains.pages.aboutus-page-one', [
@@ -1199,215 +960,3 @@ class BusinessController extends Controller
         ]);
     }
 }
-
-
-
-// public function checkoutChecker($locale, $digit, $nvxf, Request $request){
-    //     if(Auth::guard('customer')->check()) {
-    //         $customer = Auth::guard('customer')->user();
-    //         if($customer->status == 1 && $customer->id == $nvxf){
-    //             if($digit == 0) {
-    //                 try {
-    //                     //code...
-    //                     $validatedData = $request->validate([
-    //                         'shipping_amount' => 'required|string|max:255',
-    //                         'total_amount' => 'required|string|max:255',
-    //                         'address' => 'required|string|max:255',
-    //                         'payment' => 'required|string|max:255',
-    //                     ]);
-
-    //                     $customerP = Auth::guard('customer')->user()->customer_profile;
-    //                     $customerA = Auth::guard('customer')->user()->customer_addresses->where('id',$validatedData['address'])->first();
-    //                     $paymentType = PaymentMethods::where('id', $validatedData['payment'])->first()->name;
-    //                     // $cartItems = CartItem::with('product','product.variation','product.productTranslation')->where('customer_id',$customer->id)->get();
-    //                     $random_number = Str::random(6);
-    //                     $customerId = $customer->id;
-    //                     $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation')
-    //                     ->where('customer_id', $customer->id)
-    //                     ->get()
-    //                     ->transform(function ($item) use ($customerId) {
-    //                         $product = $item->product;
-
-    //                         // Calculate the discount for the product
-    //                         $discountDetails = $this->calculateFinalPrice($product, $customerId);
-
-    //                         // Assign calculated discount details to the product
-    //                         $product->base_price = $discountDetails['base_price'];
-    //                         $product->discount_price = $discountDetails['discount_price'];
-    //                         $product->customer_discount_price = $discountDetails['customer_discount_price'];
-    //                         $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
-
-    //                         // Set the product price in the cart item based on customer-specific discount or general discount
-    //                         $finalPrice = $product->customer_discount_price ?? $product->discount_price ?? $product->base_price;
-    //                         $item->final_price = $finalPrice;
-
-    //                         return $item;
-    //                     });
-
-    //                     DB::beginTransaction();
-    //                     $order = Order::create([
-    //                         'customer_id' => $customer->id,
-    //                         'first_name' =>  $customerP->first_name,
-    //                         'last_name' => $customerP->last_name,
-    //                         'email' => $customer->email,
-    //                         'country' => $customerA->country,
-    //                         'city' => $customerA->city,
-    //                         'address' => $customerA->address,
-    //                         'zip_code' => $customerA->zip_code,
-    //                         'latitude' => $customerA->latitude,
-    //                         'longitude' => $customerA->longitude,
-    //                         'phone_number' => $customerA->phone_number,
-    //                         'payment_method' => $paymentType,
-    //                         'payment_status' => 'pending',
-    //                         'status' => 'pending', 
-    //                         'tracking_number' => $random_number,
-    //                         'discount' => null, 
-    //                         'shipping_amount' => $validatedData['shipping_amount'], // ***********************
-    //                         'total_amount' => $validatedData['total_amount'] // ***********************
-    //                     ]);
-
-    //                     foreach ($cartItems as $item) {
-
-    //                         // $pPrice = $item->product->variation->discount ? $item->product->variation->discount : $item->product->variation->price;
-    //                         $pPrice = $item->final_price;
-                            
-    //                         OrderItem::create([
-    //                             'order_id' => $order->id,
-    //                             'product_id' => $item->product_id, // Assuming you're getting product_id
-    //                             'quantity' => $item->quantity,
-    //                             'product_name' => $item->product->productTranslation[0]->name,
-    //                             'price' => $pPrice,
-    //                             'total' => $item->quantity * $pPrice, // Calculate total for this item
-    //                         ]);
-    //                     }
-
-    //                     try {
-    //                         $adminUsers = User::whereHas('roles', function ($query) {
-    //                             $query->where('name', 'Administrator')
-    //                                   ->orWhere('name', 'Data Entry Specialist')
-    //                                   ->orWhere('name', 'Finance Manager')
-    //                                   ->orWhere('name', 'Order Processor');
-    //                         })->whereDoesntHave('roles', function ($query) {
-    //                             $query->where('name', 'Driver');
-    //                         })->get();
-                
-    //                         foreach ($adminUsers as $admin) {
-    //                             if (!$admin->notifications()->where('data->order_id', $order->tracking_number)
-    //                                 ->where('data->tracking_number', $random_number)->exists()) {
-    //                                 $admin->notify(new NotifyCustomerOrderCheckout(
-    //                                     $order->tracking_number, 
-    //                                     $order->id,
-    //                                     $customerP->first_name .' '. $customerP->last_name, 
-    //                                     "New Order has Been Submitted By {$customerP->first_name} {$customerP->last_name} Order ID: [#{$random_number}]", 
-    //                                 ));
-    //                             }
-    //                         }
-    //                         try {
-    //                         broadcast(new EventCustomerOrderCheckout($random_number, $customerP->first_name .' '. $customerP->last_nam))->toOthers();    
-    //                         } catch (\Exception $e) {
-    //                             // DO NOTHING
-    //                         }
-    //                     } catch (\Exception $e) {
-    //                     }
-
-    //                     try{
-    //                         Notification::route('toTelegram', null)
-    //                         ->notify(new TeleNotifyCustomerOrder(
-    //                             $order->id,
-    //                             $order->tracking_number,
-    //                             $customerP->first_name .' '. $customerP->last_name,
-    //                             $customerP->phone_number,
-    //                             $cartItems,
-    //                             $validatedData['shipping_amount'],
-    //                             $validatedData['total_amount'],
-    //                         ));
-    //                         $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
-    //                     }  catch (\Exception $e) {
-                            
-    //                     }
-
-    //                     DB::commit();
-    //                     CartItem::where('customer_id', $customer->id)->delete();
-    //                     $sum = 0;
-    //                     $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$random_number)->first();
-    //                     // Return view with data
-    //                     foreach($order->orderItems as $item) {
-    //                         $sum = $sum + $item->total;
-    //                     }
-    //                     // Mail::to($customer->email)->send(new EmailInvoiceActionMail($order, $sum));
-    //                     return redirect()->route('business.checkout.success',['locale' => app()->getLocale()]);
-    //                     // return 'Cash On Delivery';
-    //                 } catch (\Exception $e) {
-    //                     DB::rollBack();
-    //                     dd($e);
-    //                     return redirect()->route('business.checkout.faild',['locale' => app()->getLocale()]);
-    //                 }
-    //             } else {
-    //                 $random_number = Str::random(6);
-    //                 // return 'PAYMENT = Digital Payment';
-    //                 // 1) Get a token from FIB
-    //                 $fibService = new \App\Services\FibService();
-    //                 $clientId     = config('fib.client_id');     // or env('FIB_CLIENT_ID')
-    //                 $clientSecret = config('fib.client_secret'); // or env('FIB_CLIENT_SECRET')
-
-    //                 $accessToken = $fibService->getAccessToken($clientId, $clientSecret);
-    //                 if (!$accessToken) {
-    //                     // handle error
-    //                     return redirect()->route('business.checkout.faild', ['locale' => app()->getLocale()])
-    //                                     ->withErrors(['fib' => 'Unable to get token from FIB.']);
-    //                 }
-
-    //                 // 2) Prepare your Payment creation payload
-    //                 // e.g. if user’s total is 500 IQD
-    //                 $fibPayload = [
-    //                     "monetaryValue" => [
-    //                         "amount" => $validatedData['total_amount'],  // must be string e.g. "500.00"
-    //                         "currency" => "IQD"
-    //                     ],
-    //                     "statusCallbackUrl" => route('fib.callback'),   // define your route for status
-    //                     "description" => "Order #{$random_number}",     // up to 50 chars
-    //                     "expiresIn" => "PT15M",                         // default 15 minutes
-    //                     "category" => "ECOMMERCE",                      // or POS, etc.
-    //                     "refundableFor" => "PT24H"                      // default 24 hours
-    //                 ];
-
-    //                 // 3) Create the payment in FIB
-    //                 $createResp = $fibService->createPayment($accessToken, $fibPayload);
-    //                 if (!$createResp) {
-    //                     // handle error
-    //                     return redirect()->route('business.checkout.faild', ['locale' => app()->getLocale()])
-    //                                     ->withErrors(['fib' => 'Unable to create FIB payment.']);
-    //                 }
-
-    //                 // 4) The response typically includes:
-    //                 //   paymentId, readableCode, qrCode (base64 image),
-    //                 //   personalAppLink, businessAppLink, etc.
-    //                 $paymentId    = $createResp['paymentId']    ?? null;
-    //                 $qrCode       = $createResp['qrCode']       ?? null;
-    //                 $readableCode = $createResp['readableCode'] ?? null;
-    //                 $appLink      = $createResp['personalAppLink'] ?? null;
-    //                 // etc.
-
-    //                 // 5) Save $paymentId to your order record or session
-    //                 // e.g. $order->fib_payment_id = $paymentId; $order->save();
-
-    //                 // If user is on a mobile phone with FIB app installed,
-    //                 // you can redirect them to $appLink.
-    //                 // Otherwise display the $qrCode so user can scan it from phone.
-    //                 return view('business.checkout.fib', [
-    //                     'order'     => $order,
-    //                     'qrCode'    => $qrCode,
-    //                     'appLink'   => $appLink,
-    //                     'readableCode' => $readableCode,
-    //                 ]);
-    //             }
-    //         } else {
-    //             return 'err2';
-    //         } 
-    //     } else {
-    //         return 'err1';
-    //     }
-    //     // return view('mains.pages.checkout-page-one', [
-
-    //     // ]);
-    // }

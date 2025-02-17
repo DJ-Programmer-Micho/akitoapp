@@ -12,6 +12,9 @@ class LocalizationMainMiddleware
 
     public function handle(Request $request, Closure $next)
     {
+        if ($request->is('api/*')) {
+            return $next($request);
+        }
         // Retrieve locale from route or session, fallback to default
         $locale = $request->route('locale') ?? $request->session()->get('applocale', config('app.locale'));
 
