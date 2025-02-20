@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\V1;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
@@ -12,8 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Log;
+
 class CustomerControllerApi extends Controller
 {
     public function register(Request $request): JsonResponse
