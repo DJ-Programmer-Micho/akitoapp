@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Gateaway\CallBackController;
-use App\Http\Controllers\API\V1\CustomerControllerApi;
+use App\Http\Controllers\Api\V1\CustomerControllerApi;
 use App\Http\Controllers\Api\V1\Main\CartControllerApi;
 use App\Http\Controllers\Api\V1\Main\ShopControllerApi;
 use App\Http\Controllers\Api\V1\Main\PaymentControllerApi;
