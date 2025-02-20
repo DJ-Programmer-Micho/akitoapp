@@ -113,9 +113,6 @@ class BusinessController extends Controller
             ];
         });
     }
-    
-    
-    
 
     private function productRelationships($locale)
     {
@@ -840,7 +837,8 @@ class BusinessController extends Controller
             $paymentResponse = $paymentService->processPayment();
 
             if (!$paymentResponse) {
-                Log::error("PaymentServiceManager instance is null!");
+                // Log::error("PaymentServiceManager instance is null!");
+                DB::rollBack();
                 return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
             }
             DB::commit();
@@ -946,8 +944,6 @@ class BusinessController extends Controller
         // Pass order details to the checkout page
         return view('mains.pages.checkout-page-old-one', compact('order', 'paymentList'));
     }
-
-
     
     public function checkSuccess(){
         return view('mains.components.livewire.aftercheckout.check-success', [

@@ -31,7 +31,7 @@ class CustomerAuth extends Controller
         $request->validate([
             'login' => 'required|string',
             'password-form-signin' => 'required|string|min:8',
-            'g-recaptcha-response' => ['required', new ReCaptcha]
+            // 'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
     
         // Map form field names to the correct database column names

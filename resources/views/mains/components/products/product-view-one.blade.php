@@ -237,6 +237,12 @@
                 </div><!-- End .details-filter-row -->
                 @endif
                 <div class="product-details-action mx-1 nav-dir">
+                    @guest('customer')
+                    <button type="button" class="btn btn-product btn-cart" href="#signin-modal" data-toggle="modal">
+                        <span>add to cart</span>
+                    </button>
+                    @endguest
+                    @auth('customer')
                     @if ($productDetail->variation->stock)
                     <button type="button" onclick="addToCartDetail({{ $productDetail->id }})" class="btn hover-text btn-product btn-cart">
                      {{__('add to cart')}}
@@ -246,6 +252,7 @@
                         <i class="fa-solid fa-cubes mr-1"></i> {{__('Out Of Stock')}}
                     </button>
                     @endif
+                    @endauth
                     <div class="details-action-wrapper detail-icon">
                         @guest('customer')
                         <div class="heart-icon">
@@ -257,10 +264,6 @@
                         @auth('customer')
                         @livewire('cart.wishlist-on-card-livewire', ['product_id' => $productDetail->id])
                         @endauth
-                        {{-- <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a> --}}
-
-
-                        {{-- <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a> --}}
                     </div><!-- End .details-action-wrapper -->
                 </div><!-- End .product-details-action -->
 

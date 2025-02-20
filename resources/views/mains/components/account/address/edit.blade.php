@@ -12,19 +12,19 @@
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="first_name">First Name *</label>
-                            <input type="text" name="first_name" class="form-control" value="{{$fName}}" required>
+                            <input type="text" name="first_name" class="form-control" value="{{$fName}}" disabled>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="last_name">Last Name *</label>
-                            <input type="text" name="last_name" class="form-control" value="{{$lName}}" required>
+                            <input type="text" name="last_name" class="form-control" value="{{$lName}}" disabled>
                         </div>
                     </div>
                     <div class="col-md-4 col-sm-12">
                         <div class="form-group">
                             <label for="email_address">Email Address *</label>
-                            <input type="text" name="email_address" class="form-control" value="{{$email}}" required>
+                            <input type="text" name="email_address" class="form-control" value="{{$email}}" disabled>
                         </div>
                     </div>
                 </div>
