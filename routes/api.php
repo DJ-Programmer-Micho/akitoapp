@@ -38,7 +38,6 @@ Route::post('/payment/callback/{provider}', [CallBackController::class, 'handleC
     // ->middleware('throttle:60,1')
     // ->name('payment.callback.fib');
 
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
