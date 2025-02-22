@@ -178,10 +178,28 @@ class CustomerControllerApi extends Controller
             return response()->json(['message' => 'Phone number not found.'], 404);
         }
 
-        return response()->json([
-            'message' => 'Phone number retrieved successfully.',
-            'phone_number' => $phoneNumber,
-        ], 200);
+
+
+        $clean_phone_number = preg_replace('/[^0-9+]/', '', $phoneNumber);
+        if (strpos($clean_phone_number, '+') === 0) {
+            $final_clean_phone_number = '00' . substr($clean_phone_number, 1);
+        } else {
+            $final_clean_phone_number = $clean_phone_number;
+        }
+        $s_response = SinchService::sendOTP($final_clean_phone_number);
+        if($s_response->successful()) {
+            return response()->json([
+                'message' => 'Phone number retrieved successfully.',
+                'phone_number' => $phoneNumber,
+            ], 200);
+
+        } else {
+            // return $s_response;
+            return redirect()->back()->with('alert', [
+                'type' => 'error',
+                'message' => __('Something Went Wrong!, Please check your phone number or the Phone Number is Already Registered'),
+            ]);
+        }
     }
     /**
      * 📌 Resend Phone OTP API
