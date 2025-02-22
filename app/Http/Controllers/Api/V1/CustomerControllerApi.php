@@ -158,6 +158,31 @@ class CustomerControllerApi extends Controller
         return response()->json(['message' => 'Invalid OTP.'], 400);
     }
 
+    public function sendPhoneNumberAfterVerification(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email|exists:customers,email',
+        ]);
+
+        // Find the customer by email
+        $customer = Customer::where('email', $request->email)->first();
+
+        if (!$customer || !$customer->email_verify) {
+            return response()->json(['message' => 'Email is not verified or customer does not exist.'], 400);
+        }
+
+        // Get the customer's phone number
+        $phoneNumber = $customer->customer_profile->phone_number ?? null;
+
+        if (!$phoneNumber) {
+            return response()->json(['message' => 'Phone number not found.'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Phone number retrieved successfully.',
+            'phone_number' => $phoneNumber,
+        ], 200);
+    }
     /**
      * 📌 Resend Phone OTP API
      */

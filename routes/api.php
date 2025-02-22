@@ -50,6 +50,7 @@ Route::prefix('v1')->middleware(['LocalizationMainMiddleware'])->group(function 
     Route::post('/register', [CustomerControllerApi::class, 'register']);
     Route::post('verify-email-otp', [CustomerControllerApi::class, 'verifyEmailOTP']);
     Route::post('resend-email-otp', [CustomerControllerApi::class, 'resendEmailOTP']);
+    Route::post('send-phone-number', [CustomerControllerApi::class, 'sendPhoneNumberAfterVerification']);
     Route::post('verify-phone-otp', [CustomerControllerApi::class, 'verifyPhoneOTP']);
     Route::post('resend-phone-otp', [CustomerControllerApi::class, 'resendPhoneOTP']);
     Route::middleware('auth:sanctum')->group(function () {
