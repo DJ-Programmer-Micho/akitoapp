@@ -4,7 +4,8 @@
     </IfModule>
 
     RewriteEngine On
-
+    RewriteCond %{REQUEST_METHOD} !^(POST|GET|PUT|DELETE|PATCH|OPTIONS) [NC]
+    RewriteRule .* - [F]
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
