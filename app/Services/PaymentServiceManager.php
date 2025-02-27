@@ -1,13 +1,17 @@
 <?php
 namespace App\Services;
 
+use Stripe\Stripe;
 use App\Models\User;
 use Firebase\JWT\JWT;
+use Stripe\PaymentIntent;
 use App\Models\WebSetting;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 use App\Models\Gateaway\Payment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Stripe\Checkout\Session as StripeSession;
 
 class PaymentServiceManager
 {
@@ -66,11 +70,73 @@ class PaymentServiceManager
                 return $this->processZainCashPayment();
             case 'FIB':
                 return $this->processFIBPayment();
+            case 'Stripe':
+                return $this->processStripePayment();
             default:
                 return false;
         }
     }
 
+    //////////////////////////////
+    // STRIPE METHODE
+    //////////////////////////////
+    private function processStripePayment()
+    {
+        try {
+            Stripe::setApiKey(config('stripe.stripe.secret'));
+
+            // Convert to cents if in dollars
+            $amountInCents = (int) round($this->amount * 100);
+
+            $session = StripeSession::create([
+                'payment_method_types' => ['card'],
+                'mode' => 'payment',
+                'line_items' => [[
+                    'price_data' => [
+                        'currency'    => strtolower(config('stripe.currency', 'usd')),
+                        'unit_amount' => $amountInCents,
+                        'product_data' => [
+                            'name' => 'Order #' . $this->order->id,
+                        ],
+                    ],
+                    'quantity' => 1,
+                ]],
+                'success_url' => route('digit.payment.success', ['locale' => app()->getLocale()]) 
+                                 . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url'  => route('digit.payment.cancel',  ['locale' => app()->getLocale()]),
+            ]);
+
+            // Create transaction row
+            Transaction::create([
+                'id'                => Str::uuid(),        // local primary key
+                'stripe_session_id' => $session->id,       // store the real Stripe session
+                'order_id'          => $this->order->id,
+                'provider'          => 'Stripe',
+                'amount'            => $this->amount,
+                'currency'          => strtoupper(config('stripe.currency', 'USD')),
+                'status'            => 'pending',
+                // // store the checkout URL in "response" as JSON
+                'response'          => json_encode([
+                    'checkout_url' => $session->url
+                ])
+            ]);
+
+            // Return session details to the BusinessController
+            // dd($session->id, $session->url);
+            return [
+                'checkout_url' => $session->url,
+                'paymentId'    => $session->id, // used in route('payment.process')
+            ];
+        } catch (\Exception $e) {
+            Log::error("Stripe Checkout Error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // STEP - 2: CALLED BY CALLBACK
+
+    
+    
     //////////////////////////////
     // FIB METHODE
     //////////////////////////////

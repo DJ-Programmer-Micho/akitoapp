@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('stripe_session_id')->nullable();
             $table->foreignId('order_id')->constrained()->onDelete('cascade'); // Ensure consistency
             $table->string('provider'); // Areeba, ZainCash, FIB
             $table->decimal('amount', 10, 2); // Ensure proper data type for amount

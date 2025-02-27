@@ -31,6 +31,8 @@ class PaymentController extends Controller
             return redirect()->route('payment.fib', ['locale' => app()->getLocale(), 'paymentId' => $paymentId]);
         } elseif ($paymentMethod == 'Areeba') {
             return redirect()->route('payment.areeba', ['locale' => app()->getLocale(), 'paymentId' => $order->id]);
+        } elseif ($paymentMethod === 'Stripe') {
+            return $this->redirectToStripeCheckout($order, $paymentId);
         } elseif ($paymentMethod == 'ZainCash') {
             return redirect()->route('payment.zaincash', ['locale' => app()->getLocale(), 'paymentId' => $order->id]);
         } else {
@@ -117,6 +119,47 @@ class PaymentController extends Controller
     }
 
     
+    //////////////////////////////
+    // PROCESS AREEBA PAYMENT AND INTERACT WITH DB
+    //////////////////////////////
+    private function redirectToStripeCheckout($order, $sessionId)
+    {
+        // 1) Look up existing transaction by stripe_session_id
+        $transaction = Transaction::where('stripe_session_id', $sessionId)
+            ->where('order_id', $order->id)
+            ->first();
+    
+        // ❌ CASE: No matching transaction
+        if (!$transaction) {
+            Log::error("Stripe Checkout Error: No transaction found matching sessionId={$sessionId} and order_id={$order->id}");
+            return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                ->withErrors('Transaction not found or expired.');
+        }
+    
+        // 2) Parse the 'checkout_url' from the 'response' column
+        $responseData = json_decode($transaction->response, true);
+    
+        // ❌ CASE: Missing 'checkout_url'
+        if (!isset($responseData['checkout_url'])) {
+            Log::error("Stripe Checkout Error: Missing 'checkout_url' in transaction->response for sessionId={$sessionId}");
+            return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                ->withErrors('Missing Stripe Checkout URL in transaction.');
+        }
+    
+        $checkoutUrl = $responseData['checkout_url'];
+    
+        // 3) Redirect the user to Stripe's hosted checkout page
+        Log::info("Redirecting to Stripe Checkout for sessionId={$sessionId}, order_id={$order->id}");
+        return redirect($checkoutUrl);
+    }
+
+public function handleStripeWebhook(Request $request)
+{
+    // 1) Parse the event from Stripe
+    // 2) If event type is checkout.session.completed
+    // 3) Mark transaction as 'paid' if payment_status == 'paid'
+    // 4) Mark the order as 'successful'
+}
     //////////////////////////////
     // PROCESS AREEBA PAYMENT AND INTERACT WITH DB
     //////////////////////////////

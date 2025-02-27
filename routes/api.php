@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\CustomerControllerApi;
 use App\Http\Controllers\Api\V1\Main\CartControllerApi;
 use App\Http\Controllers\Api\V1\Main\ShopControllerApi;
 use App\Http\Controllers\Api\V1\Main\PaymentControllerApi;
+use App\Http\Controllers\Gateaway\StripeWebhookController;
 use App\Http\Controllers\Api\V1\Main\BusinessControllerApi;
 use App\Http\Controllers\Api\V1\Main\CheckoutControllerApi;
 use App\Http\Controllers\Api\V1\Main\CheckoutOldControllerApi;
@@ -34,6 +35,9 @@ Route::post('/payment/callback/{provider}', [CallBackController::class, 'handleC
     ->middleware('throttle:60,1')
     ->name('payment.callback');
 
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
+    ->middleware('throttle:60,1')
+    ->name('stripe.webhook');
     // Route::post('/payment/callback/fib', [CallBackController::class, 'handleFIBCallback'])
     // ->middleware('throttle:60,1')
     // ->name('payment.callback.fib');

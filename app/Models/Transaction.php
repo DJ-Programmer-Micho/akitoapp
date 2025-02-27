@@ -12,6 +12,7 @@ class Transaction extends Model
 
     protected $fillable = [
         'id',
+        'stripe_session_id',
         'order_id',
         'provider', // Matches migration
         'amount',

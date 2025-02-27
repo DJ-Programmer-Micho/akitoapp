@@ -173,7 +173,10 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
         Route::get('proccess/success', [BusinessController::class, 'checkSuccess'])->name('business.checkout.success');
         Route::get('proccess/failed', [BusinessController::class, 'checkFaild'])->name('business.checkout.failed');
 
-        
+        // Stripe Payment Page for front-end processing
+        Route::get('/payment/stripe/{orderId}', [PaymentController::class, 'showStripePaymentPage'])
+            ->name('payment.stripe');
+
         Route::post('/checkout/{orderId}', [PaymentController::class, 'checkout'])->name('checkout');
         Route::get('/payment/success', [PaymentController::class, 'digitSuccess'])->name('digit.payment.success');
         Route::get('/payment/cancel', [PaymentController::class, 'digitCancel'])->name('digit.payment.cancel');
