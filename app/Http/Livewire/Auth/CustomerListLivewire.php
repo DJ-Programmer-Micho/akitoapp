@@ -121,6 +121,9 @@ class CustomerListLivewire extends Component
     // Real-Time Validation
     public function updated($propertyName)
     {
+        if ($propertyName === 'searchTerm' || $propertyName === 'startDate' || $propertyName === 'statusFilter') {
+            return; // no validation needed
+        }
         // $this->validateOnly($propertyName);
         if($this->currentValidation == 'add') {
             $this->validateOnly($propertyName, $this->rulesForSave());
