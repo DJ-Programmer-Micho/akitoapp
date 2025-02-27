@@ -94,6 +94,10 @@ class CustomerListLivewire extends Component
 
     protected function rulesForUpdate()
     {
+        if (!$this->customer_update) {
+            return [];
+        }
+
         $userId = $this->customer_update->id;
         
         return [
