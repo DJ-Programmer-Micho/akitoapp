@@ -36,7 +36,6 @@ Route::post('/payment/callback/{provider}', [CallBackController::class, 'handleC
     ->name('payment.callback');
 
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
-    ->middleware('throttle:60,1')
     ->name('stripe.webhook');
     // Route::post('/payment/callback/fib', [CallBackController::class, 'handleFIBCallback'])
     // ->middleware('throttle:60,1')

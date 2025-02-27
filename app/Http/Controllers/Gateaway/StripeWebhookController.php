@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Gateaway;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Log;
+
 
 class StripeWebhookController extends Controller
 {
@@ -14,6 +16,7 @@ class StripeWebhookController extends Controller
         $sig_header = $request->header('Stripe-Signature');
         $secret     = env('STRIPE_WEBHOOK_SECRET'); // from Stripe Dashboard
 
+        Log::info('Stripe Was Here');
         try {
             $event = \Stripe\Webhook::constructEvent($payload, $sig_header, $secret);
 
