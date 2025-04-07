@@ -25,6 +25,9 @@ class ShopControllerApi extends Controller
      */
     public function productShopApi(Request $request)
     {
+        $locale = $request->input('lang', 'en');
+        app()->setLocale($locale);
+        
         $filters = $this->getFiltersFromRequestApi($request);
         $filters['is_spare_part'] = 0; // Non-spare parts
 
@@ -56,22 +59,68 @@ class ShopControllerApi extends Controller
         ]);
     }
 
-        private function formatProduct(Product $product): array
+    private function formatProduct(Product $product): array
     {
         $customerId = Auth::guard('sanctum')->user()->id ?? null;
         $finalPrices = $this->calculateFinalPrice($product, $customerId);
-
+    
         return [
-            'id'                     => $product->id,
-            'name'                   => $product->productTranslation->first()->name ?? '',
-            'slug'                   => $product->productTranslation->first()->slug ?? '',
-            'brand'                  => $product->brand->brandTranslation->name ?? '',
-            'category'               => $product->categories->first()->categoryTranslation->name ?? '',
-            'image'                  => app('cloudfront').$product->variation->images->first()->image_path ?? 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/logo/icon_2024021117305762286939.png',
-            'price'                  => $finalPrices['base_price'],
-            'discount_price'         => $finalPrices['customer_discount_price'] ?? $finalPrices['discount_price'],
+            'id'              => $product->id,
+            'name'            => $product->productTranslation->first()->name ?? '',
+            'slug'            => $product->productTranslation->first()->slug ?? '',
+            'brand'           => $product->brand->brandTranslation->name ?? '',
+            'category'        => $product->categories->first()->categoryTranslation->name ?? '',
+            'image'           => app('cloudfront').($product->variation->images->first()->image_path ?? 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/logo/icon_2024021117305762286939.png'),
+            'price'           => $finalPrices['base_price'],
+            'discount_price'  => $finalPrices['customer_discount_price'] ?? $finalPrices['discount_price'],
+    
+            // Additional fields:
+            'size' => $product->variation->sizes->map(function ($size) {
+                return [
+                    'id'   => $size->id,
+                    'name' => $size->variationSizeTranslation->name ?? '',
+                    'code' => $size->code,
+                ];
+            })->toArray(),
+    
+            'material' => $product->variation->materials->map(function ($material) {
+                return [
+                    'id'   => $material->id,
+                    'name' => $material->variationMaterialTranslation->name ?? '',
+                    'code' => $material->code,
+                ];
+            })->toArray(),
+    
+            'capacity' => $product->variation->capacities->map(function ($capacity) {
+                return [
+                    'id'   => $capacity->id,
+                    'name' => $capacity->variationCapacityTranslation->name ?? '',
+                    'code' => $capacity->code,
+                ];
+            })->toArray(),
+    
+            'color' => $product->variation->colors->map(function ($color) {
+                return [
+                    'id'   => $color->id,
+                    'name' => $color->variationColorTranslation->name ?? '',
+                    'code' => $color->code,
+                ];
+            })->toArray(),
+    
+            // Assuming the product variation has an intensity value (or a related intensity model)
+            'intensity' => $product->variation->intensity ?? null,
+    
+            // If a product can have multiple tags, return them as an array:
+            'tag' => $product->tags->map(function ($tag) {
+                return [
+                    'id'   => $tag->id,
+                    'name' => $tag->tagTranslation->first()->name ?? '',
+                    'icon' => $tag->icon ?? '',
+                ];
+            })->toArray(),
         ];
     }
+    
 
 
     private function getFilterQueriesApi($categoryIds, $sparepart)
@@ -181,11 +230,15 @@ class ShopControllerApi extends Controller
         $locale = app()->getLocale();
 
         return [
-            'productTranslation'       => fn($q) => $q->where('locale', $locale),
-            'variation.images'         => fn($q) => $q->where('is_primary', 1),
-            'brand.brandTranslation'   => fn($q) => $q->where('locale', $locale),
+            'productTranslation' => fn($q) => $q->where('locale', $locale),
+            'variation.images'   => fn($q) => $q->where('is_primary', 1),
+            'variation.sizes.variationSizeTranslation' => fn($q) => $q->where('locale', $locale),
+            'variation.materials.variationMaterialTranslation' => fn($q) => $q->where('locale', $locale),
+            'variation.capacities.variationCapacityTranslation' => fn($q) => $q->where('locale', $locale),
+            'variation.colors.variationColorTranslation' => fn($q) => $q->where('locale', $locale),
+            'brand.brandTranslation' => fn($q) => $q->where('locale', $locale),
             'categories.categoryTranslation' => fn($q) => $q->where('locale', $locale),
-            'subCategories.subCategoryTranslation' => fn($q) => $q->where('locale', $locale),
+            'tags.tagTranslation' => fn($q) => $q->where('locale', $locale),
         ];
     }
 

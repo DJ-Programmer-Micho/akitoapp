@@ -36,7 +36,7 @@ class CustomerAddressController extends Controller
                 return back()->with('alert', [
                     'type' => 'error', 
                 'message' => 'You can only have up to 5 delivery addresses..'
-            ]);;
+            ]);
         }
     
         // Validate the request
