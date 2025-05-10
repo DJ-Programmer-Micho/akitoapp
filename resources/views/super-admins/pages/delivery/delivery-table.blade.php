@@ -21,25 +21,25 @@
             <div class="col-6">
                 <div class="card p-3">
                     <div>
-                        <h3>Instructions</h3>
-                        <p>Create zone by click on map and connect the dots together</p>
+                        <h3>{{ __('Instructions') }}</h3>
+                        <p>{{ __('Create zone by click on map and connect the dots together') }}</p>
                         <ul>
-                            <li><i class="fa-regular fa-hand-pointer"></i> Use this to drag map to find proper area</li>
-                            <li><i class="fa-solid fa-circle-nodes"></i> Click this icon to start pin points in the map and connect them to draw a zone . Minimum 3 points required</li>
+                            <li><i class="fa-regular fa-hand-pointer"></i> {{ __('Use this to drag map to find proper area') }}</li>
+                            <li><i class="fa-solid fa-circle-nodes"></i> {{ __('Click this icon to start pin points in the map and connect them to draw a zone . Minimum 3 points required') }}</li>
                         </ul>
                     </div>
                     <hr class="my-3">
                     <form wire:submit.prevent="storeZone">
                         <div class="form-group mb-3">
-                            <label for="name">Zone Name</label>
+                            <label for="name">{{ __('Zone Name') }}</label>
                             <input type="text" id="name" class="form-control" wire:model="name" required>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="name">Delivery Cost</label>
-                            <input type="number" id="delivery_cost" class="form-control" wire:model="delivery_cost" step="0.01" required>
+                            <label for="name">{{ __('Delivery Cost') }}</label>
+                            <input type="number" id="delivery_cost" class="form-control" wire:model="delivery_cost" step="250" required>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="name">Delivary Team</label>
+                            <label for="name">{{ __('Delivary Team') }}</label>
                             <select class="form-control" wire:model="delivery_team" required>
                                 <option value="" selected>{{__('Select Delivary Team')}}</option>
                                 @foreach ($teamList as $team)
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <input type="hidden" id="coordinates" wire:model="coordinates">
-                        <button type="submit" class="btn btn-primary">Save Zone</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Save Zone') }}</button>
                     </form>
                     <!-- Button to update coordinates -->
                 </div>
@@ -73,7 +73,7 @@
                 class="btn btn-secondary w-100"
                 wire:click="updateZone"
                 @if(is_null($selectedZoneId)) disabled @endif>
-                Update Coordinates
+                {{ __('Update Coordinates') }}
             </button>
             </div>
         </div>
@@ -140,7 +140,7 @@
                                 <th>{{__('ID')}}</th>
                                 <th>{{__('Name')}}</th>
                                 <th class="text-center">{{__('Delivery Team')}}</th>
-                                <th class="text-center">{{__('Delivery Cost ($)')}}</th>
+                                <th class="text-center">{{__('Delivery Cost (IQD)')}}</th>
                                 <th class="text-center">{{__('Digital Payment')}}</th>
                                 <th class="text-center">{{__('Cash On Delivery Payment')}}</th>
                                 <th class="text-center">{{__('Status')}}</th>
@@ -161,9 +161,9 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         <div class="d-flex justify-content-center align-items-center">
-                                            <input type="number" id="cost_{{ $data->id }}" value="{{ $data->delivery_cost }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                            <input type="text" id="cost_{{ $data->id }}" value="{{ number_format($data->delivery_cost, 0) }}" class="form-control bg-dark text-white" style="max-width: 120px">
                                             <button type="button" class="btn btn-success btn-icon"  onclick="updateCostValue({{ $data->id }})">
-                                                <i class="fa-solid fa-dollar-sign"></i>
+                                                {{ __('IQD') }}
                                             </button>
                                         </div>
                                     </td>
@@ -217,7 +217,7 @@
                                 <div class="py-4 text-center">
                                     <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:72px;height:72px">
                                     </lord-icon>
-                                    <h5 class="mt-4">Sorry! No Result Found</h5>
+                                    <h5 class="mt-4">{{ __('Sorry! No Result Found') }}</h5>
                                 </div>
                             </div>
                             @endforelse
@@ -232,7 +232,7 @@
                     <div class="py-4 text-center">
                         <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:72px;height:72px">
                         </lord-icon>
-                        <h5 class="mt-4">Sorry! No Result Found</h5>
+                        <h5 class="mt-4">{{ __('Sorry! No Result Found') }}</h5>
                     </div>
                 </div>
                 @endif

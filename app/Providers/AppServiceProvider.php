@@ -6,6 +6,8 @@ use App\Models\WebSetting;
 use App\Services\FirebaseService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,11 +27,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $settings = WebSetting::find(1); // Assuming there's only one settings record
+        $settings = Cache::remember('web_settings', 1*1, fn() => WebSetting::find(1) ?? new WebSetting);
+        $rate = $settings->exchange_price > 0 ? (int) $settings->exchange_price : 1;
 
-        // Fallback if settings not found
-        $settings = $settings ?? new WebSetting();
-
+        View::share('exchangeRate', $rate);
+        View::share('currencyCode', __('IQD'));
+        Config::set('currency.exchange_rate', $rate);
+        
         $this->app->singleton('glocales', function () {
             return config('app.locales'); 
         });

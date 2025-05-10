@@ -14,8 +14,8 @@
             @csrf
             <div class="row">
                 <div class="col-lg-9">
-                    <h2 class="checkout-title">Select Address: {{$digitPaymentStatus ?? 'none'}}</h2>
-
+                    <h2 class="checkout-title">{{ __('Select Address:') }}</h2>
+                         {{-- {{$digitPaymentStatus ?? 'none'}} --}}
                     <div class="row px-3">
                         @if ($addressList)
 
@@ -59,11 +59,8 @@
                             </a>
                         </div>
                         @endif
-
                     </div>
-
-                    <h2 class="checkout-title">Select Payment Method:</h2>
-
+                    <h2 class="checkout-title">{{ __('Select Payment Method:') }}</h2>
                     <div class="row px-3">
                         @foreach ($paymentList as $index => $payment)
                         <div class="col-lg-6 p-0">
@@ -104,37 +101,41 @@
                     {{-- <label><h2 class="checkout-title">Order notes (optional)</h2></label>
                     <textarea class="form-control" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea> --}}
                 </div>
-                <aside class="col-lg-3">
+                <aside class="col-lg-3" dir="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'rtl' : 'ltr' }}">
                     <div class="summary">
-                        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                        <h3 class="summary-title">{{ __('Your Order') }}</h3><!-- End .summary-title -->
 
-                        <table class="table table-summary">
+                        <table class="table table-summary" dir="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'rtl' : 'ltr' }}">
                             <thead>
                                 <tr>
-                                    <th>Product</th>
-                                    <th>QTY X Item</th>
+                                    <th class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Product') }}</th>
+                                    <th class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">{{ __('QTY X Item') }}</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 @forelse($cartListItems as $item)
                                 <tr>
-                                    <td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">
                                         <a href="#" class="d-flex">
                                         <img src="{{ app('cloudfront').$item['product']['variation']['images'][0]['image_path'] }}" alt="{{ $item['product']['product_translation'][0]['name'] }}" class="img-fluid" style="max-width: 40px; max-height: 40px; object-fit: cover;">
                                         {{$item['product']['product_translation'][0]['name'] ?? 'unKnown' }}
                                         </a>
                                     </td>
-                                    <td>
-                                        {{$item['quantity']}} X ${{ 
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
+                                        <span class="price flip-symbol">
+                                            <span class="cart-product-qty amount">{{ $item['quantity'] }} x</span>
+                                            {{ 
                                             number_format(
                                                 (
                                                     $item['product']['customer_discount_price'] ?? 
                                                     ($item['product']['discount_price'] ?? $item['product']['base_price'])
                                                 ), 
-                                                2
-                                            ) 
-                                        }}
+                                                0
+                                                ) 
+                                            }}
+                                            <span class="currency">{{ __('IQD') }}</span>
+                                        </span>
                                         {{-- ${{ (!empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price']) *  $item['quantity']}} --}}
                                     </td>
                                 </tr>
@@ -142,8 +143,13 @@
                                 {{__('No Items Are Added')}}
                                 @endforelse
                                 <tr class="summary-subtotal">
-                                    <td>Subtotal:</td>
-                                    <td>${{ $totalListPrice }}</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Subtotal:') }}</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
+                                        <span class="cart-total-price flip-symbol text-left">
+                                            <span class="amount">{{ number_format($totalListPrice, 0) }}</span>
+                                            <span class="currency">{{ __('IQD') }}</span>
+                                        </span>
+                                    </td>
                                 </tr><!-- End .summary-subtotal -->
                                 {{-- <tr>
                                     <td colspan="2">
@@ -156,26 +162,38 @@
                                     <td>${{ $totalListPrice }}</td>
                                 </tr><!-- End .summary-total --> --}}
                                 <tr class="summary-total-f">
-                                    <td>Payment Fees:</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Payment Fees:') }}</td>
                                     @if ($transactionFee > 0)
-                                    <td>{{ number_format($transactionFee) }}%</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">{{ number_format($transactionFee) }}%</td>
                                     @else
-                                    <td class="text-success"><b>No Fees</b></td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }} text-success"><b>{{ __('No Fees') }}</b></td>
                                     @endif
                                 </tr><!-- End .summary-total -->
                                 <tr class="summary-total-f">
-                                    <td>Shipping:</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Shipping:') }}</td>
                                     <input type="hidden" name="shipping_amount" value="{{$deliveryCharge}}">
                                     @if ($deliveryCharge > 0)
-                                    <td>${{$deliveryCharge}}</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
+                                        <span class="cart-total-price flip-symbol text-left">
+                                            <span class="amount">{{ number_format($deliveryCharge, 0)}} </span>
+                                            <span class="currency">{{ __('IQD') }}</span>
+                                        </span>
+                                    </td>
                                     @else
-                                    <td class="text-danger"><b>FREE</b></td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }} text-danger"><b>{{ __('FREE') }}</b></td>
                                     @endif
                                 </tr><!-- End .summary-total -->
                                 <tr class="summary-total-f">
-                                    <td>Grand Total:</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Grand Total:') }}</td>
                                     <input type="hidden" name="total_amount" value="{{$totalListPrice + $deliveryCharge + (($totalListPrice) * $transactionFee / 100)}}">
-                                    <td><b>${{number_format($totalListPrice + $deliveryCharge + (($totalListPrice) * $transactionFee / 100), 2)}}</b></td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
+                                        <b>
+                                            <span class="cart-total-price flip-symbol text-left">
+                                                <span class="amount">{{ number_format($totalListPrice + $deliveryCharge + (($totalListPrice) * $transactionFee / 100), 0)}} </span>
+                                                <span class="currency">{{ __('IQD') }}</span>
+                                            </span>
+                                        </b>
+                                    </td>
                                 </tr><!-- End .summary-total -->
                             </tbody>
                         </table><!-- End .table table-summary -->
@@ -184,20 +202,20 @@
                             @if ($inZone)
                             <!-- Button with a loader -->
                             <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" id="order-btn" style="display: none;">
-                                <span class="btn-text">Place Order</span>
-                                <span class="btn-hover-text">Proceed to Checkout</span>
+                                <span class="btn-text">{{ __('Place Order') }}</span>
+                                <span class="btn-hover-text">{{ __('Proceed to Checkout') }}</span>
                             </button>
                             <div id="loading" class="text-center mb-1">
                                 <i class="fa-solid fa-spinner fa-spin-pulse"></i>
                             </div>
                             @else
                             <div class="text-center mt-1">
-                                <h6 class="text-danger">Please Add Address First</h6>
+                                <h6 class="text-danger">{{ __('Please Add Address First') }}</h6>
                             </div>
                             @endif
                         @else
                         <div class="text-center mt-1">
-                            <h6 class="text-danger">Please Get Verify First</h6>
+                            <h6 class="text-danger">{{ __('Please Get Verify First') }}</h6>
                         </div>
                         @endif
 

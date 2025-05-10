@@ -37,11 +37,14 @@ class CheckoutListOneLivewire extends Component
     public $deliveryCharge;
     public $inZone;
 
+    public $exchange_rate;
 
     protected $listeners = ['addToCartList','cartListUpdated' => 'loadCartList'];
 
     public function mount()
     {
+        $this->exchange_rate = config('currency.exchange_rate');
+
         $this->digitPaymentStatus = null;
         $this->loadaddresses();
         
@@ -242,9 +245,9 @@ class CheckoutListOneLivewire extends Component
                 $discountDetails = $this->calculateFinalPrice($product, $customerId);
         
                 // Assign calculated discount details to the product
-                $product->base_price = $discountDetails['base_price'];
-                $product->discount_price = $discountDetails['discount_price'];
-                $product->customer_discount_price = $discountDetails['customer_discount_price'];
+                $product->base_price = $discountDetails['base_price'] * $this->exchange_rate;
+                $product->discount_price = $discountDetails['discount_price'] * $this->exchange_rate;
+                $product->customer_discount_price = $discountDetails['customer_discount_price'] * $this->exchange_rate;
                 $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
         
                 return $cartListItems;

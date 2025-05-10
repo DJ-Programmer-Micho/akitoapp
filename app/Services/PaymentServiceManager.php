@@ -16,6 +16,8 @@ use Stripe\Checkout\Session as StripeSession;
 class PaymentServiceManager
 {
     private $order;
+    private $exchange;
+    private $delivery;
     private $paymentMethod;
     private $amount;
     private $currency = 'IQD';
@@ -39,13 +41,19 @@ class PaymentServiceManager
         return $this;
     }
 
+    public function setDelivery($delivery) // IN IQD
+    {
+        $this->delivery = $delivery;
+        return $this;
+    }
+
     public function setPaymentMethod($paymentMethod)
     {
         $this->paymentMethod = $paymentMethod;
         return $this;
     }
 
-    public function setAmount($amount)
+    public function setAmount($amount) // IN USD
     {
         $this->amount = $amount;
         return $this;
@@ -86,15 +94,17 @@ class PaymentServiceManager
             Stripe::setApiKey(config('stripe.stripe.secret'));
 
             // Convert to cents if in dollars
+            $deliveryInDollar = round($this->delivery / $this->exchange);
+            // Convert to cents if in dollars
             $amountInCents = (int) round($this->amount * 100);
-
+            $finalAmount = $amountInCents + $deliveryInDollar;
             $session = StripeSession::create([
                 'payment_method_types' => ['card'],
                 'mode' => 'payment',
                 'line_items' => [[
                     'price_data' => [
                         'currency'    => strtolower(config('stripe.currency', 'usd')),
-                        'unit_amount' => $amountInCents,
+                        'unit_amount' => $finalAmount,
                         'product_data' => [
                             'name' => 'Order #' . $this->order->id,
                         ],
@@ -106,13 +116,14 @@ class PaymentServiceManager
                 'cancel_url'  => route('digit.payment.cancel',  ['locale' => app()->getLocale()]),
             ]);
 
+            $dbAmount = $this->amount + $deliveryInDollar;
             // Create transaction row
             Transaction::create([
                 'id'                => Str::uuid(),        // local primary key
                 'stripe_session_id' => $session->id,       // store the real Stripe session
                 'order_id'          => $this->order->id,
                 'provider'          => 'Stripe',
-                'amount'            => $this->amount,
+                'amount'            => $dbAmount,
                 'currency'          => strtoupper(config('stripe.currency', 'USD')),
                 'status'            => 'pending',
                 // // store the checkout URL in "response" as JSON
@@ -145,11 +156,15 @@ class PaymentServiceManager
     private function processFIBPayment() {
         $accessToken = $this->getFIBToken();
         $exchangeRate = WebSetting::find(1)->exchange_price;
+        if(!$exchangeRate) {
+            $exchangeRate = 1500;
+        }
+
         if (!$accessToken) {
             return false;
         }
 
-        $iq_currency = round($this->amount * $exchangeRate);
+        $iq_currency = round($this->amount * $exchangeRate) + $this->delivery;
         Log::info($iq_currency);
         $paymentData = [
             "monetaryValue" => [

@@ -6,11 +6,13 @@ use App\Models\User;
 use App\Models\Zone;
 use App\Models\Order;
 use Livewire\Component;
-use Illuminate\Support\Facades\Log;
 use App\Events\EventDriverUpdated;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use App\Events\EventOrderStatusUpdated;
-use App\Events\EventOrderPaymentStatusUpdated;
 use App\Notifications\NotifyDriverUpdate;
+use App\Mail\EmailInvoiceActionFailedMail;
+use App\Events\EventOrderPaymentStatusUpdated;
 use App\Notifications\NotifyOrderStatusChanged;
 use App\Notifications\NotifyOrderPaymentStatusChanged;
 
@@ -119,6 +121,9 @@ class OrderViewerLivewire extends Component
             if (!empty($this->statusFilter)) {
                 // Update the payment status with the selected filter value
                 $order->status = $this->statusFilter;
+                if($this->statusFilter == 'canceled') {
+                    $order->payment_status = 'failed';
+                }
                 $order->save();
     
                 // Dispatch a success message
@@ -165,6 +170,10 @@ class OrderViewerLivewire extends Component
                 } catch (\Exception $e) {
                     $this->dispatchBrowserEvent('alert', ['type' => 'info', 'message' => __('Your Internet is Weak!: ' . $e->getMessage())]);
                     return;
+                }
+
+                if($this->statusFilter == 'canceled') {
+                    Mail::to($order->customer->email)->queue(new EmailInvoiceActionFailedMail($order));
                 }
     
             } else {
@@ -382,9 +391,8 @@ private function isCoordinateInsidePolygon($coordinates, $lat, $lng)
         $sum = 0;
         $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->find($this->o_id);
         // Return view with data
-        // dd($order->orderItems);
         foreach($order->orderItems as $item) {
-            $sum = $sum + $item->total;
+            $sum = $sum + $item->total_iqd;
         }
         
         return view('super-admins.pages.orderviewer.order-viewer', [

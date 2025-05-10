@@ -22,7 +22,9 @@ class Order extends Model
         'driver',
         'phone_number',
         'shipping_amount',
-        'total_amount',
+        'total_amount_usd',
+        'total_amount_iqd',
+        'exchange_rate',
         'payment_status',
         'payment_method',
         'tracking_number',
@@ -41,8 +43,4 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'driver'); // Specify 'driver' as the foreign key
     }
-    // public function calculateTotalAmount()
-    // {
-    //     return $this->orderItems->sum('total');
-    // }
 }

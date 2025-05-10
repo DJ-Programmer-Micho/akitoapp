@@ -17,8 +17,10 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Foreign key referencing products (optional, based on your design)
             $table->integer('quantity')->default(1); // Quantity of the product ordered
             $table->string('product_name'); // Product name at the time of purchase
-            $table->decimal('price', 10, 2); // Price of the product at the time of the order
-            $table->decimal('total', 10, 2);
+            $table->decimal('price_usd', 10, 2); // Price of the product at the time of the order
+            $table->decimal('total_usd', 10, 2);
+            $table->decimal('price_iqd', 10, 2); // Price of the product at the time of the order
+            $table->decimal('total_iqd', 10, 2);
             $table->timestamps(); // Timestamps for created_at and updated_at
         });
     }

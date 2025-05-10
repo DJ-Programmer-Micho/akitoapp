@@ -3,12 +3,13 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EmailInvoiceActionMail extends Mailable
+class EmailInvoiceActionFailedMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $orderData, $subTotal;
@@ -18,7 +19,9 @@ class EmailInvoiceActionMail extends Mailable
     public function __construct($order)
     {
         $this->orderData = $order;
-        $this->subTotal = $order->total_amount_iqd;
+        foreach($order->orderItems as $item) {
+            $this->subTotal = $this->subTotal + $item->total_iqd;
+        }
     }
     /**
      * Get the message envelope.
@@ -36,10 +39,9 @@ class EmailInvoiceActionMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'super-admins.pdf.orderinvoice.order-invoice-action-print',
+            view: 'super-admins.pdf.orderinvoice.order-invoice-action-print-cancelled',
         );
     }
-
     /**
      * Get the attachments for the message.
      *

@@ -68,7 +68,7 @@
                             <h5 class="mb-1">
                                 <span class="counter-value" data-target="{{ $refundCount }}">{{$refundCount}}</span>
                             </h5>
-                            <p class="text-muted mb-0">Refunds</p>
+                            <p class="text-muted mb-0">Refunds/Cancelled</p>
                         </div>
                     </div>
                     <!--end col-->
@@ -218,7 +218,7 @@ document.addEventListener('livewire:load', function () {
                 },
                 {
                     formatter: function (val) {
-                        return val !== undefined ? val.toFixed(0) + " refunded" : val;
+                        return val !== undefined ? val.toFixed(0) + " R/C" : val;
                     }
                 }
             ]

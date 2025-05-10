@@ -54,7 +54,7 @@ class DashboardLivewire extends Component
         $this->filteredLocales = app('glocales');
 
         // Default "all-time" stats for initial page load (optional)
-        $this->totalEarningsCard = Order::sum('total_amount');
+        $this->totalEarningsCard = Order::sum('total_amount_usd');
         $this->ordersCountCard   = Order::count();
         $this->quantitySellsCard = OrderItem::sum('quantity');
         $this->customersCountCard = Customer::count();
@@ -64,7 +64,8 @@ class DashboardLivewire extends Component
         $this->quantitySells = $this->quantitySellsCard;
         $this->customersCount = $this->customersCountCard;
 
-        $this->refundCount = Order::where('status','refunded')->count();
+        $this->refundCount = Order::where('status', 'refunded')->orWhere('status', 'canceled')->count();
+
         $deliveredCount = Order::where('status','delivered')->count();
         $this->conversionRatio = ($this->ordersCount > 0)
             ? round(($deliveredCount / $this->ordersCount) * 100, 2)
@@ -137,9 +138,10 @@ class DashboardLivewire extends Component
         // Orders in this date range
         $this->ordersCount = Order::whereBetween('created_at', [$start, $end])->count();
         $this->totalEarnings = Order::whereBetween('created_at', [$start, $end])
-            ->sum('total_amount');
+            ->sum('total_amount_usd');
         $this->refundCount = Order::whereBetween('created_at', [$start, $end])
             ->where('status','refunded')
+            ->orWhere('status', 'canceled')
             ->count();
 
         // For conversion ratio, we need delivered
@@ -165,8 +167,8 @@ class DashboardLivewire extends Component
         $monthlyData = Order::selectRaw('
                 MONTH(created_at) as month_num,
                 COUNT(*) as total_orders,
-                SUM(total_amount) as total_earnings,
-                SUM(CASE WHEN status = "refunded" THEN 1 ELSE 0 END) as total_refunds
+                SUM(total_amount_usd) as total_earnings,
+                SUM(CASE WHEN status = "refunded" OR status = "canceled" THEN 1 ELSE 0 END) as total_refunds
             ')
             ->whereYear('created_at', $year)
             ->groupBy('month_num')
@@ -207,11 +209,12 @@ class DashboardLivewire extends Component
     private function getSingleMonthData($year, $month)
     {
         // Single query: group by day
+        // SUM(CASE WHEN status = "refunded" THEN 1 ELSE 0 END) as total_refunds
         $dailyData = Order::selectRaw('
                 DAY(created_at) as day_num,
                 COUNT(*) as total_orders,
-                SUM(total_amount) as total_earnings,
-                SUM(CASE WHEN status = "refunded" THEN 1 ELSE 0 END) as total_refunds
+                SUM(total_amount_usd) as total_earnings,
+                SUM(CASE WHEN status = "refunded" OR status = "canceled" THEN 1 ELSE 0 END) as total_refunds
             ')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
@@ -347,8 +350,8 @@ class DashboardLivewire extends Component
     {
         return Customer::with(['customer_profile'])
             ->withCount('orders')
-            ->withSum('orders', 'total_amount')
-            ->orderBy('orders_sum_total_amount', 'desc')
+            ->withSum('orders', 'total_amount_usd')
+            ->orderBy('orders_sum_total_amount_usd', 'desc')
             ->take($limit)
             ->get();
     }
@@ -359,7 +362,7 @@ class DashboardLivewire extends Component
             'product_id',
             DB::raw('COUNT(DISTINCT order_id) as orders_count'),
             DB::raw('SUM(quantity) as total_units'),
-            DB::raw('SUM(total) as total_revenue')
+            DB::raw('SUM(total_usd) as total_revenue')
         )
         ->groupBy('product_id')
         ->orderByDesc(DB::raw('SUM(quantity)'))  // or orderByDesc('total_units')

@@ -62,7 +62,7 @@ class OrderInvoiceLivewire extends Component
         $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$this->o_id)->first();
         // Return view with data
         foreach($order->orderItems as $item) {
-            $sum = $sum + $item->total;
+            $sum = $sum + $item->total_iqd;
         }
         
         return view('super-admins.pdf.orderinvoice.order-invoice', [

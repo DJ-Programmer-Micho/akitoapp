@@ -6,7 +6,10 @@ use App\Models\User;
 use App\Models\Order;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use App\Events\EventOrderStatusUpdated;
+use App\Mail\EmailInvoiceActionFailedMail;
 use App\Notifications\NotifyOrderStatusChanged;
 
 class OrderLivewire extends Component
@@ -72,6 +75,9 @@ class OrderLivewire extends Component
         if ($orderStatus) {
             // Toggle the status (0 to 1 and 1 to 0)
             $orderStatus->status = $status;
+            if($status == 'canceled') {
+                $orderStatus->payment_status = 'failed';
+            }
             $orderStatus->save();
     
             $adminUsers = User::whereHas('roles', function ($query) {
@@ -88,8 +94,8 @@ class OrderLivewire extends Component
                     ->where('data->status', $orderStatus->status)->exists()) {
                     $admin->notify(new NotifyOrderStatusChanged(
                         $orderStatus->tracking_number, 
-                        $orderStatus->status, 
                         $orderStatus->id,
+                        $orderStatus->status, 
                         "Order ID {$orderStatus->tracking_number} has been updated to {$orderStatus->status}", 
                     ));
                 }
@@ -114,6 +120,10 @@ class OrderLivewire extends Component
                 return;
             }
             
+            if($status == 'canceled') {
+                Mail::to($orderStatus->customer->email)->queue(new EmailInvoiceActionFailedMail($orderStatus));
+            }
+
             // Dispatch a browser event to show success message
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'success',

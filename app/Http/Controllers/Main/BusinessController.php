@@ -21,13 +21,20 @@ use App\Models\VariationMaterial;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Mail\EmailInvoiceActionMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use App\Services\PaymentServiceManager;
 
 
 class BusinessController extends Controller
 {
+    public $exchange_rate;
+    public function __construct()
+    {
+        $this->exchange_rate = config('currency.exchange_rate');
+    }
     public function home() {
         $locale = app()->getLocale(); // Get the current locale
         $settings = WebSetting::find(1);
@@ -220,9 +227,9 @@ class BusinessController extends Controller
         // Calculate the final customer discount price based on the total applicable discounts
         $customerDiscountPrice = $discountPrice * (1 - ($totalDiscountPercentage / 100));
         return [
-            'base_price' => $basePrice,
-            'discount_price' => $discountPrice,
-            'customer_discount_price' => $customerDiscountPrice,
+            'base_price' => $basePrice * $this->exchange_rate,
+            'discount_price' => $discountPrice * $this->exchange_rate,
+            'customer_discount_price' => $customerDiscountPrice * $this->exchange_rate,
             'total_discount_percentage' => $totalDiscountPercentage
         ];
     }
@@ -413,7 +420,7 @@ class BusinessController extends Controller
             'capacityIds' => $request->query('capacities', []),
             'materialIds' => $request->query('materials', []),
             'minPrice' => floatval($request->query('min_price', 0)),
-            'maxPrice' => floatval($request->query('max_price', 5000)),
+            'maxPrice' => floatval($request->query('max_price', 5000000)),
             'sortBy' => $request->query('sortby', 'priority'),
             'grid' => $request->query('grid', 4),
         ];
@@ -471,10 +478,9 @@ class BusinessController extends Controller
                 $query->whereHas('variation.materials', fn($q) => $q->whereIn('variation_material_id', $filters['materialIds']))
             )
             ->when([$filters['minPrice'], $filters['maxPrice']], fn($query) =>
-                $query->whereBetween('product_variations.price', [$filters['minPrice'], $filters['maxPrice']])
+                $query->whereBetween('product_variations.price', [$filters['minPrice'] / $this->exchange_rate, $filters['maxPrice'] / $this->exchange_rate])
             );
     }
-    
     
     private function applySorting($query, $sortBy)
     {
@@ -787,6 +793,8 @@ class BusinessController extends Controller
                 return $item;
             });
 
+            $pure_total_iqd = $validatedData['total_amount'] - $validatedData['shipping_amount'];
+            $pure_total_usd = ($validatedData['total_amount'] - $validatedData['shipping_amount']) / $this->exchange_rate;
         DB::beginTransaction();
 
         // ✅ Create Order
@@ -807,32 +815,40 @@ class BusinessController extends Controller
             'status' => 'pending',
             'tracking_number' => $trackingNumber,
             'shipping_amount' => $validatedData['shipping_amount'],
-            'total_amount' => $validatedData['total_amount']
+            'total_amount_usd' => (string) $pure_total_usd,
+            'total_amount_iqd' => (string) $pure_total_iqd,
+            'exchange_rate' => $this->exchange_rate
         ]);
 
         // ✅ Store Order Items
         foreach ($cartItems as $item) {
+            $itemConversion = $item->final_price / $this->exchange_rate;
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
                 'quantity' => $item->quantity,
                 'product_name' => $item->product->productTranslation[0]->name,
-                'price' => $item->final_price,
-                'total' => $item->quantity * $item->final_price,
+                'price_usd' => $itemConversion,
+                'total_usd' => $item->quantity * $itemConversion,
+                'price_iqd' => $item->final_price, 
+                'total_iqd' => $item->quantity * $item->final_price,
             ]);
+            $itemConversion = null;
         }
 
         // ✅ Handle Cash On Delivery
         if ($paymentMethod->online == 0) {
             DB::commit();
             CartItem::where('customer_id', Auth::guard('customer')->id())->delete();
+            Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
             return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
         }
 
             $paymentService = PaymentServiceManager::getInstance()
                 ->setOrder($order)
+                ->setDelivery($validatedData['shipping_amount'])
                 ->setPaymentMethod($paymentMethod->name)
-                ->setAmount($order->total_amount);
+                ->setAmount($order->total_amount_usd);
                 
             $paymentResponse = $paymentService->processPayment();
 
@@ -843,9 +859,8 @@ class BusinessController extends Controller
             }
             DB::commit();
             CartItem::where('customer_id', $customer->id)->delete();
-            return redirect()->route('payment.process', 
-            ['locale' => app()->getLocale(), 'orderId' => $order->id,'paymentId' => $paymentResponse['paymentId'], 'paymentMethod' => $digit]);
-
+            Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order, $item->quantity * $item->final_price));
+            return redirect()->route('payment.process',  ['locale' => app()->getLocale(), 'orderId' => $order->id,'paymentId' => $paymentResponse['paymentId'], 'paymentMethod' => $digit]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Checkout Error: " . $e->getMessage());
@@ -892,8 +907,10 @@ class BusinessController extends Controller
                 CartItem::where('customer_id', Auth::guard('customer')->id())->delete();
                 return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
             }
+
             $paymentService = PaymentServiceManager::getInstance()
                 ->setOrder($order)
+                ->setDelivery($order->shipping_amount)
                 ->setPaymentMethod($paymentMethod->name)
                 ->setAmount($grandTotalUpdated);
             
@@ -901,7 +918,6 @@ class BusinessController extends Controller
                 // dd($paymentResponse);
 
             if (!$paymentResponse) {
-                Log::error("PaymentServiceManager instance is null!");
                 return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
             }
 

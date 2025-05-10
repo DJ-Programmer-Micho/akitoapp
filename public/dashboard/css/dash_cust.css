@@ -1,3 +1,14 @@
 .page-content-dash {
     padding: calc(70px + 1.5rem) calc(1.5rem* .5) 0 calc(1.5rem* .5);
 }
+
+.price.flip-symbol {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+}
+
+.flip-symbol [lang="ar"],
+.flip-symbol [lang="ku"] {
+    flex-direction: row-reverse;
+}

@@ -3,13 +3,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-9">
-                    <table class="table table-cart table-mobile">
+                    <table class="table table-cart table-mobile" dir="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'rtl' : 'ltr' }}">
                         <thead>
                             <tr>
-                                <th>Product</th>
-                                <th class="text-center">Price</th>
-                                <th class="text-center">Quantity</th>
-                                <th class="text-center">Total</th>
+                                <th class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Product') }}</th>
+                                <th class="text-center">{{ __('Price') }}</th>
+                                <th class="text-center">{{ __('Quantity') }}</th>
+                                <th class="text-center">{{ __('Total') }}</th>
                             </tr>
                         </thead>
 
@@ -36,26 +36,33 @@
                                     {{-- ${{ !empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price'] }} --}}
                                     @if ($item['product']['discount_price'] == $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
                                     <div class="product-price mt-1 fw-bold">
-                                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
-                                        $ {{ number_format($item['product']['base_price'], 2) }}
+                                        <span class="w-100 price flip-symbol justify-content-center" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                                            <span class="amount">{{ number_format($item['product']['base_price'], 0) }}</span>
+                                            <span class="currency">{{ __('IQD') }}</span>
                                         </span>
-                                        <span class="w-100">
-                                            $ {{ number_format($item['product']['discount_price'], 2) }}
+                                        <span class="price flip-symbol justify-content-center w-100">
+                                            <span class="amount">{{ number_format($item['product']['discount_price'], 0) }}</span>
+                                            <span class="currency">{{ __('IQD') }}</span>
                                         </span>
                                     </div><!-- End .product-price -->
                                 @elseif ($item['product']['discount_price'] != $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
                                     <div class="product-price mt-1 fw-bold">
-                                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
-                                            $ {{ number_format($item['product']['base_price'], 2) }}
+                                        <span class="price flip-symbol justify-content-center w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                                            <span class="amount">{{ number_format($item['product']['base_price'], 0) }}</span>
+                                            <span class="currency">{{ __('IQD') }}</span>
                                         </span>
-                                        <span class="text-gold w-100" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
-                                            {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}$ {{ number_format($item['product']['customer_discount_price'], 2) }}{{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
+                                        <span class="text-gold price flip-symbol justify-content-center w-100" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
+                                            {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
+                                            <span class="amount">{{ number_format($item['product']['customer_discount_price'], 0) }}</span>
+                                            <span class="currency">{{ __('IQD') }}</span>
+                                            {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
                                         </span>
                                     </div><!-- End .product-price -->
                                 @else
                                     <div class="product-price mt-1 fw-bold">
-                                        <span class="w-100">
-                                            $ {{ number_format($item['product']['base_price'], 2) }}
+                                        <span class="w-100 price flip-symbol justify-content-center">
+                                            <span class="amount">{{ number_format($item['product']['base_price'], 0) }}</span>
+                                            <span class="currency">{{ __('IQD') }}</span>
                                         </span>
                                     </div><!-- End .product-price -->
                                 @endif
@@ -63,31 +70,32 @@
                                 <td class="align-middle text-center">
                                     <div class="quantity-action d-flex align-items-center justify-content-center">
                                         @if($item['quantity'] > 1)
-                                            <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] - 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: 40px 0 0 40px">
+                                            <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] - 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: {{ in_array(app()->getLocale(), ['ar','ku']) ? '0 40px 40px 0' : '40px 0 0 40px' }}">
                                                 <i class="fa-solid fa-minus"></i>
                                             </button>
                                         @else
-                                            <button wire:click="removeFromCartList({{ $item['id'] }})" class="btn btn-outline-danger btn-sm" style="min-width: 35px; padding: 5px; border-radius: 40px 0 0 40px">
+                                            <button wire:click="removeFromCartList({{ $item['id'] }})" class="btn btn-outline-danger btn-sm" style="min-width: 35px; padding: 5px; border-radius: {{ in_array(app()->getLocale(), ['ar','ku']) ? '0 40px 40px 0' : '40px 0 0 40px' }}">
                                                 <i class="fa-regular fa-trash-can"></i>
                                             </button>
                                         @endif
                                         <span class="mx-2">{{ $item['quantity'] }}</span>
-                                        <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: 0 40px 40px 0">
+                                        <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: {{ in_array(app()->getLocale(), ['ar','ku']) ? '40px 0 0 40px' : '0 40px 40px 0' }}">
                                             <i class="fa-solid fa-plus"></i>
                                         </button>
                                     </div>
                                 </td>
                                 
                                 <td class="total-col align-middle text-center">
-                                    ${{ 
-                                        number_format(
+                                    <span class="price flip-symbol justify-content-center">
+                                        <span class="amount">{{ number_format(
                                             (
                                                 $item['product']['customer_discount_price'] ?? 
                                                 ($item['product']['discount_price'] ?? $item['product']['base_price'])
-                                            ) * $item['quantity'], 
-                                            2
-                                        ) 
-                                    }}
+                                                ) * $item['quantity'], 0) 
+                                            }}
+                                        </span>
+                                        <span class="currency">{{ __('IQD') }}</span>
+                                    </span>
                                     {{-- ${{ (!empty($item['product']['variation']['on_sale']) ? $item['product']['variation']['discount'] : $item['product']['variation']['price']) *  $item['quantity'] }} --}}
                                 </td>
                             </tr>
@@ -114,66 +122,27 @@
                     </div><!-- End .cart-bottom --> --}}
                 </div><!-- End .col-lg-9 -->
                 <aside class="col-lg-3">
-                    <div class="summary summary-cart">
-                        <h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
+                    <div class="summary summary-cart" dir="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'rtl' : 'ltr' }}">
+                        <h3 class="summary-title {{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Cart Total') }}</h3><!-- End .summary-title -->
 
                         <table class="table table-summary">
                             <tbody>
                                 <tr class="summary-subtotal">
-                                    <td>Subtotal:</td>
-                                    <td>${{ $totalListPrice }}</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Subtotal:') }}</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
+                                        <span class="price flip-symbol">
+                                            <span class="amount">{{ number_format($totalListPrice) }}</span>
+                                            <span class="currency">{{ __('IQD') }}</span>
+                                        </span>
+                                    </td>
                                 </tr><!-- End .summary-subtotal -->
-                                {{-- <tr class="summary-shipping">
-                                    <td>Shipping:</td>
-                                    <td>&nbsp;</td>
-                                </tr>
-
-                                <tr class="summary-shipping-row">
-                                    <td>
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" id="free-shipping" name="shipping" class="custom-control-input">
-                                            <label class="custom-control-label" for="free-shipping">Free Shipping</label>
-                                        </div><!-- End .custom-control -->
-                                    </td>
-                                    <td>$0.00</td>
-                                </tr><!-- End .summary-shipping-row -->
-
-                                <tr class="summary-shipping-row">
-                                    <td>
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" id="standart-shipping" name="shipping" class="custom-control-input">
-                                            <label class="custom-control-label" for="standart-shipping">Standart:</label>
-                                        </div><!-- End .custom-control -->
-                                    </td>
-                                    <td>$10.00</td>
-                                </tr><!-- End .summary-shipping-row -->
-
-                                <tr class="summary-shipping-row">
-                                    <td>
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" id="express-shipping" name="shipping" class="custom-control-input">
-                                            <label class="custom-control-label" for="express-shipping">Express:</label>
-                                        </div><!-- End .custom-control -->
-                                    </td>
-                                    <td>$20.00</td>
-                                </tr><!-- End .summary-shipping-row --> --}}
-
-                                {{-- <tr class="summary-shipping-estimate">
-                                    <td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a></td>
-                                    <td>&nbsp;</td>
-                                </tr><!-- End .summary-shipping-estimate --> --}}
-
-                                {{-- <tr class="summary-total">
-                                    <td>Total:</td>
-                                    <td>{{ $totalListPrice }}</td>
-                                </tr><!-- End .summary-total --> --}}
                             </tbody>
                         </table><!-- End .table table-summary -->
 
-                        <a href="{{ route('business.checkout', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                        <a href="{{ route('business.checkout', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-primary-2 btn-order btn-block">{{ __('PROCEED TO CHECKOUT') }}</a>
                     </div><!-- End .summary -->
 
-                    <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
+                    <a href="{{ route('business.productShop', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-dark-2 btn-block mb-3"><span>{{ __('CONTINUE SHOPPING') }}</span><i class="icon-refresh"></i></a>
                 </aside><!-- End .col-lg-3 -->
             </div><!-- End .row -->
         </div><!-- End .container -->

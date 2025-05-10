@@ -37,12 +37,15 @@ class CheckoutListOldOneLivewire extends Component
     public $order;
     public $orderItemsArray = [];
 
+    public $exchange_rate;
+
     protected $casts = [
         'orderItemsArray' => 'array'
     ];
 
     public function mount($orderId)
     {
+        $this->exchange_rate = config('currency.exchange_rate');
         $this->orderId = $orderId;
         $this->digitPaymentStatus = null;
         $this->loadAddresses();
@@ -210,9 +213,9 @@ class CheckoutListOldOneLivewire extends Component
         $customerDiscountPrice = $discountPrice * (1 - ($totalDiscountPercentage / 100));
 
         return [
-            'base_price' => $basePrice,
-            'discount_price' => $discountPrice,
-            'customer_discount_price' => $customerDiscountPrice,
+            'base_price' => $basePrice * $this->exchange_rate,
+            'discount_price' => $discountPrice * $this->exchange_rate,
+            'customer_discount_price' => $customerDiscountPrice * $this->exchange_rate,
             'total_discount_percentage' => $totalDiscountPercentage
         ];
     }
@@ -242,6 +245,7 @@ class CheckoutListOldOneLivewire extends Component
 
         $grandTotal = $this->totalListPrice + $this->deliveryCharge + ($this->totalListPrice * $this->transactionFee / 100);
         return view('mains.components.livewire.cart.checkout-list-old-one', [
+            'exchangeRate' => $this->exchange_rate,
             'totalListQuantity' => $this->totalListQuantity,
             'totalListPrice' => $this->totalListPrice,
             'totalDiscount' => $this->totalDiscount,

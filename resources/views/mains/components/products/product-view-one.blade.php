@@ -83,25 +83,34 @@
                 </div><!-- End .rating-container --> --}}
                 @if ($productDetail->discount_price == $productDetail->customer_discount_price && $productDetail->customer_discount_price != $productDetail->base_price)
                     <div class="product-price mt-1 fw-bold">
-                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
-                        $ {{ number_format($productDetail->base_price, 2) }}
+                        <span class="mx-2 w-100 price flip-symbol" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                            <span class="amount">{{ number_format($productDetail->base_price, 0) }}</span>
+                            <span class="currency">{{ __('IQD') }}</span>
                         </span>
-                        <span>
-                            $ {{ number_format($productDetail->discount_price, 2) }}
+                        <span class="price flip-symbol">
+                            <span class="amount">{{ number_format($productDetail->discount_price, 0) }}</span>
+                            <span class="currency">{{ __('IQD') }}</span>
                         </span>
                     </div><!-- End .product-price -->
                 @elseif ($productDetail->discount_price != $productDetail->customer_discount_price && $productDetail->customer_discount_price != $productDetail->base_price)
                     <div class="product-price mt-1 fw-bold">
-                        <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
-                            $ {{ number_format($productDetail->base_price, 2) }}
+                        <span class="mx-2 w-100 price flip-symbol" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                            <span class="amount">{{ number_format($productDetail->base_price, 0) }}</span>
+                            <span class="currency">{{ __('IQD') }}</span>
                         </span>
-                        <span class="text-gold" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
-                            {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}$ {{ number_format($productDetail->customer_discount_price, 2) }}{{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
+                        <span class="text-gold price flip-symbol" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
+                            {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
+                            <span class="amount">{{ number_format($productDetail->customer_discount_price, 0) }}</span>
+                            <span class="currency">{{ __('IQD') }}</span>
+                            {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
                         </span>
                     </div><!-- End .product-price -->
                 @else
                     <div class="product-price mt-1 fw-bold">
-                        $ {{ number_format($productDetail->base_price, 2) }}
+                        <span class="price flip-symbol">
+                            <span class="amount">{{ number_format($productDetail->base_price, 0) }}</span>
+                            <span class="currency">{{ __('IQD') }}</span>
+                        </span>
                     </div><!-- End .product-price -->
                 @endif
             

@@ -9,7 +9,7 @@
         </lord-icon>
         <span class="cart-count">{{$totalQuantity}}</span>
     </a>
-    <div class="dropdown-menu dropdown-menu-right">
+    <div class="dropdown-menu dropdown-menu-right" dir="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'rtl' : 'ltr' }}">
         <div class="dropdown-cart-products">
             @forelse($cartItems as $item)
             <div class="product d-flex align-items-center justify-content-between p-2" style="flex-direction:unset;">
@@ -19,31 +19,31 @@
                             {{ $item['product']['product_translation'][0]['name'] }}
                         </a>
                     </h4>
-                    <span class="cart-product-info">
-                        <span class="cart-product-qty">{{ $item['quantity'] }}</span>
-                        x ${{ 
+                    <span class="cart-product-info price flip-symbol">
+                        <span class="cart-product-qty amount">{{ $item['quantity'] }} x</span>
+                         {{ 
                             number_format(
                                 (
                                     $item['product']['customer_discount_price'] ?? 
                                     ($item['product']['discount_price'] ?? $item['product']['base_price'])
                                 ), 
-                                2
+                                0
                             ) 
                         }}
-                        
+                        <span class="currency">{{ __('IQD') }}</span>
                     </span>
                     <div class="quantity-action d-flex align-items-center">
                         @if($item['quantity'] > 1)
-                            <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] - 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: 40px 0 0 40px">
+                            <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] - 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: {{ in_array(app()->getLocale(), ['ar','ku']) ? '0 40px 40px 0' : '40px 0 0 40px' }}">
                                 <i class="fa-solid fa-minus"></i>
                             </button>
                         @else
-                            <button wire:click="removeFromCart({{ $item['id'] }})" class="btn btn-outline-danger btn-sm" style="min-width: 35px; padding: 5px; border-radius: 40px 0 0 40px">
+                            <button wire:click="removeFromCart({{ $item['id'] }})" class="btn btn-outline-danger btn-sm" style="min-width: 35px; padding: 5px; border-radius: {{ in_array(app()->getLocale(), ['ar','ku']) ? '0 40px 40px 0' : '40px 0 0 40px' }}">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                         @endif
                         {{-- <span class="mx-2">{{ $item['quantity'] }}</span> --}}
-                        <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: 0 40px 40px 0">
+                        <button wire:click="updateQuantity({{ $item['id'] }}, {{ $item['quantity'] + 1 }})" class="btn btn-outline-secondary btn-sm" style="min-width: 35px; padding: 5px; border-radius: {{ in_array(app()->getLocale(), ['ar','ku']) ? '40px 0 0 40px' : '0 40px 40px 0' }}">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
@@ -63,14 +63,17 @@
             @endforelse
         </div><!-- End .cart-product -->
         @if ($cartItems)
-        <div class="dropdown-cart-total mt-2">
-            <span>Total</span>
-            <span class="cart-total-price">${{ $totalPrice }}</span>
+        <div class="dropdown0-cart-total mt-2 price w-100 d-flex justify-content-between">
+            <span>{{ __('Total') }}</span>
+            <span class="cart-total-price flip-symbol text-left">
+                <span class="amount">{{ number_format($totalPrice, 0) }}</span>
+                <span class="currency">{{ __('IQD') }}</span>
+            </span>
         </div><!-- End .dropdown-cart-total -->
     
         <div class="dropdown-cart-action mt-2">
-            <a href="{{ route('business.viewcart', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}" class="btn btn-outline-primary-2">View Cart</a>
-            <a href="{{ route('business.checkout', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}" class="btn btn-outline-primary-2">Checkout</a>
+            <a href="{{ route('business.viewcart', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}" class="btn btn-outline-primary-2">{{ __('View Cart') }}</a>
+            <a href="{{ route('business.checkout', ['locale' => app()->getLocale(),'slug' => $item['product']['product_translation'][0]['slug']])}}" class="btn btn-outline-primary-2">{{ __('Check Out') }}</a>
             {{-- <button wire:click="checkout" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></button> --}}
         </div><!-- End .dropdown-cart-action -->
         @endif

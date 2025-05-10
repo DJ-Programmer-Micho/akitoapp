@@ -13,7 +13,7 @@ class PdfController extends Controller
         $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$invoiceTracking)->first();
         // Return view with data
         foreach($order->orderItems as $item) {
-            $sum = $sum + $item->total;
+            $sum = $sum + $item->total_iqd;
         }
 
         return view('super-admins.pdf.orderinvoice.order-invoice-print',[
@@ -28,7 +28,7 @@ class PdfController extends Controller
         $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$invoiceTracking)->first();
         // Return view with data
         foreach($order->orderItems as $item) {
-            $sum = $sum + $item->total;
+            $sum = $sum + $item->total_iqd;
         }
 
         return view('super-admins.pdf.orderinvoice.order-invoice-action-print',[
@@ -43,7 +43,7 @@ class PdfController extends Controller
         $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$invoiceTracking)->first();
         // Return view with data
         foreach($order->orderItems as $item) {
-            $sum = $sum + $item->total;
+            $sum = $sum + $item->total_iqd;
         }
 
         return view('super-admins.pdf.orderinvoice.order-invoice-action-print',[
@@ -58,12 +58,16 @@ class PdfController extends Controller
         $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->where('tracking_number',$invoiceTracking)->first();
         // Return view with data
         foreach($order->orderItems as $item) {
-            $sum = $sum + $item->total;
+            $sum = $sum + $item->total_iqd;
         }
 
-        return view('super-admins.pdf.orderinvoice.order-invoice-action-print-cancelled',[
-            'orderData' => $order,
-            'subTotal' => $sum,
-        ]);    
+        if($order->status == 'canceled') {
+            return view('super-admins.pdf.orderinvoice.order-invoice-action-print-cancelled',[
+                'orderData' => $order,
+                'subTotal' => $sum,
+            ]);    
+        } else{
+            return redirect()->route('business.account', ['locale' => app()->getLocale()]);
+        }
     }
 }

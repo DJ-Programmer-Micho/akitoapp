@@ -71,6 +71,9 @@
                                 <tr style="font-family: 'Roboto', sans-serif; font-size: 14px; margin: 0;">
                                     <td class="content-wrap" style="font-family: 'Roboto', sans-serif; box-sizing: border-box; color: #495057; font-size: 14px; vertical-align: top; margin: 0;padding: 30px; box-shadow: 0 3px 15px rgba(30,32,37,.06); ;border-radius: 7px; background-color: #fff;" valign="top">
                                         <meta itemprop="name" content="Confirm Email" style="font-family: 'Roboto', sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;" />
+                                        <div  style="text-align: center; padding: 15px">
+                                            <img src="{{ app('main_logo') }}" alt="Akito" width="140">
+                                        </div>
                                         <table width="100%" cellpadding="0" cellspacing="0" style="font-family: 'Roboto', sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                             <tr style="font-family: 'Roboto', sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                                 <td class="content-block" style="font-family: 'Roboto', sans-serif; box-sizing: border-box; font-size: 24px; vertical-align: top; margin: 0; padding: 0 0 10px; text-align: center;" valign="top">
@@ -97,7 +100,7 @@
                                                                     <span>{{$orderData->created_at}}</span>
                                                                 </th>
                                                                 <th style="padding: 5px;">
-                                                                    <p style="color: #878a99; font-size: 13px; margin-bottom: 2px; font-weight: 400;">Payment Method</p>
+                                                                    <p style="color: #878a99; font-size: 13px; margin-bottom: 2px; font-weight: 400;">Payment Status</p>
                                                                     @if ($orderData->payment_status == "pending")
                                                                     <span style="color: #4169e1 ">
                                                                         {{strtoupper($orderData->payment_status)}}
@@ -137,7 +140,10 @@
                                                                     {{$item->quantity}}
                                                                 </td>
                                                                 <td style="padding: 8px; font-size: 13px;">
-                                                                    {{Number::currency($item->total)}}
+                                                                    <span class="cart-total-price flip-symbol text-left">
+                                                                        <span class="amount">{{ number_format($item->total_iqd, 0)}} </span>
+                                                                        <span class="currency">{{ __('IQD') }}</span>
+                                                                    </span>
                                                                 </td>
                                                             </tr>
                                                             @endforeach
@@ -146,39 +152,43 @@
                                                                     Subtotal
                                                                 </td>
                                                                 <th style="padding: 8px; font-size: 13px;border-top: 1px solid #e9ebec;">
-                                                                    {{Number::currency($subTotal)}}
+                                                                    <span class="cart-total-price flip-symbol text-left">
+                                                                        <span class="amount">{{ number_format($subTotal, 0)}} </span>
+                                                                        <span class="currency">{{ __('IQD') }}</span>
+                                                                    </span>
                                                                 </th>
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="2" style="padding: 8px; font-size: 13px; text-align: end;">
-                                                                    Shipping Charge
+                                                                    Shipping Charge:
                                                                 </td>
                                                                 <th style="padding: 8px; font-size: 13px;">
-                                                                    {{Number::currency($orderData->shipping_amount)}}
+                                                                    <span class="cart-total-price flip-symbol text-left">
+                                                                        <span class="amount" style="color: #44a6c4">{{ number_format($orderData->shipping_amount, 0)}} </span>
+                                                                        <span class="currency" style="color: #44a6c4">{{ __('IQD') }}</span>
+                                                                    </span>
                                                                 </th>
                                                             </tr>
-                                                            {{-- <tr>
+                                                            <tr>
                                                                 <td colspan="2" style="padding: 8px; font-size: 13px; text-align: end;">
-                                                                    Taxs
+                                                                    Fee Amount:
                                                                 </td>
                                                                 <th style="padding: 8px; font-size: 13px;">
-                                                                    $15.26
+                                                                    <span class="cart-total-price flip-symbol text-left">
+                                                                        <span class="amount" style="color: #44a6c4">{{ number_format($orderData->total_amount_iqd - $subTotal, 0)}} </span>
+                                                                        <span class="currency" style="color: #44a6c4">{{ __('IQD') }}</span>
+                                                                    </span>
                                                                 </th>
-                                                            </tr> --}}
-                                                            {{-- <tr>
-                                                                <td colspan="2" style="padding: 8px; font-size: 13px; text-align: end;">
-                                                                    Discount
-                                                                </td>
-                                                                <th style="padding: 8px; font-size: 13px;">
-                                                                    $20.78
-                                                                </th>
-                                                            </tr> --}}
+                                                            </tr>
                                                             <tr>
                                                                 <td colspan="2" style="padding: 8px; font-size: 13px; text-align: end;border-top: 1px solid #e9ebec;">
-                                                                    Total Amount
+                                                                    Total Amount:
                                                                 </td>
                                                                 <th style="padding: 8px; font-size: 13px;border-top: 1px solid #e9ebec;">
-                                                                    {{Number::currency($subTotal + $orderData->shipping_amount)}}
+                                                                    <span class="cart-total-price flip-symbol text-left">
+                                                                        <span class="amount" style="color: #13c56b">{{ number_format($subTotal + $orderData->shipping_amount + ($orderData->total_amount_iqd - $subTotal), 0)}} </span>
+                                                                        <span class="currency" style="color: #13c56b">{{ __('IQD') }}</span>
+                                                                    </span>
                                                                 </th>
                                                             </tr>
                                                         </tbody>

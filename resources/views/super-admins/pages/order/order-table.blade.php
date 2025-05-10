@@ -32,7 +32,7 @@
                 <div class="card-header border-0">
                     <div class="row align-items-center gy-3">
                         <div class="col-sm">
-                            <h5 class="card-title mb-0">Order History</h5>
+                            <h5 class="card-title mb-0">{{ __('Order History') }}</h5>
                         </div>
                         <div class="col-sm-auto">
                             {{-- <div class="d-flex gap-1 flex-wrap">
@@ -48,7 +48,7 @@
                         <div class="row g-3">
                             <div class="col-xxl-4 col-sm-6">
                                 <div class="search-box">
-                                    <input type="text" class="form-control search" placeholder="Search for order ID, customer, order status or something..."
+                                    <input type="text" class="form-control search" placeholder="{{ __('Search for order ID, customer, order status or something...') }}"
                                            wire:model="searchTerm">
                                     <i class="ri-search-line search-icon"></i>
                                 </div>
@@ -68,22 +68,23 @@
                             <div class="col-xxl-2 col-sm-4">
                                 <div>
                                     <select class="form-control" data-choices data-choices-search-false wire:model="statusPaymentFilter">
-                                        <option value="">Status</option>
-                                        <option value="all">All</option>
-                                        <option value="pending">Pending ({{$pPending}})</option>
-                                        <option value="successful">Successful ({{$pPayed}})</option>
-                                        <option value="failed">Failed ({{$pFailed}})</option>
+                                        <option value="">{{ __('Status') }}</option>
+                                        <option value="all">{{ __('All') }}</option>
+                                        <option value="pending">{{ __('Pending') }} ({{$pPending}})</option>
+                                        <option value="successful">{{ __('Successful') }} ({{$pPayed}})</option>
+                                        <option value="failed">{{ __('Failed') }} ({{$pFailed}})</option>
                                     </select>
                                 </div>
+                                
                             </div>
                             <!--end col-->
                             <div class="col-xxl-2 col-sm-4">
                                 <div>
                                     <select class="form-control" data-choices data-choices-search-false wire:model="statusPaymentMethodFilter">
-                                        <option value="">Select Payment</option>
-                                        <option value="all">All</option>
-                                        <option value="Cash On Delivery">Cash On Delivery</option>
-                                        <option value="Credit Card">Credit Card</option>
+                                        <option value="">{{ __('Select Payment') }}</option>
+                                        <option value="all">{{ __('All') }}</option>
+                                        <option value="Cash On Delivery">{{ __('Cash On Delivery') }}</option>
+                                        <option value="Credit Card">{{ __('Credit Card') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -105,32 +106,32 @@
                         <ul wire:ignore class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active All py-3" data-bs-toggle="tab" id="All" role="tab" aria-selected="true" wire:click="changeTab('all')" >
-                                    <i class="fa-solid fa-store me-1"></i> All Orders <span class="badge bg-danger align-middle ms-1">{{$oAll}}</span>
+                                    <i class="fa-solid fa-store me-1"></i> {{ __('All Orders') }} <span class="badge bg-danger align-middle ms-1">{{$oAll}}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link py-3 Pending" data-bs-toggle="tab" id="pending" role="tab" aria-selected="false" wire:click="changeTab('pending')" >
-                                    <i class="fa-regular fa-hourglass-half me-1"></i> Pending <span class="badge bg-danger align-middle ms-1">{{$oPending}}</span>
+                                    <i class="fa-regular fa-hourglass-half me-1"></i> {{ __('Pending') }} <span class="badge bg-danger align-middle ms-1">{{$oPending}}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link py-3 shipping" data-bs-toggle="tab" id="shipping" role="tab" aria-selected="false" wire:click="changeTab('shipping')" >
-                                    <i class="fa-solid fa-truck-moving me-1"></i> Shipping <span class="badge bg-danger align-middle ms-1">{{$oShipping}}</span>
+                                    <i class="fa-solid fa-truck-moving me-1"></i> {{ __('Shipping') }} <span class="badge bg-danger align-middle ms-1">{{$oShipping}}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link py-3 Delivered" data-bs-toggle="tab" id="delivered" role="tab" aria-selected="false" wire:click="changeTab('delivered')" >
-                                    <i class="fa-regular fa-circle-check me-1"></i> Delivered <span class="badge bg-danger align-middle ms-1">{{$oDelivered}}</span>
+                                    <i class="fa-regular fa-circle-check me-1"></i> {{ __('Delivered') }} <span class="badge bg-danger align-middle ms-1">{{$oDelivered}}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link py-3 Returns" data-bs-toggle="tab" id="Returns" role="tab" aria-selected="false" wire:click="changeTab('refunded')" >
-                                    <i class="fa-regular fa-circle-xmark me-1"></i> Returns <span class="badge bg-danger align-middle ms-1">{{$oRefunded}}</span>
+                                    <i class="fa-regular fa-circle-xmark me-1"></i> {{ __('Returns') }} <span class="badge bg-danger align-middle ms-1">{{$oRefunded}}</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link py-3 Cancelled" data-bs-toggle="tab" id="canceled" role="tab" aria-selected="false" wire:click="changeTab('canceled')" >
-                                    <i class="fa-regular fa-face-frown me-1"></i> Cancelled <span class="badge bg-danger align-middle ms-1">{{$oCancelled}}</span>
+                                    <i class="fa-regular fa-face-frown me-1"></i> {{ __('Cancelled') }} <span class="badge bg-danger align-middle ms-1">{{$oCancelled}}</span>
                                 </a>
                             </li>
                         </ul>
@@ -144,15 +145,17 @@
                                                 <input class="form-check-input" type="checkbox" id="checkAll" value="option">
                                             </div>
                                         </th> --}}
-                                        <th class="sort" data-sort="id">Order ID</th>
-                                        <th class="sort" data-sort="customer_name">Customer</th>
-                                        <th class="sort" data-sort="date">Order Date</th>
-                                        <th class="sort" data-sort="product_name">Shipping Amount</th>
-                                        <th class="sort" data-sort="amount">Total Amount</th>
-                                        <th class="sort" data-sort="payment">Payment Method</th>
-                                        <th class="sort" data-sort="payment">Payment Status</th>
-                                        <th class="sort" data-sort="status">Delivery Status</th>
-                                        <th class="sort" data-sort="city">Action</th>
+                                        <th class="sort" data-sort="id">{{ __(('Order ID')) }}</th>
+                                        <th class="sort" data-sort="customer_name">{{ __(('Customer')) }}</th>
+                                        <th class="sort" data-sort="date">{{ __(('Order Date')) }}</th>
+                                        <th class="sort" data-sort="product_name">{{ __(('Shipping Amount')) }}</th>
+                                        <th class="sort" data-sort="amount">{{ __(('Total Amount (USD)')) }}</th>
+                                        <th class="sort" data-sort="amount">{{ __(('Total Amount (IQD)')) }}</th>
+                                        <th class="sort" data-sort="amount">{{ __(('Exchange Rate')) }}</th>
+                                        <th class="sort" data-sort="payment">{{ __(('Payment Method')) }}</th>
+                                        <th class="sort" data-sort="payment">{{ __(('Payment Status')) }}</th>
+                                        <th class="sort" data-sort="status">{{ __(('Delivery Status')) }}</th>
+                                        <th class="sort" data-sort="city">{{ __(('Action')) }}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="list form-check-all">
@@ -167,26 +170,47 @@
                                         <td class="customer_name">{{$order->first_name}} {{$order->last_name}}</td>
                                         {{-- <td class="product_name">Puma Tshirt</td> --}}
                                         <td class="date">{{$order->created_at}}</td>
-                                        <td class="amount">{{$order->shipping_amount}}</td>
-                                        <td class="amount">{{$order->total_amount}}</td>
-                                        <td class="payment">{{$order->payment_method}}</td>
+                                        <td class="amount text-center">
+                                            <span class="cart-total-price flip-symbol text-left">
+                                                <span class="amount text-info">{{ number_format($order->shipping_amount, 0)}} </span>
+                                                <span class="currency text-info">{{ __('IQD') }}</span>
+                                            </span>
+                                        </td>
+                                        <td class="amount text-center">
+                                            <span class="text-success">$ {{ number_format($order->total_amount_usd,2) }}</span>
+                                        </td>
+                                        <td class="amount text-center">
+                                            <span class="cart-total-price flip-symbol text-left">
+                                                <span class="amount text-success">{{ number_format($order->total_amount_iqd, 0)}} </span>
+                                                <span class="currency text-success">{{ __('IQD') }}</span>
+                                            </span>
+                                        </td>
+                                        <td class="amount text-center">
+                                            <span class="cart-total-price flip-symbol text-left">
+                                                <span class="amount text-info">{{ number_format($order->exchange_rate, 0)}} </span>
+                                                <span class="currency text-info">{{ __('IQD') }}</span>
+                                            </span>
+                                        </td>
+                                        <td class="payment text-center">
+                                            {{$order->payment_method}}
+                                        </td>
                                         @if ($order->payment_status == "pending")
-                                        <td class="status"><span class="badge bg-warning-subtle text-warning text-uppercase">{{$order->payment_status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-warning-subtle text-warning text-uppercase">{{__($order->payment_status)}}</span></td>
                                         @elseif ($order->payment_status == "successful")
-                                        <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">{{$order->payment_status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-success-subtle text-success text-uppercase">{{__($order->payment_status)}}</span></td>
                                         @else
-                                        <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">{{$order->payment_status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-danger-subtle text-danger text-uppercase">{{__($order->payment_status)}}</span></td>
                                         @endif
                                         @if ($order->status == "pending")
-                                        <td class="status"><span class="badge bg-warning-subtle text-warning text-uppercase">{{$order->status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-warning-subtle text-warning text-uppercase">{{__($order->status)}}</span></td>
                                         @elseif ($order->status == "shipping")
-                                        <td class="status"><span class="badge bg-primary-subtle text-primary text-uppercase">{{$order->status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-primary-subtle text-primary text-uppercase">{{__($order->status)}}</span></td>
                                         @elseif ($order->status == "delivered")
-                                        <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">{{$order->status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-success-subtle text-success text-uppercase">{{__($order->status)}}</span></td>
                                         @elseif ($order->status == "canceled")
-                                        <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">{{$order->status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-danger-subtle text-danger text-uppercase">{{__($order->status)}}</span></td>
                                         @else
-                                        <td class="status"><span class="badge bg-secondary-subtle text-secondary text-uppercase">{{$order->status}}</span></td>
+                                        <td class="status text-center"><span class="badge bg-secondary-subtle text-secondary text-uppercase">{{__($order->status)}}</span></td>
                                         @endif
                                         <td>
                                             <span>
@@ -235,7 +259,7 @@
                                                 <div class="text-center">
                                                     <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px">
                                                     </lord-icon>
-                                                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                                                    <h5 class="mt-2">{{ __('Sorry! No Result Found') }}</h5>
                                                     <p class="text-muted">We've searched more than {{$oAll}} Orders We did not find any orders for you search.</p>
                                                 </div>
                                             </div>

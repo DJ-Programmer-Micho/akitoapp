@@ -1,11 +1,11 @@
 <div class="page-content">
     <div class="container">
-        <table class="table table-wishlist table-mobile">
+        <table class="table table-wishlist table-mobile" dir="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'rtl' : 'ltr' }}">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th class="text-center">Price</th>
-                    <th class="text-center">Stock Status</th>
+                    <th class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Product') }}</th>
+                    <th class="text-center">{{ __('Price') }}</th>
+                    <th class="text-center">{{ __('Stock Status') }}</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -32,43 +32,50 @@
                     </td>
 
                     <td class="price-col text-center">
-                    @if ($item['product']['discount_price'] == $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
+                        @if ($item['product']['discount_price'] == $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
                         <div class="product-price mt-1 fw-bold">
-                            <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
-                            $ {{ number_format($item['product']['base_price'], 2) }}
+                            <span class="w-100 price flip-symbol justify-content-center" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                                <span class="amount">{{ number_format($item['product']['base_price'], 0) }}</span>
+                                <span class="currency">{{ __('IQD') }}</span>
                             </span>
-                            <span class="w-100">
-                                $ {{ number_format($item['product']['discount_price'], 2) }}
+                            <span class="price flip-symbol justify-content-center w-100">
+                                <span class="amount">{{ number_format($item['product']['discount_price'], 0) }}</span>
+                                <span class="currency">{{ __('IQD') }}</span>
                             </span>
                         </div><!-- End .product-price -->
                     @elseif ($item['product']['discount_price'] != $item['product']['customer_discount_price'] && $item['product']['customer_discount_price'] != $item['product']['base_price'])
                         <div class="product-price mt-1 fw-bold">
-                            <span class="mx-2 w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
-                                $ {{ number_format($item['product']['base_price'], 2) }}
+                            <span class="price flip-symbol justify-content-center w-100" style="text-decoration: line-through; color: #cc0022; font-size: 16px">
+                                <span class="amount">{{ number_format($item['product']['base_price'], 0) }}</span>
+                                <span class="currency">{{ __('IQD') }}</span>
                             </span>
-                            <span class="text-gold w-100" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
-                                {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}$ {{ number_format($item['product']['customer_discount_price'], 2) }}{{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
+                            <span class="text-gold price flip-symbol justify-content-center w-100" data-toggle="tooltip" data-placement="top" title="{{__('Only For You')}}">
+                                {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
+                                <span class="amount">{{ number_format($item['product']['customer_discount_price'], 0) }}</span>
+                                <span class="currency">{{ __('IQD') }}</span>
+                                {{-- <i class="fa-solid fa-star fa-beat-fade"></i> --}}
                             </span>
                         </div><!-- End .product-price -->
                     @else
                         <div class="product-price mt-1 fw-bold">
-                            <span class="w-100">
-                                $ {{ number_format($item['product']['base_price'], 2) }}
+                            <span class="w-100 price flip-symbol justify-content-center">
+                                <span class="amount">{{ number_format($item['product']['base_price'], 0) }}</span>
+                                <span class="currency">{{ __('IQD') }}</span>
                             </span>
                         </div><!-- End .product-price -->
                     @endif
                     </td>
                     <td class="stock-col text-center">
                         @if ($item['product']['variation']['order_limit'])
-                        <span class="text-success">In Stock</span>
+                        <span class="text-success"><b>{{ __('In Stock') }}</b></span>
                         @else
-                        <span class="text-danger">Out Of Stock</span>
+                        <span class="text-danger"><b>{{ __('Out Of Stock') }}</b></span>
                         @endif
                     </td>
                     <td class="action-col">
-                        <button class="btn btn-block btn-outline-primary-2"  wire:click="singleAddWishlist({{$item['product']['id']}})"><i class="icon-cart-plus"></i>Add to Cart</button>
+                        <button class="btn btn-block btn-outline-primary-2"  wire:click="singleAddWishlist({{$item['product']['id']}})"><i class="icon-cart-plus"></i>{{ __('Add to Cart') }}</button>
                     </td>
-                    <td class="remove-col"><button class="btn-remove"  wire:click="removeFromWishlist({{$item['product']['id']}})"><i class="fa-regular fa-trash-can"></i></button></td>
+                    <td class="remove-col text-center"><button class="btn-remove"  wire:click="removeFromWishlist({{$item['product']['id']}})"><i class="fa-regular fa-trash-can"></i></button></td>
                 </tr>
                 @empty
                     {{__('No Items Are Added')}}

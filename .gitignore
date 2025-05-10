@@ -17,6 +17,6 @@ yarn-error.log
 /.idea
 /.vscode
 resources/credentials/firebase_credentials.json
-resources/lang/ar.json
-resources/lang/en.json
-resources/lang/ku.json
+# resources/lang/ar.json
+# resources/lang/en.json
+# resources/lang/ku.json

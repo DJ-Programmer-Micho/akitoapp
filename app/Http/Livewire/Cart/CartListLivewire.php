@@ -14,11 +14,13 @@ class CartListLivewire extends Component
     public $totalListQuantity = 0;
     public $totalListPrice = 0;
     public $totalDiscount = 0;
+    public $exchange_rate;
 
     protected $listeners = ['addToCartList','cartListUpdated' => 'loadCartList'];
 
     public function mount()
     {
+        $this->exchange_rate = config('currency.exchange_rate');
         $this->loadCartList();
     }
 
@@ -70,9 +72,9 @@ class CartListLivewire extends Component
         // Calculate the final customer discount price based on the total applicable discounts
         $customerDiscountPrice = $discountPrice * (1 - ($totalDiscountPercentage / 100));
         return [
-            'base_price' => $basePrice,
-            'discount_price' => $discountPrice,
-            'customer_discount_price' => $customerDiscountPrice,
+            'base_price' => $basePrice * $this->exchange_rate,
+            'discount_price' => $discountPrice * $this->exchange_rate,
+            'customer_discount_price' => $customerDiscountPrice * $this->exchange_rate,
             'total_discount_percentage' => $totalDiscountPercentage
         ];
     }

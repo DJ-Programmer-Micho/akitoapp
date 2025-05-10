@@ -14,7 +14,6 @@
     font-family: 'Scheherazade', serif;
 }
 
-
 .text-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -99,6 +98,33 @@
 [lang="ku"] .menu>li>a {
     font-size: 16px;
     font-weight: 100;
+}
+
+.price.flip-symbol {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+}
+
+.flip-symbol [lang="ar"],
+.flip-symbol [lang="ku"] {
+    flex-direction: row-reverse;
+}
+.cart-direction [lang="ar"],
+.cart-direction [lang="ku"] {
+    direction: rtl;
+}
+
+table .product-col .product [lang="ar"],
+table .product-col .product [lang="ku"] {
+    padding-right: unset!important;
+    padding-left: 2rem!important;
+}
+
+table .product-col .product-media [lang="ar"],
+table .product-col .product-media [lang="ku"] {
+    margin-right: unset!important;
+    margin-left: 2.8rem!important;
 }
 
 .heart-icon {

@@ -34,7 +34,7 @@
         </div><!-- End .cart-product -->
         @if ($wishlistItems)
         <div class="dropdown-cart-action mt-2">
-            <button wire:click="fromWishlistToCart" class="btn btn-outline-primary-2"><span>Add Them To Cart</span><i class="icon-long-arrow-right"></i></button>
+            <button wire:click="fromWishlistToCart" class="btn btn-outline-primary-2"><span>{{ __('Add Them To Cart') }}</span><i class="icon-long-arrow-right"></i></button>
         </div><!-- End .dropdown-cart-action -->
         @endif
     </div><!-- End .dropdown-menu -->

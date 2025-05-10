@@ -26,7 +26,9 @@ return new class extends Migration
             $table->foreignId('driver')->nullable()->constrained('users')->onDelete('set null'); // Foreign key referencing the users table (nullable)
             $table->string('phone_number'); // Customer's phone number
             $table->decimal('shipping_amount', 10, 2); // Total amount for the order shipping
-            $table->decimal('total_amount', 10, 2); // Total amount for the order
+            $table->decimal('total_amount_usd', 10, 2); // Total amount for the order
+            $table->decimal('total_amount_iqd', 10, 2); // Total amount for the order
+            $table->decimal('exchange_rate', 10, 2); // Total amount for the order
             $table->string('payment_method'); // Payment method (e.g., COD, digital payment)
             $table->enum('payment_status', ['pending', 'successful', 'failed'])->default('pending'); // Track payment status
             $table->enum('status', ['pending', 'shipping', 'delivered', 'canceled', 'refunded'])->default('pending'); // Order status

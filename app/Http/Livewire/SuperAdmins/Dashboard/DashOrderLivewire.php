@@ -27,9 +27,11 @@ class DashOrderLivewire extends Component
                         $subQuery->where('locale', $locale);
                     },
                     'variation',
-                    'variation.images'
+                    'variation.images',
+                    
                 ]);
-            }
+            },
+            'customer.customer_profile'
         ])
         ->orderBy('created_at', 'desc')
         ->take(5) // get the latest 5

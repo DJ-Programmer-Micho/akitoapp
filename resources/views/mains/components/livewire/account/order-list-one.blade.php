@@ -29,7 +29,10 @@
                             #{{$item->tracking_number}}
                         </td>
                         <td class="align-middle text-center">
-                            ${{ $item->total_amount }}
+                            <span class="cart-total-price flip-symbol text-left">
+                                <span class="amount">{{ number_format($item->total_amount_iqd + $item->shipping_amount, 0)}} </span>
+                                <span class="currency">{{ __('IQD') }}</span>
+                            </span>
                         </td>
                         <td class="align-middle text-center">
                             {{$item->payment_method}}
