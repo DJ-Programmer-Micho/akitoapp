@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $rate = $settings->exchange_price > 0 ? (int) $settings->exchange_price : 1;
 
         View::share('exchangeRate', $rate);
-        View::share('currencyCode', 'IQD');
+        View::share('currencyCode', __('IQD'));
         Config::set('currency.exchange_rate', $rate);
         
         $this->app->singleton('glocales', function () {
