@@ -56,6 +56,21 @@
                                 @endforeach
                             </ul>
                         </li>
+                        @if(isset($soons) && $soons->count() > 0)
+                        <li class="megamenu-container {{ request()->is(app()->getLocale() . '/coming-soon') ? 'active' : '' }}">
+                            <a href="{{ route('business.soon', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Coming Soon') }}</a>    
+                            <ul>
+                                @foreach($soons as $soon)
+                                <li class="p-1">
+                                    <a class="p-1" href="{{ route('business.soon', ['locale' => app()->getLocale()]) }}">
+                                        <span class="demo-bg" style="background-image: url('{{ app('cloudfront').$soon->image }}'); padding: 60px" alt="{{ $soon->coming_soon_translation->name }}"></span>
+                                        <span class="demo-title">{{ $soon->coming_soon_translation->name }}</span>
+                                    </a>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </li>
+                        @endif
                         <li class="{{ request()->is(app()->getLocale() . '/wishlist-list') ? 'active' : '' }}">
                             <a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">{{__('Wishlist')}}</a>
                         </li>

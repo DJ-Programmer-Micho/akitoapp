@@ -60,14 +60,14 @@
                             <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">{{__('Dashboard')}}</a></li>
                             <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">{{__('Wishlist')}}</a></li>
                             <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">{{__('View Cart')}}</a></li>
-                            <li><a href="{{ route('business.checkout', ['locale' => app()->getLocale()]) }}">Check Out</a></li>
-                            <li class="item-lead"><a href="#signout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign Out</a></li>
+                            <li><a href="{{ route('business.checkout', ['locale' => app()->getLocale()]) }}">{{ __('Checkout') }}</a></li>
+                            <li class="item-lead"><a href="#signout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Sign Out') }}</a></li>
                         </ul><!-- End .menu-vertical -->
                         @endauth
                         @guest('customer')
                         <ul class="menu-vertical sf-arrows">
-                            <li><a href="#signin-modal" data-toggle="modal">Login</a></li>
-                            <li><a href="{{ route('business.register', ['locale' => app()->getLocale()]) }}">Register</a></li>
+                            <li><a href="#signin-modal" data-toggle="modal">{{ __('Login') }}</a></li>
+                            <li><a href="{{ route('business.register', ['locale' => app()->getLocale()]) }}">{{ __('Register') }}</a></li>
                         </ul><!-- End .menu-vertical -->
                         @endguest
                     </nav><!-- End .side-nav -->
