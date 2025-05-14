@@ -25,6 +25,11 @@
     {{-- @php
         dd($productsCat1);
     @endphp --}}
+    @if(isset($soons) && $soons->count() > 4)
+    <div class="bg-light py-4">
+        <x-mains.components.brand-slider-one/>
+    </div>
+    @endif
     @foreach($categoryProducts as $index => $productData)
     <x-mains.components.banner-width-one :image="$imageBanner[$index]['image']" />
     <x-mains.components.category-product-one :productsData="$productData['products']" :title="$productData['title']" />
@@ -34,9 +39,16 @@
     </div><!-- End .container -->
     @endforeach
 
+
+    @if(isset($soons) && $soons->count() > 4)
+    <div class="bg-light py-4">
+        <x-mains.components.soon-slider-one :soons="$soons"/>
+    </div>
+    @else
     <div class="bg-light py-4">
         <x-mains.components.brand-slider-one/>
     </div>
+    @endif
     {{-- <x-mains.components.trending-product-one />
     <div class="container">
         <hr class="mt-5 mb-6">

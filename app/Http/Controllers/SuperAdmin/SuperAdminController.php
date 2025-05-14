@@ -16,6 +16,9 @@ class SuperAdminController extends Controller
     public function brand(){
         return view('super-admins.pages.brands.index');
     }
+    public function soon(){
+        return view('super-admins.pages.comingsoon.index');
+    }
     public function category(){
         return view('super-admins.pages.categories.index');
     }

@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Category;
 use App\Models\OrderItem;
+use App\Models\ComingSoon;
 use App\Models\WebSetting;
 use App\Models\SubCategory;
 use Illuminate\Support\Str;
@@ -59,6 +60,16 @@ class BusinessController extends Controller
                 ->get();
         });
 
+        $soons = Cache::remember("active_coming_soon_$locale", 60, function () use ($locale) {
+            return ComingSoon::with([
+                'coming_soon_translation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->orderBy('priority', 'ASC')
+            ->get();
+        });
         // Slider and Banner images
         $heroImages = json_decode($settings->hero_images, true); // true for associative array
 
@@ -84,6 +95,7 @@ class BusinessController extends Controller
             'featured_products' => $featured,
             'on_sale_products' => $on_sale,
             'sliders' => $sortedSliders,
+            'soons' => $soons,
         ]);
     }
 
@@ -259,6 +271,12 @@ class BusinessController extends Controller
 
     public function productBrand(){
         return view('mains.pages.brand-page-one', [
+
+        ]);
+    }
+
+    public function productSoon(){
+        return view('mains.pages.coming-soon-page-one', [
 
         ]);
     }

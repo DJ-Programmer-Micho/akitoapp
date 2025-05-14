@@ -21,7 +21,7 @@
                                     <div class="demo-item">
                                         <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'categories[]' => $category->id]) }}">
                                             <div class="image-wrapper-100">
-                                                <span class="demo-bg-100" style="background-image: url('{{ app('cloudfront').$category->image }}');" alt="{{ $category->image }}"></span>
+                                                <span class="demo-bg-100" style="background-image: url('{{ app('cloudfront').$category->image }}');" alt="{{ $category->categoryTranslation->name }}"></span>
                                             </div>
                                             <span class="demo-title">{{ $category->categoryTranslation->name }}</span>
                                         </a>
@@ -43,7 +43,7 @@
                                     <div class="demo-item">
                                         <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $brand->id]) }}">
                                             <div class="image-wrapper-100">
-                                                <span class="demo-bg-100" style="background-image: url('{{ app('cloudfront').$brand->image }}');" alt="{{ $brand->image }}"></span>
+                                                <span class="demo-bg-100" style="background-image: url('{{ app('cloudfront').$brand->image }}');" alt="{{ $brand->brandTranslation->name }}"></span>
                                             </div>
                                             <span class="demo-title">{{ $brand->brandTranslation->name }}</span>
                                         </a>
@@ -53,7 +53,29 @@
                             </div><!-- End .menu-col -->
                         </div><!-- End .megamenu -->
                     </li>
+                    @if(isset($soons) && $soons->count() > 0)
+                    <li class="megamenu-container {{ request()->is(app()->getLocale() . '/coming-soon') ? 'active' : '' }}">
+                        <a class="nav-font" href="{{ route('business.soon', ['locale' => app()->getLocale()]) }}" class="sf-with-ul">{{ __('Coming Soon') }}</a>
                     
+                        <div class="megamenu demo">
+                            <div class="menu-col">
+                                <div class="menu-title">{{ __('Coming Soon Brands') }}</div><!-- End .menu-title -->
+                                <div class="demo-list">
+                                    @foreach($soons as $soon)
+                                    <div class="demo-item">
+                                        <a href="{{ route('business.soon', ['locale' => app()->getLocale()]) }}">
+                                            <div class="image-wrapper-100">
+                                                <span class="demo-bg-100" style="background-image: url('{{ app('cloudfront').$soon->image }}');" alt="{{ $soon->coming_soon_translation->name }}"></span>
+                                            </div>
+                                            <span class="demo-title">{{ $soon->coming_soon_translation->name }}</span>
+                                        </a>
+                                    </div><!-- End .demo-item -->
+                                    @endforeach
+                                </div><!-- End .demo-list -->
+                            </div><!-- End .menu-col -->
+                        </div><!-- End .megamenu -->
+                    </li>
+                    @endif
                     {{-- <li class="{{ request()->is(app()->getLocale() . '/spare') ? 'active' : '' }}">
                         <a class="nav-font" href="{{ route('business.productShopSpare', ['locale' => app()->getLocale()]) }}">{{ __('Spare Parts') }}</a>
                     </li> --}}
@@ -61,7 +83,7 @@
             </nav><!-- End .main-nav -->
 
             <button class="mobile-menu-toggler">
-                <span class="sr-only">Toggle mobile menu</span>
+                <span class="sr-only">{{ __('Toggle mobile menu') }}</span>
                 <i class="icon-bars"></i>
             </button>
         </div><!-- End .header-left -->

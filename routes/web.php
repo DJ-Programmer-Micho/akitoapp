@@ -94,6 +94,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::get('/', [SuperAdminController::class, 'dashboard'])->name('super.dashboard');
     Route::get('/tickers-managements', [SuperAdminController::class, 'ticker'])->name('super.ticker');
     Route::get('/brands-managements', [SuperAdminController::class, 'brand'])->name('super.brand');
+    Route::get('/soons-managements', [SuperAdminController::class, 'soon'])->name('super.soon');
     Route::get('/categories-managements', [SuperAdminController::class, 'category'])->name('super.category');
     Route::get('/intensities-managements', [SuperAdminController::class, 'intensity'])->name('super.intensity');
     Route::get('/tags-managements', [SuperAdminController::class, 'tag'])->name('super.tag');
@@ -153,6 +154,7 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     Route::get('shop', [BusinessController::class, 'productShop'])->name('business.productShop');
     Route::get('categories', [BusinessController::class, 'productCategory'])->name('business.category');
     Route::get('brands', [BusinessController::class, 'productBrand'])->name('business.brand');
+    Route::get('coming-soon', [BusinessController::class, 'productSoon'])->name('business.soon');
     Route::get('spare', [BusinessController::class, 'productShopSpare'])->name('business.productShopSpare');
     Route::get('product/{slug}', [BusinessController::class, 'productDetail'])->name('business.productDetail');
     Route::get('shop-search', [BusinessController::class, 'searchShop'])->name('business.shop.search');

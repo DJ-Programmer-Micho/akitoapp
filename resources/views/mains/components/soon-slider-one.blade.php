@@ -1,16 +1,16 @@
 <div class="heading text-center mb-4">
-    <h2 class="title">{{ __('Brands') }}</h2>
-    <p class="title-desc">{{ __('With Akitu Star only best brands') }}</p>
+    <h2 class="title">{{ __('Coming Soon Brands') }}</h2>
+    <p class="title-desc">{{ __('With Akitu Star all new brands with us') }}</p>
 </div>
 
 <section class="slide-option">
-    <div id="infinite">
+    <div id="infinite-2">
         <div class="slider-container">
-            <ul id="brand-list" class="highway-lane">
-                @foreach($brands as $brand)
+            <ul id="soon-list" class="highway-lane">
+                @foreach($soons as $soon)
                 <li class="highway-car">
-                    <a href="{{ route('business.productShop', ['locale' => app()->getLocale(), 'brands[]' => $brand->id]) }}">
-                        <img loading="lazy" src="{{ app('cloudfront') . $brand->image }}" alt="{{ $brand->brandtranslation->name ?? 'Unknown Brand' }}" style="max-width: 100%; height: 120px;">
+                    <a href="{{ route('business.soon', ['locale' => app()->getLocale()]) }}">
+                        <img loading="lazy" src="{{ app('cloudfront') . $soon->image }}" alt="{{ $brand->coming_soon_translation->name ?? 'Unknown Brand' }}" style="max-width: 100%; height: 120px;">
                     </a>
                 </li>
                 @endforeach
@@ -21,30 +21,10 @@
 
 @push('styles-password')
 <style>
-#infinite {
+#infinite-2 {
     overflow: hidden;
     position: relative;
     height: 150px;
-}
-
-.slider-container {
-    position: relative;
-    width: 100%;
-}
-
-.highway-lane {
-    display: flex;
-    position: relative;
-    left: 0;
-    width: max-content;
-}
-
-.highway-car {
-    min-width: 180px;
-    padding: 0 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 </style>
 @endpush
@@ -52,7 +32,7 @@
 @push("productView")
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const brandList = document.getElementById('brand-list');
+    const brandList = document.getElementById('soon-list');
     const brands = Array.from(brandList.children);
     const brandCount = brands.length;
     

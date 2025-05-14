@@ -12,13 +12,15 @@ class NavOne extends Component
 {
     public $brands;
     public $categories;
+    public $soons;
     /**
      * Create a new component instance.
      */
-    public function __construct($brands, $categories)
+    public function __construct($brands, $categories, $soons)
     {
         $this->brands = $brands;
         $this->categories = $categories;
+        $this->soons = $soons;
         // $this->brands = Cache::remember('active_brands', 60, function () {
         //     return Brand::where('status', 1)->get();
         // });    
@@ -31,7 +33,8 @@ class NavOne extends Component
     {
         return view('mains.mappings.components.nav-one',[
             "brands" => $this->brands,
-            "categories" => $this->categories
+            "categories" => $this->categories,
+            "soons" => $this->soons
         ]);
     }
 }

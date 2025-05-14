@@ -5,6 +5,7 @@ namespace App\View\Components\Mains\Mappings;
 use Closure;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\ComingSoon;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
@@ -13,6 +14,7 @@ class NavOne extends Component
 {
     public $brands;
     public $categories;
+    public $soons;
     /**
      * Create a new component instance.
      */
@@ -38,6 +40,15 @@ class NavOne extends Component
             ->where('status', 1)
             ->get();
         }); 
+        $this->soons = Cache::remember("active_coming_soon_$locale", 60, function () use ($locale) {
+            return ComingSoon::with([
+                'coming_soon_translation' => function ($query) use ($locale) {
+                    $query->where('locale', $locale);
+                }
+            ])
+            ->where('status', 1)
+            ->get();
+        }); 
     }
     /**
      * Get the view / contents that represent the component.
@@ -46,7 +57,8 @@ class NavOne extends Component
     {
         return view('mains.mappings.nav-one',[
             "brands" => $this->brands,
-            "categories" => $this->categories
+            "categories" => $this->categories,
+            "soons" => $this->soons
         ]);
     }
 }
