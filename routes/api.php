@@ -78,6 +78,12 @@ Route::prefix('/v1')->group(function () {
     Route::get('/products/search', [ShopControllerApi::class, 'searchProductsApi'])->name('api.shop.search');
 });
 
+// Shop Page 
+Route::prefix('/v1')->group(function () {
+    Route::get('/products-all', [ShopControllerApi::class, 'productShopAllApi'])->name('api.shop.products');
+    Route::get('/products-all/search', [ShopControllerApi::class, 'searchProductsAllApi'])->name('api.shop.search');
+});
+
 // product Page 
 Route::prefix('/v1')->group(function () {
     Route::get('/product/{id}', [ProductDetailControllerApi::class, 'productDetailApi'])->name('api.product.detail');

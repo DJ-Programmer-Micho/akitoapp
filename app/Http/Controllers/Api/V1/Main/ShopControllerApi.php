@@ -59,6 +59,41 @@ class ShopControllerApi extends Controller
         ]);
     }
 
+    public function productShopAllApi(Request $request)
+    {
+        $locale = $request->input('lang', 'en');
+        app()->setLocale($locale);
+        
+        $filters = $this->getFiltersFromRequestApi($request);
+        $filters['is_spare_part'] = 0; // Non-spare parts
+
+        // Base product query
+        $productQuery = Product::select('products.*', 'product_variations.price as variation_price')
+            ->join('product_variations', 'products.variation_id', '=', 'product_variations.id')
+            ->with($this->getEagerLoadRelationsApi())
+            ->where('products.is_spare_part', 0);
+
+        // Apply filters & sorting dynamically
+        $productQuery = $this->applyFiltersApi($productQuery, $filters);
+        $productQuery = $this->applySortingApi($productQuery, $filters['sortBy']);
+
+        // Paginate products
+        $products = $productQuery->paginate(12);
+        $products->getCollection()->transform(fn($product) => $this->applyDiscountsApi($product, $request));
+        $formattedProducts = $products->getCollection()->map(fn($product) => $this->formatProduct($product));
+
+        return response()->json([
+            'filters'  => $this->getFilterQueriesApi($filters['categoryIds'], 0), // Return available filters
+            'products' => $formattedProducts,
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'per_page'     => $products->perPage(),
+                'total'        => $products->total(),
+                'last_page'    => $products->lastPage(),
+            ],
+        ]);
+    }
+
     private function formatProduct(Product $product): array
     {
         $customerId = Auth::guard('sanctum')->user()->id ?? null;
@@ -373,6 +408,77 @@ public function searchProductsApi(Request $request)
             'categories.categoryTranslation',
         ])
         ->where('products.status', 1)
+        ->where('products.is_spare_part', 0);
+
+    // Apply search filters across ALL languages
+    if (!empty($searchQuery)) {
+        $productQuery->where(function ($query) use ($searchQuery) {
+            $query->whereHas('productTranslation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(name) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            })
+            ->orWhereHas('brand.brandTranslation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(name) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            })
+            ->orWhereHas('categories.categoryTranslation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(name) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            })
+            ->orWhereHas('variation.colors.variationColorTranslation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(name) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            })
+            ->orWhereHas('variation.sizes.variationSizeTranslation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(name) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            })
+            ->orWhereHas('variation.materials.variationMaterialTranslation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(name) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            })
+            ->orWhereHas('variation.capacities.variationCapacityTranslation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(name) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            })
+            ->orWhereHas('variation', function ($subQuery) use ($searchQuery) {
+                $subQuery->whereRaw("LOWER(keywords) COLLATE utf8mb4_general_ci LIKE LOWER(?)", ["%$searchQuery%"]);
+            });
+        });
+    }
+
+    // Paginate results
+    $products = $productQuery->paginate(10)->appends(['q' => $searchQuery]);
+
+    // Apply discount calculations and format results
+    $products->getCollection()->transform(fn($product) => $this->applyDiscountsApi($product, $request));
+    $formattedProducts = $products->getCollection()->map(fn($product) => $this->formatProduct($product));
+
+    return response()->json([
+        'query' => $searchQuery,
+        'products' => $formattedProducts,
+        'pagination' => [
+            'current_page' => $products->currentPage(),
+            'per_page'     => $products->perPage(),
+            'total'        => $products->total(),
+            'last_page'    => $products->lastPage(),
+        ],
+    ]);
+}
+
+public function searchProductsAllApi(Request $request)
+{
+    $locale = $request->input('lang', app()->getLocale());
+    $searchQuery = trim($request->query('q', ''));
+
+    // Base query to get products
+    $productQuery = Product::select('products.*', 'product_variations.price as variation_price')
+        ->join('product_variations', 'products.variation_id', '=', 'product_variations.id')
+        ->with([
+            'productTranslation', // Load all translations
+            'variation.colors.variationColorTranslation',
+            'variation.sizes.variationSizeTranslation',
+            'variation.materials.variationMaterialTranslation',
+            'variation.capacities.variationCapacityTranslation',
+            'variation.images' => fn($q) => $q->where(function ($q) {
+                $q->where('priority', 0)->orWhere('is_primary', 1);
+            }),
+            'brand.brandTranslation',
+            'categories.categoryTranslation',
+        ])
         ->where('products.is_spare_part', 0);
 
     // Apply search filters across ALL languages
