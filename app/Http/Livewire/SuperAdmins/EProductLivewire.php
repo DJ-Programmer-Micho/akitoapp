@@ -523,11 +523,6 @@ class EProductLivewire extends Component
     
     public function productSave()
     {
-        // foreach ($this->images as $index => $image) {
-        //     dd($image['file']);
-        // }
-        // dd($this->images, $this->imagesData);
-
         $this->currentValidation = 'store';
         $validatedData = $this->validate($this->rulesForSaveProduct());
         // Start database transaction

@@ -543,6 +543,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text" id="basic-addon1">$</span>
                                     <input type="number"
+                                    step="any"
                                     class="form-control
                                     @error('originalPrice') is-invalid @enderror
                                     @if(!$errors->has('originalPrice') && !empty($originalPrice)) is-valid @endif"
