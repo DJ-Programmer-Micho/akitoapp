@@ -100,15 +100,27 @@
         {{-- <x-mains.mappings.nav-one /> --}}
         {{-- @livewire('main.auth.form-one') --}}
         {{-- @livewire('main.pop.news-one') --}}
+        @if (Str::endsWith(request()->getHost(), '.com'))
         <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-5W49056DDZ"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            
+            gtag('config', 'G-5W49056DDZ');
+        </script>
+        @elseif (Str::endsWith(request()->getHost(), '.iq'))
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RGMHTNVFWX"></script>
         <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
-        gtag('config', 'G-5W49056DDZ');
+        gtag('config', 'G-RGMHTNVFWX');
         </script>
+        @endif
         <!-- Plugins JS File -->
         <script src="{{asset('main/assets/js/jquery.min.js')}}"></script>
         <script src="{{asset('main/assets/js/bootstrap.bundle.min.js')}}"></script>
