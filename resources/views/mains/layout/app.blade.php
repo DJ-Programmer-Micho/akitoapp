@@ -11,9 +11,9 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="#003465">
         <meta name="theme-color" content="#003465">
         <meta name="publisher" content="Michel Shabo">
-        <meta name="mobile-web-app-title" content="Akitu">
+        <meta name="mobile-web-app-title" content="Akitu Star">
         <meta name="author" content="Furat Hariri">
-        <meta name="copyright" content="Akitu Co">
+        <meta name="copyright" content="Akitu Star">
         <meta name="page-topic" content="e-commerce">
         <meta name="page-type" content="website">
         <meta name="audience" content="Everyone">
@@ -36,8 +36,8 @@
         <meta name="msapplication-TileColor" content="#003465">
         <meta name="msapplication-TileImage" content="{{app('logo_1024')}}">
 
-        <meta name='og:title' content="{{$seo['title'] ?? 'Akitu'}}">
-        <meta name='og:description' content="{{$seo['description'] ?? 'Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
+        <meta name='og:title' content="{{$seo['title'] ?? 'Akitu Star'}}">
+        <meta name='og:description' content="{{$seo['description'] ?? 'Akitu Star Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
         <meta name='og:image' content="{{$seo['image'] ?? app('main_logo')}}">
         <meta name='og:type' content='eCommerce'>
         @if (Str::endsWith(request()->getHost(), '.com'))
@@ -47,8 +47,8 @@
         @endif
         <meta name='og:site_name' content='Akitu'>
 
-        <meta name="news_keywords" content="{{$seo['keywords'] ?? 'akitu'}}">
-        <meta name='keywords' content='{{$seo['keywords'] ?? 'akitu'}}'>
+        <meta name="news_keywords" content="{{$seo['keywords'] ?? 'Akitu Star'}}">
+        <meta name='keywords' content='{{$seo['keywords'] ?? 'Akitu Star'}}'>
         {{-- <meta name="google-site-verification" content="3vvBxZ-Qxu0d3DsF4ycREMvZSzw8l_tPZlksjWh5UXY" />
         <meta name="google-site-verification" content="google-site-verification=BsTd6RGpf34g3qd36xuA_12dr9Wi6NA3VAgom4gKzGA" /> --}}
         @if (Str::endsWith(request()->getHost(), '.com'))
@@ -85,7 +85,7 @@
         @stack('styles-ticker')
         @stack('styles-password')
         @livewireStyles
-        <title>{{ $title ?? 'Akitu' }}</title>
+        <title>{{ $title ?? 'Akitu Star' }}</title>
     </head>
     <body>
         <div class="page-wrapper">

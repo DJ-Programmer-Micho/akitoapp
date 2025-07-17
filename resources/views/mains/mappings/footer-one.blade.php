@@ -5,8 +5,8 @@
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
-                        <img src="{{ app('negative_logo') }}" alt="Akito" class="footer-logo" width="105" height="25">
-                        <p>{{__('Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.')}}</p>
+                        <img src="{{ app('negative_logo') }}" alt="Akitu Star" class="footer-logo" width="105" height="25">
+                        <p>{{__('Akitu Star Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.')}}</p>
 
                         <div class="widget-call mb-1">
                             <i class="icon-phone"></i>
@@ -76,7 +76,7 @@
 
     <div class="footer-bottom">
         <div class="container">
-            <p class="footer-copyright" style="color: rgb(255, 255, 255)">Copyright © 2024 Akitu-co Store. All Rights Reserved.</p><!-- End .footer-copyright -->
+            <p class="footer-copyright" style="color: rgb(255, 255, 255)">Copyright © 2024 Akitu Star Store. All Rights Reserved.</p><!-- End .footer-copyright -->
             <figure class="footer-payments">
                 {{-- <img src="{{ asset('lang/payments.png')}}" alt="Payment methods" width="272" height="20"> --}}
             </figure><!-- End .footer-payments -->
