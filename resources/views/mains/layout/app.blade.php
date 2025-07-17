@@ -19,9 +19,15 @@
         <meta name="audience" content="Everyone">
         <meta name="robots" content="index, follow"> 
         <meta name="language" content="{{app()->getLocale()}}">
-        <link rel="alternate" hreflang="en" href="http://akitu-co/en" />
-        <link rel="alternate" hreflang="ar" href="http://akitu-co/ar" />
-        <link rel="alternate" hreflang="ku" href="http://akitu-co/ku" />
+        @if (Str::endsWith(request()->getHost(), '.com'))
+        <link rel="alternate" hreflang="en" href="http://akitu-co.com/en" />
+        <link rel="alternate" hreflang="ar" href="http://akitu-co.com/ar" />
+        <link rel="alternate" hreflang="ku" href="http://akitu-co.com/ku" />
+        @elseif (Str::endsWith(request()->getHost(), '.iq'))
+        <link rel="alternate" hreflang="en" href="http://akitustar.iq/en" />
+        <link rel="alternate" hreflang="ar" href="http://akitustar.iq/ar" />
+        <link rel="alternate" hreflang="ku" href="http://akitustar.iq/ku" />
+        @endif
 
         <meta name='owner' content='Furat Hariri'>
         <meta name='url' content='{{url()->current()}}'>
@@ -34,7 +40,11 @@
         <meta name='og:description' content="{{$seo['description'] ?? 'Akitu Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
         <meta name='og:image' content="{{$seo['image'] ?? app('main_logo')}}">
         <meta name='og:type' content='eCommerce'>
+        @if (Str::endsWith(request()->getHost(), '.com'))
         <meta name='og:url' content='http://akitu-co.com/'>
+        @elseif (Str::endsWith(request()->getHost(), '.iq'))
+        <meta name='og:url' content='http://akitustar.iq/'>
+        @endif
         <meta name='og:site_name' content='Akitu'>
 
         <meta name="news_keywords" content="{{$seo['keywords'] ?? 'akitu'}}">
