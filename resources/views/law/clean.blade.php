@@ -20,6 +20,11 @@
     <meta name="audience" content="Everyone">
     <meta name="robots" content="index, follow"> 
     {{-- <meta name='google-site-verification' content='umlVYoC_GB0LKj19BGjAp0DDjU1Jirtq9sVJCgTGgAM'> --}}
+        @if (Str::endsWith(request()->getHost(), '.com'))
+            <meta name="google-site-verification" content="3vvBxZ-Qxu0d3DsF4ycREMvZSzw8l_tPZlksjWh5UXY" />
+        @elseif (Str::endsWith(request()->getHost(), '.iq'))
+            <meta name="google-site-verification" content="BsTd6RGpf34g3qd36xuA_12dr9Wi6NA3VAgom4gKzGA" />
+        @endif
     {{-- Sharing Purposes --}}
     <meta name='og:title' content='Akitu'>
     <meta name='og:type' content='Software Company'>
