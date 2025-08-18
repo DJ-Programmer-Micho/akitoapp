@@ -5,7 +5,8 @@
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
-                        <img src="{{ app('negative_logo') }}" alt="Italian Coffee" class="footer-logo mx-auto" width="200" height="">
+                        <img src="{{ app('negative_logo') }}" alt="Italian Coffee" class="footer-logo mx-auto mb-1" width="200" height="">
+                        <hr/>
                         <p>{{__('Italian Coffee Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.')}}</p>
 
                         <div class="widget-call mb-1">
