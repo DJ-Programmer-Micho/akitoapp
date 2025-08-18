@@ -1,6 +1,6 @@
 <div class="heading text-center mb-4">
     <h2 class="title">{{ __('Coming Soon Brands') }}</h2>
-    <p class="title-desc">{{ __('With Akitu Star all new brands with us') }}</p>
+    <p class="title-desc">{{ __('With Italian Coffee Company all new brands with us') }}</p>
 </div>
 
 <section class="slide-option">

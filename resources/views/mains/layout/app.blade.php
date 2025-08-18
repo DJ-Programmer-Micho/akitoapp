@@ -11,15 +11,18 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="#003465">
         <meta name="theme-color" content="#003465">
         <meta name="publisher" content="Michel Shabo">
-        <meta name="mobile-web-app-title" content="Akitu Star">
+        <meta name="mobile-web-app-title" content="Italian Coffee">
         <meta name="author" content="Furat Hariri">
-        <meta name="copyright" content="Akitu Star">
+        <meta name="copyright" content="Italian Coffee">
         <meta name="page-topic" content="e-commerce">
         <meta name="page-type" content="website">
         <meta name="audience" content="Everyone">
         <meta name="robots" content="index, follow"> 
         <meta name="language" content="{{app()->getLocale()}}">
-        @if (Str::endsWith(request()->getHost(), '.com'))
+        <link rel="alternate" hreflang="en" href="http://italiancoffee-co.com/en" />
+        <link rel="alternate" hreflang="ar" href="http://italiancoffee-co.com/ar" />
+        <link rel="alternate" hreflang="ku" href="http://italiancoffee-co.com/ku" />
+        {{-- @if (Str::endsWith(request()->getHost(), '.com'))
         <link rel="alternate" hreflang="en" href="http://akitu-co.com/en" />
         <link rel="alternate" hreflang="ar" href="http://akitu-co.com/ar" />
         <link rel="alternate" hreflang="ku" href="http://akitu-co.com/ku" />
@@ -27,7 +30,7 @@
         <link rel="alternate" hreflang="en" href="http://akitustar.iq/en" />
         <link rel="alternate" hreflang="ar" href="http://akitustar.iq/ar" />
         <link rel="alternate" hreflang="ku" href="http://akitustar.iq/ku" />
-        @endif
+        @endif --}}
 
         <meta name='owner' content='Furat Hariri'>
         <meta name='url' content='{{url()->current()}}'>
@@ -36,8 +39,8 @@
         <meta name="msapplication-TileColor" content="#003465">
         <meta name="msapplication-TileImage" content="{{app('logo_1024')}}">
 
-        <meta name='og:title' content="{{$seo['title'] ?? 'Akitu Star'}}">
-        <meta name='og:description' content="{{$seo['description'] ?? 'Akitu Star Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
+        <meta name='og:title' content="{{$seo['title'] ?? 'Italian Coffee'}}">
+        <meta name='og:description' content="{{$seo['description'] ?? 'Italian Coffee Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
         <meta name='og:image' content="{{$seo['image'] ?? app('main_logo')}}">
         <meta name='og:type' content='eCommerce'>
         @if (Str::endsWith(request()->getHost(), '.com'))
@@ -47,8 +50,8 @@
         @endif
         <meta name='og:site_name' content='Akitu'>
 
-        <meta name="news_keywords" content="{{$seo['keywords'] ?? 'Akitu Star'}}">
-        <meta name='keywords' content='{{$seo['keywords'] ?? 'Akitu Star'}}'>
+        <meta name="news_keywords" content="{{$seo['keywords'] ?? 'Italian Coffee'}}">
+        <meta name='keywords' content='{{$seo['keywords'] ?? 'Italian Coffee'}}'>
         {{-- <meta name="google-site-verification" content="3vvBxZ-Qxu0d3DsF4ycREMvZSzw8l_tPZlksjWh5UXY" />
         <meta name="google-site-verification" content="google-site-verification=BsTd6RGpf34g3qd36xuA_12dr9Wi6NA3VAgom4gKzGA" /> --}}
         @if (Str::endsWith(request()->getHost(), '.com'))
@@ -85,7 +88,7 @@
         @stack('styles-ticker')
         @stack('styles-password')
         @livewireStyles
-        <title>{{ $title ?? 'Akitu Star' }}</title>
+        <title>{{ $title ?? 'Italian Coffee' }}</title>
     </head>
     <body>
         <div class="page-wrapper">

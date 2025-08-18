@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#003465">
     <meta name="theme-color" content="#003465">
     <meta name="publisher" content="Michel Shabo">
-    <meta name="mobile-web-app-title" content="Akitu Star">
+    <meta name="mobile-web-app-title" content="Italian Coffee">
     <meta name="author" content="Michel Shabo">
     <meta name="copyright" content="MET Iraq">
     <meta name="page-topic" content="Software">
@@ -34,8 +34,8 @@
     <meta name='og:url' content='http://akitustar.iq/'>
     @endif
     {{-- <meta name='og:image' content='https://d7tztcuqve7v9.cloudfront.net/{{app('fixedimage_640x360_half')}}'> --}}
-    <meta name='og:site_name' content='Akitu Star'>
-    <meta name='og:description' content='Akitu Star Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'>
+    <meta name='og:site_name' content='Italian Coffee'>
+    <meta name='og:description' content='Italian Coffee Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'>
     {{-- META TAGS --}}
     {{-- <meta name="news_keywords" content="minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food"> --}}
     {{-- <meta name='keywords' content='minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food'> --}}
@@ -60,7 +60,7 @@
     <body>	
         <div class="container mt-4">
             <a class="navbar-brand" href="/"> 
-                <img src="{{ app('main_logo') }}" alt="Akitu Star" width="120">
+                <img src="{{ app('main_logo') }}" alt="Italian Coffee" width="120">
             </a>	
             <hr class="underline_Logo" style="height: 5px; background-color: #003465">
             @yield('law')

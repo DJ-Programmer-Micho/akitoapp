@@ -1,6 +1,6 @@
 <div class="heading text-center mb-4">
     <h2 class="title">{{ __('Brands') }}</h2>
-    <p class="title-desc">{{ __('With Akitu Star only best brands') }}</p>
+    <p class="title-desc">{{ __('With Italian Coffee Company only best brands') }}</p>
 </div>
 
 <section class="slide-option">

@@ -5,8 +5,8 @@
             <div class="row">
                 <div class="col-sm-6 col-lg-3">
                     <div class="widget widget-about">
-                        <img src="{{ app('negative_logo') }}" alt="Akitu Star" class="footer-logo" width="105" height="25">
-                        <p>{{__('Akitu Star Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.')}}</p>
+                        <img src="{{ app('negative_logo') }}" alt="Italian Coffee" class="footer-logo" width="105" height="25">
+                        <p>{{__('Italian Coffee Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.')}}</p>
 
                         <div class="widget-call mb-1">
                             <i class="icon-phone"></i>
@@ -57,13 +57,13 @@
 
                         <ul class="widget-list">
                             @guest('customer')
-                            <li><a href="#signin-modal" data-toggle="modal">Login</a></li>
-                            <li><a href="{{ route('business.register', ['locale' => app()->getLocale()]) }}">Register</a></li>
+                            <li><a href="#signin-modal" data-toggle="modal">{{ __('Login') }}</a></li>
+                            <li><a href="{{ route('business.register', ['locale' => app()->getLocale()]) }}">{{ __('Register') }}</a></li>
                             @endguest
                             @auth('customer')
-                            <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">Dashboard</a></li>
-                            <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">View Cart</a></li>
-                            <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">My Wishlist</a></li>
+                            <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">{{ __('Dashboard') }}</a></li>
+                            <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">{{ __('View Cart') }}</a></li>
+                            <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">{{ __('My Wishlist') }}</a></li>
                             {{-- <li><a href="#">Track My Order</a></li>
                             <li><a href="#">Help</a></li> --}}
                             @endauth
@@ -76,7 +76,7 @@
 
     <div class="footer-bottom">
         <div class="container">
-            <p class="footer-copyright" style="color: rgb(255, 255, 255)">Copyright © 2024 Akitu Star Store. All Rights Reserved.</p><!-- End .footer-copyright -->
+            <p class="footer-copyright" style="color: rgb(255, 255, 255)">{{ __('Copyright © 2024 Italian Coffee Company Store. All Rights Reserved.') }}</p><!-- End .footer-copyright -->
             <figure class="footer-payments">
                 {{-- <img src="{{ asset('lang/payments.png')}}" alt="Payment methods" width="272" height="20"> --}}
             </figure><!-- End .footer-payments -->
