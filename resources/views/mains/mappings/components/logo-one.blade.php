@@ -2,13 +2,13 @@
     <div class="container">
         <div class="header-left">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}">
-                <img src="{{ app('main_logo') }}" alt="Akito" width="140" height="30">
+                <img src="{{ app('main_logo') }}" alt="Italian-Coffee" width="220" height="91">
             </a>
 
         </div>
         <div class="header-center">
             <a href=" {{ route('business.home', ['locale' => app()->getLocale()]) }}" class="logo d-lg-none">
-                <img src="{{ app('main_logo') }}" alt="Akito" width="140" height="30">
+                <img src="{{ app('main_logo') }}" alt="Italian-Coffee" width="180" height="75">
             </a>
         </div><!-- End .header-left -->
 

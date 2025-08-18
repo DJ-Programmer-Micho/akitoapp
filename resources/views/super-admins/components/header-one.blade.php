@@ -6,20 +6,20 @@
             <!-- LOGO -->
             <div class="navbar-brand-box horizontal-logo">
                 <a href="index.html" class="logo logo-dark">
-                    <span class="logo-sm">
-                        <img src="{{ app('negative_logo') }}" alt="Akito" height="27">
+                    <span class="logo-sm mt-2">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="50">
                     </span>
-                    <span class="logo-lg">
-                        <img src="{{ app('negative_logo') }}" alt="Akito" height="42">
+                    <span class="logo-lg mt-1">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="72">
                     </span>
                 </a>
                 <!-- Light Logo-->
                 <a href="index.html" class="logo logo-light">
-                    <span class="logo-sm">
-                        <img src="{{ app('negative_logo') }}" alt="Akito" height="27">
+                    <span class="logo-sm mt-2">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="50">
                     </span>
-                    <span class="logo-lg">
-                        <img src="{{ app('negative_logo') }}" alt="Akito" height="42">
+                    <span class="logo-lg mt-1">
+                        <img src="{{ app('negative_logo') }}" alt="Akito" height="72">
                     </span>
                 </a>
             </div>
