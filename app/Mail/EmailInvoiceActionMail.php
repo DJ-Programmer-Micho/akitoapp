@@ -26,7 +26,7 @@ class EmailInvoiceActionMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Akitu-co - Order ID #{$this->orderData->tracking_number}",
+            subject: "Italiancoffee-co - Order ID #{$this->orderData->tracking_number}",
         );
     }
 

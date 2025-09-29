@@ -78,6 +78,10 @@ class AppServiceProvider extends ServiceProvider
             return $settings->snapchat_url ?? 'https://snapchat.com'; // Fallback to default
         });
 
+        $this->app->singleton('gmap', function () {
+            return 'AIzaSyBnz8a5QM24rNyxdTj3yAeT2G2pHVfXMZ0';
+        });
+
         $this->app->singleton('cloudfront', function () {
             return 'https://d1h4q8vrlfl3k9.cloudfront.net/';
         });

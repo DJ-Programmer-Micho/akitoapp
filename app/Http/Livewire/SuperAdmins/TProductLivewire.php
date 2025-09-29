@@ -33,7 +33,7 @@ class TProductLivewire extends Component
     public $capacityIds = [];
     public $materialIds = [];
     public $minPrice = 0;
-    public $maxPrice = 5000;
+    public $maxPrice = 1000000000000;
     public $sortBy = 'priority';
     public $items = 10;
     public $activeCount;

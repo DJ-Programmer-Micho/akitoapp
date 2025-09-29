@@ -28,13 +28,14 @@
     {{-- Sharing Purposes --}}
     <meta name='og:title' content='Akitu'>
     <meta name='og:type' content='Software Company'>
-    @if (Str::endsWith(request()->getHost(), '.com'))
+    <meta name='og:url' content='http://italiancoffee-co.com/'>
+    {{-- @if (Str::endsWith(request()->getHost(), '.com'))
     <meta name='og:url' content='http://akitu-co.com/'>
     @elseif (Str::endsWith(request()->getHost(), '.iq'))
     <meta name='og:url' content='http://akitustar.iq/'>
-    @endif
+    @endif --}}
     {{-- <meta name='og:image' content='https://d7tztcuqve7v9.cloudfront.net/{{app('fixedimage_640x360_half')}}'> --}}
-    <meta name='og:site_name' content='Italian Coffee'>
+    <meta name='og:site_name' content='Italian Coffee Co.'>
     <meta name='og:description' content='Italian Coffee Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'>
     {{-- META TAGS --}}
     {{-- <meta name="news_keywords" content="minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food"> --}}

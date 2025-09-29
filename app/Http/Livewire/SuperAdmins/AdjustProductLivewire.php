@@ -26,7 +26,7 @@ class AdjustProductLivewire extends Component
     public $capacityIds = [];
     public $materialIds = [];
     public $minPrice = 0;
-    public $maxPrice = 1000;
+    public $maxPrice = 1000000000000;
     public $sortBy = 'priority';
     public $items = 15;
     public $activeCount;

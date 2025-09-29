@@ -245,8 +245,8 @@
     </div>
 </div>
 @push('materialsScripts')
-{{-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQuIFgYGBzpKpzzp3puSrqzL6uK7sXiTo&callback=initMap" async defer></script> --}}
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQuIFgYGBzpKpzzp3puSrqzL6uK7sXiTo&callback=initialize&libraries=drawing,places&v=3.49" async defer></script>
+{{-- <script src="https://maps.googleapis.com/maps/api/js?key={{ app('gmap') }}&callback=initMap" async defer></script> --}}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ app('gmap') }}&callback=initialize&libraries=drawing,places&v=3.49" async defer></script>
 <script>
 let map;
 let drawingManager;

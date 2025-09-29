@@ -31,7 +31,7 @@
                     <hr>
                     <div class="d-flex justify-content-around">
                         <div class="text-center">
-                            <a href="mailto:support@akitu-co.com" class="btn btn-primary">{{__('Email Us')}}</a>
+                            <a href="mailto:support@italiancoffee-co.com" class="btn btn-primary">{{__('Email Us')}}</a>
                         </div>
                         <div class="text-center">
                             <a href="tel:009647507747742" class="btn btn-primary">{{__('Call Us')}}</a>

@@ -75,12 +75,12 @@
                                     <thead>
                                         <tr>
                                             <th>{{__('Product')}}</th>
-                                            <th>{{__('Original Price ($)')}}</th>
-                                            <th>{{__('Discount Price ($)')}}</th>
+                                            <th>{{__('Original Price (IQD)')}}</th>
+                                            <th>{{__('Discount Price (IQD)')}}</th>
                                             <th>{{__('Stock')}}</th>
                                             <th>{{__('Order Limit')}}</th>
-                                            <th>{{__('Status')}}</th>
                                             <th>{{__('Priority')}}</th>
+                                            <th>{{__('Status')}}</th>
                                             <th>{{__('Action')}}</th>
                                         </tr>
                                     </thead>
@@ -103,7 +103,8 @@
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <input type="number" id="price_{{ $data->id }}" value="{{ $data->variation->price }}" class="form-control bg-dark text-white" style="max-width: 80px">
                                                         <button type="button" class="btn btn-info btn-icon text-dark" onclick="updatePriceValue({{ $data->id }})">
-                                                            <i class="fa-solid fa-dollar-sign"></i>
+                                                            {{-- <i class="fa-solid fa-dollar-sign"></i> --}}
+                                                            IQD
                                                         </button>
                                                     </div>
                                                 </td>
@@ -111,7 +112,8 @@
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <input type="number" id="discount_{{ $data->id }}" value="{{ $data->variation->discount }}" class="form-control bg-dark text-white" style="max-width: 80px">
                                                         <button type="button" class="btn btn-info btn-icon text-dark" onclick="updateDiscountValue({{ $data->id }})">
-                                                            <i class="fa-solid fa-dollar-sign"></i>
+                                                            {{-- <i class="fa-solid fa-dollar-sign"></i> --}}
+                                                            IQD
                                                         </button>
                                                     </div>
                                                 </td>

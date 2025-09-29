@@ -562,7 +562,7 @@
                             <div class="mb-3">
                                 <label for="original-price-input" class="form-label">{{__('Original Price')}}</label>
                                 <div class="input-group">
-                                    <span class="input-group-text" id="basic-addon1">$</span>
+                                    <span class="input-group-text" id="basic-addon1">IQD</span>
                                     <input type="number"
                                     step="any"
                                     class="form-control

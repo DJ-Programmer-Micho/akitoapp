@@ -177,7 +177,7 @@
                                             </span>
                                         </td>
                                         <td class="amount text-center">
-                                            <span class="text-success">$ {{ number_format($order->total_amount_usd,2) }}</span>
+                                            <span class="text-success">$ {{ number_format($order->total_amount_usd,3) }}</span>
                                         </td>
                                         <td class="amount text-center">
                                             <span class="cart-total-price flip-symbol text-left">

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('sku')->nullable()->unique();
             $table->string('keywords')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->decimal('discount', 10, 2)->nullable();
+            $table->decimal('price', 12, 0);
+            $table->decimal('discount', 12, 0)->nullable();
             $table->integer('stock')->default(1);
             $table->integer('order_limit')->default(1);
             $table->integer('on_sale');

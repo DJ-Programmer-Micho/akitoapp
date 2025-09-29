@@ -135,7 +135,7 @@
     @push('geo')
     <link rel="stylesheet" href="{{ asset('main/assets/lib/country_select/countrySelect.min.css') }}">
     <script src="{{ asset('main/assets/lib/country_select/countrySelect.min.js') }}"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQuIFgYGBzpKpzzp3puSrqzL6uK7sXiTo&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ app('gmap') }}&callback=initMap" async defer></script>
     <script>
         let map, marker;
         

@@ -213,9 +213,12 @@ class CheckoutListOldOneLivewire extends Component
         $customerDiscountPrice = $discountPrice * (1 - ($totalDiscountPercentage / 100));
 
         return [
-            'base_price' => $basePrice * $this->exchange_rate,
-            'discount_price' => $discountPrice * $this->exchange_rate,
-            'customer_discount_price' => $customerDiscountPrice * $this->exchange_rate,
+            'base_price' => $basePrice,
+            'discount_price' => $discountPrice,
+            'customer_discount_price' => $customerDiscountPrice,
+            // 'base_price' => $basePrice * $this->exchange_rate,
+            // 'discount_price' => $discountPrice * $this->exchange_rate,
+            // 'customer_discount_price' => $customerDiscountPrice * $this->exchange_rate,
             'total_discount_percentage' => $totalDiscountPercentage
         ];
     }

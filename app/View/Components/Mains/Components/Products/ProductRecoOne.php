@@ -78,9 +78,12 @@ class ProductRecoOne extends Component
             $discountDetails = $this->calculateFinalPrice($product, $customerId);
     
             // Assign calculated discount details to the product
-            $product->base_price = $discountDetails['base_price'] * $this->exchange_rate;
-            $product->discount_price = $discountDetails['discount_price'] * $this->exchange_rate;
-            $product->customer_discount_price = $discountDetails['customer_discount_price'] * $this->exchange_rate;
+            $product->base_price = $discountDetails['base_price'];
+            $product->discount_price = $discountDetails['discount_price'];
+            $product->customer_discount_price = $discountDetails['customer_discount_price'];
+            // $product->base_price = $discountDetails['base_price'] * $this->exchange_rate;
+            // $product->discount_price = $discountDetails['discount_price'] * $this->exchange_rate;
+            // $product->customer_discount_price = $discountDetails['customer_discount_price'] * $this->exchange_rate;
             $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
     
             return $product;
@@ -148,9 +151,12 @@ class ProductRecoOne extends Component
             $discountDetails = $this->calculateFinalPrice($product, $customerId);
 
             // Assign the calculated discount details to the product
-            $product->base_price                = $discountDetails['base_price'] * $this->exchange_rate;
-            $product->discount_price            = $discountDetails['discount_price'] * $this->exchange_rate;
-            $product->customer_discount_price   = $discountDetails['customer_discount_price'] * $this->exchange_rate;
+            $product->base_price                = $discountDetails['base_price'];
+            $product->discount_price            = $discountDetails['discount_price'];
+            $product->customer_discount_price   = $discountDetails['customer_discount_price'];
+            // $product->base_price                = $discountDetails['base_price'] * $this->exchange_rate;
+            // $product->discount_price            = $discountDetails['discount_price'] * $this->exchange_rate;
+            // $product->customer_discount_price   = $discountDetails['customer_discount_price'] * $this->exchange_rate;
             $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
 
             return $product;

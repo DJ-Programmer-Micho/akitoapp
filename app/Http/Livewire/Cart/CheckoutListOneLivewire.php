@@ -57,7 +57,7 @@ class CheckoutListOneLivewire extends Component
         $this->loadPayments();
         
         if ($this->paymentList->isNotEmpty()) {
-            $this->paymentSelected = 2;
+            $this->paymentSelected = 1;
             $this->selectPayment($this->paymentSelected);        
         }
 
@@ -88,7 +88,7 @@ class CheckoutListOneLivewire extends Component
                 // Address is inside this zone, set COD payment status
                 $this->digitPaymentStatus = $zone->digit_payment;
                 $this->manualePaymentStatus = $zone->cod_payment;
-
+// dd($this->digitPaymentStatus);
                 if($this->paymentSelected) {
                     if($this->manualePaymentStatus == 0) {
                         $this->paymentSelected = 1;
@@ -149,12 +149,11 @@ class CheckoutListOneLivewire extends Component
         $this->paymentSelected = $paymentId;
         // Get the selected payment method
         $paymentMethod = PaymentMethods::find($paymentId);
-
         // Update the transaction fee
         if ($paymentMethod) {
             $this->transactionFee = $paymentMethod->transaction_fee;
         }
-        $this->digitPaymentStatus = $paymentId;
+        // $this->digitPaymentStatus = $paymentMethod->online;
         // Recalculate the total
         $this->calculateTotals();
     }
@@ -245,9 +244,12 @@ class CheckoutListOneLivewire extends Component
                 $discountDetails = $this->calculateFinalPrice($product, $customerId);
         
                 // Assign calculated discount details to the product
-                $product->base_price = $discountDetails['base_price'] * $this->exchange_rate;
-                $product->discount_price = $discountDetails['discount_price'] * $this->exchange_rate;
-                $product->customer_discount_price = $discountDetails['customer_discount_price'] * $this->exchange_rate;
+                $product->base_price = $discountDetails['base_price'];
+                $product->discount_price = $discountDetails['discount_price'];
+                $product->customer_discount_price = $discountDetails['customer_discount_price'];
+                // $product->base_price = $discountDetails['base_price'] * $this->exchange_rate;
+                // $product->discount_price = $discountDetails['discount_price'] * $this->exchange_rate;
+                // $product->customer_discount_price = $discountDetails['customer_discount_price'] * $this->exchange_rate;
                 $product->total_discount_percentage = $discountDetails['total_discount_percentage'];
         
                 return $cartListItems;
@@ -284,13 +286,13 @@ class CheckoutListOneLivewire extends Component
             }
     
             // Add the product price multiplied by quantity to the total price
-            $this->totalListPrice += $item['quantity'] * $finalPrice;
+            (int) $this->totalListPrice += $item['quantity'] * $finalPrice;
         }
     }
     
     public function render()
     {
-        if($this->totalListPrice > $this->deliveryLimit){
+        if((int) $this->totalListPrice > (int) $this->deliveryLimit){
             $this->deliveryCharge = 0;
         }
         return view('mains.components.livewire.cart.checkout-list-one', [

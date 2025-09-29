@@ -388,8 +388,8 @@
                                             <td style="text-align: left; padding-left: 10px;">
                                                 <h3 class="heading">Useful Links</h3>
                                                 <ul>
-                                                    <li>Team Support: <a href="mailto:support@akitu-co.com">support@akitu-co.com</a></li>
-                                                    <li>Developer Support: <a href="mailto:support@akitu-co.com">support@akitu-co.com</a></li>
+                                                    <li>Team Support: <a href="mailto:support@italiancoffee-co.com">support@italiancoffee-co.com</a></li>
+                                                    <li>Developer Support: <a href="mailto:support@italiancoffee-co.com">support@italiancoffee-co.com</a></li>
                                                     {{-- <li>Email Owner: <a href="mailto:michel@minemenu.com">michel@minemenu.com</a></li>
                                                     <li>Call Owner: <a href="telto:+9647506814144">+9647506814144</a></li> --}}
                                                 </ul>

@@ -198,8 +198,8 @@
                                     </div>
                                     <div class="flex-shrink-0 mt-sm-0 mt-3">
                                         {{-- <h6><span class="text-muted fw-normal">Legal Registration No:</span><span id="legal-register-no">{{$orderData->tracking_number}}</span></h6> --}}
-                                        <h6><span class="text-muted fw-normal">Email:</span><a href="mailto:support@akitu-co.com" class="link-primary" target="_blank" id="email">support@akitu-co.com</a></h6>
-                                        <h6><span class="text-muted fw-normal">Website:</span> <a href="https://akitu-co.com/" class="link-primary" target="_blank" id="website">www.akitu-co.com</a></h6>
+                                        <h6><span class="text-muted fw-normal">Email:</span><a href="mailto:support@italiancoffee-co.com" class="link-primary" target="_blank" id="email">support@italiancoffee-co.com</a></h6>
+                                        <h6><span class="text-muted fw-normal">Website:</span> <a href="https://italiancoffee-co.com/" class="link-primary" target="_blank" id="website">www.italiancoffee-co.com</a></h6>
                                         <h6 class="mb-0"><span class="text-muted fw-normal">Contact No: </span><a href="tel:009647507747742" class="link-primary" target="_blank" id="contact-no">+964 750 774 7742</a></h6>
                                         <div class="py-2">
                                             <div id="qrcode"></div>

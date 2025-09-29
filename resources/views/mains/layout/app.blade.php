@@ -43,12 +43,13 @@
         <meta name='og:description' content="{{$seo['description'] ?? 'Italian Coffee Store Company is one of the leading e-commerce websites in Iraq, specializing in coffee products and accessories.'}}">
         <meta name='og:image' content="{{$seo['image'] ?? app('main_logo')}}">
         <meta name='og:type' content='eCommerce'>
-        @if (Str::endsWith(request()->getHost(), '.com'))
+        <meta name='og:url' content='http://italiancoffee-co.com/'>
+        {{-- @if (Str::endsWith(request()->getHost(), '.com'))
         <meta name='og:url' content='http://akitu-co.com/'>
         @elseif (Str::endsWith(request()->getHost(), '.iq'))
         <meta name='og:url' content='http://akitustar.iq/'>
-        @endif
-        <meta name='og:site_name' content='Akitu'>
+        @endif --}}
+        <meta name='og:site_name' content='Italian Coffee Co.'>
 
         <meta name="news_keywords" content="{{$seo['keywords'] ?? 'Italian Coffee'}}">
         <meta name='keywords' content='{{$seo['keywords'] ?? 'Italian Coffee'}}'>

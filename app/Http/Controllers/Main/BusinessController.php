@@ -239,9 +239,12 @@ class BusinessController extends Controller
         // Calculate the final customer discount price based on the total applicable discounts
         $customerDiscountPrice = $discountPrice * (1 - ($totalDiscountPercentage / 100));
         return [
-            'base_price' => $basePrice * $this->exchange_rate,
-            'discount_price' => $discountPrice * $this->exchange_rate,
-            'customer_discount_price' => $customerDiscountPrice * $this->exchange_rate,
+            'base_price' => $basePrice,
+            'discount_price' => $discountPrice,
+            'customer_discount_price' => $customerDiscountPrice,
+            // 'base_price' => $basePrice * $this->exchange_rate,
+            // 'discount_price' => $discountPrice * $this->exchange_rate,
+            // 'customer_discount_price' => $customerDiscountPrice * $this->exchange_rate,
             'total_discount_percentage' => $totalDiscountPercentage
         ];
     }
@@ -496,7 +499,8 @@ class BusinessController extends Controller
                 $query->whereHas('variation.materials', fn($q) => $q->whereIn('variation_material_id', $filters['materialIds']))
             )
             ->when([$filters['minPrice'], $filters['maxPrice']], fn($query) =>
-                $query->whereBetween('product_variations.price', [$filters['minPrice'] / $this->exchange_rate, $filters['maxPrice'] / $this->exchange_rate])
+                $query->whereBetween('product_variations.price', [$filters['minPrice'], $filters['maxPrice']])
+                // $query->whereBetween('product_variations.price', [$filters['minPrice'] / $this->exchange_rate, $filters['maxPrice'] / $this->exchange_rate])
             );
     }
     

@@ -19,7 +19,7 @@
                 <div class="intro-slide">
                     <figure class="slide">
                         <picture>
-                            <img src="{{ app('cloudfront') . $slide['filename'] }}" alt="Akitu-co">
+                            <img src="{{ app('cloudfront') . $slide['filename'] }}" alt="Italiancoffee-co">
                         </picture>
                     </figure><!-- End .slide-image -->
                 </div><!-- End .intro-slide -->

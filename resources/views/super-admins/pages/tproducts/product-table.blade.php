@@ -92,7 +92,7 @@
                                                             @if ($data->variation->images)
                                                                 <img src="{{ app('cloudfront').$data->variation->images->first()->image_path }}" alt="{{ $data->name }}" class="img-fluid" style="max-width: 60px; max-height: 60px; object-fit: cover;">
                                                             @else
-                                                                <img src="{{ app('logo_1024') }}" alt="Akitu-co" class="img-fluid" style="max-width: 60px; max-height: 60px; object-fit: cover;">
+                                                                <img src="{{ app('logo_1024') }}" alt="Italiancoffee-co" class="img-fluid" style="max-width: 60px; max-height: 60px; object-fit: cover;">
                                                             @endif
                                                         </div>
                                                         <div>
@@ -103,11 +103,11 @@
                                                     </div>
                                                 </td>
                                                 <td class="align-middle text-center">
-                                                    <span>$ {{ $data->variation->price }}</span>
+                                                    <span>{{ $data->variation->price }} IQD</span>
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     @if ($data->variation->discount)
-                                                        <span>$ {{ $data->variation->discount }}</span>
+                                                        <span>{{ $data->variation->discount }} IQD</span>
                                                     @else
                                                         -
                                                     @endif

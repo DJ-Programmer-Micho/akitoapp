@@ -222,7 +222,7 @@
                                     class="form-control 
                                     @error('url') is-invalid @enderror
                                     @if(!$errors->has('url') && !empty($url)) is-valid @endif"
-                                    wire:model="url" placeholder="https://akitu-co.com/">
+                                    wire:model="url" placeholder="https://italiancoffee-co.com/">
                                 @error('url')
                                     <div class="@if(app()->getLocale() != 'en') ar-shift @endif">
                                             <span class="text-danger">{{ __($message) }}</span>
