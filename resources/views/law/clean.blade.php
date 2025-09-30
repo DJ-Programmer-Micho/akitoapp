@@ -41,12 +41,12 @@
     {{-- <meta name="news_keywords" content="minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food"> --}}
     {{-- <meta name='keywords' content='minemenu, Akitu, ماين منيو, menu iraq, menu erbil, menu resturant, qr code, resturant qr code, finedine, finedinemenu, Akitu iraq, food, drinks, food menu, menu scan, scan menu, منيو, menu generator, food menu generator, قائمة الطعام, food'> --}}
     <!-- apple icons -->
-    {{-- <link rel="shortcut icon" href="{{app('logo_72')}}">
+    <link rel="shortcut icon" href="{{app('logo_72')}}">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{app('logo_144')}}">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{app('logo_114')}}">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{app('logo_72')}}">
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{app('logo_57')}}">
-    <link rel="apple-touch-icon-precomposed" href="{{app('logo_1024')}}"> --}}
+    <link rel="apple-touch-icon-precomposed" href="{{app('logo_1024')}}">
     <!-- end of icons -->
     {{-- Title --}}
     <title>Akitu</title>

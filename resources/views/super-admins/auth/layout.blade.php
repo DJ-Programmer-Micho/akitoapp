@@ -17,7 +17,12 @@
         <link href="{{asset('dashboard/css/app.min.css')}}" rel="stylesheet" type="text/css" />
         <!-- custom Css-->
         <link href="{{asset('dashboard/css/custom.min.css')}}" rel="stylesheet" type="text/css" />
-
+        <link rel="shortcut icon" href="{{app('logo_72')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{app('logo_144')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{app('logo_114')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{app('logo_72')}}">
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{app('logo_57')}}">
+        <link rel="apple-touch-icon-precomposed" href="{{app('logo_1024')}}">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <link href="{{asset('dashboard/css/toaster.css')}}" rel="stylesheet" type="text/css">
         <title>{{ $title ?? 'Admin Panel Sign In' }}</title>
