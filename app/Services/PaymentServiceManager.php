@@ -155,16 +155,17 @@ class PaymentServiceManager
     // MAIN FUNTION FOR POST SEND TO FIB PROVIDER
     private function processFIBPayment() {
         $accessToken = $this->getFIBToken();
-        $exchangeRate = WebSetting::find(1)->exchange_price;
-        if(!$exchangeRate) {
-            $exchangeRate = 1500;
-        }
+        // dd($accessToken);
+        // $exchangeRate = WebSetting::find(1)->exchange_price;
+        // if(!$exchangeRate) {
+        //     $exchangeRate = 1500;
+        // }
 
         if (!$accessToken) {
             return false;
         }
 
-        $iq_currency = round($this->amount * $exchangeRate) + $this->delivery;
+        $iq_currency = $this->amount + $this->delivery;
         Log::info($iq_currency);
         $paymentData = [
             "monetaryValue" => [

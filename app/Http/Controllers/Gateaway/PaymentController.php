@@ -37,6 +37,7 @@ class PaymentController extends Controller
             return redirect()->route('payment.zaincash', ['locale' => app()->getLocale(), 'paymentId' => $order->id]);
         } else {
             return redirect()->route('business.checkout.failed')->withErrors('Invalid payment provider.');
+            // return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])->withErrors('Invalid payment provider.');
         }
     }
 

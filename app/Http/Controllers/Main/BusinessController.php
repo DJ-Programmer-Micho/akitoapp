@@ -771,6 +771,7 @@ class BusinessController extends Controller
     
     public function checkoutChecker($locale, $digit, $nvxf, Request $request)
     {
+        
         if (!Auth::guard('customer')->check()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -857,6 +858,7 @@ class BusinessController extends Controller
             ]);
             $itemConversion = null;
         }
+        
 
         // ✅ Handle Cash On Delivery
         if ($paymentMethod->online == 0) {
@@ -865,29 +867,28 @@ class BusinessController extends Controller
             Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
             return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
         }
-
             $paymentService = PaymentServiceManager::getInstance()
                 ->setOrder($order)
                 ->setDelivery($validatedData['shipping_amount'])
                 ->setPaymentMethod($paymentMethod->name)
-                ->setAmount($order->total_amount_usd);
+                ->setAmount($order->total_amount_iqd);
                 
             $paymentResponse = $paymentService->processPayment();
 
             if (!$paymentResponse) {
-                // Log::error("PaymentServiceManager instance is null!");
+                Log::error("PaymentServiceManager instance is null!");
                 DB::rollBack();
                 return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
             }
             DB::commit();
             CartItem::where('customer_id', $customer->id)->delete();
             Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order, $item->quantity * $item->final_price));
-            return redirect()->route('payment.process',  ['locale' => app()->getLocale(), 'orderId' => $order->id,'paymentId' => $paymentResponse['paymentId'], 'paymentMethod' => $digit]);
+            return redirect()->route('payment.process',  ['locale' => app()->getLocale(), 'orderId' => $order->id,'paymentId' => $paymentResponse['paymentId'], 'paymentMethod' => $paymentMethod->id]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Checkout Error: " . $e->getMessage());
-            // return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
-            //     ->withErrors(['error' => 'Payment processing failed.']);
+            return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                ->withErrors(['error' => 'Payment processing failed.']);
         }
     }
 
