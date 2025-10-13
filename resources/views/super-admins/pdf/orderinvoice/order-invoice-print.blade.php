@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Invoice of #VL{{$orderData->tracking_number}}</title>
+    <title>Invoice of #{{$orderData->tracking_number}}</title>
     <link href="https://italiancoffee-co.com/dashboard/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
     <link href="https://italiancoffee-co.com/dashboard/css/icons.min.css" rel="stylesheet" type="text/css" />
@@ -86,7 +86,7 @@
                                 <div class="row g-3">
                                     <div class="col-3">
                                         <p class="text-muted mb-2 text-uppercase fw-semibold">Invoice No</p>
-                                        <h5 class="fs-14 mb-0">#VL<span id="invoice-no"></span>{{$orderData->tracking_number}}</h5>
+                                        <h5 class="fs-14 mb-0">#<span id="invoice-no"></span>{{$orderData->tracking_number}}</h5>
                                     </div>
                                     <!--end col-->
                                     <div class="col-3">

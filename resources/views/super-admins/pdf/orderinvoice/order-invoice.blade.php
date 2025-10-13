@@ -214,7 +214,7 @@
                                 <div class="row g-3">
                                     <div class="col-lg-3 col-6">
                                         <p class="text-muted mb-2 text-uppercase fw-semibold">Invoice No</p>
-                                        <h5 class="fs-14 mb-0">#VL<span id="invoice-no"></span>{{$orderData->tracking_number}}</h5>
+                                        <h5 class="fs-14 mb-0">#<span id="invoice-no"></span>{{$orderData->tracking_number}}</h5>
                                     </div>
                                     <!--end col-->
                                     <div class="col-lg-3 col-6">
@@ -414,20 +414,33 @@
     </div><!-- container-fluid -->
     <x-super-admins.components.pdf-order-invoice />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        // Latitude and longitude
-        const latitude = 33.3152;  // Example: Latitude of Baghdad, Iraq
-        const longitude = 44.3661; // Example: Longitude of Baghdad, Iraq
-    
-        // Google Maps link with the coordinates
-        const mapUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-    
-        // Create the QR code
-        const qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: mapUrl,         // The URL that will be encoded in the QR code
-        width: 100,           // QR code width
-        height: 100           // QR code height
-        });
-    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    const lat   = @json($orderData->latitude);
+    const lng   = @json($orderData->longitude);
+
+    // Build a readable single-line shipping address as fallback
+    const parts = [
+        @json($orderData->address ?? ''),
+        @json($orderData->city ?? ''),
+        @json($orderData->zip_code ?? ''),
+        @json($orderData->country ?? '')
+    ].filter(Boolean); // drop empties
+
+    const addressText = parts.join(', ').trim();
+
+    // Prefer precise coordinates if present, else use address text
+    const mapUrl = (lat && lng)
+        ? `https://www.google.com/maps?q=${encodeURIComponent(lat)},${encodeURIComponent(lng)}`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressText)}`;
+
+    // Render the QR
+    new QRCode(document.getElementById("qrcode"), {
+        text: mapUrl,
+        width: 100,
+        height: 100
+    });
+</script>
+
 </div><!-- End Page-content -->
 

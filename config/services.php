@@ -33,4 +33,9 @@ return [
     'telegram-bot-api' => [
         'token' => env('TELEGRAM_BOT_TOKEN', '7853859457:AAHH_Kw0r5uisP2WdrfvxgDCQzDh-vJrhj8')
     ],
+    'standingtech' => [
+        'base_url'  => env('STANDINGTECH_BASE_URL', 'https://gateway.standingtech.com'),
+        'token'     => env('STANDINGTECH_TOKEN'),
+        'sender_id' => env('STANDINGTECH_SENDER_ID', 'MetIraq'),
+    ],
 ];

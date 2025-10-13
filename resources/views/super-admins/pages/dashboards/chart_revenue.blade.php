@@ -52,11 +52,29 @@
                     <div class="col-6 col-sm-3">
                         <div class="p-3 border border-dashed border-start-0">
                             <!-- E.g., earnings in K -->
-                            @php
-                                $earningsInK = round($totalEarnings / 1000, 2);
-                            @endphp
+                        @php
+                            $amount = $totalEarnings ?? 0;
+
+                            if ($amount >= 1_000_000_000) {
+                                // Billion
+                                $formattedValue = number_format($amount / 1_000_000_000, 3);
+                                $suffix = 'B';
+                            } elseif ($amount >= 1_000_000) {
+                                // Million
+                                $formattedValue = number_format($amount / 1_000_000, 3);
+                                $suffix = 'M';
+                            } elseif ($amount >= 1_000) {
+                                // Thousand
+                                $formattedValue = number_format($amount / 1_000, 3);
+                                $suffix = 'K';
+                            } else {
+                                // Less than thousand
+                                $formattedValue = number_format($amount, 0);
+                                $suffix = '';
+                            }
+                        @endphp
                             <h5 class="mb-1">
-                                $<span class="counter-value" data-target="{{ $earningsInK }}">{{$earningsInK}}</span>k
+                                <span class="counter-value" data-target="{{ $formattedValue }}">{{ $formattedValue }}</span>{{ $suffix }} IQD
                             </h5>
                             <p class="text-muted mb-0">Earnings</p>
                         </div>

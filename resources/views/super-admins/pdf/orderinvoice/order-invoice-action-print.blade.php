@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Invoice of #VL{{$orderData->tracking_number}}</title>
+    <title>Invoice of #{{$orderData->tracking_number}}</title>
     <link href="https://italiancoffee-co.com/dashboard/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
     <link href="https://italiancoffee-co.com/dashboard/css/icons.min.css" rel="stylesheet" type="text/css" />

@@ -26,7 +26,16 @@
                     @forelse($orderTable as $item)
                     <tr>
                         <td>
-                            #{{$item->tracking_number}}
+                            @if ($item->status == 'canceled')
+                                <a target="_blank" href="{{route('pdf.order.customer.cancel', ['locale' => app()->getLocale(),'tracking' => $item->tracking_number])}}">
+                                    #{{$item->tracking_number}}
+                                </a>
+                            @else
+                                <a target="_blank" href="{{route('pdf.order.customer', ['locale' => app()->getLocale(),'tracking' => $item->tracking_number])}}">
+                                    #{{$item->tracking_number}}
+                                </a>
+                            @endif
+
                         </td>
                         <td class="align-middle text-center">
                             <span class="cart-total-price flip-symbol text-left">
@@ -88,9 +97,9 @@
                                 </button>
                                 <div class="dropdown-menu bg-light">
                                 @if ($item->status == 'canceled')
-                                <p><a class="dropdown-item" href="{{route('pdf.order.customer.cancel', ['locale' => app()->getLocale(),'tracking' => $item->tracking_number])}}"><i class="fa-regular fa-eye"></i> {{__('View Reciept')}}</a></p>
+                                <p><a target="_blank" class="dropdown-item" href="{{route('pdf.order.customer.cancel', ['locale' => app()->getLocale(),'tracking' => $item->tracking_number])}}"><i class="fa-regular fa-eye"></i> {{__('View Reciept')}}</a></p>
                                 @else
-                                <p><a class="dropdown-item" href="{{route('pdf.order.customer', ['locale' => app()->getLocale(),'tracking' => $item->tracking_number])}}"><i class="fa-regular fa-eye"></i> {{__('View Reciept')}}</a></p>
+                                <p><a target="_blank" class="dropdown-item" href="{{route('pdf.order.customer', ['locale' => app()->getLocale(),'tracking' => $item->tracking_number])}}"><i class="fa-regular fa-eye"></i> {{__('View Reciept')}}</a></p>
                                 @endif
                                   @if ($item->status != 'canceled' && $item->payment_status != 'successful')
                                   <p><a class="dropdown-item" href="{{ route('business.checkout.order', ['locale' => app()->getLocale(), 'orderId' => $item->id]) }}"><i class="fa-solid fa-money-check-dollar"></i> {{__('Pay Now')}}</a></p>

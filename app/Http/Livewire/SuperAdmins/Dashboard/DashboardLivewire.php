@@ -54,7 +54,7 @@ class DashboardLivewire extends Component
         $this->filteredLocales = app('glocales');
 
         // Default "all-time" stats for initial page load (optional)
-        $this->totalEarningsCard = Order::sum('total_amount_usd');
+        $this->totalEarningsCard = Order::sum('total_amount_iqd');
         $this->ordersCountCard   = Order::count();
         $this->quantitySellsCard = OrderItem::sum('quantity');
         $this->customersCountCard = Customer::count();
@@ -362,7 +362,7 @@ class DashboardLivewire extends Component
             'product_id',
             DB::raw('COUNT(DISTINCT order_id) as orders_count'),
             DB::raw('SUM(quantity) as total_units'),
-            DB::raw('SUM(total_usd) as total_revenue')
+            DB::raw('SUM(total_iqd) as total_revenue')
         )
         ->groupBy('product_id')
         ->orderByDesc(DB::raw('SUM(quantity)'))  // or orderByDesc('total_units')

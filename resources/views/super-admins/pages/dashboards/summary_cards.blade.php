@@ -19,13 +19,31 @@
                 <div class="d-flex align-items-end justify-content-between mt-4">
                     <div>
                         @php
-                            // Format total earnings as thousands (k)
-                            $earningsInK = number_format($totalEarnings / 1000, 2);
+                            $amount = $totalEarnings ?? 0;
+
+                            if ($amount >= 1_000_000_000) {
+                                // Billion
+                                $formattedValue = number_format($amount / 1_000_000_000, 3);
+                                $suffix = 'B';
+                            } elseif ($amount >= 1_000_000) {
+                                // Million
+                                $formattedValue = number_format($amount / 1_000_000, 3);
+                                $suffix = 'M';
+                            } elseif ($amount >= 1_000) {
+                                // Thousand
+                                $formattedValue = number_format($amount / 1_000, 3);
+                                $suffix = 'K';
+                            } else {
+                                // Less than thousand
+                                $formattedValue = number_format($amount, 0);
+                                $suffix = '';
+                            }
                         @endphp
                         <h4 class="fs-22 fw-semibold ff-secondary mb-4">
-                            $<span class="counter-value" data-target="{{ $earningsInK }}">{{ $earningsInK }}</span>k
+                            <span class="counter-value" data-target="{{ $formattedValue }}">{{ $formattedValue }}</span>{{ $suffix }}
+                            <span class="text-muted ms-1">IQD</span>
                         </h4>
-                        <a href="#" class="text-decoration-underline text-muted">View net earnings</a>
+                        <a href="#" class="text-decoration-underline text-muted">Maximum Time</a>
                     </div>
                     <div class="avatar-sm flex-shrink-0">
                         <span class="avatar-title bg-success-subtle rounded fs-3">

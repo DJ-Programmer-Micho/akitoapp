@@ -199,48 +199,53 @@ class CustomerAuth extends Controller
         return view('mains.components.otp.email-otp',['id' => $uid, 'email' => $email]);
     } // END Function (Register)
 
-    public function resendEmailOTP($local, $id, $email){
-        $customer = Customer::where('email', $email)->first();
-        if ($customer) {
-            $otpCodeEmail = rand(100000, 999999);
+    public function resendEmailOTP($local, $id, $email)
+    {
+        $customer = \App\Models\Customer::where('email', $email)->firstOrFail();
+        $res = \App\Services\OtpService::sendEmailOtp($customer);
 
-            $customer->updateOrCreate(
-                ['id' => $customer->id], // Use the primary key column for identification
-                ['email_otp_number' => $otpCodeEmail]
-            );
-            // Send OTP via email (Mailtrap)
-            Mail::to($customer->email)->send(new EmailVerificationMail($otpCodeEmail));
-            session()->flash('alert', [
-                'type' => 'success',
-                'message' => __('PIN CODE SENT!, Please Check Your Email'),
-            ]);
+        if ($res['ok'] ?? false) {
+            session()->flash('alert', ['type' => 'success','message' => __('PIN CODE SENT!, Please Check Your Email')]);
             return response()->json(['success' => true]);
-            // return redirect()->route('goEmailOTP', ['locale' => app()->getLocale(), 'id' => $id, 'email' => $customer->email]);
-        } else {
-            return redirect()->back()->with('error', 'User not found.');
         }
+
+        if (($res['reason'] ?? null) === 'cooldown') {
+            return response()->json([
+                'success' => false,
+                'cooldown' => true,
+                'retry_in' => $res['retry_in'] ?? 0,
+            ], 429);
+        }
+
+        return response()->json(['success' => false], 500);
     }
-    
+
     public function verifyEmailOTP(Request $request)
     {
-        // Verify email OTP code...
-        $enteredEmailOTP = $request->input('entered_email_otp_code');
-        $customer = Customer::where('email', $request->input('email'))->first();
+        $entered  = $request->input('entered_email_otp_code');
+        $customer = \App\Models\Customer::where('email', $request->input('email'))->firstOrFail();
 
-        if ($customer && $enteredEmailOTP == $customer->email_otp_number) {
-            $customer->email_verify = 1;
-            $customer->save();
+        $res = \App\Services\OtpService::verifyEmailOtp($customer, $entered);
 
-            // Auth::guard('customer')->login($customer);
-            // return redirect()->route('business.home', ['locale' => app()->getLocale()]);
-            return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id' => $customer->id,'phone' => $customer->customer_profile->phone_number]);
+        if ($res['ok']) {
+            return redirect()->route('goOTP', [
+                'locale' => app()->getLocale(),
+                'id'     => $customer->id,
+                'phone'  => $customer->customer_profile->phone_number
+            ]);
         }
-        session()->flash('alert', [
-            'type' => 'error',
-            'message' => __('PIN CODE NOT CORRECT!'),
-        ]);
+
+        $msg = match ($res['reason'] ?? '') {
+            'expired'  => __('PIN CODE EXPIRED!'),
+            'no_code'  => __('No code generated yet. Please resend.'),
+            'mismatch' => __('PIN CODE NOT CORRECT!'),
+            default    => __('Verification failed.'),
+        };
+
+        session()->flash('alert', ['type' => 'error', 'message' => $msg]);
         return redirect()->back();
     }
+
 
     public function goReEmailOTP($local, $uid){
         return view('mains.components.otp.re-email-otp',['locale' => app()->getLocale(), 'id' => $uid]);
@@ -311,64 +316,57 @@ class CustomerAuth extends Controller
         }
     } // END Function (update email)
 
-    public function resendPhoneOTP($locale, $id, $phone){
-        $customer = Customer::where('id', $id)->first();
-        if ($customer) {
-            // Send OTP via Sinch
-            $response = SinchService::sendOTP($phone);
-            // dd($response,$phone);
-            if ($response->successful()) {
-                return response()->json(['success' => true]);
-                // return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id'=> $id, 'phone' => $phone])->with('alert', [
-                //     'type' => 'success',
-                //     'message' => __('PIN SENT!, Please check your SMS'),
-                // ]);
-            } else {
-                $clean_phone_number = preg_replace('/[^0-9+]/', '', $customer->customer_profile->phone_number);
-                if (strpos($clean_phone_number, '+') === 0) {
-                    $final_clean_phone_number = '00' . substr($clean_phone_number, 1);
-                } else {
-                    $final_clean_phone_number = $clean_phone_number;
-                }
-                $s_response = SinchService::sendOTP($final_clean_phone_number);
-                if($s_response->successful()) {
-                    return response()->json(['success' => true]);
-                    // return redirect()->route('goOTP', ['locale' => app()->getLocale(), 'id'=> $id, 'phone' => $phone])->with('alert', [
-                    //     'type' => 'success',
-                    //     'message' => __('PIN SENT!, Please check your SMS'),
-                    // ]);
-                } else {
-                    // return $s_response;
-                    return redirect()->back()->with('alert', [
-                        'type' => 'error',
-                        'message' => __('Something Went Wrong!, Please check your phone number or the Phone Number is Already Registered'),
-                    ]);
-                }
-            }  
+        public function resendPhoneOTP($locale, $id, $phone)
+    {
+        $customer = \App\Models\Customer::findOrFail($id);
+
+        // channel can arrive as ?channel=whatsapp|telegram|sms (fallback to default)
+        $channel = request()->query('channel', config('otp.phone_channel'));
+        $lang    = request()->query('lang', config('otp.default_lang', 'en'));
+
+        $res = \App\Services\OtpService::sendPhoneOtp(
+            customer: $customer,
+            channel: $channel,
+            lang:    $lang
+        );
+
+        if ($res['ok'] ?? false) {
+            return response()->json(['success' => true]);
         }
+
+        if (($res['reason'] ?? null) === 'cooldown') {
+            return response()->json([
+                'success' => false,
+                'cooldown' => true,
+                'retry_in' => $res['retry_in'] ?? 0,
+            ], 429);
+        }
+
+        return response()->json(['success' => false, 'error' => $res], 502);
     }
 
     public function verifyOTP(Request $request)
     {
-        $enteredOTP = $request->input('entered_otp_code');
-        $customer = Customer::where('id', $request->input('id'))->first();
-        $toNumber = $customer->customer_profile->phone_number;
+        $entered  = $request->input('entered_otp_code');
+        $customer = \App\Models\Customer::findOrFail($request->input('id'));
 
-        $response = SinchService::verifyOTP($toNumber, $enteredOTP);
+        $res = \App\Services\OtpService::verifyPhoneOtp($customer, $entered);
 
-        if ($response->successful()) {
-            $customer->phone_verify = 1;
-            $customer->save();
-            Auth::guard('customer')->login($customer);
+        if ($res['ok']) {
+            \Illuminate\Support\Facades\Auth::guard('customer')->login($customer);
             return redirect()->route('business.home', ['locale' => app()->getLocale()]);
-        } else {
-            // dd('error');
-            return redirect()->back()->with('alert', [
-                'type' => 'error',
-                'message' => __('Wrong Code!'),
-            ]);
         }
+
+        $msg = match ($res['reason'] ?? '') {
+            'expired'  => __('Code expired, please resend.'),
+            'no_code'  => __('No code generated yet. Please resend.'),
+            'mismatch' => __('Wrong Code!'),
+            default    => __('Verification failed.'),
+        };
+
+        return redirect()->back()->with('alert', ['type' => 'error', 'message' => $msg]);
     }
+
 
     public function logout(){
         Auth::guard('customer')->logout();

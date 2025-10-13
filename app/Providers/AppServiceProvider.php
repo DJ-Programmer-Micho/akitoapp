@@ -90,6 +90,16 @@ class AppServiceProvider extends ServiceProvider
             return 'https://d1h4q8vrlfl3k9.cloudfront.net/users/user.png';
         });
 
+        $this->app->singleton('whatsapp-logo', function () {
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/social-icons/whats.png';
+        });
+        $this->app->singleton('telegram-logo', function () {
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/social-icons/tele.png';
+        });
+        $this->app->singleton('sms-logo', function () {
+            return 'https://d1h4q8vrlfl3k9.cloudfront.net/web-setting/social-icons/sms.png';
+        });
+
         $this->app->singleton('main_logo', function () use ($settings) {
             return $this->getLogoUrl($settings->logo_image);
         });

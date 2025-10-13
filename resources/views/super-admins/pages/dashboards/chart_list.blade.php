@@ -82,7 +82,7 @@
                                     <!-- Price -->
                                     <td>
                                         <h5 class="fs-14 my-1 fw-normal">
-                                            ${{ number_format($price, 2) }}
+                                            {{ number_format($price, 0) }} IQD
                                         </h5>
                                         <span class="text-muted">Price</span>
                                     </td>
@@ -110,7 +110,7 @@
                                     <!-- Total Revenue (Amount) -->
                                     <td>
                                         <h5 class="fs-14 my-1 fw-normal">
-                                            ${{ number_format($totalRevenue, 2) }}
+                                            {{ number_format($totalRevenue, 0) }} IQD
                                         </h5>
                                         <span class="text-muted">&#8776 Amount</span>
                                     </td>
