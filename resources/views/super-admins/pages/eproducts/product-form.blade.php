@@ -704,7 +704,7 @@
                                 wire:model="selectedBrand" data-choices data-choices-search-true>
                                 <option value="" selected>{{__('Select a Brand')}}</option>
                                 @foreach($brands as $brand)
-                                    <option value="{{ $brand->id }}">{{ $brand->brandtranslation->first()->name ?? 'unKnown' }}</option>
+                                    <option value="{{ $brand->id }}">{{ $brand->brandtranslation->name ?? 'unKnown' }}</option>
                                 @endforeach
                             </select>
                             @error('selectedBrand')
