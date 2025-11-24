@@ -95,7 +95,7 @@ class CustomerOrderLivewire extends Component
         ]);
     
         // Apply status filter (skip "all" option)
-        $statusFilters = ['pending', 'shipping', 'delivered', 'canceled', 'refunded'];
+        $statusFilters = ['pending', 'shipping', 'delivered', 'cancelled', 'refunded'];
         if (in_array($this->statusFilter, $statusFilters)) {
             $query->where('status', $this->statusFilter);
         }
@@ -142,7 +142,7 @@ class CustomerOrderLivewire extends Component
             COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_count,
             COUNT(CASE WHEN status = 'shipping' THEN 1 END) as shipping_count,
             COUNT(CASE WHEN status = 'delivered' THEN 1 END) as delivered_count,
-            COUNT(CASE WHEN status = 'canceled' THEN 1 END) as cancelled_count,
+            COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_count,
             COUNT(CASE WHEN status = 'refunded' THEN 1 END) as refunded_count,
             COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as payment_pending_count,
             COUNT(CASE WHEN payment_status = 'successful' THEN 1 END) as payment_successful_count,

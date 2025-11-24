@@ -23,7 +23,10 @@ class CheckoutListOneLivewire extends Component
     public $totalListPrice = 0;
     public $totalDiscount = 0;
     public $orderNote = 0;
-    public $transactionFee = 0; // New property for the transaction fee
+    public $transactionFee = 0; 
+
+    public $walletBalance = 0; 
+    public $insufficientWallet = false;
 
     public $addressList;
     public $paymentList;
@@ -37,6 +40,10 @@ class CheckoutListOneLivewire extends Component
     public $deliveryCharge;
     public $inZone;
 
+    public $subtotal = 0;  
+    public $feeAmount = 0; 
+    public $grandTotal = 0;
+
     public $exchange_rate;
 
     protected $listeners = ['addToCartList','cartListUpdated' => 'loadCartList'];
@@ -44,6 +51,7 @@ class CheckoutListOneLivewire extends Component
     public function mount()
     {
         $this->exchange_rate = config('currency.exchange_rate');
+        $this->walletBalance = (int) (Auth::guard('customer')->user()->wallet->balance_minor ?? 0);
 
         $this->digitPaymentStatus = null;
         $this->loadaddresses();
@@ -65,7 +73,12 @@ class CheckoutListOneLivewire extends Component
         $this->calculateTotals();
         $this->deliveryLimit = WebSetting::find(1)->free_delivery;
     }
-    
+
+    private function isWalletSelected(): bool
+    {
+        return (int)$this->paymentSelected === 5; // wallet ID = 5
+    }
+
     protected function loadZoneData()
     {
         // Get the coordinates of the selected address
@@ -144,18 +157,19 @@ class CheckoutListOneLivewire extends Component
     public function loadPayments() {
         $this->paymentList = PaymentMethods::where('active', true)->get();
     }
+
     public function selectPayment($paymentId)
     {
-        $this->paymentSelected = $paymentId;
-        // Get the selected payment method
-        $paymentMethod = PaymentMethods::find($paymentId);
-        // Update the transaction fee
-        if ($paymentMethod) {
-            $this->transactionFee = $paymentMethod->transaction_fee;
-        }
-        // $this->digitPaymentStatus = $paymentMethod->online;
-        // Recalculate the total
+        $this->paymentSelected = (int)$paymentId;
+
+        $method = PaymentMethods::find($this->paymentSelected);
+        $this->transactionFee = $method ? (float)$method->transaction_fee : 0;
+
+        // Recalculate totals with the new fee
         $this->calculateTotals();
+
+        // Wallet sufficiency check
+        $this->insufficientWallet = $this->isWalletSelected() && ($this->walletBalance < $this->grandTotal);
     }
 
     private function calculateFinalPrice($product, $customerId) {
@@ -263,32 +277,41 @@ class CheckoutListOneLivewire extends Component
     public function calculateTotals()
     {
         $this->totalListQuantity = array_sum(array_column($this->cartListItems, 'quantity'));
-        
-        // Initialize total price and total discount
+
         $this->totalListPrice = 0;
-        $this->totalDiscount = 0;
-        
-        // Loop through the cart items to calculate total price and discount
+        $this->totalDiscount  = 0;
+
         foreach ($this->cartListItems as $item) {
-            // Initialize variables for pricing
             $basePrice = $item['product']['variation']['price'] ?? 0;
             $discountPrice = $item['product']['variation']['discount'] ?? $basePrice;
             $customerDiscountPrice = $item['product']['customer_discount_price'] ?? null;
-    
-            // Determine the price to use based on priority
+
             $finalPrice = $customerDiscountPrice ?? $discountPrice;
-    
-            // Calculate total discount if applicable
+
             if ($customerDiscountPrice && $customerDiscountPrice < $basePrice) {
                 $this->totalDiscount += ($basePrice - $customerDiscountPrice) * $item['quantity'];
             } elseif ($discountPrice < $basePrice) {
                 $this->totalDiscount += ($basePrice - $discountPrice) * $item['quantity'];
             }
-    
-            // Add the product price multiplied by quantity to the total price
-            (int) $this->totalListPrice += $item['quantity'] * $finalPrice;
+
+            $this->totalListPrice += $item['quantity'] * $finalPrice;
         }
+
+        // Subtotal = items only
+        $itemsSubtotal = (int)$this->totalListPrice;
+        $shipping      = (int)($this->deliveryCharge ?? 0);
+
+        // Fee base = items + shipping (more common)
+        $feeBase       = $itemsSubtotal + $shipping;
+        $this->feeAmount = (int) round($feeBase * ($this->transactionFee / 100));
+
+        $this->subtotal  = $itemsSubtotal;
+        $this->grandTotal = $itemsSubtotal + $shipping + $this->feeAmount;
+
+        // Wallet sufficiency (in case called before selectPayment)
+        $this->insufficientWallet = $this->isWalletSelected() && ($this->walletBalance < $this->grandTotal);
     }
+
     
     public function render()
     {

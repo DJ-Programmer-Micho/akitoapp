@@ -48,6 +48,10 @@
                 <li class="breadcrumb-item">
                     <a href="{{ route('business.checkout', ['locale' => app()->getLocale()]) }}">{{ __('Checkout') }}</a>
                 </li>
+            @elseif(request()->is('*/wallet/topup'))
+                <li class="breadcrumb-item">
+                    <a href="{{ route('wallet.topup.form', ['locale' => app()->getLocale()]) }}">{{ __('Top Up') }}</a>
+                </li>
             @endif
 
             <!-- Current Page Breadcrumb Item -->

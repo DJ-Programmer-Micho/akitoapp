@@ -4,37 +4,35 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'stripe_session_id',
+        'payment_id',
         'order_id',
-        'provider', // Matches migration
+        'amount_minor',
         'amount',
         'currency',
+        'provider',
         'status',
         'response',
     ];
 
     protected $casts = [
-        'response' => 'array', // Make sure this matches migration
+        'response' => 'array',
     ];
 
-    public $incrementing = false;
-    protected $keyType = 'string';
-
-    // protected static function boot()
-    // {
-    //     parent::boot();
-    //     static::creating(function ($model) {
-    //         $model->{$model->getKeyName()} = Str::uuid()->toString();
-    //     });
-    // }
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
+    }
 
     public function order()
     {

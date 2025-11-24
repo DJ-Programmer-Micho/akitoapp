@@ -80,8 +80,8 @@ Route::prefix('/v1')->group(function () {
 
 // Shop Page 
 Route::prefix('/v1')->group(function () {
-    Route::get('/products-all', [ShopControllerApi::class, 'productShopAllApi'])->name('api.shop.products');
-    Route::get('/products-all/search', [ShopControllerApi::class, 'searchProductsAllApi'])->name('api.shop.search');
+    Route::get('/products-all', [ShopControllerApi::class, 'productShopAllApi'])->name('api.shop.products.all');
+    Route::get('/products-all/search', [ShopControllerApi::class, 'searchProductsAllApi'])->name('api.shop.search.all');
 });
 
 // product Page 

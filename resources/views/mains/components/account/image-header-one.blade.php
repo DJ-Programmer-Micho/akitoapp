@@ -4,6 +4,8 @@
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Account')}}</span></h1>
         @elseif(request()->is('*/checkout-list'))
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Checkout')}}</span></h1>
+        @elseif(request()->is('*/wallet/topup'))
+        <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('Top Up')}}</span></h1>
         @elseif(request()->is('*/view-cart-list'))
         <h1 class="page-title" style="font-family: lavaFont;"><span style="font-size: 50px">{{__('My Cart')}}</span></h1>
         @elseif(request()->is('*/wishlist-list'))

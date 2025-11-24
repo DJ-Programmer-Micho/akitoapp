@@ -53,7 +53,7 @@
                                         'pending' => 'badge bg-primary-subtle text-primary',
                                         'shipping'    => 'badge bg-secondary-subtle text-secondary',
                                         'delivered'     => 'badge bg-success-subtle text-success',
-                                        'canceled'     => 'badge bg-danger-subtle text-danger',
+                                        'cancelled'     => 'badge bg-danger-subtle text-danger',
                                         'refunded'     => 'badge bg-warning-subtle text-warning',
                                         default      => 'badge bg-primary-subtle text-primary'
                                     };

@@ -14,27 +14,42 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id(); // Primary Key
             $table->foreignId('customer_id')->constrained()->onDelete('cascade'); // Foreign key referencing customers
+
             $table->string('first_name'); // Customer's first name
             $table->string('last_name'); // Customer's last name
             $table->string('email');
+
             $table->string('country'); // Customer's country
             $table->string('city'); // Customer's city
             $table->string('address'); // Customer's address
             $table->string('zip_code'); // Customer's zip code
+
             $table->string('latitude'); // Customer's zip code
             $table->string('longitude'); // Customer's zip code
+
             $table->foreignId('driver')->nullable()->constrained('users')->onDelete('set null'); // Foreign key referencing the users table (nullable)
             $table->string('phone_number'); // Customer's phone number
+
             $table->decimal('shipping_amount', 10, 2); // Total amount for the order shipping
             $table->decimal('total_amount_usd', 10, 2); // Total amount for the order
             $table->decimal('total_amount_iqd', 10, 2); // Total amount for the order
             $table->decimal('exchange_rate', 10, 2); // Total amount for the order
+
+            $table->unsignedBigInteger('total_minor')->nullable();   // IQD minor units
+            $table->unsignedBigInteger('paid_minor')->default(0);
+            $table->unsignedBigInteger('refunded_minor')->default(0);
+            $table->string('currency', 3)->default('IQD');
+
+            $table->enum('payment_status', ['pending','paid','failed','refunded','partially_refunded'])->default('pending');
             $table->string('payment_method'); // Payment method (e.g., COD, digital payment)
-            $table->enum('payment_status', ['pending', 'successful', 'failed'])->default('pending'); // Track payment status
-            $table->enum('status', ['pending', 'shipping', 'delivered', 'canceled', 'refunded'])->default('pending'); // Order status
             $table->string('tracking_number')->nullable();
-            $table->decimal('discount', 10, 2)->nullable(); // Field for discounts
+            $table->decimal('discount', 10, 2)->nullable(); 
+            $table->enum('status', ['pending', 'shipping', 'delivered', 'cancelled', 'refunded'])->default('pending'); // Order status
             $table->timestamps(); // Timestamps for created_at and updated_at
+
+            $table->index(['customer_id','status']);
+            $table->index(['payment_status']);
+            $table->index(['tracking_number']);
         });
     }
 

@@ -1,3 +1,4 @@
+{{-- resources/views/super-admins/pages/orderviewer/order-viewer.blade.php --}}
 <div class="page-content">
     <div class="container-fluid">
 
@@ -78,7 +79,26 @@
                                             </span>
                                         </td>
                                     </tr>
+                                    @if ($orderData->payment_status === 'refunded' && (int)($orderData->refunded_minor ?? 0) > 0)
+                                        <div class="alert alert-info d-flex align-items-center mt-2" role="alert">
+                                            <i class="ri-wallet-3-line me-2"></i>
+                                            <div>
+                                                {{ __('Refunded :amount IQD to customer wallet.', ['amount' => number_format($orderData->refunded_minor, 0)]) }}
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     @endforeach
+                                    @php
+                                        $items = (int) $subTotal;
+                                        $shipping = (int) ($orderData->shipping_amount ?? 0);
+                                        $total = (int) ($orderData->total_minor ?? ($items + $shipping)); // fallback for older orders
+                                        $fee = max(0, $total - $shipping - $items);
+
+                                        $paid = (int) ($orderData->paid_minor ?? 0);
+                                        $refunded = (int) ($orderData->refunded_minor ?? 0);
+                                        $balance = max(0, $total - $paid);
+                                    @endphp
                                     <tr class="border-top border-top-dashed">
                                         <td colspan="3"></td>
                                         <td colspan="2" class="fw-medium p-0">
@@ -87,21 +107,17 @@
                                                     <tr>
                                                         <td>Sub Total :</td>
                                                         <td class="text-end">
-                                                            <span class="cart-total-price flip-symbol text-left">
-                                                                <span class="amount">{{ number_format($subTotal, 0)}} </span>
+                                                            <span class="cart-total-price flip-symbol">
+                                                                <span class="amount">{{ number_format($items, 0) }}</span>
                                                                 <span class="currency">{{ __('IQD') }}</span>
                                                             </span>
                                                         </td>
                                                     </tr>
-                                                    {{-- <tr>
-                                                        <td>Discount <span class="text-muted">(VELZON15)</span> : :</td>
-                                                        <td class="text-end">-$53.99</td>
-                                                    </tr> --}}
                                                     <tr>
                                                         <td>Shipping Charge :</td>
                                                         <td class="text-end">
-                                                            <span class="cart-total-price flip-symbol text-left">
-                                                                <span class="amount text-info">{{ number_format($orderData->shipping_amount, 0)}} </span>
+                                                            <span class="cart-total-price flip-symbol">
+                                                                <span class="amount text-info">{{ number_format($shipping, 0) }}</span>
                                                                 <span class="currency text-info">{{ __('IQD') }}</span>
                                                             </span>
                                                         </td>
@@ -109,8 +125,8 @@
                                                     <tr>
                                                         <td>Fee Amount:</td>
                                                         <td class="text-end">
-                                                            <span class="cart-total-price flip-symbol text-left">
-                                                                <span class="amount text-info">{{ number_format($orderData->total_amount_iqd - $subTotal, 0)}} </span>
+                                                            <span class="cart-total-price flip-symbol">
+                                                                <span class="amount text-info">{{ number_format($fee, 0) }}</span>
                                                                 <span class="currency text-info">{{ __('IQD') }}</span>
                                                             </span>
                                                         </td>
@@ -118,11 +134,40 @@
                                                     <tr class="border-top border-top-dashed">
                                                         <th scope="row">Total (IQD) :</th>
                                                         <th class="text-end">
-                                                            <span class="cart-total-price flip-symbol text-left">
-                                                                <span class="amount text-success">{{ number_format($subTotal + $orderData->shipping_amount + ($orderData->total_amount_iqd - $subTotal), 0)}} </span>
+                                                            <span class="cart-total-price flip-symbol">
+                                                                <span class="amount text-success">{{ number_format($total, 0) }}</span>
                                                                 <span class="currency text-success">{{ __('IQD') }}</span>
                                                             </span>
                                                         </th>
+                                                    </tr>
+
+                                                    {{-- NEW: money reconciliation --}}
+                                                    <tr class="border-top border-top-dashed">
+                                                        <td>Paid:</td>
+                                                        <td class="text-end">
+                                                            <span class="cart-total-price flip-symbol">
+                                                                <span class="amount">{{ number_format($paid, 0) }}</span>
+                                                                <span class="currency">{{ __('IQD') }}</span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Refunded:</td>
+                                                        <td class="text-end">
+                                                            <span class="cart-total-price flip-symbol">
+                                                                <span class="amount text-danger">{{ number_format($refunded, 0) }}</span>
+                                                                <span class="currency text-danger">{{ __('IQD') }}</span>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Balance Due:</td>
+                                                        <td class="text-end">
+                                                            <span class="cart-total-price flip-symbol">
+                                                                <span class="amount">{{ number_format($balance, 0) }}</span>
+                                                                <span class="currency">{{ __('IQD') }}</span>
+                                                            </span>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -304,23 +349,31 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="text-center mb-3">
-                            @if ($orderData->payment_status == "pending")
+                    <div class="text-center mb-3">
+                        @if ($orderData->payment_status == "pending")
                             <span class="badge bg-warning-subtle text-warning text-uppercase" style="font-size: 2em">{{$orderData->payment_status}}</span>
-                            @elseif ($orderData->payment_status == "successful")
+                        @elseif ($orderData->payment_status == "successful")
                             <span class="badge bg-success-subtle text-success text-uppercase" style="font-size: 2em">{{$orderData->payment_status}}</span>
-                            @else
+                        @elseif ($orderData->payment_status == "refunded")
+                            <span class="badge bg-info-subtle text-info text-uppercase" style="font-size: 2em">{{$orderData->payment_status}}</span>
+                        @else
                             <span class="badge bg-danger-subtle text-danger text-uppercase" style="font-size: 2em">{{$orderData->payment_status}}</span>
-                            @endif
-                        </div>
+                        @endif
+                    </div>
                         @if (hasRole([1, 3, 5]))
                         <div class="text-center">
-                            <select class="form-control" data-choices data-choices-search-false wire:model="statusPaymentFilter" wire:change="updatePaymentStatus({{$orderData->id}})">
-                                <option value="">Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="successful">Successful</option>
-                                <option value="failed">Failed</option>
+                            <select class="form-control" data-choices data-choices-search-false
+                                    wire:model="statusPaymentFilter"
+                                    wire:change="updatePaymentStatus({{$orderData->id}})">
+                                <option value="">{{ __('Status') }}</option>
+                                <option value="pending">{{ __('Pending') }}</option>
+                                <option value="successful">{{ __('Successful') }}</option>
+                                <option value="failed">{{ __('Failed') }}</option>
+                                <option value="refunded">{{ __('Refunded') }}</option> {{-- NEW --}}
                             </select>
+                            <small class="text-muted d-block mt-1">
+                                {{ __('Refund excludes gateway fees. Items + shipping only.') }}
+                            </small>
                         </div>
                         @endif
                     </div>
@@ -341,7 +394,7 @@
                             <span class="badge bg-primary-subtle text-primary text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
                             @elseif ($orderData->status == "delivered")
                             <span class="badge bg-success-subtle text-success text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
-                            @elseif ($orderData->status == "canceled")
+                            @elseif ($orderData->status == "cancelled")
                             <span class="badge bg-danger-subtle text-danger text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
                             @else
                             <span class="badge bg-secondary-subtle text-secondary text-uppercase" style="font-size: 2em">{{$orderData->status}}</span>
@@ -354,7 +407,7 @@
                                 <option value="pending">Pending</option>
                                 <option value="shipping">Shipping</option>
                                 <option value="delivered">Delivered</option>
-                                <option value="canceled">Cancelled</option>
+                                <option value="cancelled">Cancelled</option>
                                 <option value="refunded">Refunded</option>
                             </select>
                         </div>

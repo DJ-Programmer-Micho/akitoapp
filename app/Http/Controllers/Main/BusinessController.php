@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Main;
 
 use App\Models\Brand;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\CartItem;
 use App\Models\Category;
@@ -11,12 +12,14 @@ use App\Models\OrderItem;
 use App\Models\ComingSoon;
 use App\Models\WebSetting;
 use App\Models\SubCategory;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use App\Models\DiscountRule;
 use Illuminate\Http\Request;
 use App\Models\VariationSize;
 use App\Models\PaymentMethods;
 use App\Models\VariationColor;
+use App\Services\WalletService;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +39,7 @@ class BusinessController extends Controller
     {
         $this->exchange_rate = config('currency.exchange_rate');
     }
+
     public function home() {
         $locale = app()->getLocale(); // Get the current locale
         $settings = WebSetting::find(1);
@@ -254,6 +258,7 @@ class BusinessController extends Controller
 
         ]);
     }
+
     public function contactus(){
         return view('mains.pages.contactus-page-one', [
 
@@ -533,96 +538,95 @@ class BusinessController extends Controller
     }
     
     private function getFilterQueries($categoryIds, $sparepart)
-{
-    return [
-        'categories' => Category::where('status', 1)
-            ->with(['categoryTranslation' => function($query) {
-                $query->where('locale', app()->getLocale());
-            }])
-            ->whereHas('product', function($query) use ($sparepart) { // Use $sparepart here
-                $query->where('is_spare_part', $sparepart);
-            })
-            ->orderBy("priority","asc")
-            ->get(),
+    {
+        return [
+            'categories' => Category::where('status', 1)
+                ->with(['categoryTranslation' => function($query) {
+                    $query->where('locale', app()->getLocale());
+                }])
+                ->whereHas('product', function($query) use ($sparepart) { // Use $sparepart here
+                    $query->where('is_spare_part', $sparepart);
+                })
+                ->orderBy("priority","asc")
+                ->get(),
 
-        'brands' => Brand::where('status', 1)
-            ->whereHas('product', function($q) use ($sparepart) { // Use $sparepart here
-                $q->where('is_spare_part', $sparepart);
-            })
-            ->with(['brandtranslation' => function($query) {
-                $query->where('locale', app()->getLocale());
-            }])
-            ->orderBy("priority","asc")
-            ->get(),
+            'brands' => Brand::where('status', 1)
+                ->whereHas('product', function($q) use ($sparepart) { // Use $sparepart here
+                    $q->where('is_spare_part', $sparepart);
+                })
+                ->with(['brandtranslation' => function($query) {
+                    $query->where('locale', app()->getLocale());
+                }])
+                ->orderBy("priority","asc")
+                ->get(),
 
-        'subCategories' => SubCategory::where('status', 1)
-            ->when($categoryIds, function($query) use ($categoryIds) {
-                $query->whereHas('product.categories', function($q) use ($categoryIds) {
-                    $q->whereIn('category_id', $categoryIds);
-                });
-            })
-            ->whereHas('product', function($q) use ($sparepart) { // Use $sparepart here
-                $q->where('is_spare_part', $sparepart);
-            })
-            ->with(['subCategoryTranslation' => function($query) {
-                $query->where('locale', app()->getLocale());
-            }])
-            ->orderBy("priority","asc")
-            ->get(),
+            'subCategories' => SubCategory::where('status', 1)
+                ->when($categoryIds, function($query) use ($categoryIds) {
+                    $query->whereHas('product.categories', function($q) use ($categoryIds) {
+                        $q->whereIn('category_id', $categoryIds);
+                    });
+                })
+                ->whereHas('product', function($q) use ($sparepart) { // Use $sparepart here
+                    $q->where('is_spare_part', $sparepart);
+                })
+                ->with(['subCategoryTranslation' => function($query) {
+                    $query->where('locale', app()->getLocale());
+                }])
+                ->orderBy("priority","asc")
+                ->get(),
 
-        'sizes' => VariationSize::where('status', 1)
-            ->when($categoryIds, function($query) use ($categoryIds) {
-                $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
-                    $q->whereIn('category_id', $categoryIds);
-                });
-            })
-            ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
-                $q->where('is_spare_part', $sparepart);
-            })
-            ->with(['variationSizeTranslation' => function($query) {
-                $query->where('locale', app()->getLocale());
-            }])
-            ->orderBy("priority","asc")
-            ->get(),
+            'sizes' => VariationSize::where('status', 1)
+                ->when($categoryIds, function($query) use ($categoryIds) {
+                    $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
+                        $q->whereIn('category_id', $categoryIds);
+                    });
+                })
+                ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
+                    $q->where('is_spare_part', $sparepart);
+                })
+                ->with(['variationSizeTranslation' => function($query) {
+                    $query->where('locale', app()->getLocale());
+                }])
+                ->orderBy("priority","asc")
+                ->get(),
 
-        'colors' => VariationColor::where('status', 1)
-            ->when($categoryIds, function($query) use ($categoryIds) {
-                $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
-                    $q->whereIn('category_id', $categoryIds);
-                });
-            })
-            ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
-                $q->where('is_spare_part', $sparepart);
-            })
-            ->get(),
+            'colors' => VariationColor::where('status', 1)
+                ->when($categoryIds, function($query) use ($categoryIds) {
+                    $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
+                        $q->whereIn('category_id', $categoryIds);
+                    });
+                })
+                ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
+                    $q->where('is_spare_part', $sparepart);
+                })
+                ->get(),
 
-        'capacities' => VariationCapacity::where('status', 1)
-            ->when($categoryIds, function($query) use ($categoryIds) {
-                $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
-                    $q->whereIn('category_id', $categoryIds);
-                });
-            })
-            ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
-                $q->where('is_spare_part', $sparepart);
-            })
-            ->orderBy("priority","asc")
-            ->get(),
+            'capacities' => VariationCapacity::where('status', 1)
+                ->when($categoryIds, function($query) use ($categoryIds) {
+                    $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
+                        $q->whereIn('category_id', $categoryIds);
+                    });
+                })
+                ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
+                    $q->where('is_spare_part', $sparepart);
+                })
+                ->orderBy("priority","asc")
+                ->get(),
 
-        'materials' => VariationMaterial::where('status', 1)
-            ->when($categoryIds, function($query) use ($categoryIds) {
-                $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
-                    $q->whereIn('category_id', $categoryIds);
-                });
-            })
-            ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
-                $q->where('is_spare_part', $sparepart);
-            })
-            ->orderBy("priority","asc")
-            ->get(),
-    ];
-}
+            'materials' => VariationMaterial::where('status', 1)
+                ->when($categoryIds, function($query) use ($categoryIds) {
+                    $query->whereHas('productVariations.product.categories', function($q) use ($categoryIds) {
+                        $q->whereIn('category_id', $categoryIds);
+                    });
+                })
+                ->whereHas('productVariations.product', function($q) use ($sparepart) { // Use $sparepart here
+                    $q->where('is_spare_part', $sparepart);
+                })
+                ->orderBy("priority","asc")
+                ->get(),
+        ];
+    }
 
-    
     public function searchShop(Request $request)
     {
         // Get the search query from the request
@@ -718,8 +722,7 @@ class BusinessController extends Controller
             'searchQuery' => $searchQuery,
         ]);
     }
-
-    
+  
     public function account(){        
         $isLoggedIn = Auth::guard('customer')->check();
     
@@ -768,10 +771,8 @@ class BusinessController extends Controller
         ]);
     }
 
-    
     public function checkoutChecker($locale, $digit, $nvxf, Request $request)
     {
-        
         if (!Auth::guard('customer')->check()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -782,109 +783,202 @@ class BusinessController extends Controller
         }
 
         try {
-        // ✅ Validate Request Data
-        $validatedData = $request->validate([
-            'shipping_amount' => 'required|string|max:255',
-            'total_amount' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'payment' => 'required|integer|exists:payment_methods,id',
-        ]);
-
-        // ✅ Retrieve Active Payment Method
-        $paymentMethod = PaymentMethods::where('id', $validatedData['payment'])
-            ->where('active', 1)
-            ->first();
-
-        if (!$paymentMethod) {
-            return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
-                ->withErrors(['payment' => 'Selected payment method is not available.']);
-        }
-
-        // ✅ Retrieve Customer Details
-        $customerP = $customer->customer_profile;
-        $customerA = $customer->customer_addresses->where('id', $validatedData['address'])->first();
-        $trackingNumber = Str::random(6);
-
-        // ✅ Retrieve Cart Items & Apply Discounts
-        $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation')
-            ->where('customer_id', $customer->id)
-            ->get()
-            ->transform(function ($item) use ($customer) {
-                $product = $item->product;
-                $discountDetails = $this->calculateFinalPrice($product, $customer->id);
-                $item->final_price = $discountDetails['customer_discount_price'] ?? $discountDetails['discount_price'] ?? $discountDetails['base_price'];
-                return $item;
-            });
-
-            $pure_total_iqd = $validatedData['total_amount'] - $validatedData['shipping_amount'];
-            $pure_total_usd = ($validatedData['total_amount'] - $validatedData['shipping_amount']) / $this->exchange_rate;
-        DB::beginTransaction();
-
-        // ✅ Create Order
-        $order = Order::create([
-            'customer_id' => $customer->id,
-            'first_name' => $customerP->first_name,
-            'last_name' => $customerP->last_name,
-            'email' => $customer->email,
-            'country' => $customerA->country,
-            'city' => $customerA->city,
-            'address' => $customerA->address,
-            'zip_code' => $customerA->zip_code,
-            'latitude' => $customerA->latitude,
-            'longitude' => $customerA->longitude,
-            'phone_number' => $customerA->phone_number,
-            'payment_method' => $paymentMethod->name,
-            'payment_status' => 'pending',
-            'status' => 'pending',
-            'tracking_number' => $trackingNumber,
-            'shipping_amount' => $validatedData['shipping_amount'],
-            'total_amount_usd' => (string) $pure_total_usd,
-            'total_amount_iqd' => (string) $pure_total_iqd,
-            'exchange_rate' => $this->exchange_rate
-        ]);
-
-        // ✅ Store Order Items
-        foreach ($cartItems as $item) {
-            $itemConversion = $item->final_price / $this->exchange_rate;
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'product_name' => $item->product->productTranslation[0]->name,
-                'price_usd' => $itemConversion,
-                'total_usd' => $item->quantity * $itemConversion,
-                'price_iqd' => $item->final_price, 
-                'total_iqd' => $item->quantity * $item->final_price,
+            // ✅ Validate Request Data
+            $validated = $request->validate([
+                'shipping_amount' => 'required|string|max:255',
+                'total_amount'    => 'required|string|max:255',
+                'address'         => 'required|string|max:255',
+                'payment'         => 'required|integer|exists:payment_methods,id',
             ]);
-            $itemConversion = null;
-        }
-        
 
-        // ✅ Handle Cash On Delivery
-        if ($paymentMethod->online == 0) {
-            DB::commit();
-            CartItem::where('customer_id', Auth::guard('customer')->id())->delete();
-            Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
-            return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
-        }
-            $paymentService = PaymentServiceManager::getInstance()
+            // Normalize totals (IQD minor units)
+            $shippingMinor = $this->toMinor($validated['shipping_amount']);
+            $grandMinor    = $this->toMinor($validated['total_amount']);
+            $pureMinor     = $grandMinor - $shippingMinor; // items only
+
+            // ✅ Retrieve Active Payment Method
+            $paymentMethod = PaymentMethods::where('id', $validated['payment'])
+                ->where('active', 1)
+                ->first();
+
+            if (!$paymentMethod) {
+                return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                    ->withErrors(['payment' => 'Selected payment method is not available.']);
+            }
+
+            // ✅ Retrieve Customer Details
+            $customerP = $customer->customer_profile;
+            $customerA = $customer->customer_addresses->where('id', $validated['address'])->first();
+            $trackingNumber = Str::random(6);
+
+            // ✅ Retrieve Cart Items & Apply Discounts
+            $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation')
+                ->where('customer_id', $customer->id)
+                ->get()
+                ->transform(function ($item) use ($customer) {
+                    $product = $item->product;
+                    $discountDetails = $this->calculateFinalPrice($product, $customer->id);
+                    $item->final_price = $discountDetails['customer_discount_price']
+                        ?? $discountDetails['discount_price']
+                        ?? $discountDetails['base_price'];
+                    return $item;
+                });
+
+            DB::beginTransaction();
+
+            // ✅ Create Order
+            $order = Order::create([
+                'customer_id'      => $customer->id,
+                'first_name'       => $customerP->first_name,
+                'last_name'        => $customerP->last_name,
+                'email'            => $customer->email,
+                'country'          => $customerA->country,
+                'city'             => $customerA->city,
+                'address'          => $customerA->address,
+                'zip_code'         => $customerA->zip_code,
+                'latitude'         => $customerA->latitude,
+                'longitude'        => $customerA->longitude,
+                'phone_number'     => $customerA->phone_number,
+
+                'payment_method'   => $paymentMethod->name,
+                'payment_status'   => 'pending',
+                'status'           => 'pending',
+                'tracking_number'  => $trackingNumber,
+
+                'shipping_amount'  => $shippingMinor,
+                'total_amount_iqd' => $pureMinor,
+                'total_amount_usd' => ($this->exchange_rate > 0)
+                    ? round(($pureMinor + $shippingMinor) / $this->exchange_rate, 3)
+                    : 0,
+                'exchange_rate'    => $this->exchange_rate ?? 1500,
+
+                'total_minor'      => $pureMinor + $shippingMinor,
+                'paid_minor'       => 0,
+                'refunded_minor'   => 0,
+                'currency'         => 'IQD',
+            ]);
+
+            // ✅ Store Order Items
+            foreach ($cartItems as $item) {
+                $lineIQD = $this->toMinor($item->final_price);
+                OrderItem::create([
+                    'order_id'     => $order->id,
+                    'product_id'   => $item->product_id,
+                    'quantity'     => $item->quantity,
+                    'product_name' => $item->product->productTranslation[0]->name,
+                    'price_usd'    => 0,
+                    'total_usd'    => 0,
+                    'price_iqd'    => $lineIQD,
+                    'total_iqd'    => $item->quantity * $lineIQD,
+                ]);
+            }
+
+            // ======================
+            // TENDER-SPECIFIC LOGIC
+            // ======================
+
+            // ✅ Cash On Delivery (offline)
+            if ((int)$paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
+                DB::commit();
+                CartItem::where('customer_id', $customer->id)->delete();
+                Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+                return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+            }
+
+            // ✅ Wallet (online=1 but special method)
+            if (strtolower($paymentMethod->name) === 'wallet') {
+                $wallet = $customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
+                $totalToPay = $order->total_minor ?? ($pureMinor + $shippingMinor);
+
+                if ($wallet->balance_minor < $totalToPay) {
+                    DB::rollBack();
+                    return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                        ->withErrors(['wallet' => __('Insufficient wallet balance')]);
+                }
+
+                $payment = Payment::create([
+                    'order_id'           => $order->id,
+                    'customer_id'        => $customer->id,
+                    'amount_minor'       => $totalToPay,
+                    'currency'           => 'IQD',
+                    'method'             => 'Wallet',
+                    'status'             => 'successful',
+                    'provider'           => 'Wallet',
+                    'provider_payment_id'=> null,
+                    'idempotency_key'    => Str::uuid(),
+                    'type'               => 'order',
+                    'meta'               => [],
+                ]);
+
+                app(WalletService::class)->debit($wallet, $totalToPay, [
+                    'reason' => 'wallet_payment',
+                    'meta'   => [
+                        'order_id'  => $order->id,
+                        'tracking'  => $order->tracking_number,
+                        'payment_id'=> $payment->id,
+                    ],
+                ]);
+
+                $order->paid_minor     = ($order->paid_minor ?? 0) + $totalToPay;
+                $order->payment_status = 'successful';
+                $order->save();
+
+                DB::commit();
+                CartItem::where('customer_id', $customer->id)->delete();
+                Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+                return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+            }
+
+            // ✅ Online Gateways (FIB / ZainCash / Areeba / Stripe)
+            $totalToPay = $order->total_minor ?? ($pureMinor + $shippingMinor);
+
+            $payment = Payment::create([
+                'order_id'           => $order->id,
+                'customer_id'        => $customer->id,
+                'amount_minor'       => $totalToPay,
+                'currency'           => 'IQD',
+                'method'             => $paymentMethod->name,
+                'status'             => 'pending',
+                'provider'           => $paymentMethod->name,
+                'provider_payment_id'=> null,          // 👈 will be filled right after
+                'idempotency_key'    => Str::uuid(),
+                'type'               => 'order',
+                'meta'               => [],
+            ]);
+
+            $paymentResponse = PaymentServiceManager::getInstance()
                 ->setOrder($order)
-                ->setDelivery($validatedData['shipping_amount'])
+                ->setPaymentId($payment->id)
                 ->setPaymentMethod($paymentMethod->name)
-                ->setAmount($order->total_amount_iqd);
-                
-            $paymentResponse = $paymentService->processPayment();
+                ->setAmount($totalToPay)
+                ->setDelivery($shippingMinor)
+                ->processPayment();
 
-            if (!$paymentResponse) {
-                Log::error("PaymentServiceManager instance is null!");
+            if (!$paymentResponse || empty($paymentResponse['paymentId'])) {
+                Log::error("Gateway init failed");
                 DB::rollBack();
                 return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
             }
+
+            // 🔑 store provider payment id (FIB paymentId)
+            $payment->update([
+                'provider_payment_id' => $paymentResponse['paymentId'],
+            ]);
+
             DB::commit();
             CartItem::where('customer_id', $customer->id)->delete();
-            Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order, $item->quantity * $item->final_price));
-            return redirect()->route('payment.process',  ['locale' => app()->getLocale(), 'orderId' => $order->id,'paymentId' => $paymentResponse['paymentId'], 'paymentMethod' => $paymentMethod->id]);
-        } catch (\Exception $e) {
+            Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+            return redirect()->route('payment.process', [
+                'locale'        => app()->getLocale(),
+                'orderId'       => $order->id,
+                'paymentId'     => $paymentResponse['paymentId'] ?? null,
+                'paymentMethod' => $paymentMethod->id,
+            ]);
+
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Checkout Error: " . $e->getMessage());
             return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
@@ -901,17 +995,16 @@ class BusinessController extends Controller
         $customer = Auth::guard('customer')->user();
 
         try {
-            // ✅ Retrieve Existing Order
             $order = Order::where('id', $orderId)
                 ->where('customer_id', $customer->id)
-                ->whereIn('payment_status', ['pending', 'failed']) // Correct
+                ->whereIn('payment_status', ['pending', 'failed'])
                 ->first();
+
             if (!$order) {
                 return response()->json(['error' => 'Order not found or already processed'], 404);
             }
 
-            // ✅ Retrieve Active Payment Method
-            $paymentMethod = PaymentMethods::where('id',$digit)
+            $paymentMethod = PaymentMethods::where('id', $digit)
                 ->where('active', 1)
                 ->first();
 
@@ -919,47 +1012,123 @@ class BusinessController extends Controller
                 return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
                     ->withErrors(['payment' => 'Selected payment method is not available.']);
             }
+
             DB::beginTransaction();
 
-            // ✅ Update `updated_at` timestamp
-            $order->touch();
+            // 🔢 ALWAYS trust the order totals from DB, not the URL param
+            $shippingMinor = (int) ($order->shipping_amount ?? 0);                  // already in IQD
+            $itemsMinor    = (int) ($order->total_amount_iqd ?? 0);                 // IQD
+            $grandMinor    = (int) ($order->total_minor ?: ($itemsMinor + $shippingMinor));
 
-            // ✅ Process Payment
-            if ($paymentMethod->online == 0) {
+            // keep order in sync
+            $order->total_minor    = $grandMinor;
+            $order->payment_method = $paymentMethod->name;
+            $order->touch();
+            $order->save();
+
+            // COD again
+            if ((int)$paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
                 DB::commit();
-                CartItem::where('customer_id', Auth::guard('customer')->id())->delete();
+                CartItem::where('customer_id', $customer->id)->delete();
+
                 return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
             }
 
-            $paymentService = PaymentServiceManager::getInstance()
-                ->setOrder($order)
-                ->setDelivery($order->shipping_amount)
-                ->setPaymentMethod($paymentMethod->name)
-                ->setAmount($grandTotalUpdated);
-            
-            $paymentResponse = $paymentService->processPayment();
-                // dd($paymentResponse);
+            // Wallet re-pay
+            if (strtolower($paymentMethod->name) === 'wallet') {
+                $wallet     = $customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
+                $totalToPay = $grandMinor;
 
-            if (!$paymentResponse) {
+                if ($wallet->balance_minor < $totalToPay) {
+                    DB::rollBack();
+                    return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                        ->withErrors(['wallet' => __('Insufficient wallet balance')]);
+                }
+
+                $payment = Payment::create([
+                    'order_id'           => $order->id,
+                    'customer_id'        => $customer->id,
+                    'amount_minor'       => $totalToPay,
+                    'currency'           => 'IQD',
+                    'method'             => 'Wallet',
+                    'status'             => 'successful',
+                    'provider'           => 'Wallet',
+                    'provider_payment_id'=> null,
+                    'idempotency_key'    => Str::uuid(),
+                    'type'               => 'order',
+                    'meta'               => [],
+                ]);
+
+                app(WalletService::class)->debit($wallet, $totalToPay, [
+                    'reason' => 'wallet_payment',
+                    'meta'   => [
+                        'order_id'  => $order->id,
+                        'tracking'  => $order->tracking_number,
+                        'payment_id'=> $payment->id,
+                    ],
+                ]);
+
+                $order->paid_minor     = ($order->paid_minor ?? 0) + $totalToPay;
+                $order->payment_status = 'successful';
+                $order->save();
+
+                DB::commit();
+                CartItem::where('customer_id', $customer->id)->delete();
+
+                return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+            }
+
+            // 🔌 Online provider retry (FIB / Areeba / ZainCash / Stripe)
+            $totalToPay = $grandMinor;
+
+            $payment = Payment::create([
+                'order_id'           => $order->id,
+                'customer_id'        => $customer->id,
+                'amount_minor'       => $totalToPay,
+                'currency'           => 'IQD',
+                'method'             => $paymentMethod->name,
+                'status'             => 'pending',
+                'provider'           => $paymentMethod->name,
+                'provider_payment_id'=> null,
+                'idempotency_key'    => Str::uuid(),
+                'type'               => 'order',
+                'meta'               => [],
+            ]);
+
+            $paymentResponse = PaymentServiceManager::getInstance()
+                ->setOrder($order)
+                ->setPaymentId($payment->id)
+                ->setPaymentMethod($paymentMethod->name)
+                ->setAmount($totalToPay)         // ✅ 60600 IQD here, not 43
+                ->setDelivery($shippingMinor)
+                ->processPayment();
+
+            if (!$paymentResponse || empty($paymentResponse['paymentId'])) {
+                DB::rollBack();
                 return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
             }
+
+            // store FIB payment id so status endpoint can match
+            $payment->update([
+                'provider_payment_id' => $paymentResponse['paymentId'],
+            ]);
 
             DB::commit();
 
             return redirect()->route('payment.process', [
-                'locale' => app()->getLocale(),
-                'orderId' => $order->id,
-                'paymentId' => $paymentResponse['paymentId'],
-                'paymentMethod' => $digit
+                'locale'        => app()->getLocale(),
+                'orderId'       => $order->id,
+                'paymentId'     => $paymentResponse['paymentId'],
+                'paymentMethod' => $digit,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Checkout Existing Order Error: " . $e->getMessage());
             return response()->json(['error' => 'An error occurred while processing the order'], 500);
         }
     }
-    
+
     public function checkoutOrder($locale, $orderId)
     {
         $isLoggedIn = Auth::guard('customer')->check();
@@ -989,9 +1158,17 @@ class BusinessController extends Controller
             
         ]);
     }
+
     public function checkFaild(){
         return view('mains.components.livewire.aftercheckout.check-failed', [
             
         ]);
     }
+
+    private function toMinor($amount): int
+    {
+        // IQD has 0 decimals. Incoming may be string/decimal; normalize to int.
+        return (int) round((float) $amount);
+    }
+
 }

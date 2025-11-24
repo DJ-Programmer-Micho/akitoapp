@@ -61,7 +61,7 @@ class PdfController extends Controller
             $sum = $sum + $item->total_iqd;
         }
 
-        if($order->status == 'canceled') {
+        if($order->status == 'cancelled') {
             return view('super-admins.pdf.orderinvoice.order-invoice-action-print-cancelled',[
                 'orderData' => $order,
                 'subTotal' => $sum,

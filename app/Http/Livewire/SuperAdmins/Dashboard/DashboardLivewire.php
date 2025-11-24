@@ -64,7 +64,7 @@ class DashboardLivewire extends Component
         $this->quantitySells = $this->quantitySellsCard;
         $this->customersCount = $this->customersCountCard;
 
-        $this->refundCount = Order::where('status', 'refunded')->orWhere('status', 'canceled')->count();
+        $this->refundCount = Order::where('status', 'refunded')->orWhere('status', 'cancelled')->count();
 
         $deliveredCount = Order::where('status','delivered')->count();
         $this->conversionRatio = ($this->ordersCount > 0)
@@ -141,7 +141,7 @@ class DashboardLivewire extends Component
             ->sum('total_amount_usd');
         $this->refundCount = Order::whereBetween('created_at', [$start, $end])
             ->where('status','refunded')
-            ->orWhere('status', 'canceled')
+            ->orWhere('status', 'cancelled')
             ->count();
 
         // For conversion ratio, we need delivered
@@ -168,7 +168,7 @@ class DashboardLivewire extends Component
                 MONTH(created_at) as month_num,
                 COUNT(*) as total_orders,
                 SUM(total_amount_usd) as total_earnings,
-                SUM(CASE WHEN status = "refunded" OR status = "canceled" THEN 1 ELSE 0 END) as total_refunds
+                SUM(CASE WHEN status = "refunded" OR status = "cancelled" THEN 1 ELSE 0 END) as total_refunds
             ')
             ->whereYear('created_at', $year)
             ->groupBy('month_num')
@@ -214,7 +214,7 @@ class DashboardLivewire extends Component
                 DAY(created_at) as day_num,
                 COUNT(*) as total_orders,
                 SUM(total_amount_usd) as total_earnings,
-                SUM(CASE WHEN status = "refunded" OR status = "canceled" THEN 1 ELSE 0 END) as total_refunds
+                SUM(CASE WHEN status = "refunded" OR status = "cancelled" THEN 1 ELSE 0 END) as total_refunds
             ')
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)

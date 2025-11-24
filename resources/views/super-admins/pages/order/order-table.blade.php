@@ -1,3 +1,4 @@
+{{-- resources/views/super-admins/pages/order/order-table.blade.php --}}
 <div class="page-content">
     <style>
         .filter-colors a {
@@ -73,6 +74,7 @@
                                         <option value="pending">{{ __('Pending') }} ({{$pPending}})</option>
                                         <option value="successful">{{ __('Successful') }} ({{$pPayed}})</option>
                                         <option value="failed">{{ __('Failed') }} ({{$pFailed}})</option>
+                                        <option value="refunded">{{ __('Refunded') }} ({{$pRefunded}})</option>
                                     </select>
                                 </div>
                                 
@@ -85,6 +87,7 @@
                                         <option value="all">{{ __('All') }}</option>
                                         <option value="Cash On Delivery">{{ __('Cash On Delivery') }}</option>
                                         <option value="Credit Card">{{ __('Credit Card') }}</option>
+                                        <option value="Wallet">{{ __('Wallet') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -198,6 +201,8 @@
                                         <td class="status text-center"><span class="badge bg-warning-subtle text-warning text-uppercase">{{__($order->payment_status)}}</span></td>
                                         @elseif ($order->payment_status == "successful")
                                         <td class="status text-center"><span class="badge bg-success-subtle text-success text-uppercase">{{__($order->payment_status)}}</span></td>
+                                        @elseif ($order->payment_status == "refunded")
+                                        <td class="status text-center"><span class="badge bg-secondary-subtle text-secondary text-uppercase">{{__($order->payment_status)}}</span></td>
                                         @else
                                         <td class="status text-center"><span class="badge bg-danger-subtle text-danger text-uppercase">{{__($order->payment_status)}}</span></td>
                                         @endif
@@ -240,8 +245,8 @@
                                                             <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'delivered')">
                                                                 <span class="text-success"><i class="fa-regular fa-circle-check me-1"></i> {{__('Delivered')}}</span>
                                                             </button>
-                                                            <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'canceled')">
-                                                                <span class="text-danger"><i class="fa-regular fa-face-frown me-1"></i> {{__('Canceled')}}</span>                                                            
+                                                            <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'cancelled')">
+                                                                <span class="text-danger"><i class="fa-regular fa-face-frown me-1"></i> {{__('cancelled')}}</span>                                                            
                                                             </button>
                                                             <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'refunded')">
                                                                 <span class="text-secondary"><i class="fa-regular fa-circle-xmark me-1"></i> {{__('Refunded')}}</span>
@@ -254,7 +259,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="9">
+                                        <td colspan="11">
                                             <div class="noresult" style="display: block">
                                                 <div class="text-center">
                                                     <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px">

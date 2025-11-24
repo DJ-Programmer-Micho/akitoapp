@@ -166,13 +166,13 @@ class CheckoutOldControllerApi extends Controller
                 return response()->json(['message' => 'Order not found.'], 404);
             }
 
-            if ($order->status == 'canceled') {
-                return response()->json(['message' => 'Order is already canceled.'], 400);
+            if ($order->status == 'cancelled') {
+                return response()->json(['message' => 'Order is already cancelled.'], 400);
             }
 
             // Update order status
             $order->update([
-                'status' => 'canceled',
+                'status' => 'cancelled',
                 'payment_status' => 'failed',
             ]);
 
@@ -185,7 +185,7 @@ class CheckoutOldControllerApi extends Controller
                 ]);
             }
 
-            return response()->json(['message' => 'Order canceled successfully.']);
+            return response()->json(['message' => 'Order cancelled successfully.']);
         } catch (\Exception $e) {
             return response()->json(['error' => '⚠️ Internal server error'], 500);
         }

@@ -330,7 +330,7 @@
                                                         <div class="avatar-title bg-light text-success rounded-3 fs-18">
                                                             <i class="fa-regular fa-circle-check"></i>
                                                         </div>
-                                                        @elseif($orderT->status == 'canceled')
+                                                        @elseif($orderT->status == 'cancelled')
                                                         <div class="avatar-title bg-light text-danger rounded-3 fs-18">
                                                             <i class="fa-regular fa-circle-xmark"></i>
                                                         </div>

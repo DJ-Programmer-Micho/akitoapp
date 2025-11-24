@@ -2,13 +2,11 @@
 namespace App\Services;
 
 use Stripe\Stripe;
-use App\Models\User;
 use Firebase\JWT\JWT;
-use Stripe\PaymentIntent;
-use App\Models\WebSetting;
+use App\Models\Payment;
+use App\Models\Customer;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
-use App\Models\Gateaway\Payment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Stripe\Checkout\Session as StripeSession;
@@ -16,6 +14,7 @@ use Stripe\Checkout\Session as StripeSession;
 class PaymentServiceManager
 {
     private $order;
+    private $paymentId = null;
     private $exchange;
     private $delivery;
     private $paymentMethod;
@@ -23,6 +22,13 @@ class PaymentServiceManager
     private $currency = 'IQD';
     private $transactionId;
     private static $instance = false;
+
+    private bool $isTopup = false;
+    private ?Customer $topupCustomer = null;
+    private ?Payment  $topupPayment  = null;
+    private $mode = 'order'; // 'order' or 'wallet_topup'
+    private $topupNetAmountMinor = 0;
+    // private $topupCustomer = null;
 
     //////////////////////////////
     // GET THE DATA NEED
@@ -38,9 +44,38 @@ class PaymentServiceManager
     public function setOrder($order)
     {
         $this->order = $order;
+        $this->mode  = 'order';
         return $this;
     }
 
+    public function setTopupCustomer($customer)
+    {
+        $this->topupCustomer = $customer;
+        return $this;
+    }
+
+    public function setTopupContext(Customer $customer, Payment $payment)
+    {
+        $this->topupCustomer = $customer;
+        $this->topupPayment  = $payment;
+        $this->mode          = 'wallet_topup';
+
+        return $this;
+    }
+
+    public function setTopupNetAmount(int $netAmountMinor)
+    {
+        $this->topupNetAmountMinor = $netAmountMinor;
+        $this->mode = 'wallet_topup';
+        return $this;
+    }
+
+    public function processTopup()
+    {
+        $this->mode = 'wallet_topup';
+        return $this->processPayment();
+    }
+    
     public function setDelivery($delivery) // IN IQD
     {
         $this->delivery = $delivery;
@@ -53,7 +88,7 @@ class PaymentServiceManager
         return $this;
     }
 
-    public function setAmount($amount) // IN USD
+    public function setAmount($amount) // IN IQD minor units (integer)
     {
         $this->amount = $amount;
         return $this;
@@ -65,6 +100,17 @@ class PaymentServiceManager
         return $this;
     }
 
+    public function setPaymentId($paymentId)
+    {
+        $this->paymentId = $paymentId;
+        return $this;
+    }
+
+    public function setExchange(?float $rate)
+    {
+        $this->exchange = $rate;
+        return $this;
+    }
     //////////////////////////////
     // CHECK THE METHOD THAT CLIENT CHOOCES
     //////////////////////////////
@@ -153,62 +199,72 @@ class PaymentServiceManager
     //////////////////////////////
 
     // MAIN FUNTION FOR POST SEND TO FIB PROVIDER
-    private function processFIBPayment() {
+    private function processFIBPayment()
+    {
         $accessToken = $this->getFIBToken();
-        // dd($accessToken);
-        // $exchangeRate = WebSetting::find(1)->exchange_price;
-        // if(!$exchangeRate) {
-        //     $exchangeRate = 1500;
-        // }
-
-        if (!$accessToken) {
-            return false;
+        if (!$accessToken) return false;
+        
+        if ($this->mode === 'wallet_topup') {
+            $description = "Wallet top-up #{$this->topupPayment?->id} (customer #{$this->topupCustomer?->id})";
+            $orderIdForTxn = null;
+        } else {
+            $description = "Order #{$this->order->id}";
+            $orderIdForTxn = $this->order->id;
         }
 
-        $iq_currency = $this->amount + $this->delivery;
-        Log::info($iq_currency);
         $paymentData = [
             "monetaryValue" => [
-                "amount" => $iq_currency,
-                "currency" => "IQD"
+                "amount"   => (int)$this->amount,
+                "currency" => "IQD",
             ],
-            // "statusCallbackUrl" => url('https://webhook-test.com/da1aa38397e2e61742c7861ba24e7570'),
             "statusCallbackUrl" => url('/api/payment/callback/fib'),
-            "description" => "Order Payment",
-            "expiresIn" => "PT15M",
-            "category" => "ECOMMERCE",
-            "refundableFor" => "PT24H",
+            "description"       => $description,
+            "expiresIn"         => "PT15M",
+            "category"          => "ECOMMERCE",
+            "refundableFor"     => "PT24H",
         ];
-        $paymentResponse = Http::withOptions([
-            'verify' => true // SSL BYPASS
-        ])->withHeaders([
+
+        $paymentResponse = Http::withHeaders([
             'Authorization' => "Bearer $accessToken",
-            'Content-Type' => 'application/json'
-            ])->post('https://fib.stage.fib.iq/protected/v1/payments', $paymentData);
-            
+            'Content-Type'  => 'application/json',
+        ])->post('https://fib.stage.fib.iq/protected/v1/payments', $paymentData);
+
         if (!$paymentResponse->successful()) {
             Log::error('FIB Payment Error: ' . $paymentResponse->body());
             return false;
         }
-        $responseData = $paymentResponse->json();
-        // Log::info("FIB UUID: ", ['pID' => $responseData['paymentId']]);
-        
+
+        $resp = $paymentResponse->json();
+
+        // Write Transaction (pending)
         Transaction::create([
-            'id' => $responseData['paymentId'],
-            'order_id' => $this->order->id,
-            'provider' => 'FIB',
-            'amount' => $iq_currency,
-            'currency' => 'IQD',
-            'status' => 'pending',
+            'id'           => $resp['paymentId'],
+            'payment_id'   => $this->paymentId ?? null,  // if you add payment_id column
+            'order_id'     => $orderIdForTxn,            // null in wallet_topup mode
+            'provider'     => 'FIB',
+            'amount_minor' => (int)$this->amount,
+            'amount'       => (int)$this->amount,        // if you're still using "amount" decimal
+            'currency'     => 'IQD',
+            'status'       => 'pending',
+            'response'     => $resp,
         ]);
 
+        // expose to session for your view
         session([
-            'qrCode' => $responseData['qrCode'],
-            'readableCode' => $responseData['readableCode'],
-            'personalAppLink' => $responseData['personalAppLink']
+            'qrCode'         => $resp['qrCode'] ?? null,
+            'readableCode'   => $resp['readableCode'] ?? null,
+            'personalAppLink'=> $resp['personalAppLink'] ?? null,
         ]);
-        return $responseData;
+
+        // unify outbound format
+        return [
+            'paymentId'    => $resp['paymentId'],
+            'qrCode'       => $resp['qrCode']        ?? null,
+            'readableCode' => $resp['readableCode']  ?? null,
+            'appLink'      => $resp['personalAppLink'] ?? null,
+        ];
     }
+
 
     // STEP - 1: GET THE BEARER TOKEN
     private function getFIBToken()
@@ -222,7 +278,7 @@ class PaymentServiceManager
         ]);
 
         if (!$tokenResponse->successful()) {
-            // Log::error('FIB Token Error: ' . $tokenResponse->body());
+            Log::error('FIB Token Error: ' . $tokenResponse->body());
             return false;
         }
 
@@ -233,21 +289,13 @@ class PaymentServiceManager
     public function fetchFIBPaymentStatus($paymentId)
     {
         try {
-            $accessToken = $this->getFIBToken(); // Securely get token
-
-            if (!$accessToken) {
-                Log::error("FIB Payment Status Error: Failed to get access token");
-                return false;
-            }
+            $accessToken = $this->getFIBToken();
+            if (!$accessToken) return false;
 
             $statusResponse = Http::withToken($accessToken)
-                // ->withoutVerifying() // SSL BYPASS
                 ->get("https://fib.stage.fib.iq/protected/v1/payments/{$paymentId}/status");
 
-            if (!$statusResponse->successful()) {
-                
-                return false;
-            }
+            if (!$statusResponse->successful()) return false;
 
             return $statusResponse->json();
         } catch (\Exception $e) {
@@ -259,68 +307,99 @@ class PaymentServiceManager
     //////////////////////////////
     // AREEBA METHODE
     //////////////////////////////
-    public function processAreebaPayment(){
-        // $user = self::getUser();
+    public function processAreebaPayment()
+    {
         $apiKey = env('AREEBA_API_KEY');
-        $url = "https://gateway.areebapayment.com/api/v3/transaction/$apiKey/debit";    
+        $url    = "https://gateway.areebapayment.com/api/v3/transaction/$apiKey/debit";
+
         $data = [
-            "merchantTransactionId" => $this->transactionId,
-            "amount" => $this->amount,
-            "currency" => $this->currency,
+            "merchantTransactionId" => $this->transactionId ?? Str::uuid(),
+            "amount"   => (int)$this->amount,  // IQD minor
+            "currency" => "IQD",
             "successUrl" => url('/payment/success'),
-            "cancelUrl" =>  url('/payment/cancel'),
-            "errorUrl" => url('/payment/error'),
-            // "callbackUrl" => route('areeba.callback'),
-            // "callbackUrl" => url('/api/areeba/callback'),
-            // "callbackUrl" => route('payment.callback', ['provider' => 'Areeba']),
-            "callbackUrl" => route('payment.callback', ['provider' => strtolower($this->paymentMethod)]),
-            // "callbackUrl" => url('https://webhook.site/ed86da25-5202-4449-afbf-c6618dbcb526'), 
-            "customer" => [
-                "firstName" => $this->order->customer->first_name,
-                "lastName" => $this->order->customer->last_name,
+            "cancelUrl"  => url('/payment/cancel'),
+            "errorUrl"   => url('/payment/error'),
+            "callbackUrl"=> route('payment.callback', ['provider' => strtolower($this->paymentMethod)]),
+            "customer"   => [
+                "firstName" => $this->order->first_name,
+                "lastName"  => $this->order->last_name,
                 "ipAddress" => request()->ip(),
             ],
-            "language" => "ar", 
+            "language" => "ar",
         ];
-        $response = Http::withBasicAuth(env('AREEBA_USERNAME'), env('AREEBA_PASSWORD'))
-            ->post($url, $data);
 
-        if ($response->successful()) {
-            return $response->json()['redirectUrl'];
-        } else {
-            // Log::error('Areeba Payment Error: ' . $response->body());
+        $response = Http::withBasicAuth(env('AREEBA_USERNAME'), env('AREEBA_PASSWORD'))
+                        ->post($url, $data);
+
+        if (!$response->successful()) {
+            Log::error('Areeba Payment Error: ' . $response->body());
             return false;
         }
+
+        $resp = $response->json();
+
+        Transaction::create([
+            'id'           => $data['merchantTransactionId'],
+            'payment_id'   => $this->paymentId,
+            'order_id'     => $this->order->id,
+            'provider'     => 'Areeba',
+            'amount_minor' => (int)$this->amount,
+            'currency'     => 'IQD',
+            'status'       => 'pending',
+            'response'     => $resp,
+        ]);
+
+        return [
+            'paymentId'   => $data['merchantTransactionId'],
+            'checkout_url'=> $resp['redirectUrl'] ?? null,
+        ];
     }
+
     //////////////////////////////
     // ZAINCASH METHODE
     //////////////////////////////
-    public function processZainCashPayment(){
-        //building data
-        $data = [
-        'amount' => $this->amount,
-        'serviceType' => 'ecommerce',
-        'msisdn' => env('ZAINCASH_SECRET_MSISDN'),
-        'orderId' => $this->transactionId,
-        // 'redirectUrl' => route('payment.callback', ['provider' => 'ZainCash']),
-        'redirectUrl' => route('payment.callback', ['provider' => strtolower($this->paymentMethod)]),
-        'iat'  => time(),
-        'exp'  => time()+60*60*4
+    public function processZainCashPayment()
+    {
+        $payload = [
+            'amount'      => (int)$this->amount,   // IQD minor
+            'serviceType' => 'ecommerce',
+            'msisdn'      => env('ZAINCASH_SECRET_MSISDN'),
+            'orderId'     => $this->transactionId ?? Str::uuid(),
+            'redirectUrl' => route('payment.callback', ['provider' => strtolower($this->paymentMethod)]),
+            'iat'         => time(),
+            'exp'         => time() + 60*60*4
         ];
 
-        $token = JWT::encode($data, env('ZAINCASH_SECRET_KEY'), 'HS256');
+        $token = JWT::encode($payload, env('ZAINCASH_SECRET_KEY'), 'HS256');
 
         $response = Http::asForm()->post('https://api.zaincash.iq/transaction/init', [
-            'token' => $token,
+            'token'      => $token,
             'merchantId' => env('ZAINCASH_MERCHANT_ID'),
-            'lang' => 'en'
+            'lang'       => 'ar'
         ]);
 
-        if ($response->successful()) {
-            return 'https://api.zaincash.iq/transaction/pay?id=' . $response->json()['id'];
-        } else {
-            // Log::error('ZainCash Payment Error: ' . $response->body());
+        if (!$response->successful()) {
+            Log::error('ZainCash Payment Error: ' . $response->body());
             return false;
         }
-    }    
+
+        $resp = $response->json();
+
+        Transaction::create([
+            'id'           => $payload['orderId'],
+            'payment_id'   => $this->paymentId,
+            'order_id'     => $this->order->id,
+            'provider'     => 'ZainCash',
+            'amount_minor' => (int)$this->amount,
+            'currency'     => 'IQD',
+            'status'       => 'pending',
+            'response'     => $resp,
+        ]);
+
+        return [
+            'paymentId'   => $payload['orderId'],
+            'checkout_url'=> 'https://api.zaincash.iq/transaction/pay?id=' . ($resp['id'] ?? ''),
+        ];
+    }
+    
 }

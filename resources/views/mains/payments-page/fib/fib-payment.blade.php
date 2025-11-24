@@ -30,56 +30,8 @@ style="max-width: 800px; border: 1px solid black"
     <div class="col">
         <button onclick="cancelUserPayment()" class="btn btn-danger btn-lg mt-1">Cancel Payment</button>
     </div>
-    {{-- <a href="{{ route('payment.cancel', ['paymentId' => $paymentId]) }}" class="btn btn-danger mt-4">Cancel Payment</a> --}}
-    {{-- window.location.href = "{{ route('business.checkout.failed', ['locale' => app()->getLocale()]) }}"; --}}
 
 </div>
-
-{{-- <script>
-    let paymentId = @json($paymentId);
-    let startTime = Date.now(); // Capture the time when the page loads
-    let maxWaitTime = 1 * 10 * 1000; // 5 minutes in milliseconds
-
-    function checkPaymentStatus() {
-        fetch(`{{ route('payment.status', ['paymentId' => '__PAYMENT_ID__']) }}`.replace('__PAYMENT_ID__', paymentId))
-            .then(response => response.json())
-            .then(data => {
-                let currentTime = Date.now();
-                let elapsedTime = currentTime - startTime;
-
-                if (data.status === 'PAID') {
-                    document.getElementById('payment-status').innerHTML = 
-                        '<div class="alert alert-success">Payment Successful! Redirecting...</div>';
-                    setTimeout(() => {
-                        window.location.href = "{{ route('digit.payment.success', ['locale' => app()->getLocale()]) }}";
-                    }, 3000);
-                } else if (elapsedTime >= maxWaitTime) {
-                    // If 5 minutes passed and payment is still UNPAID, mark it as DECLINED
-                    fetch(`{{ route('digit.payment.cancel', ['locale' => app()->getLocale(), 'paymentId' => '__PAYMENT_ID__']) }}`.replace('__PAYMENT_ID__', paymentId), {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ reason: 'Time expired' })
-                    }).then(() => {
-                        document.getElementById('payment-status').innerHTML = 
-                            '<div class="alert alert-danger">Payment Declined due to Timeout.</div>';
-                        setTimeout(() => {
-                            window.location.href = "{{ route('digit.payment.cancel', ['locale' => app()->getLocale()]) }}";
-                        }, 3000);
-                    }).catch(error => console.error('Error updating payment status:', error));
-                } else {
-                    // Keep checking every 5 seconds
-                    setTimeout(checkPaymentStatus, 5000);
-                }
-            })
-            .catch(error => console.error('Error checking payment status:', error));
-    }
-
-    setTimeout(checkPaymentStatus, 5000); // Start checking every 5 seconds
-</script> --}}
-
 <script>
     let paymentId = @json($paymentId);
     let startTime = Date.now(); 

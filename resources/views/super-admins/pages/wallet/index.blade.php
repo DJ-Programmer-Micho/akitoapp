@@ -1,8 +1,8 @@
-{{-- resources/views/super-admins/pages/order/index.blade.php --}}
+{{-- resources/views/super-admins/pages/wallet/index.blade.php --}}
 @extends('super-admins.layouts.layout')
 @section('super-admin-content')
 <div>
-    @livewire('super-admins.order-livewire')
+    @livewire('super-admins.wallet-livewire')
 </div>
 @endsection
 @push('super_script')

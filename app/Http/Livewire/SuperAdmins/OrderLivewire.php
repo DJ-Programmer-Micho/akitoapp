@@ -4,9 +4,13 @@ namespace App\Http\Livewire\SuperAdmins;
 
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Refund;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Services\WalletService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\OrderRefundService;
 use Illuminate\Support\Facades\Mail;
 use App\Events\EventOrderStatusUpdated;
 use App\Mail\EmailInvoiceActionFailedMail;
@@ -31,6 +35,7 @@ class OrderLivewire extends Component
     public $pPending = 0;
     public $pPayed = 0;
     public $pFailed = 0;
+    public $pRefunded = 0;
 
     public $search = '';
     public $statusFilter = 'all';
@@ -45,7 +50,8 @@ class OrderLivewire extends Component
 
     public function reloadTable($e){ 
         $this->emit('notificationSound');
-        $this->render();
+        // $this->render();
+        $this->emitSelf('$refresh');
     }
 
     public function mount()
@@ -56,7 +62,7 @@ class OrderLivewire extends Component
             abort(403, 'Unauthorized action.');
         }
         $this->statusFilter = request()->query('statusFilter', 'all');
-        $this->statusFilter = request()->query('statusPaymentFilter', 'all');
+        $this->statusPaymentFilter = request()->query('statusPaymentFilter', 'all');
         $this->page = request()->query('page', 1);
     }
 
@@ -67,18 +73,31 @@ class OrderLivewire extends Component
         $this->emitSelf('refresh');
     }
 
-    public function updateStatus(int $id, $status)
-    {
-        // Find the brand by ID, if not found return an error
-        $orderStatus = Order::find($id);
-    
-        if ($orderStatus) {
-            // Toggle the status (0 to 1 and 1 to 0)
-            $orderStatus->status = $status;
-            if($status == 'canceled') {
+public function updateStatus(int $id, $status)
+{
+    $orderStatus = Order::with('orderItems', 'customer.wallet')->find($id);
+    if (!$orderStatus) {
+        $this->dispatchBrowserEvent('alert', ['type' => 'error','message' => __('Record Not Found')]);
+        return;
+    }
+
+    try {
+        if ($status === 'refunded') {
+            app(OrderRefundService::class)->performRefund($orderStatus, 'order_table_refund');
+        } else {
+            // leaving refunded?
+            if ($orderStatus->status === 'refunded' || $orderStatus->payment_status === 'refunded') {
+                app(OrderRefundService::class)->reverseRefund($orderStatus, 'order_table_refund_reverse');
+            }
+
+            if ($status === 'cancelled' && $orderStatus->payment_status === 'pending') {
                 $orderStatus->payment_status = 'failed';
             }
+
+            $orderStatus->status = $status;
             $orderStatus->save();
+        }
+        
     
             $adminUsers = User::whereHas('roles', function ($query) {
                 $query->where('name', 'Administrator')
@@ -120,7 +139,7 @@ class OrderLivewire extends Component
                 return;
             }
             
-            if($status == 'canceled') {
+            if($status == 'cancelled') {
                 Mail::to($orderStatus->customer->email)->queue(new EmailInvoiceActionFailedMail($orderStatus));
             }
 
@@ -129,13 +148,78 @@ class OrderLivewire extends Component
                 'type' => 'success',
                 'message' => __('Status Updated Successfully')
             ]);
-        } else {
-            // Dispatch a browser event to show error message
+        } catch (\Throwable $e) {
             $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
-                'message' => __('Record Not Found')
+                'message' => __('Update failed: :msg', ['msg' => $e->getMessage()])
             ]);
         }
+    }
+
+    private function refundOrderToWallet(Order $order, string $reason = 'admin_action'): void
+    {
+        // If already refunded, skip
+        if (in_array($order->payment_status, ['refunded','partially_refunded'])) {
+            return;
+        }
+
+        DB::transaction(function () use ($order, $reason) {
+            $customer = $order->customer;
+            $wallet   = $customer->wallet()->lockForUpdate()->firstOrCreate([
+                'currency' => $order->currency ?? 'IQD',
+            ]);
+
+            // Sum all successful digital payments (exclude COD)
+            $successfulPayments = $order->payments()
+                ->where('status', 'successful')
+                ->where('method', '!=', 'Cash On Delivery')
+                ->get();
+
+            if ($successfulPayments->isEmpty()) {
+                // no captured digital payment => nothing to refund to wallet
+                $order->payment_status = $order->payment_status === 'successful' ? 'refunded' : 'failed';
+                $order->save();
+                return;
+            }
+
+            // Sum decimal amounts (IQD) -> integer minor units
+            $totalRefundMinor = 0;
+            foreach ($successfulPayments as $p) {
+                $minor = (int) round($p->amount); // IQD has 0 decimals; safe cast
+                $totalRefundMinor += $minor;
+            }
+
+            if ($totalRefundMinor <= 0) {
+                return;
+            }
+
+            // Credit wallet (with ledger)
+            app(WalletService::class)->credit($wallet, $totalRefundMinor, [
+                'source_type' => Order::class,
+                'source_id'   => $order->id,
+                'reason'      => 'order_refund',
+                'meta'        => ['tracking' => $order->tracking_number, 'by' => 'admin', 'why' => $reason],
+            ]);
+
+            // Create Refund rows per payment (ledger)
+            foreach ($successfulPayments as $p) {
+                Refund::create([
+                    'payment_id'   => $p->id,
+                    'destination'  => 'wallet',
+                    'amount_minor' => (int) round($p->amount),
+                    'currency'     => $order->currency ?? 'IQD',
+                    'status'       => 'processed',
+                    'reason'       => $reason,
+                    'processed_at' => now(),
+                    'metadata'     => ['order_id' => $order->id, 'tracking' => $order->tracking_number],
+                ]);
+            }
+
+            // Update order money fields
+            $order->refunded_minor = ($order->refunded_minor ?? 0) + $totalRefundMinor;
+            $order->payment_status = ($order->refunded_minor > 0) ? 'refunded' : $order->payment_status;
+            $order->save();
+        });
     }
 
     public function render()
@@ -156,7 +240,7 @@ class OrderLivewire extends Component
         ]);
     
         // Apply status filter (skip "all" option)
-        $statusFilters = ['pending', 'shipping', 'delivered', 'canceled', 'refunded'];
+        $statusFilters = ['pending', 'shipping', 'delivered', 'cancelled', 'refunded'];
         if (in_array($this->statusFilter, $statusFilters)) {
             $query->where('status', $this->statusFilter);
         }
@@ -203,11 +287,12 @@ class OrderLivewire extends Component
             COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_count,
             COUNT(CASE WHEN status = 'shipping' THEN 1 END) as shipping_count,
             COUNT(CASE WHEN status = 'delivered' THEN 1 END) as delivered_count,
-            COUNT(CASE WHEN status = 'canceled' THEN 1 END) as cancelled_count,
+            COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_count,
             COUNT(CASE WHEN status = 'refunded' THEN 1 END) as refunded_count,
             COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as payment_pending_count,
             COUNT(CASE WHEN payment_status = 'successful' THEN 1 END) as payment_successful_count,
-            COUNT(CASE WHEN payment_status = 'failed' THEN 1 END) as payment_failed_count
+            COUNT(CASE WHEN payment_status = 'failed' THEN 1 END) as payment_failed_count,
+            COUNT(CASE WHEN payment_status = 'refunded' THEN 1 END) as payment_refunded_count
         ")->first();
 
         // Set the count values
@@ -220,10 +305,11 @@ class OrderLivewire extends Component
         $this->pPending = $orderCounts->payment_pending_count;
         $this->pPayed = $orderCounts->payment_successful_count;
         $this->pFailed = $orderCounts->payment_failed_count;
+        $this->pRefunded = $orderCounts->payment_refunded_count ?? 0;
 
         $this->oAll = $this->oPending + $this->oShipping + $this->oDelivered + $this->oCancelled + $this->oRefunded;
-        $this->pAll = $this->pPending + $this->pPayed + $this->pFailed;
-        
+        // $this->pAll = $this->pPending + $this->pPayed + $this->pFailed;
+        $this->pAll = $this->pPending + $this->pPayed + $this->pFailed + $this->pRefunded;
         // Paginate the results
         $orders = $query->orderBy('created_at', 'DESC')->paginate(15);
         // Return view with data

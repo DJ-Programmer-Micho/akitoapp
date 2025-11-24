@@ -201,7 +201,7 @@
                     <input type="hidden" id="max-price" name="max_price" value="{{ request('max_price', $maxPrice) }}">
                     
                     <!-- Confirm Button -->
-                    <button id="confirm-price-filter" type="button">{{__('Confirm')}}</button>
+                    <button id="confirm-price-filter" class="btn btn-primary text-white" type="button">{{__('Confirm')}}</button>
                 </div>
             </div><!-- End .widget-body -->
         </div><!-- End .collapse -->
@@ -253,7 +253,7 @@
 
     // Display the current price range and update aria values
     priceSlider.noUiSlider.on('update', function (values, handle) {
-        priceRange.innerHTML = '$' + values[0] + ' - $' + values[1];
+        priceRange.innerHTML = values[0] + ' IQD - ' + values[1] + ' IQD';
         minPriceInput.value = values[0];
         maxPriceInput.value = values[1];
 

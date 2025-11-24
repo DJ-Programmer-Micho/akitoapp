@@ -15,6 +15,8 @@ use App\Http\Middleware\LocaleRedirectMiddleware;
 use App\Http\Controllers\SuperAdmin\AuthController;
 use App\Http\Middleware\LocalizationMainMiddleware;
 use App\Http\Controllers\Gateaway\PaymentController;
+use App\Http\Controllers\main\OrderActionController;
+use App\Http\Controllers\Main\WalletTopupController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Gateaway\TransactionController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
@@ -116,6 +118,8 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::get('/order-managements', [SuperAdminController::class, 'orderManagements'])->name('super.orderManagements');
     Route::get('/order-management-viewer/{id}', [SuperAdminController::class, 'orderManagementsViewer'])->name('super.orderManagementsViewer');
     Route::get('/order-invoice/{tracking}', [SuperAdminController::class, 'orderInvoice'])->name('super.orderInvoice');
+    Route::get('/wallet-managements', [SuperAdminController::class, 'walletManagements'])->name('super.walletManagements');
+    Route::get('/wallet-management-viewer/{id}', [SuperAdminController::class, 'walletManagementsViewer'])->name('super.walletManagementsViewer');
     Route::get('/delivery-zones', [SuperAdminController::class, 'deliveryZones'])->name('super.deliveryZones');
     Route::get('/shipping-costs', [SuperAdminController::class, 'shippingCost'])->name('super.shippingCost');
     Route::get('/customer-profile/{id}', [SuperAdminController::class, 'customerProfile'])->name('super.customerProfile');
@@ -179,7 +183,7 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
         Route::get('/payment/stripe/{orderId}', [PaymentController::class, 'showStripePaymentPage'])
             ->name('payment.stripe');
 
-        Route::post('/checkout/{orderId}', [PaymentController::class, 'checkout'])->name('checkout');
+        // Route::post('/checkout/{orderId}', [PaymentController::class, 'checkout'])->name('checkout');
         Route::get('/payment/success', [PaymentController::class, 'digitSuccess'])->name('digit.payment.success');
         Route::get('/payment/cancel', [PaymentController::class, 'digitCancel'])->name('digit.payment.cancel');
         Route::get('/payment/error', [PaymentController::class, 'digitError'])->name('digit.payment.error');
@@ -192,24 +196,30 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
         Route::get('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'edit'])->name('customer.addresses.edit');
         Route::put('/cust-address/{addressId}/edit', [CustomerAddressController::class, 'update'])->name('customer.addresses.update');
         Route::delete('/cust-address/{addressId}/delete', [CustomerAddressController::class, 'destroy'])->name('customer.addresses.delete');
+        // WALLET
+        Route::get('/wallet/topup', [WalletTopupController::class, 'showForm'])->name('wallet.topup.form');
+        Route::post('/wallet/topup', [WalletTopupController::class, 'startTopup'])->name('wallet.topup.start');
 
         Route::get('/payment/status/{paymentId}/{paymentMethod}', [PaymentController::class, 'checkFIBPaymentStatus'])->name('payment.status');
 
-    // Payment Process
-    Route::get('/payment/process/{orderId}/{paymentId}/{paymentMethod}', [PaymentController::class, 'processFrontPayment'])->name('payment.process');
+        // Payment Process
+        Route::get('/payment/process/{orderId}/{paymentId}/{paymentMethod}', [PaymentController::class, 'processFrontPayment'])->name('payment.process');
 
-    // FIB Payment Routes
-    Route::get('/payment/fib/{paymentId}', [PaymentController::class, 'showFIBPaymentPage'])->name('payment.fib');
-    // Route::get('/payment/status/{paymentId}', [PaymentController::class, 'checkFIBPaymentStatus'])->name('payment.status');
-    
-    // Areeba & ZainCash Payment Routes
-    // Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
-    // Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
-    // Route::get('/payment/error', [PaymentController::class, 'error'])->name('payment.error');
-});
+        // FIB Payment Routes
+        Route::get('/payment/fib/{paymentId}', [PaymentController::class, 'showFIBPaymentPage'])->name('payment.fib');
+        // Route::get('/payment/status/{paymentId}', [PaymentController::class, 'checkFIBPaymentStatus'])->name('payment.status');
+        
+        // Areeba & ZainCash Payment Routes
+        // Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+        // Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+        // Route::get('/payment/error', [PaymentController::class, 'error'])->name('payment.error');
+
+        // Cance Order
+        Route::post('/account/order/{orderId}/cancel', [OrderActionController::class, 'cancelOrder'])->name('action.payment.cancel');
+    });
 });
 Route::post('/payment/cancel-timeout/{paymentId}', [PaymentController::class, 'cancelPayment'])->name('time.payment.cancel');
-Route::post('/payment/cancel-by-user/{orderId}', [OrderController::class, 'cancelOrder'])->name('action.payment.cancel');
+// Route::post('/payment/cancel-by-user/{orderId}', [OrderController::class, 'cancelOrder'])->name('action.payment.cancel');
 
 Route::get('law/terms-conditions', [LawController::class, 'termsCondition'])->name('law.terms');
 Route::get('law/privacy-policy', [LawController::class, 'privacyPolicy'])->name('law.privacy');

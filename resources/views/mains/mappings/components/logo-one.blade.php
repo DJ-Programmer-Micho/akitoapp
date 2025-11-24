@@ -53,10 +53,18 @@
                         style="width:40px;height:40px">
                     </lord-icon>
                 @endauth
+                
                 <div class="dropdown-menu p-0" style="width: 150px">
                     <nav class="side-nav">
                         @auth('customer')
                         <ul class="menu-vertical sf-arrows">
+                            <li class="item-lead">
+                                <a href="#" class="d-flex w-100 justify-content-between align-items-center px-3 py-2">
+                                    <span>{{ __('Wallet') }}</span>
+                                    <strong>{{ auth('customer')->user()->wallet_balance_formatted }}</strong>
+                                    {{-- <strong>113,500,455 IQD</strong> --}}
+                                </a>
+                            </li>
                             <li><a href="{{ route('business.account', ['locale' => app()->getLocale()]) }}">{{__('Dashboard')}}</a></li>
                             <li><a href="{{ route('business.whishlist', ['locale' => app()->getLocale()]) }}">{{__('Wishlist')}}</a></li>
                             <li><a href="{{ route('business.viewcart', ['locale' => app()->getLocale()]) }}">{{__('View Cart')}}</a></li>

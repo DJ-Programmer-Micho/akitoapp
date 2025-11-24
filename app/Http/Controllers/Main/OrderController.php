@@ -18,41 +18,34 @@ class OrderController extends Controller
     public function cancelOrder($orderId, Request $request)
     {
         try {
-            $transaction = Transaction::where('order_id', $orderId)->first();
-            // if (!$transaction || $transaction->status !== 'pending') {
-            //     return response()->json(['error' => '❌ Transaction not found or already processed'], 404);
-            // }            
-            // ✅ Update transaction status to "Declined"
-            if($transaction){
+            $transaction = Transaction::where('order_id', $orderId)->latest()->first();
+            if ($transaction) {
                 $transaction->update([
-                    'status' => 'declined',
+                    'status'   => 'failed', // 'declined' → align to 'failed'
                     'response' => ['reason' => $request->input('reason', 'Timeout')],
                 ]);
             }
-    
-            // ✅ Update related order's payment status
-            $order = Order::findOrFail($orderId);
-            if(!$order){
-                return response()->json(['error' => 'Transaction not found'], 404);
+
+            $order = Order::find($orderId);
+            if (!$order) {
+                return response()->json(['error' => 'Order not found'], 404);
             }
+
+            // If we are here due to gateway timeout BEFORE success, it's a failure.
             $order->payment_status = 'failed';
-            $order->status         = 'canceled';
+            $order->status         = 'cancelled';
             $order->save();
 
             Mail::to($order->customer->email)->queue(new EmailInvoiceActionFailedMail($order));
 
             try {
-                broadcast(new EventOrderStatusUpdated($order->tracking_number, $order->id, $order->status))->toOthers();    
-
-                $adminUsers = User::whereHas('roles', function ($query) {
-                    $query->where('name', 'Administrator')
-                          ->orWhere('name', 'Data Entry Specialist')
-                          ->orWhere('name', 'Finance Manager')
-                          ->orWhere('name', 'Order Processor');
-                })->whereDoesntHave('roles', function ($query) {
-                    $query->where('name', 'Driver');
+                broadcast(new EventOrderStatusUpdated($order->tracking_number, $order->id, $order->status))->toOthers();
+                $adminUsers = User::whereHas('roles', function ($q) {
+                    $q->whereIn('name', ['Administrator','Data Entry Specialist','Finance Manager','Order Processor']);
+                })->whereDoesntHave('roles', function ($q) {
+                    $q->where('name', 'Driver');
                 })->get();
-                
+
                 foreach ($adminUsers as $admin) {
                     if (!$admin->notifications()->where('data->order_id', $order->tracking_number)
                         ->where('data->status', $order->status)->exists()) {
@@ -60,20 +53,19 @@ class OrderController extends Controller
                             $order->tracking_number, 
                             $order->id,
                             $order->status, 
-                            "Order ID {$order->tracking_number} has been updated to {$order->status}", 
+                            "Order ID {$order->tracking_number} has been updated to {$order->status}",
                         ));
                     }
                 }
-            } catch (\Exception $e) {
-                $this->dispatchBrowserEvent('alert', ['type' => 'info', 'message' => __('Your Internet is Weak!: ' . $e->getMessage())]);
-                return;
+            } catch (\Throwable $e) {
+                // swallow broadcasting failure; return success to client
             }
 
-            Log::info("❌ Payment declined due to timeout.");
-            return response()->json(['message' => '🚫 Payment marked as declined']);
-        } catch (\Exception $e) {
-            Log::error("❌ Error canceling payment: " . $e->getMessage());
-            return response()->json(['error' => '⚠️ Internal server error'], 500);
+            Log::info("Payment attempt failed/timeout; order cancelled.", ['order' => $orderId]);
+            return response()->json(['message' => 'Payment marked as failed & order cancelled']);
+        } catch (\Throwable $e) {
+            Log::error("Error canceling payment: " . $e->getMessage());
+            return response()->json(['error' => 'Internal server error'], 500);
         }
     }
 }

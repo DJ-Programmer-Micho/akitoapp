@@ -11,7 +11,7 @@
                             <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">My Orders</a>
                         </li>
                         <li class="nav-item">
-                            {{-- <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a> --}}
+                            <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-wallet" role="tab" aria-controls="tab-wallet" aria-selected="false">My Wallet</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
@@ -32,33 +32,43 @@
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
                             <div class="row text-center">
-                                <div class="col-4">
+                                <div class="col-6">
+                                    <div class="card card-dashboard">
+                                        <div class="card-head">
+                                            <h3 class="card-title p-2">{{__('wallet')}}</h3><!-- End .card-title -->
+                                        </div>
+                                        <div class="card-body p-1">
+                                            <p class="card-title"><b>{{auth('customer')->user()->wallet_balance_formatted}}</b></p><!-- End .card-title -->
+                                        </div><!-- End .card-body -->
+                                    </div><!-- End .card-dashboard -->
+                                </div>
+                                <div class="col-6">
                                     <div class="card card-dashboard">
                                         <div class="card-head">
                                             <h3 class="card-title p-2">{{__('Orders')}}</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
-                                            <p class="card-title">{{$totalPendingAndShipping}}</p><!-- End .card-title -->
+                                            <p class="card-title"><b>{{$totalPendingAndShipping}}</b></p><!-- End .card-title -->
                                         </div><!-- End .card-body -->
                                     </div><!-- End .card-dashboard -->
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <div class="card card-dashboard">
                                         <div class="card-head">
                                             <h3 class="card-title p-2">{{__('Pending')}}</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
-                                            <p class="card-title">{{$totalPending}}</p><!-- End .card-title -->
+                                            <p class="card-title"><b>{{$totalPending}}</b></p><!-- End .card-title -->
                                         </div><!-- End .card-body -->
                                     </div><!-- End .card-dashboard -->
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <div class="card card-dashboard">
                                         <div class="card-head">
                                             <h3 class="card-title p-2">{{__('Shipping')}}</h3><!-- End .card-title -->
                                         </div>
                                         <div class="card-body p-1">
-                                            <p class="card-title">{{$totalShipping}}</p><!-- End .card-title -->
+                                            <p class="card-title"><b>{{$totalShipping}}</b></p><!-- End .card-title -->
                                         </div><!-- End .card-body -->
                                     </div><!-- End .card-dashboard -->
                                 </div>
@@ -66,24 +76,16 @@
 
                         </div><!-- .End .tab-pane -->
 
-                        
-                        {{-- <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-                            <p>No order has been made yet.</p>
-                            <a href="{{ route('business.home', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-                        </div><!-- .End .tab-pane --> --}}
                         <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
                             @livewire('account.orders-list-livewire')
 
                             {{-- @livewire('account.cart-list-one-livewire') --}}
                         </div><!-- .End .tab-pane -->
 
+                        <div class="tab-pane fade" id="tab-wallet" role="tabpanel" aria-labelledby="tab-wallet-link">
+                            @livewire('account.wallet-livewire')
+                        </div>
 
-
-
-                        {{-- <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-                            <p>No downloads available yet.</p>
-                            <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-                        </div><!-- .End .tab-pane --> --}}
 
                         <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
                             <x-mains.components.account.address-one />

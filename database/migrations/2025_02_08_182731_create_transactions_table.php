@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('stripe_session_id')->nullable();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade'); // Ensure consistency
+            $table->foreignId('payment_id')->nullable()->constrained('payments')->nullOnDelete();
+            $table->foreignId('order_id')->constrained()->nullable()->onDelete('cascade'); // Ensure consistency
+            $table->unsignedBigInteger('amount_minor');
             $table->string('provider'); // Areeba, ZainCash, FIB
-            $table->decimal('amount', 10, 2); // Ensure proper data type for amount
+            $table->decimal('amount', 12, 2); // Ensure proper data type for amount
             $table->string('currency', 3)->default('IQD'); // 3-letter ISO currency code
             $table->string('status')->default('pending'); // pending, success, failed
             $table->json('response')->nullable(); // Rename `transactions_data` to `response` for clarity

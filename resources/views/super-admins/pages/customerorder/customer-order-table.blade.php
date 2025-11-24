@@ -1,3 +1,4 @@
+{{-- resources/views/super-admins/pages/customerorder/customer-order-table.blade.php --}}
 <div class="page-content">
     <style>
         .filter-colors a {
@@ -183,7 +184,7 @@
                                         <td class="status"><span class="badge bg-primary-subtle text-primary text-uppercase">{{$order->status}}</span></td>
                                         @elseif ($order->status == "delivered")
                                         <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">{{$order->status}}</span></td>
-                                        @elseif ($order->status == "canceled")
+                                        @elseif ($order->status == "cancelled")
                                         <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">{{$order->status}}</span></td>
                                         @else
                                         <td class="status"><span class="badge bg-secondary-subtle text-secondary text-uppercase">{{$order->status}}</span></td>
@@ -216,8 +217,8 @@
                                                             <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'delivered')">
                                                                 <span class="text-success"><i class="fa-regular fa-circle-check me-1"></i> {{__('Delivered')}}</span>
                                                             </button>
-                                                            <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'canceled')">
-                                                                <span class="text-danger"><i class="fa-regular fa-face-frown me-1"></i> {{__('Canceled')}}</span>                                                            
+                                                            <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'cancelled')">
+                                                                <span class="text-danger"><i class="fa-regular fa-face-frown me-1"></i> {{__('cancelled')}}</span>                                                            
                                                             </button>
                                                             <button class="dropdown-item" type="button" wire:click="updateStatus({{ $order->id }}, 'refunded')">
                                                                 <span class="text-secondary"><i class="fa-regular fa-circle-xmark me-1"></i> {{__('Refunded')}}</span>

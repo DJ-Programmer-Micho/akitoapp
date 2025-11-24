@@ -13,11 +13,17 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->decimal('amount', 10, 2);
+            $table->foreignId('order_id')->constrained()->nullable()->onDelete('cascade');
+            $table->foreignId('customer_id')->constrained()->nullable()->onDelete('cascade');
+            $table->unsignedBigInteger('amount_minor');
             $table->string('currency')->default('IQD');
             $table->string('method'); // COD, Areeba, ZainCash, FIB
             $table->string('status')->default('pending'); // pending, paid, failed, refunded
+            $table->string('provider')->nullable();           // 'FIB', 'Areeba', 'ZainCash', etc.
+            $table->string('provider_payment_id')->nullable();
+            $table->string('idempotency_key')->nullable()->index();
+            $table->string('type')->default('order');
+            $table->json('meta')->nullable();
             $table->timestamps();
         });
     }

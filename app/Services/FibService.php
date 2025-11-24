@@ -150,7 +150,7 @@ class FibService
      */
     public function refundPayment(string $accessToken, string $paymentId, array $payload = [])
     {
-        // $payload could be something like ['amount' => 150, 'reason' => 'Order canceled']
+        // $payload could be something like ['amount' => 150, 'reason' => 'Order cancelled']
         try {
             $response = Http::withToken($accessToken)
                 ->post($this->baseUrl . "/payments/{$paymentId}/refund", $payload);

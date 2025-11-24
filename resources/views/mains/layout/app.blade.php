@@ -149,6 +149,7 @@
         <script src="https://www.google.com/recaptcha/api.js?render={{ env('GOOGLE_RECAPTCHA_KEY') }}"></script>
         {{-- @stack("ticker") --}}
         @stack("productView")
+        @stack("scripts")
         @stack("brandSlider")
         @stack("register")
         @stack("password")

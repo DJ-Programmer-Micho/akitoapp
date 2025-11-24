@@ -1,3 +1,4 @@
+{{-- resources/views/mains/components/livewire/cart/checkout-list-one.blade.php --}}
 <div class="checkout">
     <div class="container">
         <style>
@@ -146,7 +147,7 @@
                                     <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Subtotal:') }}</td>
                                     <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
                                         <span class="cart-total-price flip-symbol text-left">
-                                            <span class="amount">{{ number_format($totalListPrice, 0) }}</span>
+                                            <span class="amount">{{ number_format($subtotal, 0) }}</span>
                                             <span class="currency">{{ __('IQD') }}</span>
                                         </span>
                                     </td>
@@ -161,47 +162,70 @@
                                     <td>Coupen Discount:</td>
                                     <td>${{ $totalListPrice }}</td>
                                 </tr><!-- End .summary-total --> --}}
+                                @if ($walletBalance > 0)
                                 <tr class="summary-total-f">
-                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Payment Fees:') }}</td>
-                                    @if ($transactionFee > 0)
-                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">{{ number_format($transactionFee) }}%</td>
-                                    @else
-                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }} text-success"><b>{{ __('No Fees') }}</b></td>
-                                    @endif
-                                </tr><!-- End .summary-total -->
-                                <tr class="summary-total-f">
-                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Shipping:') }}</td>
-                                    <input type="hidden" name="shipping_amount" value="{{$deliveryCharge}}">
-                                    @if ($deliveryCharge > 0)
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Wallet Balance:') }}</td>
                                     <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
                                         <span class="cart-total-price flip-symbol text-left">
-                                            <span class="amount">{{ number_format($deliveryCharge, 0)}} </span>
+                                            <span class="amount">{{ number_format($walletBalance, 0) }}</span>
                                             <span class="currency">{{ __('IQD') }}</span>
                                         </span>
                                     </td>
-                                    @else
-                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }} text-danger"><b>{{ __('FREE') }}</b></td>
-                                    @endif
-                                </tr><!-- End .summary-total -->
+                                </tr>
+                                @endif
+                                <tr class="summary-total-f">
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Payment Fees:') }}</td>
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
+                                        @if ($transactionFee > 0)
+                                            <span class="cart-total-price flip-symbol text-left">
+                                                <span class="amount">{{ number_format($feeAmount, 0) }}</span>
+                                                <span class="currency">{{ __('IQD') }}</span>
+                                                <small class="text-muted"> ({{ number_format($transactionFee, 0) }}%)</small>
+                                            </span>
+                                        @else
+                                            <span class="text-success"><b>{{ __('No Fees') }}</b></span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr class="summary-total-f">
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Shipping:') }}</td>
+                                    <input type="hidden" name="shipping_amount" value="{{ $deliveryCharge }}">
+                                    <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
+                                        @if ($deliveryCharge > 0)
+                                            <span class="cart-total-price flip-symbol text-left">
+                                                <span class="amount">{{ number_format($deliveryCharge, 0) }}</span>
+                                                <span class="currency">{{ __('IQD') }}</span>
+                                            </span>
+                                        @else
+                                            <span class="text-danger"><b>{{ __('FREE') }}</b></span>
+                                        @endif
+                                    </td>
+                                </tr>
                                 <tr class="summary-total-f">
                                     <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-right' : 'text-left' }}">{{ __('Grand Total:') }}</td>
-                                    <input type="hidden" name="total_amount" value="{{$totalListPrice + $deliveryCharge + (($totalListPrice) * $transactionFee / 100)}}">
+                                    {{-- this will be used by the controller as IQD minor (no decimals) --}}
+                                    <input type="hidden" name="total_amount" value="{{ $grandTotal }}">
                                     <td class="{{ in_array(app()->getLocale(), ['ar','ku']) ? 'text-left' : 'text-right' }}">
                                         <b>
                                             <span class="cart-total-price flip-symbol text-left">
-                                                <span class="amount">{{ number_format($totalListPrice + $deliveryCharge + (($totalListPrice) * $transactionFee / 100), 0)}} </span>
+                                                <span class="amount">{{ number_format($grandTotal, 0) }}</span>
                                                 <span class="currency">{{ __('IQD') }}</span>
                                             </span>
                                         </b>
                                     </td>
-                                </tr><!-- End .summary-total -->
+                                </tr>
                             </tbody>
                         </table><!-- End .table table-summary -->
 
                         @if (auth('customer')->user()->company_verify == 1)
                             @if ($inZone)
                             <!-- Button with a loader -->
-                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" id="order-btn" style="display: none;">
+                            <button type="submit"
+                                class="btn btn-outline-primary-2 btn-order btn-block"
+                                id="order-btn"
+                                style="display: none;"
+                                @if($insufficientWallet) disabled @endif
+                            >
                                 <span class="btn-text">{{ __('Place Order') }}</span>
                                 <span class="btn-hover-text">{{ __('Proceed to Checkout') }}</span>
                             </button>
@@ -218,7 +242,11 @@
                             <h6 class="text-danger">{{ __('Please Get Verify First') }}</h6>
                         </div>
                         @endif
-
+                        @if ($payment->id == 5 && $insufficientWallet)
+                            <div class="alert alert-danger my-2">
+                                {{ __('Your wallet balance is not enough to cover the order total.') }}
+                            </div>
+                        @endif
                         <!-- JavaScript to Show Button After Page Fully Loads -->
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {

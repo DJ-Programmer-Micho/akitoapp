@@ -87,6 +87,14 @@ class SuperAdminController extends Controller
             "p_id" => $id
         ]);
     }
+    public function walletManagements(){
+        return view('super-admins.pages.wallet.index');
+    }
+    public function walletManagementsViewer($local, $id){
+        return view('super-admins.pages.walletviewer.index',[
+            "p_id" => $id
+        ]);
+    }
     public function orderInvoice($local, $id){
         return view('super-admins.pdf.orderinvoice.index',[
             "p_id" => $id
