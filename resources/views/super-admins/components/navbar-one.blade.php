@@ -206,6 +206,33 @@
                 @endif
                 @if (hasRole([1,2,5,6]))
                 <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarWebDesign" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarWebDesign">
+                        <i class="bx bx-wrench"></i> <span data-key="t-products">{{__('Web Design')}}</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarWebDesign">
+                        <ul class="nav nav-sm flex-column">
+                            @if (hasRole([1,2]))
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.info', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Information')}}</a>
+                            </li>
+                            @endif
+                            @if (hasRole([1,5,6]))
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.logo', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Logo - App Icon')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.hero', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Hero - Sliders')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.banner', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Category Banner')}}</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+                @endif
+                @if (hasRole([1,2,5,6]))
+                <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarWebSetting" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarWebSetting">
                         <i class="bx bx-wrench"></i> <span data-key="t-products">{{__('Web Setting')}}</span>
                     </a>
@@ -230,15 +257,6 @@
                             </li>
                             @endif
                             @if (hasRole([1,5,6]))
-                            <li class="nav-item">
-                                <a wire:navigate href="{{ route('setting.logo', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Logo - App Icon')}}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a wire:navigate href="{{ route('setting.hero', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Hero - Sliders')}}</a>
-                            </li>
-                            <li class="nav-item">
-                                <a wire:navigate href="{{ route('setting.banner', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Category Banner')}}</a>
-                            </li>
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('setting.language', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Languages')}}</a>
                             </li>

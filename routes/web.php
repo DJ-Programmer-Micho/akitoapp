@@ -143,6 +143,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::get('/setting-banner', [SuperAdminController::class, 'settingBanner'])->name('setting.banner');
     Route::get('/setting-language', [SuperAdminController::class, 'settingLanguage'])->name('setting.language');
     Route::get('/setting-prices', [SuperAdminController::class, 'settingPrice'])->name('setting.price');
+    Route::get('/setting-api', [SuperAdminController::class, 'settingAPI'])->name('setting.api');
 });
 // DASHBOARD - DRIVER
 Route::prefix('{locale}/drivers')->middleware(['LocalizationMainMiddleware','drivercheck','driverstatuscheck'])->group(function () {

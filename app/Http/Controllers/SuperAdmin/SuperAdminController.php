@@ -150,4 +150,7 @@ class SuperAdminController extends Controller
     public function settingPrice(){
         return view('super-admins.pages.setting.checkout.index');
     }
+    public function settingAPI(){
+        return view('super-admins.pages.setting.phenix.index');
+    }
 }

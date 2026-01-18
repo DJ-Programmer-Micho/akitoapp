@@ -252,7 +252,7 @@ class ShopControllerApi extends Controller
             'capacityIds'   => $request->input('capacities', []),
             'materialIds'   => $request->input('materials', []),
             'minPrice'      => floatval($request->input('min_price', 0)),
-            'maxPrice'      => floatval($request->input('max_price', 5000)),
+            'maxPrice'      => floatval($request->input('max_price', 5000000)),
             'sortBy'        => $request->input('sortby', 'priority'),
         ];
     }
