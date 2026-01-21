@@ -59,7 +59,8 @@ class CProductLivewire extends Component
     public $selectedIntensities = []; // Intensity Selected
     public $selectedTags = [];
     public $images = []; // Cropped Imgeas
-    public $sku; // Cropped Imgeas
+    public $sku; 
+    public $material_id; 
     public $keywords; // Cropped Imgeas
     // Sub Form INT
     public $is_spare_part = 0;
@@ -160,6 +161,9 @@ class CProductLivewire extends Component
         $rules['originalPrice'] = 'required|numeric|min:0';
         $rules['selectedCategories'] = 'required';
         $rules['selectedSubCategories'] = 'required';
+        $rules['material_id'] = 'nullable|integer|min:1';
+        $rules['sku'] = 'nullable|string';
+
     
         // Sale related rules
         if ($this->is_on_sale) {
@@ -448,6 +452,7 @@ class CProductLivewire extends Component
 
             // Create Variation entry
             $variation = ProductVariation::create([
+                'material_id' => $this->material_id ?? null,
                 'sku' => $this->sku ?? null,
                 'keywords' => $this->keywords ?? null,
                 'price' => $this->originalPrice ?? null,
@@ -610,6 +615,7 @@ class CProductLivewire extends Component
         $this->productShip = [];
         $this->faqs = [];
         $this->sku = ""; // Cropped Imgeas
+        $this->material_id = null;
         $this->keywords = ""; // Cropped Imgeas
         $this->is_spare_part = 0;
         $this->stock = 1;

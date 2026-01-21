@@ -689,7 +689,19 @@
                                 <label class="form-label" for="meta-title-input">{{__('SKU')}}</label>
                                 <input type="text" class="form-control" wire:model="sku" placeholder="xxxx-xxxxx-xxx" id="meta-title-input">
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="material-id-input">
+                                    {{__('Material ID (Phenix)')}}
+                                </label>
+                                <input type="number" class="form-control" wire:model="material_id"
+                                    placeholder="1096" id="material-id-input">
+                                <small class="text-muted">
+                                    {{__('Used for sync price from Phenix using Ut_Mat_ID (Ut_Equal=1).')}}
+                                </small>
+                                @error('material_id') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
                         </div>
+                        
                     </div>
                     <!-- end card -->
                     <div class="card">

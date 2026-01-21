@@ -9,16 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('phenix_systems', function (Blueprint $table) {
             $table->id();
-            $table->string('name');          // e.g. "Italian Phenix"
-            $table->string('code')->unique(); // e.g. "italian", "monin"
-            $table->string('base_url');      // http://192.168.100.50:8282
-            $table->string('username');
-            $table->string('password');
+            $table->string('name');
+            $table->string('code')->unique();
+            $table->string('base_url'); // http://192.168.100.50:8282
+
+            // Secrets (store encrypted via Eloquent casts, not plaintext)
+            $table->text('username');     // text because encrypted values are longer
+            $table->text('password');
+            $table->text('token')->nullable(); // phenixtoken
+
             $table->boolean('is_active')->default(true);
+
+            // Optional operational fields
+            $table->unsignedSmallInteger('timeout_seconds')->default(10);
+            $table->unsignedSmallInteger('retry_times')->default(2);
+
             $table->timestamps();
         });
     }

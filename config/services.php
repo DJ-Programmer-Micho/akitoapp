@@ -38,4 +38,13 @@ return [
         'token'     => env('STANDINGTECH_TOKEN'),
         'sender_id' => env('STANDINGTECH_SENDER_ID', 'MetIraq'),
     ],
+    'phenix' => [
+        'systems' => array_filter(array_map('trim', explode(',', env('PHENIX_SYSTEMS', '')))),
+
+        'defaults' => [
+            'timeout' => (int) env('PHENIX_TIMEOUT', 10),
+            'retries' => (int) env('PHENIX_RETRIES', 2),
+            'retry_sleep_ms' => (int) env('PHENIX_RETRY_SLEEP_MS', 200),
+        ],
+    ],
 ];

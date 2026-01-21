@@ -51,6 +51,9 @@ class SuperAdminController extends Controller
             "p_id" => $id
         ]);
     }
+    public function phenixSyncReport(){
+        return view('super-admins.pages.phenixreport.index');
+    }
     public function recommendProduct(){
         return view('super-admins.pages.recommendproduct.index');
     }

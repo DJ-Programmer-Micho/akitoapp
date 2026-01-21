@@ -58,7 +58,8 @@ class EProductLivewire extends Component
     public $selectedIntensities = []; // Intesities Selected
     public $selectedTags = [];
     public $images = []; // Cropped Imgeas
-    public $sku; // Cropped Imgeas
+    public $sku;
+    public $material_id;
     public $keywords; // Cropped Imgeas
     // Sub Form INT
     public $is_spare_part = 0;
@@ -172,6 +173,7 @@ class EProductLivewire extends Component
         }
         // Load variations
         $this->sku = $product->variation->sku;
+        $this->material_id = $product->variation->material_id;
         $this->keywords = $product->variation->keywords;
         $this->originalPrice = $product->variation->price;
         $this->discountPrice = $product->variation->discount;
@@ -257,6 +259,8 @@ class EProductLivewire extends Component
                 }
             }
         ];
+        $rules['sku'] = 'nullable|string';
+        $rules['material_id'] = 'nullable|integer|min:1';
         $rules['images'] = 'required';
         $rules['selectedBrand'] = 'required';
         $rules['originalPrice'] = 'required|numeric|min:0';
@@ -564,6 +568,7 @@ class EProductLivewire extends Component
             // Update  Variation entry
             $variation->update([
                 'sku' => $this->sku ?? $variation->sku,
+                'material_id' => $this->material_id ?? $variation->material_id,
                 'keywords' => $this->keywords ?? $variation->keywords,
                 'price' => $this->originalPrice ?? $variation->price,
                 'discount' => $this->discountPrice ?? $variation->discount,

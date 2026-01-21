@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Main;
 
+use Carbon\Carbon;
 use App\Models\Brand;
 use App\Models\Order;
 use App\Models\Payment;
@@ -22,11 +23,13 @@ use App\Models\VariationColor;
 use App\Services\WalletService;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
+use App\Services\PhenixApiService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Mail\EmailInvoiceActionMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use App\Services\PaymentServiceManager;
@@ -812,17 +815,26 @@ class BusinessController extends Controller
             $trackingNumber = Str::random(6);
 
             // ✅ Retrieve Cart Items & Apply Discounts
-            $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation')
+            $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation', 'product.categories', 'product.subCategories')
                 ->where('customer_id', $customer->id)
                 ->get()
                 ->transform(function ($item) use ($customer) {
                     $product = $item->product;
+
                     $discountDetails = $this->calculateFinalPrice($product, $customer->id);
-                    $item->final_price = $discountDetails['customer_discount_price']
+
+                    $base  = $discountDetails['base_price']; // original
+                    $final = $discountDetails['customer_discount_price']
                         ?? $discountDetails['discount_price']
                         ?? $discountDetails['base_price'];
+
+                    // store on item so Phenix mapping is accurate
+                    $item->base_price  = $base;
+                    $item->final_price = $final;
+
                     return $item;
                 });
+
 
             DB::beginTransaction();
 
@@ -872,6 +884,7 @@ class BusinessController extends Controller
                     'total_iqd'    => $item->quantity * $lineIQD,
                 ]);
             }
+            $this->sendBillToPhenix(app(PhenixApiService::class), $order, $cartItems);
 
             // ======================
             // TENDER-SPECIFIC LOGIC
@@ -1171,4 +1184,104 @@ class BusinessController extends Controller
         return (int) round((float) $amount);
     }
 
+    private function sendBillToPhenix(PhenixApiService $phenix, $order, $cartItems): bool
+    {
+        try {
+            // Baghdad time (adjust if your server timezone differs)
+            $now  = Carbon::now('Asia/Baghdad');
+            $shippingIQD = (int) ($order->shipping_amount ?? 0);
+
+            // order->total_amount_iqd = (items + payment fee) in your DB
+            $itemsPlusFeeIQD = (int) ($order->total_amount_iqd ?? 0);
+
+            // subtotal of items after discounts (from cart)
+            $itemsSubtotalIQD = (int) $cartItems->sum(function ($item) {
+                $final = (float) ($item->final_price ?? 0);
+                $qty   = (int) ($item->quantity ?? 1);
+                return round($final) * $qty;
+            });
+
+            $paymentFeesIQD = max(0, $itemsPlusFeeIQD - $itemsSubtotalIQD);
+
+            $note = trim(($order->first_name ?? '') . ' ' . ($order->last_name ?? '') . ' - ' . ($order->phone_number ?? ''))
+                . ' | Shipping: ' . number_format($shippingIQD) . ' IQD'
+                . ' | Payment Fees: ' . number_format($paymentFeesIQD) . ' IQD';
+
+
+            $details = $cartItems->map(function ($item) {
+                $product   = $item->product;
+                $variation = $product->variation;
+
+                $unitId     = $variation->unit_id;      // Phenix unit_id
+                $materialId = $variation->material_id;  // Phenix material_id
+
+                $baseMinor  = (int) round((float) ($item->base_price ?? $variation->price ?? 0));     // original
+                $finalMinor = (int) round((float) ($item->final_price ?? $baseMinor));                // after discounts
+
+                // ✅ discount amount (NOT final price)
+                $discountMinor = max(0, $baseMinor - $finalMinor);
+
+                return [
+                    "unitid"        => (int) $unitId,
+                    "itemprice"     => $baseMinor,                 // ✅ original price
+                    "itemid"        => (int) $materialId,
+                    "discountvalue" => $discountMinor * (int) ($item->quantity ?? 1),             // ✅ discount amount
+                    "quantity"      => (int) ($item->quantity ?? 1),
+                    "vatvalue"      => 0,
+                ];
+            })->values()->all();
+
+
+
+            $payload = [
+                "_parameters" => [
+                    [
+                        "billdata" => [
+                            "customerManipulateid" => 0,
+                            "discountamount"       => 0,
+                            "salesmanid"           => 0,
+                            "receiptid"            => (string) $order->tracking_number, // tracking_number
+                            "CheckDataValidation"  => 0,
+
+                            "dateMonth"            => (int) $now->month,
+                            "dateMinute"           => (int) $now->minute,
+                            "dateYear"             => (int) $now->year,
+                            "dateHour"             => (int) $now->hour,
+                            "dateDay"              => (int) $now->day,
+
+                            "iscash"               => 0,
+                            "customerid"           => 0,
+                            "billtype"             => 136,
+                            "currencyid"           => 2,
+                            "note"                 => $note,
+                            "warehouseid"          => 11,
+                        ],
+                        "billdetaildata" => $details,
+                    ]
+                ]
+            ];
+            $systemCode = config('phenix.systems')[0] ?? null;
+            if (!$systemCode) {
+                Log::error("Phenix systems not configured (PHENIX_SYSTEMS empty)");
+                return false;
+            }
+
+            $res = $phenix->putBill($systemCode, $payload);
+
+            Log::info("Phenix Bill PUT success", [
+                'order_id' => $order->id,
+                'tracking' => $order->tracking_number,
+                'response' => $res,
+            ]);
+
+            return true;
+
+        } catch (\Throwable $e) {
+            Log::error("Phenix Bill PUT failed: " . $e->getMessage(), [
+                'order_id' => $order->id ?? null,
+                'tracking' => $order->tracking_number ?? null,
+            ]);
+            return false;
+        }
+    }
 }

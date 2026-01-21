@@ -11,6 +11,8 @@ class ProductVariation extends Model
     protected $table = 'product_variations';
     protected $fillable = [
         'sku',
+        'material_id',
+        'unit_id',
         'keywords',
         'price',
         'discount',
@@ -22,6 +24,7 @@ class ProductVariation extends Model
 
     protected $casts = [
         'keywords' => 'array',
+        'material_id' => 'integer',
     ];
 
     public function product() { return $this->hasMany(Product::class, 'variation_id'); }

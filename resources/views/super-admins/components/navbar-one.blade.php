@@ -245,6 +245,9 @@
                             <li class="nav-item">
                                 <a wire:navigate href="{{ route('setting.recaptcha', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-tProduct">{{__('Google Recaptcha')}}</a>
                             </li>
+                            <li class="nav-item">
+                                <a wire:navigate href="{{ route('setting.api', ['locale' => app()->getLocale()]) }}" class="nav-link" data-key="t-api"><b class="text-danger">{{__('API Setting')}}</b></a>
+                            </li>
                             @endif
                             @if (hasRole([1,3]))
                             <li class="nav-item">

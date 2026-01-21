@@ -9,16 +9,23 @@ use Livewire\Component;
 use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Support\Str;
+use App\Models\PhenixSystem;
 use App\Models\ProductImage;
 use Livewire\WithPagination;
+use App\Models\PhenixSyncLog;
 use App\Models\VariationSize;
 use App\Models\VariationColor;
+use Illuminate\Support\Carbon;
 use App\Models\ProductVariation;
 use App\Models\VariationCapacity;
 use App\Models\VariationMaterial;
 use App\Models\ProductTranslation;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 
 class TProductLivewire extends Component
 {
@@ -55,11 +62,25 @@ class TProductLivewire extends Component
     public $page = 1;
     public $glang;
 
+    public array $syncChanges = [];
+    public ?string $syncDownloadUrl = null;
+    public ?string $syncLogPath = null;
+    public bool $showSyncModal = false;
+    public ?int $phenix_system_id = null;
+    public $phenixSystems = [];
+
 
     public function mount()
     {
         $this->glang = app()->getLocale();
         $this->loadInitialData();
+
+        $this->phenixSystems = PhenixSystem::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'code']);
+
+        $this->phenix_system_id = $this->phenixSystems->first()->id ?? null;
     }
 
     public function loadInitialData()
@@ -159,6 +180,50 @@ class TProductLivewire extends Component
         }
     }
 
+    public function updateMaterial(int $p_id, $updatedMaterial): void
+    {
+        // Validate numeric
+        if (!is_numeric($updatedMaterial)) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Invalid material ID value'),
+            ]);
+            return;
+        }
+
+        $materialId = (int) $updatedMaterial;
+
+        // Optional: allow clearing material_id (empty => null)
+        // if ($updatedMaterial === '' || $updatedMaterial === null) { $materialId = null; }
+
+        $product = Product::with('variation')->find($p_id);
+
+        if (!$product) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Record Not Found'),
+            ]);
+            return;
+        }
+
+        if (!$product->variation) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('This product has no variation.'),
+            ]);
+            return;
+        }
+
+        // Update on product_variations table
+        $product->variation->update([
+            'material_id' => $materialId,
+        ]);
+
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => __('Material ID Updated Successfully'),
+        ]);
+    }
 
     public function toggleColor($colorId)
     {
@@ -174,10 +239,29 @@ class TProductLivewire extends Component
         $this->filterProducts();
     }
     
+    public function clearFilters()
+    {
+        $this->brandIds = [];
+        $this->categoryIds = [];
+        $this->subCategoryIds = [];
+        $this->sizeIds = [];
+        $this->colorIds = [];
+        $this->capacityIds = [];
+        $this->materialIds = [];
+        $this->selectedColors = [];
+
+        $this->minPrice = 0;
+        $this->maxPrice = 1000000000000;
+
+        $this->search = '';
+        $this->statusFilter = 'all';
+
+        $this->resetPage();
+    }
     public function filterProducts()
     {
         // Re-render the component to apply filters
-        $this->render();
+        $this->resetPage();
     }
     
     public function statusFilter($status)
@@ -365,6 +449,344 @@ class TProductLivewire extends Component
         // Return view with data
         return view('super-admins.pages.tproducts.product-table', [
             'tableData' => $productsQuery,
+            'phenixSystems' => $this->phenixSystems,
         ]);
+    }
+
+    public function syncPhenixPrices(): void
+    {
+        @set_time_limit(0);
+
+        $this->syncChanges = [];
+        $this->syncDownloadUrl = null;
+        $this->syncLogPath = null;
+        $this->showSyncModal = false;
+
+        $log = null; // ✅ will hold PhenixSyncLog row
+
+        try {
+            if (!$this->phenix_system_id) {
+                throw new \RuntimeException('Please select a Phenix system first.');
+            }
+
+            /** @var PhenixSystem $system */
+            $system = PhenixSystem::query()
+                ->where('id', $this->phenix_system_id)
+                ->where('is_active', true)
+                ->firstOrFail();
+
+            $baseUrl  = rtrim((string) $system->base_url, '/');
+            $username = (string) $system->username; // decrypted by casts
+            $password = (string) $system->password;
+            $token    = (string) $system->token;
+
+            if (!$baseUrl || !$username || !$password || !$token) {
+                throw new \RuntimeException('Selected Phenix system is missing base_url/username/password/token.');
+            }
+
+            $timeout = (int) ($system->timeout_seconds ?? 10);
+            $retries = (int) ($system->retry_times ?? 2);
+
+            // ✅ Create "running" log row FIRST
+            $log = PhenixSyncLog::create([
+                'phenix_system_id' => $system->id,
+                'system_code'      => $system->code,
+                'matched'          => 0,
+                'updated'          => 0,
+                'changes'          => 0,
+                'xlsx_path'        => null,
+                'meta'             => [
+                    'base_url' => $baseUrl,
+                    'timeout'  => $timeout,
+                    'retries'  => $retries,
+                    'status'   => 'running',
+                ],
+                'synced_at'        => null,
+            ]);
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'info',
+                'message' => "SYNC started ({$system->name})...",
+            ]);
+
+            // 1) Fetch items from Phenix
+            $resp = Http::baseUrl($baseUrl)
+                ->withBasicAuth($username, $password)
+                ->withHeaders(['phenixtoken' => $token])
+                ->timeout($timeout)
+                ->retry($retries, 200)
+                ->get('/api/rest/TPhenixApi/ItemsGetAllList')
+                ->throw()
+                ->json();
+
+            $items = data_get($resp, 'result.0.items', []);
+            if (empty($items)) {
+                throw new \RuntimeException('No items received from Phenix.');
+            }
+
+            // 2) Build maps using Ut_Equal==1:
+            // material_id (Ut_Mat_ID) => Ut_Sell_Price
+            // material_id (Ut_Mat_ID) => Ut_Id
+            $priceMap = [];
+            $unitMap  = [];
+
+            foreach ($items as $item) {
+                foreach (($item['Funits'] ?? []) as $u) {
+                    if (($u['Ut_Equal'] ?? null) == 1) {
+
+                        $matId = (int) ($u['Ut_Mat_ID'] ?? 0);
+                        $price = $u['Ut_Sell_Price'] ?? null;
+                        $utId  = (int) ($u['Ut_Id'] ?? 0);
+
+                        if ($matId > 0) {
+                            if (is_numeric($price)) {
+                                $priceMap[$matId] = (int) $price;
+                            }
+                            if ($utId > 0) {
+                                $unitMap[$matId] = $utId;
+                            }
+                        }
+
+                        break; // stop at first Ut_Equal==1
+                    }
+                }
+            }
+
+            if (empty($priceMap)) {
+                throw new \RuntimeException('No prices mapped from Phenix (Ut_Equal==1 not found).');
+            }
+
+            // 3) Update only matched variations (fast): chunk + bulk CASE update (price + unit_id)
+            $updated = 0;
+            $matched = 0;
+
+            ProductVariation::query()
+                ->select(['id', 'sku', 'material_id', 'unit_id', 'price'])
+                ->with([
+                    'product.productTranslation' => function ($q) {
+                        $q->where('locale', 'en')->select('id','product_id','name','locale');
+                    },
+                    'images' => function ($q) {
+                        $q->orderByRaw('is_primary DESC, priority ASC, id ASC')
+                        ->select('id','variation_id','image_path','priority','is_primary');
+                    }
+                ])
+                ->whereNotNull('material_id')
+                ->where('material_id', '>', 0)
+                ->whereIn('material_id', array_keys($priceMap))
+                ->orderBy('id')
+                ->chunkById(500, function ($rows) use (&$updated, &$matched, $priceMap, $unitMap) {
+
+                    $matched += $rows->count();
+
+                    $idsToUpdate = [];
+
+                    $priceCases = [];
+                    $unitCases  = [];
+
+                    foreach ($rows as $v) {
+                        $matId = (int) $v->material_id;
+
+                        $newPrice = $priceMap[$matId] ?? null;
+                        $newUnit  = $unitMap[$matId] ?? null;
+
+                        $priceChanged = ($newPrice !== null && (int) $v->price !== (int) $newPrice);
+                        $unitChanged  = ($newUnit !== null && (int) $v->unit_id !== (int) $newUnit);
+
+                        // ✅ If neither changed, skip
+                        if (!$priceChanged && !$unitChanged) {
+                            continue;
+                        }
+
+                        $id = (int) $v->id;
+                        $idsToUpdate[] = $id;
+
+                        // For SQL CASE, if value missing keep current value
+                        if ($newPrice !== null) {
+                            $priceCases[] = "WHEN {$id} THEN {$newPrice}";
+                        }
+                        if ($newUnit !== null) {
+                            $unitCases[] = "WHEN {$id} THEN {$newUnit}";
+                        }
+
+                        // Product + name + image for modal/xlsx
+                        $product = $v->product->first();
+
+                        $enName = optional(
+                            optional($product)->productTranslation
+                                ->where('locale', 'en')
+                                ->first()
+                        )->name ?? 'Unknown';
+
+                        $imagePath = optional($v->images->first())->image_path;
+                        $imageUrl  = $imagePath ? (app('cloudfront') . $imagePath) : null;
+
+                        $this->syncChanges[] = [
+                            'sku'         => $v->sku,
+                            'material_id' => $matId,
+                            'unit_id'     => $newUnit,                 // ✅ new
+                            'en_name'     => $enName,
+                            'image'       => $imageUrl,
+                            'old_price'   => (int) $v->price,
+                            'new_price'   => $newPrice ?? (int) $v->price,
+                        ];
+                    }
+
+                    if (!empty($idsToUpdate)) {
+                        $idsList = implode(',', $idsToUpdate);
+
+                        // If no cases, keep field as-is
+                        $priceSql = !empty($priceCases)
+                            ? "price = CASE id " . implode(' ', $priceCases) . " ELSE price END"
+                            : "price = price";
+
+                        $unitSql = !empty($unitCases)
+                            ? "unit_id = CASE id " . implode(' ', $unitCases) . " ELSE unit_id END"
+                            : "unit_id = unit_id";
+
+                        DB::statement("
+                            UPDATE product_variations
+                            SET {$priceSql}, {$unitSql}
+                            WHERE id IN ({$idsList})
+                        ");
+
+                        $updated += count($idsToUpdate);
+                    }
+                });
+
+            // ✅ If matched = 0, still store log and end normally
+            if ($matched === 0) {
+                if ($log) {
+                    $log->update([
+                        'matched'   => 0,
+                        'updated'   => 0,
+                        'changes'   => 0,
+                        'synced_at' => now(),
+                        'meta'      => array_merge(($log->meta ?? []), [
+                            'status' => 'done',
+                            'note'   => 'No products matched (material_id not set or not found).',
+                        ]),
+                    ]);
+                }
+
+                $this->dispatchBrowserEvent('alert', [
+                    'type' => 'warning',
+                    'message' => "SYNC finished ({$system->name}): no products matched (material_id not set or not found).",
+                ]);
+                return;
+            }
+
+            // 4) Create XLSX log and upload (only if there are changes)
+            $xlsxPath = null;
+
+            if (!empty($this->syncChanges)) {
+                $xlsxPath = $this->buildAndUploadSyncXlsx($system->code ?? 'phenix');
+                $this->syncLogPath = $xlsxPath;
+
+                try {
+                    $this->syncDownloadUrl = Storage::disk('s3')->temporaryUrl($xlsxPath, now()->addMinutes(60));
+                } catch (\Throwable $e) {
+                    $this->syncDownloadUrl = Storage::disk('s3')->url($xlsxPath);
+                }
+            }
+
+            // ✅ Update log row AFTER everything
+            if ($log) {
+                $log->update([
+                    'matched'   => $matched,
+                    'updated'   => $updated,
+                    'changes'   => count($this->syncChanges),
+                    'xlsx_path' => $xlsxPath,
+                    'synced_at' => now(),
+                    'meta'      => array_merge(($log->meta ?? []), [
+                        'status' => 'done',
+                        'items_received' => count($items),
+                        'price_map_count' => count($priceMap),
+                    ]),
+                ]);
+            }
+
+            // 5) Show modal
+            $this->showSyncModal = true;
+            $this->dispatchBrowserEvent('open-sync-modal');
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => "SYNC done ({$system->name}). Updated: {$updated}. Matched: {$matched}. Changes: " . count($this->syncChanges),
+            ]);
+
+        } catch (\Throwable $e) {
+
+            // ✅ Store failure in log meta (if log exists)
+            if ($log) {
+                $log->update([
+                    'synced_at' => now(),
+                    'meta'      => array_merge(($log->meta ?? []), [
+                        'status' => 'failed',
+                        'error'  => $e->getMessage(),
+                    ]),
+                ]);
+            }
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'SYNC failed: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Build XLSX file from $this->syncChanges and upload to S3 in /sync_log/.
+     * Returns the S3 path.
+     */
+    private function buildAndUploadSyncXlsx(string $systemCode): string
+    {
+        // Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header
+        $sheet->fromArray([
+            ['sku', 'material_id', 'en_name', 'old_price', 'new_price', 'changed_at']
+        ], null, 'A1');
+
+
+        $now = Carbon::now()->toDateTimeString();
+
+        // Rows
+        $row = 2;
+        foreach ($this->syncChanges as $c) {
+            $sheet->fromArray([[
+                $c['sku'] ?? '',
+                $c['material_id'] ?? '',
+                $c['en_name'] ?? '',
+                $c['old_price'] ?? '',
+                $c['new_price'] ?? '',
+                $now,
+            ]], null, 'A' . $row);
+
+            $row++;
+        }
+
+
+        // Write to temp file
+        $tmpFile = tempnam(sys_get_temp_dir(), 'phenix_sync_') . '.xlsx';
+        (new Xlsx($spreadsheet))->save($tmpFile);
+
+        // Upload to S3
+        $date = Carbon::now()->format('Y-m-d');
+        $ts   = Carbon::now()->format('Ymd_His');
+        $safeSystem = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $systemCode);
+
+        $s3Path = "sync_log/{$safeSystem}/{$date}/price_sync_{$ts}.xlsx";
+
+        Storage::disk('s3')->put($s3Path, file_get_contents($tmpFile), [
+            'visibility' => 'public',
+            'ContentType' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+
+        @unlink($tmpFile);
+
+        return $s3Path;
     }
 }

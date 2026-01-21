@@ -107,6 +107,7 @@ Route::prefix('{locale}/super-admin')->middleware(['LocalizationMainMiddleware',
     Route::get('/product-table', [SuperAdminController::class, 'tProduct'])->name('super.product.table');
     Route::get('/product-create', [SuperAdminController::class, 'cProduct'])->name('super.product.create');
     Route::get('/product-recommend', [SuperAdminController::class, 'recommendProduct'])->name('super.product.recommend');
+    Route::get('/product-report-ph', [SuperAdminController::class, 'phenixSyncReport'])->name('super.product.phenixSyncReport');
     Route::get('/product-add-edit-recommend/{id}', [SuperAdminController::class, 'recommendProductEdit'])->name('super.product.recommend.edit');
     Route::get('/edit/{id}', [SuperAdminController::class, 'eProduct'])->name('super.product.edit');
     Route::get('/product-adjust', [SuperAdminController::class, 'adjustProduct'])->name('super.product.adjust');

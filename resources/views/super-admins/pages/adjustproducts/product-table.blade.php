@@ -30,6 +30,34 @@
         <!-- end page title -->
 
         <div class="row">
+            <div class="col-xl-12">
+                <div class="card">        
+                    <div>
+                        <div class="card-body d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                            <select class="form-select form-select-sm"
+                                    style="max-width: 220px"
+                                    wire:model="phenix_system_id">
+                                <option value="">{{ __('Select Phenix System') }}</option>
+
+                                @foreach($phenixSystems as $sys)
+                                    <option value="{{ $sys->id }}">
+                                        {{ $sys->name }} ({{ $sys->code }})
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <button class="btn btn-warning btn-sm"
+                                    wire:click="syncPhenixPrices"
+                                    wire:loading.attr="disabled"
+                                    wire:target="syncPhenixPrices"
+                                    @disabled(!$phenix_system_id)>
+                                <span wire:loading.remove wire:target="syncPhenixPrices">{{ __('SYNC') }}</span>
+                                <span wire:loading wire:target="syncPhenixPrices">{{ __('SYNCING...') }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-xl-9 col-lg-8">
                 <div>
                     <div class="card">        
@@ -75,6 +103,7 @@
                                     <thead>
                                         <tr>
                                             <th>{{__('Product')}}</th>
+                                            <th>{{__('Material_ID')}}</th>
                                             <th>{{__('Original Price (IQD)')}}</th>
                                             <th>{{__('Discount Price (IQD)')}}</th>
                                             <th>{{__('Stock')}}</th>
@@ -101,7 +130,15 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <input type="number" id="price_{{ $data->id }}" value="{{ $data->variation->price }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                                        <input type="number" id="material_{{ $data->id }}" value="{{ $data->variation->material_id }}" step="1" min="0" class="form-control bg-dark text-white" style="max-width: 80px">
+                                                        <button type="button" class="btn btn-secondary btn-icon text-dark"  onclick="updateMaterialValue({{ $data->id }})">
+                                                            <i class="fas fa-barcode"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <input type="number" id="price_{{ $data->id }}" value="{{ $data->variation->price }}" step="1" min="0" class="form-control bg-dark text-white" style="max-width: 80px">
                                                         <button type="button" class="btn btn-info btn-icon text-dark" onclick="updatePriceValue({{ $data->id }})">
                                                             {{-- <i class="fa-solid fa-dollar-sign"></i> --}}
                                                             IQD
@@ -110,7 +147,7 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <input type="number" id="discount_{{ $data->id }}" value="{{ $data->variation->discount }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                                        <input type="number" id="discount_{{ $data->id }}" value="{{ $data->variation->discount }}" step="1" min="0" class="form-control bg-dark text-white" style="max-width: 80px">
                                                         <button type="button" class="btn btn-info btn-icon text-dark" onclick="updateDiscountValue({{ $data->id }})">
                                                             {{-- <i class="fa-solid fa-dollar-sign"></i> --}}
                                                             IQD
@@ -119,7 +156,7 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <input type="number" id="stock_{{ $data->id }}" value="{{ $data->variation->stock }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                                        <input type="number" id="stock_{{ $data->id }}" value="{{ $data->variation->stock }}" step="1" min="0" class="form-control bg-dark text-white" style="max-width: 60px">
                                                         <button type="button" class="btn btn-secondary btn-icon text-white" onclick="updateStockValue({{ $data->id }})">
                                                             <i class="fa-solid fa-boxes-stacked"></i>
                                                         </button>
@@ -127,7 +164,7 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <input type="number" id="order_limit_{{ $data->id }}" value="{{ $data->variation->order_limit }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                                        <input type="number" id="order_limit_{{ $data->id }}" value="{{ $data->variation->order_limit }}" step="1" min="0" class="form-control bg-dark text-white" style="max-width: 60px">
                                                         <button type="button" class="btn btn-secondary btn-icon text-white" onclick="updateOrderLimitValue({{ $data->id }})">
                                                             <i class="fa-solid fa-boxes-stacked"></i>
                                                         </button>
@@ -135,7 +172,7 @@
                                                 </td>
                                                 <td class="align-middle text-center">
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <input type="number" id="priority_{{ $data->id }}" value="{{ $data->priority }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                                        <input type="number" id="priority_{{ $data->id }}" value="{{ $data->priority }}" step="1" min="0" class="form-control bg-dark text-white" style="max-width: 60px">
                                                         <button type="button" class="btn btn-warning btn-icon text-dark" onclick="updatePriorityValue({{ $data->id }})">
                                                             <i class="fas fa-sort"></i>
                                                         </button>
@@ -381,6 +418,77 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="syncResultModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ __('Sync Results') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                        <div>
+                            <strong>{{ __('Changes') }}:</strong> {{ count($syncChanges ?? []) }}
+                        </div>
+
+                        @if(!empty($syncDownloadUrl))
+                            <a class="btn btn-sm btn-success" href="{{ $syncDownloadUrl }}" target="_blank">
+                                {{ __('Download XLSX') }}
+                            </a>
+                        @else
+                            <button class="btn btn-sm btn-secondary" disabled>{{ __('No XLSX (no changes)') }}</button>
+                        @endif
+                    </div>
+
+                    @if(empty($syncChanges))
+                        <div class="alert alert-info mb-0">
+                            {{ __('No price changes were detected.') }}
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('Image') }}</th>
+                                        <th>{{ __('Name (EN)') }}</th>
+                                        <th>{{ __('SKU') }}</th>
+                                        <th>{{ __('Material ID') }}</th>
+                                        <th>{{ __('Old Price') }}</th>
+                                        <th>{{ __('New Price') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($syncChanges as $c)
+                                    <tr>
+                                        <td style="width:70px">
+                                            @if(!empty($c['image']))
+                                                <img src="{{ $c['image'] }}" style="width:55px;height:55px;object-fit:cover;border-radius:8px;">
+                                            @else
+                                                <img src="{{ app('logo_1024') }}" style="width:55px;height:55px;object-fit:cover;border-radius:8px;">
+                                            @endif
+                                        </td>
+
+                                        <td>{{ $c['en_name'] ?? 'Unknown' }}</td>
+                                        <td>{{ $c['sku'] }}</td>
+                                        <td>{{ $c['material_id'] }}</td>
+                                        <td>{{ $c['old_price'] }}</td>
+                                        <td>{{ $c['new_price'] }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
     @push('tProductScripts')
     <script>
@@ -388,6 +496,11 @@
             var input = document.getElementById('priority_' + itemId);
             var updatedPriority = input.value;
             @this.call('updatePriority', itemId, updatedPriority);
+        }
+        function updateMaterialValue(itemId) {
+            var input = document.getElementById('material_' + itemId);
+            var updatedMaterial = input.value;
+            @this.call('updateMaterial', itemId, updatedMaterial);
         }
         function updatePriceValue(itemId) {
             var input = document.getElementById('price_' + itemId);
@@ -413,5 +526,12 @@
             var updateStock = input_temp.value;
             @this.call('updateOrderLimitValue', itemId, updateOrderLimit, updateStock);
         }
+    </script>
+    <script>
+        window.addEventListener('open-sync-modal', function () {
+            const el = document.getElementById('syncResultModal');
+            const modal = new bootstrap.Modal(el);
+            modal.show();
+        });
     </script>
     @endpush

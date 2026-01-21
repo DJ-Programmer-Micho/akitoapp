@@ -1,35 +1,68 @@
 <div class="page-content">
-<style>
-    .filter-colors a {
-    position: relative;
-    display: block;
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 50%;
-    border: .2rem solid #fff;
-    margin: 0 .3rem .3rem;
-    transition: box-shadow .35s ease;
-}
-</style>
+    <style>
+        .filter-colors a {
+        position: relative;
+        display: block;
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 50%;
+        border: .2rem solid #fff;
+        margin: 0 .3rem .3rem;
+        transition: box-shadow .35s ease;
+    }
+    </style>
     <div class="container-fluid">
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                     <h4 class="mb-sm-0">{{__('Products')}}</h4>
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">{{__('Dashboard')}}</a></li>
-                            <li class="breadcrumb-item active">{{__('Products Table')}}</li>
-                        </ol>
-                    </div>
 
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">{{__('Dashboard')}}</a></li>
+                                <li class="breadcrumb-item active">{{__('Products Table')}}</li>
+                            </ol>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
         <!-- end page title -->
 
         <div class="row">
+            <div class="col-xl-12">
+                    <div class="card">        
+                        <div>
+                            <div class="card-body d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                                <select class="form-select form-select-sm"
+                                        style="max-width: 220px"
+                                        wire:model="phenix_system_id">
+                                    <option value="">{{ __('Select Phenix System') }}</option>
+
+                                    @foreach($phenixSystems as $sys)
+                                        <option value="{{ $sys->id }}">
+                                            {{ $sys->name }} ({{ $sys->code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                <button class="btn btn-warning btn-sm"
+                                        wire:click="syncPhenixPrices"
+                                        wire:loading.attr="disabled"
+                                        wire:target="syncPhenixPrices"
+                                        @disabled(!$phenix_system_id)>
+                                    <span wire:loading.remove wire:target="syncPhenixPrices">{{ __('SYNC') }}</span>
+                                    <span wire:loading wire:target="syncPhenixPrices">{{ __('SYNCING...') }}</span>
+                                </button>
+
+
+                            </div>
+                        </div>
+                    </div>
+            </div>
             <div class="col-xl-9 col-lg-8">
                 <div>
                     <div class="card">        
@@ -75,6 +108,7 @@
                                     <thead>
                                         <tr>
                                             <th>{{__('Product')}}</th>
+                                            <th class="text-danger">{{__('Material ID')}}</th>
                                             <th>{{__('Price')}}</th>
                                             <th>{{__('Old Price')}}</th>
                                             <th>{{__('Published')}}</th>
@@ -100,6 +134,14 @@
                                                             <h6 class="mb-0">{{ $data->productTranslation->first()->name ?? 'unKnown' }}</h6>
                                                             <p class="mb-0">{{__('Category:')}} {{ $data->categories->first()->categoryTranslation->name }}</p>
                                                         </div>
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <input type="number" id="material_{{ $data->id }}" value="{{ $data->variation->material_id }}" class="form-control bg-dark text-white" style="max-width: 80px">
+                                                        <button type="button" class="btn btn-secondary btn-icon text-dark"  onclick="updateMaterialValue({{ $data->id }})">
+                                                            <i class="fas fa-barcode"></i>
+                                                        </button>
                                                     </div>
                                                 </td>
                                                 <td class="align-middle text-center">
@@ -270,7 +312,7 @@
                             </div>
                         </div>
                         <!-- end accordion-item -->
-{{--     
+                                        {{--     
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="flush-headingSubCategories">
                                 <button class="accordion-button bg-transparent shadow-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSubCategories">
@@ -412,6 +454,78 @@
             </div>
         </div> 
 
+        <div class="modal fade" id="syncResultModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('Sync Results') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <div>
+                                <strong>{{ __('Changes') }}:</strong> {{ count($syncChanges ?? []) }}
+                            </div>
+
+                            @if(!empty($syncDownloadUrl))
+                                <a class="btn btn-sm btn-success" href="{{ $syncDownloadUrl }}" target="_blank">
+                                    {{ __('Download XLSX') }}
+                                </a>
+                            @else
+                                <button class="btn btn-sm btn-secondary" disabled>{{ __('No XLSX (no changes)') }}</button>
+                            @endif
+                        </div>
+
+                        @if(empty($syncChanges))
+                            <div class="alert alert-info mb-0">
+                                {{ __('No price changes were detected.') }}
+                            </div>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ __('Image') }}</th>
+                                            <th>{{ __('Name (EN)') }}</th>
+                                            <th>{{ __('SKU') }}</th>
+                                            <th>{{ __('Material ID') }}</th>
+                                            <th>{{ __('Old Price') }}</th>
+                                            <th>{{ __('New Price') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($syncChanges as $c)
+                                        <tr>
+                                            <td style="width:70px">
+                                                @if(!empty($c['image']))
+                                                    <img src="{{ $c['image'] }}" style="width:55px;height:55px;object-fit:cover;border-radius:8px;">
+                                                @else
+                                                    <img src="{{ app('logo_1024') }}" style="width:55px;height:55px;object-fit:cover;border-radius:8px;">
+                                                @endif
+                                            </td>
+
+                                            <td>{{ $c['en_name'] ?? 'Unknown' }}</td>
+                                            <td>{{ $c['sku'] }}</td>
+                                            <td>{{ $c['material_id'] }}</td>
+                                            <td>{{ $c['old_price'] }}</td>
+                                            <td>{{ $c['new_price'] }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
 
@@ -423,4 +537,19 @@
             @this.call('updatePriority', itemId, updatedPriority);
         }
     </script>
+    <script>
+        function updateMaterialValue(itemId) {
+            var input = document.getElementById('material_' + itemId);
+            var updatedMaterial = input.value;
+            @this.call('updateMaterial', itemId, updatedMaterial);
+        }
+    </script>
+    <script>
+        window.addEventListener('open-sync-modal', function () {
+            const el = document.getElementById('syncResultModal');
+            const modal = new bootstrap.Modal(el);
+            modal.show();
+        });
+    </script>
     @endpush
+</div>
