@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('password');
             $table->text('token')->nullable(); // phenixtoken
 
+            $table->unsignedSmallInteger('billtype');
+            $table->unsignedSmallInteger('warehouseid');
             $table->boolean('is_active')->default(true);
 
             // Optional operational fields

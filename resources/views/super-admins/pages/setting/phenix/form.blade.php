@@ -43,6 +43,8 @@
                                         <th>{{ __('Code') }}</th>
                                         <th>{{ __('Base URL') }}</th>
                                         <th>{{ __('Active') }}</th>
+                                        <th>{{ __('Bill Type') }}</th>
+                                        <th>{{ __('Warehouse') }}</th>
                                         <th style="width: 180px;">{{ __('Actions') }}</th>
                                     </tr>
                                     </thead>
@@ -55,11 +57,13 @@
                                             <td class="text-break">{{ $system->base_url }}</td>
                                             <td>
                                                 @if($system->is_active)
-                                                    <span class="badge bg-success">{{ __('Yes') }}</span>
+                                                <span class="badge bg-success">{{ __('Yes') }}</span>
                                                 @else
-                                                    <span class="badge bg-secondary">{{ __('No') }}</span>
+                                                <span class="badge bg-secondary">{{ __('No') }}</span>
                                                 @endif
                                             </td>
+                                            <td><code>{{ $system->billtype }}</code></td>
+                                            <td><code>{{ $system->warehouseid }}</code></td>
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <button class="btn btn-sm btn-warning"
@@ -170,6 +174,41 @@
                                     <small class="text-muted">{{ __('Leave blank to keep current token') }}</small>
                                 @endif
                             </div>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">{{ __('Bill Type') }}</label>
+                                    <input type="number" class="form-control" wire:model.defer="billtype" min="1">
+                                    @error('billtype') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <small class="text-muted">
+                                        {{ __('Example: Italian=136, Monin=75') }}
+                                    </small>
+                                </div>
+
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">{{ __('Warehouse ID') }}</label>
+                                    <input type="number" class="form-control" wire:model.defer="warehouseid" min="1">
+                                    @error('warehouseid') <span class="text-danger">{{ $message }}</span> @enderror
+                                    <small class="text-muted">
+                                        {{ __('Example: Italian=11, Monin=12') }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">{{ __('Timeout (seconds)') }}</label>
+                                    <input type="number" class="form-control" wire:model.defer="timeout_seconds" min="1" max="120">
+                                    @error('timeout_seconds') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">{{ __('Retry Times') }}</label>
+                                    <input type="number" class="form-control" wire:model.defer="retry_times" min="0" max="10">
+                                    @error('retry_times') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+
 
                             <div class="form-check form-switch mb-3">
                                 <input class="form-check-input" type="checkbox" role="switch"

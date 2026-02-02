@@ -157,6 +157,7 @@ class AdjustProductLivewire extends Component
         // Update on product_variations table
         $product->variation->update([
             'material_id' => $materialId,
+            'phenix_system_id' => $this->phenix_system_id ?: $product->variation->phenix_system_id,
         ]);
 
         $this->dispatchBrowserEvent('alert', [
@@ -478,7 +479,31 @@ class AdjustProductLivewire extends Component
             'phenixSystems' => $this->phenixSystems,
         ]);
     }
-    
+
+    public function updateSystem(int $productId, $systemId): void
+    {
+        $systemId = ($systemId === '' || $systemId === null) ? null : (int) $systemId;
+
+        $product = Product::with('variation')->find($productId);
+
+        if (!$product || !$product->variation) {
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => __('Record not found or no variation'),
+            ]);
+            return;
+        }
+
+        $product->variation->update([
+            'phenix_system_id' => $systemId,
+        ]);
+
+        $this->dispatchBrowserEvent('alert', [
+            'type' => 'success',
+            'message' => __('System updated successfully'),
+        ]);
+    }
+
     public function syncPhenixPrices(): void
     {
         @set_time_limit(0);
@@ -596,7 +621,8 @@ class AdjustProductLivewire extends Component
                         $q->orderByRaw('is_primary DESC, priority ASC, id ASC')
                         ->select('id','variation_id','image_path','priority','is_primary');
                     }
-                ])
+                    ])
+                ->where('phenix_system_id', $system->id)
                 ->whereNotNull('material_id')
                 ->where('material_id', '>', 0)
                 ->whereIn('material_id', array_keys($priceMap))

@@ -16,6 +16,7 @@ use App\Models\SubCategory;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use App\Models\DiscountRule;
+use App\Models\PhenixSystem;
 use Illuminate\Http\Request;
 use App\Models\VariationSize;
 use App\Models\PaymentMethods;
@@ -1187,101 +1188,267 @@ class BusinessController extends Controller
     private function sendBillToPhenix(PhenixApiService $phenix, $order, $cartItems): bool
     {
         try {
-            // Baghdad time (adjust if your server timezone differs)
-            $now  = Carbon::now('Asia/Baghdad');
-            $shippingIQD = (int) ($order->shipping_amount ?? 0);
+            $now = Carbon::now('Asia/Baghdad');
 
-            // order->total_amount_iqd = (items + payment fee) in your DB
-            $itemsPlusFeeIQD = (int) ($order->total_amount_iqd ?? 0);
+            // totals stored on order
+            $shippingIQD     = (int) ($order->shipping_amount ?? 0);
+            $itemsPlusFeeIQD = (int) ($order->total_amount_iqd ?? 0); // items + payment fees (your DB rule)
 
-            // subtotal of items after discounts (from cart)
+            // subtotal of items after discounts (from cartItems final_price * qty)
             $itemsSubtotalIQD = (int) $cartItems->sum(function ($item) {
                 $final = (float) ($item->final_price ?? 0);
                 $qty   = (int) ($item->quantity ?? 1);
-                return round($final) * $qty;
+                return (int) round($final) * $qty;
             });
 
             $paymentFeesIQD = max(0, $itemsPlusFeeIQD - $itemsSubtotalIQD);
 
-            $note = trim(($order->first_name ?? '') . ' ' . ($order->last_name ?? '') . ' - ' . ($order->phone_number ?? ''))
-                . ' | Shipping: ' . number_format($shippingIQD) . ' IQD'
-                . ' | Payment Fees: ' . number_format($paymentFeesIQD) . ' IQD';
+            /**
+             * ✅ Group cart items by system_id (from product_variations.phenix_system_id)
+             * Keys may come as strings from Collection, so we normalize later.
+             */
+            $groups = $cartItems->groupBy(function ($item) {
+                return (int) data_get($item, 'product.variation.phenix_system_id', 0);
+            });
 
+            // invalid items (system_id missing)
+            $invalidItems = $groups->get(0) ?? collect();
+            if ($invalidItems->count() > 0) {
+                Log::warning("Checkout: items missing phenix_system_id (skipped)", [
+                    'order_id' => $order->id,
+                    'items' => $invalidItems->map(fn($i) => [
+                        'product_id' => $i->product_id ?? null,
+                        'sku' => data_get($i, 'product.variation.sku'),
+                    ])->values()->all(),
+                ]);
+            }
 
-            $details = $cartItems->map(function ($item) {
-                $product   = $item->product;
-                $variation = $product->variation;
+            // keep only valid system groups
+            $groups = $groups->reject(fn($items, $sysId) => (int) $sysId <= 0);
 
-                $unitId     = $variation->unit_id;      // Phenix unit_id
-                $materialId = $variation->material_id;  // Phenix material_id
-
-                $baseMinor  = (int) round((float) ($item->base_price ?? $variation->price ?? 0));     // original
-                $finalMinor = (int) round((float) ($item->final_price ?? $baseMinor));                // after discounts
-
-                // ✅ discount amount (NOT final price)
-                $discountMinor = max(0, $baseMinor - $finalMinor);
-
-                return [
-                    "unitid"        => (int) $unitId,
-                    "itemprice"     => $baseMinor,                 // ✅ original price
-                    "itemid"        => (int) $materialId,
-                    "discountvalue" => $discountMinor * (int) ($item->quantity ?? 1),             // ✅ discount amount
-                    "quantity"      => (int) ($item->quantity ?? 1),
-                    "vatvalue"      => 0,
-                ];
-            })->values()->all();
-
-
-
-            $payload = [
-                "_parameters" => [
-                    [
-                        "billdata" => [
-                            "customerManipulateid" => 0,
-                            "discountamount"       => 0,
-                            "salesmanid"           => 0,
-                            "receiptid"            => (string) $order->tracking_number, // tracking_number
-                            "CheckDataValidation"  => 0,
-
-                            "dateMonth"            => (int) $now->month,
-                            "dateMinute"           => (int) $now->minute,
-                            "dateYear"             => (int) $now->year,
-                            "dateHour"             => (int) $now->hour,
-                            "dateDay"              => (int) $now->day,
-
-                            "iscash"               => 0,
-                            "customerid"           => 0,
-                            "billtype"             => 136,
-                            "currencyid"           => 2,
-                            "note"                 => $note,
-                            "warehouseid"          => 11,
-                        ],
-                        "billdetaildata" => $details,
-                    ]
-                ]
-            ];
-            $systemCode = config('phenix.systems')[0] ?? null;
-            if (!$systemCode) {
-                Log::error("Phenix systems not configured (PHENIX_SYSTEMS empty)");
+            if ($groups->isEmpty()) {
+                Log::warning("Checkout: no items with phenix_system_id, nothing sent to Phenix", [
+                    'order_id' => $order->id,
+                ]);
                 return false;
             }
 
-            $res = $phenix->putBill($systemCode, $payload);
+            // ✅ Load systems (id => system) including billtype/warehouseid
+            $systemIds = $groups->keys()->map(fn($x) => (int) $x)->values()->all();
 
-            Log::info("Phenix Bill PUT success", [
-                'order_id' => $order->id,
-                'tracking' => $order->tracking_number,
-                'response' => $res,
-            ]);
+            $systems = PhenixSystem::query()
+                ->whereIn('id', $systemIds)
+                ->where('is_active', true)
+                ->get(['id', 'name', 'code', 'billtype', 'warehouseid'])
+                ->keyBy('id');
 
-            return true;
+            /**
+             * ✅ Remove groups whose system is missing/inactive
+             * (otherwise allocation ratios break)
+             */
+            $groups = $groups->filter(function ($items, $sysId) use ($systems, $order) {
+                $sysId = (int) $sysId;
+                if (!$systems->has($sysId)) {
+                    Log::error("Checkout: PhenixSystem not found/active, skipping system group", [
+                        'order_id'   => $order->id,
+                        'system_id'  => $sysId,
+                        'item_count' => $items->count(),
+                    ]);
+                    return false;
+                }
+                return true;
+            });
+
+            if ($groups->isEmpty()) {
+                Log::warning("Checkout: all system groups invalid/inactive, nothing sent", [
+                    'order_id' => $order->id,
+                ]);
+                return false;
+            }
+
+            // ✅ Calculate each group subtotal (to allocate shipping/fees proportionally)
+            $groupSubtotals = [];
+            $totalAllGroups = 0;
+
+            foreach ($groups as $sysId => $items) {
+                $subtotal = (int) $items->sum(function ($item) {
+                    $final = (float) ($item->final_price ?? 0);
+                    $qty   = (int) ($item->quantity ?? 1);
+                    return (int) round($final) * $qty;
+                });
+
+                $groupSubtotals[(int) $sysId] = $subtotal;
+                $totalAllGroups += $subtotal;
+            }
+
+            // edge case: all are zero
+            if ($totalAllGroups <= 0) {
+                $totalAllGroups = 1;
+            }
+
+            // ✅ Allocate shipping + fees (rounding-safe)
+            $allocShipping = [];
+            $allocFees     = [];
+
+            $remainingShipping = $shippingIQD;
+            $remainingFees     = $paymentFeesIQD;
+
+            $sysKeys = array_keys($groupSubtotals);
+            $lastSys = (int) $sysKeys[array_key_last($sysKeys)];
+
+            foreach ($groupSubtotals as $sysId => $subtotal) {
+                $sysId = (int) $sysId;
+
+                if ($sysId === $lastSys) {
+                    // last system gets remainder
+                    $allocShipping[$sysId] = $remainingShipping;
+                    $allocFees[$sysId]     = $remainingFees;
+                    break;
+                }
+
+                $ratio = $subtotal / $totalAllGroups;
+
+                $s = (int) floor($shippingIQD * $ratio);
+                $f = (int) floor($paymentFeesIQD * $ratio);
+
+                $allocShipping[$sysId] = $s;
+                $allocFees[$sysId]     = $f;
+
+                $remainingShipping -= $s;
+                $remainingFees     -= $f;
+            }
+
+            $allOk = true;
+
+            // ✅ Send a bill per system
+            foreach ($groups as $sysId => $items) {
+                $sysId = (int) $sysId;
+
+                /** @var PhenixSystem $system */
+                $system = $systems->get($sysId);
+
+                // ✅ Build details, but skip invalid item mappings safely
+                $details = [];
+                $skipped = [];
+
+                foreach ($items as $item) {
+                    $variation   = data_get($item, 'product.variation');
+
+                    $unitId     = (int) data_get($variation, 'unit_id', 0);
+                    $materialId = (int) data_get($variation, 'material_id', 0);
+
+                    if ($unitId <= 0 || $materialId <= 0) {
+                        $skipped[] = [
+                            'product_id'  => $item->product_id ?? null,
+                            'sku'         => data_get($variation, 'sku'),
+                            'material_id' => $materialId,
+                            'unit_id'     => $unitId,
+                        ];
+                        continue;
+                    }
+
+                    $baseMinor  = (int) round((float) ($item->base_price ?? data_get($variation, 'price', 0)));
+                    $finalMinor = (int) round((float) ($item->final_price ?? $baseMinor));
+
+                    $qty = (int) ($item->quantity ?? 1);
+                    $discountMinor = max(0, $baseMinor - $finalMinor);
+
+                    $details[] = [
+                        "unitid"        => $unitId,
+                        "itemprice"     => $baseMinor,                 // original price
+                        "itemid"        => $materialId,
+                        "discountvalue" => $discountMinor * $qty,      // discount amount
+                        "quantity"      => $qty,
+                        "vatvalue"      => 0,
+                    ];
+                }
+
+                if (!empty($skipped)) {
+                    Log::warning("Checkout: skipped items missing material_id/unit_id for system bill", [
+                        'order_id'  => $order->id,
+                        'system_id' => $sysId,
+                        'system'    => $system->code ?? null,
+                        'skipped'   => $skipped,
+                    ]);
+                }
+
+                // If no valid details for this system, skip bill
+                if (empty($details)) {
+                    Log::warning("Checkout: no valid bill lines for system, bill not sent", [
+                        'order_id'  => $order->id,
+                        'system_id' => $sysId,
+                        'system'    => $system->code ?? null,
+                    ]);
+                    $allOk = false;
+                    continue;
+                }
+
+                // per-system note
+                $note = trim(($order->first_name ?? '') . ' ' . ($order->last_name ?? '') . ' - ' . ($order->phone_number ?? ''))
+                    . ' | Order: ' . ($order->tracking_number ?? $order->id)
+                    . ' | System: ' . $system->name . ' (' . $system->code . ')'
+                    . ' | Shipping: ' . number_format($allocShipping[$sysId] ?? 0) . ' IQD'
+                    . ' | Payment Fees: ' . number_format($allocFees[$sysId] ?? 0) . ' IQD';
+
+                // unique receipt id per system (avoid duplicates inside Phenix)
+                $receiptId = (string) ($order->tracking_number ?? $order->id) . '-' . strtoupper((string) $system->code);
+
+                // ✅ System-configured values (fallbacks just in case)
+                $billType     = (int) ($system->billtype ?? 136);
+                $warehouseId  = (int) ($system->warehouseid ?? 11);
+
+                $payload = [
+                    "_parameters" => [
+                        [
+                            "billdata" => [
+                                "customerManipulateid" => 0,
+                                "discountamount"       => 0,
+                                "salesmanid"           => 0,
+                                "receiptid"            => $receiptId,
+                                "CheckDataValidation"  => 0,
+
+                                "dateMonth"            => (int) $now->month,
+                                "dateMinute"           => (int) $now->minute,
+                                "dateYear"             => (int) $now->year,
+                                "dateHour"             => (int) $now->hour,
+                                "dateDay"              => (int) $now->day,
+
+                                "iscash"               => 0,
+                                "customerid"           => 0,
+                                "billtype"             => $billType,
+                                "currencyid"           => 2,
+                                "note"                 => $note,
+                                "warehouseid"          => $warehouseId,
+                            ],
+                            "billdetaildata" => $details,
+                        ]
+                    ]
+                ];
+
+                $res = $phenix->putBill($system->code, $payload);
+
+                Log::info("Phenix Bill PUT success (system split)", [
+                    'order_id'   => $order->id,
+                    'tracking'   => $order->tracking_number,
+                    'system_id'  => $sysId,
+                    'system'     => $system->code,
+                    'receipt'    => $receiptId,
+                    'billtype'   => $billType,
+                    'warehouse'  => $warehouseId,
+                    'lines'      => count($details),
+                    'response'   => $res,
+                ]);
+            }
+
+            return $allOk;
 
         } catch (\Throwable $e) {
-            Log::error("Phenix Bill PUT failed: " . $e->getMessage(), [
-                'order_id' => $order->id ?? null,
-                'tracking' => $order->tracking_number ?? null,
+            Log::error("Phenix Bill PUT failed (system split): " . $e->getMessage(), [
+                'order_id'  => $order->id ?? null,
+                'tracking'  => $order->tracking_number ?? null,
             ]);
             return false;
         }
     }
+
 }

@@ -18,9 +18,14 @@ class PhenixSystemsLivewire extends Component
     public $base_url = '';
     public $username = '';
 
+    public $timeout_seconds = 10;
+    public $retry_times = 2;
     // Secrets: keep separate "inputs" so we can avoid showing stored values
     public $password = '';
     public $token = '';
+
+    public $billtype  = null;
+    public $warehouseid  = null;
 
     public $is_active = true;
 
@@ -55,6 +60,12 @@ class PhenixSystemsLivewire extends Component
         $this->password = '';
         $this->token = '';
 
+        $this->billtype = null;
+        $this->warehouseid = null;
+
+        $this->timeout_seconds = 10;
+        $this->retry_times = 2;
+
         $this->is_active = true;
 
         $this->test_result = null;
@@ -76,9 +87,14 @@ class PhenixSystemsLivewire extends Component
         $this->username = $system->username;
         $this->is_active = (bool) $system->is_active;
 
+        $this->billtype     = (int) ($system->billtype ?? 000);
+        $this->warehouseid  = (int) ($system->warehouseid ?? 00);
         // Do NOT load password/token into the form for security.
         $this->password = '';
         $this->token = '';
+
+        $this->timeout_seconds = (int) ($system->timeout_seconds ?? 10);
+        $this->retry_times     = (int) ($system->retry_times ?? 2);
 
         $this->test_result = null;
     }
@@ -96,6 +112,13 @@ class PhenixSystemsLivewire extends Component
             'base_url' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255'],
 
+            // ✅ new config
+            'billtype'    => ['required', 'integer', 'min:1', 'max:9999'],
+            'warehouseid' => ['required', 'integer', 'min:1', 'max:9999'],
+
+            // ✅ ops
+            'timeout_seconds' => ['required', 'integer', 'min:1', 'max:120'],
+            'retry_times'     => ['required', 'integer', 'min:0', 'max:10'],
             // Secrets:
             // - on create: required
             // - on edit: optional (only update if user types something)
@@ -114,6 +137,12 @@ class PhenixSystemsLivewire extends Component
             'base_url'  => $this->base_url,
             'username'  => $this->username,
             'is_active' => $this->is_active ? 1 : 0,
+
+            'billtype'     => (int) $this->billtype,
+            'warehouseid'  => (int) $this->warehouseid,
+
+            'timeout_seconds' => (int) $this->timeout_seconds,
+            'retry_times'     => (int) $this->retry_times,
         ];
 
         // Only update secrets if provided

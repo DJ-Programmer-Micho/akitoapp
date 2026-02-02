@@ -122,9 +122,25 @@
                                                             <img src="{{ app('cloudfront').$data->variation->images->first()->image_path }}" alt="{{ $data->name }}" class="img-fluid" style="max-width: 60px; max-height: 60px; object-fit: cover;">
                                                         </div>
                                                         <div>
-
                                                             <h6 class="mb-0">{{ $data->productTranslation->first()->name ?? 'unKnown' }}</h6>
                                                             <p class="mb-0">{{__('Category:')}} {{ $data->categories->first()->categoryTranslation->name }}</p>
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <small class="text-muted">{{ __('System:') }}</small>
+
+                                                                <select id="system_{{ $data->id }}"
+                                                                        class="form-select form-select-sm"
+                                                                        style="max-width: 160px;"
+                                                                        onchange="updateSystemValue({{ $data->id }})">
+                                                                    <option value="">{{ __('None') }}</option>
+
+                                                                    @foreach($phenixSystems as $sys)
+                                                                        <option value="{{ $sys->id }}"
+                                                                            @selected(optional($data->variation)->phenix_system_id == $sys->id)>
+                                                                            {{ $sys->name }} ({{ $sys->code }})
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -525,6 +541,19 @@
             var updateOrderLimit = input.value;
             var updateStock = input_temp.value;
             @this.call('updateOrderLimitValue', itemId, updateOrderLimit, updateStock);
+        }
+        window._sysTimers = window._sysTimers || {};
+
+        function updateSystemValue(itemId) {
+            const input = document.getElementById('system_' + itemId);
+            const systemId = input.value; // "" means None
+
+            // debounce per-row (300ms)
+            if (window._sysTimers[itemId]) clearTimeout(window._sysTimers[itemId]);
+
+            window._sysTimers[itemId] = setTimeout(() => {
+                @this.call('updateSystem', itemId, systemId);
+            }, 300);
         }
     </script>
     <script>

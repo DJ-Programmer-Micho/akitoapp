@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PhenixSystem extends Model
 {
     protected $fillable = [
-        'name','code','base_url','username','password','token',
+        'name','code','base_url','username','password','token','billtype','warehouseid',
         'is_active','timeout_seconds','retry_times',
     ];
 

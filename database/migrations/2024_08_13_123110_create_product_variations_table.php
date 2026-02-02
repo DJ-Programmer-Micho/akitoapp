@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('material_id')->nullable();
             $table->unsignedBigInteger('unit_id')->nullable();
             $table->string('sku')->nullable()->unique();
+            $table->unsignedBigInteger('phenix_system_id')->nullable();
             $table->string('keywords')->nullable();
             $table->decimal('price', 12, 0);
             $table->decimal('discount', 12, 0)->nullable();

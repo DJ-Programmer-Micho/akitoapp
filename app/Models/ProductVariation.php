@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductVariation extends Model
 {
@@ -14,6 +14,7 @@ class ProductVariation extends Model
         'material_id',
         'unit_id',
         'keywords',
+        'phenix_system_id',
         'price',
         'discount',
         'stock',
@@ -25,9 +26,11 @@ class ProductVariation extends Model
     protected $casts = [
         'keywords' => 'array',
         'material_id' => 'integer',
+        'phenix_system_id' => 'integer',    
     ];
 
     public function product() { return $this->hasMany(Product::class, 'variation_id'); }
+    public function phenixSystem() { return $this->belongsTo(PhenixSystem::class, 'phenix_system_id');}
     public function images() { return $this->hasMany(ProductImage::class, 'variation_id'); }
     public function colors() { return $this->belongsToMany(VariationColor::class, 'product_variation_color'); }
     public function sizes() { return $this->belongsToMany(VariationSize::class, 'product_variation_size'); }
