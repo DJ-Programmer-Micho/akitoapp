@@ -350,8 +350,8 @@ class DashboardLivewire extends Component
     {
         return Customer::with(['customer_profile'])
             ->withCount('orders')
-            ->withSum('orders', 'total_amount_usd')
-            ->orderBy('orders_sum_total_amount_usd', 'desc')
+            ->withSum('orders', 'total_amount_iqd')
+            ->orderBy('orders_sum_total_amount_iqd', 'desc')
             ->take($limit)
             ->get();
     }

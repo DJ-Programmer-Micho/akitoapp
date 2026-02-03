@@ -28,6 +28,8 @@
             <!-- Current Page Breadcrumb Item -->
             @if(request()->is('*/shop'))
             <li class="breadcrumb-item active" aria-current="page">{{__('Products')}}</li>
+            @elseif(request()->is('*/register'))
+                <li class="breadcrumb-item active" aria-current="page">{{ __('Register') }}</li>
             @else
             <li class="breadcrumb-item active" aria-current="page">{{__('Items')}}</li>
             @endif

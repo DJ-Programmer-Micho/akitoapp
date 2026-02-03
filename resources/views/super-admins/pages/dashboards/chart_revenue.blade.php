@@ -226,12 +226,12 @@ document.addEventListener('livewire:load', function () {
             y: [
                 {
                     formatter: function (val) {
-                        return val !== undefined ? val.toFixed(0) : val;
+                        return val !== undefined ? val.toFixed(0) + " QTY" : val;
                     }
                 },
                 {
                     formatter: function (val) {
-                        return val !== undefined ? "$" + val.toFixed(2) + "k" : val;
+                        return val !== undefined ? val.toFixed(2) + "k" + " IQD" : val;
                     }
                 },
                 {

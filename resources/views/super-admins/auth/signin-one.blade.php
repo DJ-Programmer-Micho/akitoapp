@@ -1,5 +1,12 @@
 @extends('super-admins.auth.layout')
 @section('super-admin-auth')
+<style>
+    .g-recaptcha {
+    overflow:hidden;
+    width:298px;
+    height:74px;
+}
+</style>
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6 col-xl-5">
         <div class="card mt-4">
@@ -46,7 +53,15 @@
                             <input class="form-check-input" type="checkbox" value="1" id="auth-remember-check" name="remember">
                             <label class="form-check-label" for="auth-remember-check">Remember me</label>
                         </div>
-
+                        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                        <div class="mt-3">
+                            <div data-theme="dark" class="g-recaptcha" data-sitekey="{!! env('GOOGLE_RECAPTCHA_KEY') !!}"></div>
+                            @error('g-recaptcha-response')
+                                <div class="text-danger mt-1" style="font-size: 13px;">
+                                    {{ __('Please Check reCaptcha') }}
+                                </div>
+                            @enderror
+                        </div>
                         <div class="mt-4">
                             <button class="btn btn-success w-100" type="submit">Sign In</button>
                         </div>

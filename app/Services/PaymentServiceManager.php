@@ -201,20 +201,19 @@ class PaymentServiceManager
     // MAIN FUNTION FOR POST SEND TO FIB PROVIDER
     private function processFIBPayment()
     {
-        $accessToken = $this->getFIBToken();
-        if (!$accessToken) return false;
-        
+        $fib = app(\App\Services\FibService::class);
+
         if ($this->mode === 'wallet_topup') {
-            $description = "Wallet top-up #{$this->topupPayment?->id} (customer #{$this->topupCustomer?->id})";
+            $description  = "Wallet top-up #{$this->topupPayment?->id} (customer #{$this->topupCustomer?->id})";
             $orderIdForTxn = null;
         } else {
-            $description = "Order #{$this->order->id}";
+            $description  = "Order #{$this->order->id}";
             $orderIdForTxn = $this->order->id;
         }
 
-        $paymentData = [
+        $payload = [
             "monetaryValue" => [
-                "amount"   => (int)$this->amount,
+                "amount"   => (int) $this->amount,
                 "currency" => "IQD",
             ],
             "statusCallbackUrl" => url('/api/payment/callback/fib'),
@@ -224,46 +223,39 @@ class PaymentServiceManager
             "refundableFor"     => "PT24H",
         ];
 
-        $paymentResponse = Http::withHeaders([
-            'Authorization' => "Bearer $accessToken",
-            'Content-Type'  => 'application/json',
-        ])->post('https://fib.stage.fib.iq/protected/v1/payments', $paymentData);
+        $resp = $fib->createPayment($payload);
 
-        if (!$paymentResponse->successful()) {
-            Log::error('FIB Payment Error: ' . $paymentResponse->body());
+        if (!$resp || empty($resp['paymentId'])) {
+            Log::error('FIB Payment Error: createPayment failed', ['resp' => $resp]);
             return false;
         }
 
-        $resp = $paymentResponse->json();
-
-        // Write Transaction (pending)
         Transaction::create([
             'id'           => $resp['paymentId'],
-            'payment_id'   => $this->paymentId ?? null,  // if you add payment_id column
-            'order_id'     => $orderIdForTxn,            // null in wallet_topup mode
+            'payment_id'   => $this->paymentId ?? null,
+            'order_id'     => $orderIdForTxn,
             'provider'     => 'FIB',
-            'amount_minor' => (int)$this->amount,
-            'amount'       => (int)$this->amount,        // if you're still using "amount" decimal
+            'amount_minor' => (int) $this->amount,
+            'amount'       => (int) $this->amount,
             'currency'     => 'IQD',
             'status'       => 'pending',
             'response'     => $resp,
         ]);
 
-        // expose to session for your view
         session([
-            'qrCode'         => $resp['qrCode'] ?? null,
-            'readableCode'   => $resp['readableCode'] ?? null,
-            'personalAppLink'=> $resp['personalAppLink'] ?? null,
+            'qrCode'          => $resp['qrCode'] ?? null,
+            'readableCode'    => $resp['readableCode'] ?? null,
+            'personalAppLink' => $resp['personalAppLink'] ?? null,
         ]);
 
-        // unify outbound format
         return [
-            'paymentId'    => $resp['paymentId'],
-            'qrCode'       => $resp['qrCode']        ?? null,
-            'readableCode' => $resp['readableCode']  ?? null,
-            'appLink'      => $resp['personalAppLink'] ?? null,
+            'paymentId'     => $resp['paymentId'],
+            'qrCode'        => $resp['qrCode'] ?? null,
+            'readableCode'  => $resp['readableCode'] ?? null,
+            'appLink'       => $resp['personalAppLink'] ?? null,
         ];
     }
+
 
 
     // STEP - 1: GET THE BEARER TOKEN
@@ -286,22 +278,26 @@ class PaymentServiceManager
     }
 
     // STEP - 2: CALLED BY CALLBACK
+    // public function fetchFIBPaymentStatus($paymentId)
+    // {
+    //     try {
+    //         $accessToken = $this->getFIBToken();
+    //         if (!$accessToken) return false;
+
+    //         $statusResponse = Http::withToken($accessToken)
+    //             ->get("https://fib.stage.fib.iq/protected/v1/payments/{$paymentId}/status");
+
+    //         if (!$statusResponse->successful()) return false;
+
+    //         return $statusResponse->json();
+    //     } catch (\Exception $e) {
+    //         Log::error("FIB Payment Status Exception: " . $e->getMessage());
+    //         return false;
+    //     }
+    // }
     public function fetchFIBPaymentStatus($paymentId)
     {
-        try {
-            $accessToken = $this->getFIBToken();
-            if (!$accessToken) return false;
-
-            $statusResponse = Http::withToken($accessToken)
-                ->get("https://fib.stage.fib.iq/protected/v1/payments/{$paymentId}/status");
-
-            if (!$statusResponse->successful()) return false;
-
-            return $statusResponse->json();
-        } catch (\Exception $e) {
-            Log::error("FIB Payment Status Exception: " . $e->getMessage());
-            return false;
-        }
+        return app(\App\Services\FibService::class)->fetchPaymentStatus((string) $paymentId);
     }
 
     //////////////////////////////

@@ -14,23 +14,29 @@ class AuthController extends Controller
         return view('super-admins.auth.signin-one');
     }
 
-    public function handleSignIn(Request $request){
-        // Validate input
+    public function handleSignIn(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string|min:6',
+            'g-recaptcha-response' => ['required', new \App\Rules\ReCaptcha],
         ]);
 
-        // Attempt login
-        // Authentication successful
-        if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
+        $remember = $request->boolean('remember');
+
+        if (Auth::guard('admin')->attempt(
+            ['email' => $request->email, 'password' => $request->password],
+            $remember
+        )) {
+            $request->session()->regenerate(); // security
             return redirect()->route('super.dashboard', ['locale' => app()->getLocale()]);
         }
-        // If authentication fails
+
         return back()->withErrors([
             'email' => 'Invalid email or password.',
-        ])->withInput();
+        ])->withInput($request->only('email'));
     }
+
     
     public function paswwordReset(){
         return view('super-admins.auth.reset-password-one');

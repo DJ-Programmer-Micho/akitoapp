@@ -48,7 +48,7 @@
                 <span class="danger" style="font-size: 12px">{{__('Please Check reCaptcha')}}</span><br>
                 @enderror
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-outline-primary-2">
+                <button type="submit" class="btn btn-primary w-100 mt-3">
                     <span>Update Password</span>
                     <i class="icon-long-arrow-right"></i>
                 </button>

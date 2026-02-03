@@ -351,7 +351,7 @@ class CustomerListRankingLivewire extends Component
         // Start the query
         $query = Customer::with(['customer_profile'])
             ->withCount('orders') // Get total orders count
-            ->withSum('orders', 'total_amount') // Get total amount spent by the customer
+            ->withSum('orders', 'total_amount_iqd') // Get total amount spent by the customer
             ->withMax('orders', 'created_at'); // Get the last order date (most recent order)
 
         // Apply status filter
@@ -385,7 +385,7 @@ class CustomerListRankingLivewire extends Component
         }
     
         // Fetch the data
-        $tableData = $query->orderBy('orders_sum_total_amount', 'DESC')->paginate(10)->withQueryString();
+        $tableData = $query->orderBy('orders_sum_total_amount_iqd', 'DESC')->paginate(10)->withQueryString();
     
         // Return the view with the data
         return view('super-admins.pages.customerranking.customer-list-ranking', [

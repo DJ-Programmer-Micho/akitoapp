@@ -177,7 +177,7 @@ class CustomerAddressController extends Controller
 
         $address->update($validated);
 
-        return redirect()->route('customer.account', ['locale' => $locale])->with('alert', [
+        return redirect()->route('customer.address', ['locale' => $locale])->with('alert', [
             'type' => 'success',
             'message' => 'Address updated successfully.'
         ]);
@@ -190,7 +190,7 @@ class CustomerAddressController extends Controller
 
         $address->delete();
 
-        return redirect()->route('customer.account', ['locale' => $locale])->with('alert', [
+        return redirect()->route('customer.address', ['locale' => $locale])->with('alert', [
             'type' => 'success',
             'message' => 'Address deleted successfully.'
         ]);

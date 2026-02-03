@@ -103,12 +103,12 @@
                                         @forelse($tableData as $data)
                                         <tr wire:key="custrank-{{ $data->id }}">
                                             <td class="customer_name @empty($data->customer_profile->first_name) text-danger @endif align-middle">
-                                                <div class="d-flex align-items-center">
+                                                <div class="d-flex align-items-center gap-2">
                                                     <img src="{{ $data->customer_profile && $data->customer_profile->avatar ? app('cloudfront').$data->customer_profile->avatar : $customerImg }}" 
                                                     alt="{{ $data->customer_profile->first_name ?? 'Unknown Customer' }}" 
                                                     class="img-fluid rounded-circle" 
                                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 3px solid white; object-position: center;">         
-                                                </div>
+                                                
                                                     <div>
                                                         <h6 class="mb-0">{{ $data->customer_profile->first_name ?? 'Unknown' }} {{ $data->customer_profile->last_name ?? '' }}</h6>
                                                         <p class="mb-0"><span>@</span>{{ $data->username ?? 'Customer' }}</p>
@@ -120,7 +120,7 @@
                                             <td class="date">{{ $data->created_at }}</td>
                                             <td class="date">{{ $data->orders_max_created_at ?? '-' }}</td>
                                             <td class="totalOrder">{{ $data->orders_count ?? 0}}</td>  <!-- Display total orders -->
-                                            <td class="totalAmount">{{ Number::currency($data->orders_sum_total_amount ?? 0) }}</td>  <!-- Display total amount -->
+                                            <td class="totalAmount">{{ number_format($data->orders_sum_total_amount_iqd ?? 0) }} IQD</td>  <!-- Display total amount -->
                                             <td class="status">
                                                 <span class="badge {{ $data->status ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} text-uppercase">
                                                     {{ $data->status ? __('Active') : __('BLOCK') }}

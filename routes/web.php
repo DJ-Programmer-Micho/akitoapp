@@ -78,17 +78,17 @@ Route::prefix('{locale}')->middleware(['LocalizationMainMiddleware'])->group(fun
     Route::post('ytuew-uasfdr-oiugo-gfhft/password/reset', [CustomerAuth::class, 'reset'])->name('password.update');
     Route::get('/success-reset-password', [CustomerAuth::class, 'successResetMsg'])->name('password.successResetMsg');
     // EMAIL
-    Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
-    Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
-    Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
-    Route::get('/resend-verify-otp/{id}/{email}', [CustomerAuth::class,'resendEmailOTP'])->name('resendEmailOTP');
-    Route::post('/email-verify-otp', [CustomerAuth::class,'verifyEmailOTP'])->name('verifyEmailOTP');
+    // Route::get('/email-verify-otp/{id}/{email}', [CustomerAuth::class,'goEmailOTP'])->name('goEmailOTP');
+    // Route::get('/update-email-otp/{id}', [CustomerAuth::class,'goReEmailOTP'])->name('goReEmailOTP');
+    // Route::post('/update-email-otp-ser/{id}', [CustomerAuth::class,'updateReEmailOTP'])->name('updateReEmailOTP');
+    // Route::get('/resend-verify-otp/{id}/{email}', [CustomerAuth::class,'resendEmailOTP'])->name('resendEmailOTP');
+    // Route::post('/email-verify-otp', [CustomerAuth::class,'verifyEmailOTP'])->name('verifyEmailOTP');
     // PHONE
-    Route::get('/verify-otp/{id}/{phone}', [CustomerAuth::class,'goOTP'])->name('goOTP');
-    Route::get('/update-phone-otp/{id}', [CustomerAuth::class,'goRePhoneOTP'])->name('goRePhoneOTP');
-    Route::post('/update-phone-otp-ser/{id}', [CustomerAuth::class,'updateRePhoneOTP'])->name('updateRePhoneOTP');
-    Route::get('/phone-resend-verify-otp/{id}/{phone}', [CustomerAuth::class,'resendPhoneOTP'])->name('resendPhoneOTP');
-    Route::post('/verify-otp', [CustomerAuth::class,'verifyOTP'])->name('verifyOTP');
+    Route::get('/verify-otp/{id}', [CustomerAuth::class, 'goOTP'])->name('goOTP');
+    Route::get('/update-phone-otp/{id}', [CustomerAuth::class, 'goRePhoneOTP'])->name('goRePhoneOTP');
+    Route::post('/update-phone-otp-ser/{id}', [CustomerAuth::class, 'updateRePhoneOTP'])->name('updateRePhoneOTP');
+    Route::get('/phone-resend-verify-otp/{id}', [CustomerAuth::class, 'resendPhoneOTP'])->name('resendPhoneOTP');
+    Route::post('/verify-otp', [CustomerAuth::class, 'verifyOTP'])->name('verifyOTP');
 });
 
 // DASHBOARD - ADMIN

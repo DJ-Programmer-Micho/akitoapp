@@ -157,16 +157,16 @@
                 <div class="form-check">
                     <input style="margin-left: -1.25rem" type="checkbox" name="terms_conditions" id="terms_conditions" required>
                     <label class="form-check-label" for="terms_conditions">
-                        I have read and agree to <a href="{{route('law.terms')}}" target="_blank" style="text-decoration: underline">Akitu's Terms & Conditions</a>
+                        I have read and agree to Italian Coffee Company's <a href="{{route('law.terms')}}" target="_blank" style="text-decoration: underline">Terms & Conditions</a>
                     </label>
                 </div>
                 <div class="form-check">
                     <input style="margin-left: -1.25rem" type="checkbox" name="privacy_policy" id="privacy_policy" required>
                     <label class="form-check-label" for="privacy_policy">
-                        I have read and agree to Akitu's <a href="{{route('law.privacy')}}" style="text-decoration: underline">Privacy Policy</a>
+                        I have read and agree to Italian Coffee Company's <a href="{{route('law.privacy')}}" style="text-decoration: underline">Privacy Policy</a>
                     </label>
                 </div>
-                <button type="submit" id="submitButton" class="btn btn-outline-primary-2">
+                <button type="submit" id="submitButton" class="btn btn-primary w-100">
                     <span>Register</span>
                     <i class="icon-long-arrow-right"></i>
                 </button>

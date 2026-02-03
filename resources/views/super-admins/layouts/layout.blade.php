@@ -73,7 +73,7 @@
     <!--Swiper slider js-->
     <script src="{{asset('dashboard/libs/swiper/swiper-bundle.min.js')}}"></script>
     <!-- Dashboard init -->
-    <script src="{{asset('dashboard/js/pages/dashboard-ecommerce.init.js')}}"></script>
+    {{-- <script src="{{asset('dashboard/js/pages/dashboard-ecommerce.init.js')}}"></script> --}}
     <!-- App js -->
     <script src="{{asset('dashboard/js/app.js')}}"></script>
     @stack('tproductscript')

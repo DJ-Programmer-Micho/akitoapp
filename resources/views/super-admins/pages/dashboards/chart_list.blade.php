@@ -152,7 +152,7 @@
                             @php
                                 $maxAvg = max(1, $topCustomers->map(function($c){
                                     $cnt = $c->orders_count;
-                                    $amt = $c->orders_sum_total_amount;
+                                    $amt = $c->orders_sum_total_amount_iqd;
                                     return $cnt ? ($amt/$cnt) : 0;
                                 })->max());
                             @endphp
@@ -165,7 +165,7 @@
                                                      . $customer->customer_profile->last_name);
     
                                     $stockOrCount = $customer->orders_count;
-                                    $totalSpent = $customer->orders_sum_total_amount;
+                                    $totalSpent = $customer->orders_sum_total_amount_iqd;
                                     $customerType = $customer->customer_profile->business_module;
                                     $avgOrderValue = $stockOrCount 
                                         ? ($totalSpent / $stockOrCount) 
@@ -207,17 +207,17 @@
                                     </td>
                                     <td>
                                         <span class="text-muted">
-                                            ${{ number_format($totalSpent, 2) }}
+                                            {{ number_format($totalSpent, 0) }} IQD
                                         </span>
                                     </td>
                                     <td>
-                                        <h5 class="fs-13 fw-semibold mb-0">
-                                            {{ round($growthPercent, 0) }}%
-                                            <i class="ri-bar-chart-fill 
-                                                {{ $growthPercent >= 50 ? 'text-success' : 'text-warning' }}
-                                                fs-16 align-middle ms-2">
-                                            </i>
-                                        </h5>
+                                    <h5 class="fs-13 fw-semibold mb-0">
+                                        {{ round($growthPercent, 0) }}%
+                                        <i class="ri-bar-chart-fill 
+                                            {{ $growthPercent >= 80 ? 'text-success' : ($growthPercent >= 50 ? 'text-warning' : 'text-danger') }}
+                                            fs-16 align-middle ms-2">
+                                        </i>
+                                    </h5>
                                     </td>
                                 </tr>
                             @endforeach
