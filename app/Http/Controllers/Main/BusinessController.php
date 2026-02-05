@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
 use App\Services\PaymentServiceManager;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\Telegram\TeleNotifyCustomerOrder;
 
 
 class BusinessController extends Controller
@@ -764,15 +766,337 @@ class BusinessController extends Controller
         ]);
     }
 
-    public function checkout(){
-        $isLoggedIn = Auth::guard('customer')->check();
-    
-        if(!$isLoggedIn){
+    public function checkout()
+    {
+        if (!Auth::guard('customer')->check()) {
             return redirect()->route('business.home', ['locale' => app()->getLocale()]);
         }
-        return view('mains.pages.checkout-page-one', [
 
-        ]);
+        return view('mains.pages.checkout-page-one');
+    }
+
+    // public function checkoutChecker($locale, $digit, $nvxf, Request $request)
+    // {
+    //     if (!Auth::guard('customer')->check()) {
+    //         return response()->json(['error' => 'Unauthorized'], 403);
+    //     }
+
+    //     $customer = Auth::guard('customer')->user();
+    //     if ($customer->status != 1 || $customer->id != $nvxf) {
+    //         return response()->json(['error' => 'Invalid customer'], 403);
+    //     }
+
+    //     try {
+    //         // ✅ Validate Request Data
+    //         $validated = $request->validate([
+    //             'shipping_amount' => 'required|string|max:255',
+    //             'total_amount'    => 'required|string|max:255',
+    //             'address'         => 'required|string|max:255',
+    //             'payment'         => 'required|integer|exists:payment_methods,id',
+    //         ]);
+
+    //         // Normalize totals (IQD minor units)
+    //         $shippingMinor = $this->toMinor($validated['shipping_amount']);
+    //         $grandMinor    = $this->toMinor($validated['total_amount']);
+    //         $pureMinor     = $grandMinor - $shippingMinor; // items only
+
+    //         // ✅ Retrieve Active Payment Method
+    //         $paymentMethod = PaymentMethods::where('id', $validated['payment'])
+    //             ->where('active', 1)
+    //             ->first();
+
+    //         if (!$paymentMethod) {
+    //             return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+    //                 ->withErrors(['payment' => 'Selected payment method is not available.']);
+    //         }
+
+    //         // ✅ Retrieve Customer Details
+    //         $customerP = $customer->customer_profile;
+    //         $customerA = $customer->customer_addresses->where('id', $validated['address'])->first();
+    //         $trackingNumber = Str::random(6);
+
+    //         // ✅ Retrieve Cart Items & Apply Discounts
+    //         $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation', 'product.categories', 'product.subCategories')
+    //             ->where('customer_id', $customer->id)
+    //             ->get()
+    //             ->transform(function ($item) use ($customer) {
+    //                 $product = $item->product;
+
+    //                 $discountDetails = $this->calculateFinalPrice($product, $customer->id);
+
+    //                 $base  = $discountDetails['base_price']; // original
+    //                 $final = $discountDetails['customer_discount_price']
+    //                     ?? $discountDetails['discount_price']
+    //                     ?? $discountDetails['base_price'];
+
+    //                 // store on item so Phenix mapping is accurate
+    //                 $item->base_price  = $base;
+    //                 $item->final_price = $final;
+
+    //                 return $item;
+    //             });
+
+
+    //         DB::beginTransaction();
+
+    //         // ✅ Create Order
+    //         $order = Order::create([
+    //             'customer_id'      => $customer->id,
+    //             'first_name'       => $customerP->first_name,
+    //             'last_name'        => $customerP->last_name,
+    //             'email'            => $customer->email,
+    //             'country'          => $customerA->country,
+    //             'city'             => $customerA->city,
+    //             'address'          => $customerA->address,
+    //             'zip_code'         => $customerA->zip_code,
+    //             'latitude'         => $customerA->latitude,
+    //             'longitude'        => $customerA->longitude,
+    //             'phone_number'     => $customerA->phone_number,
+
+    //             'payment_method'   => $paymentMethod->name,
+    //             'payment_status'   => 'pending',
+    //             'status'           => 'pending',
+    //             'tracking_number'  => $trackingNumber,
+
+    //             'shipping_amount'  => $shippingMinor,
+    //             'total_amount_iqd' => $pureMinor,
+    //             'total_amount_usd' => ($this->exchange_rate > 0)
+    //                 ? round(($pureMinor + $shippingMinor) / $this->exchange_rate, 3)
+    //                 : 0,
+    //             'exchange_rate'    => $this->exchange_rate ?? 1500,
+
+    //             'total_minor'      => $pureMinor + $shippingMinor,
+    //             'paid_minor'       => 0,
+    //             'refunded_minor'   => 0,
+    //             'currency'         => 'IQD',
+    //         ]);
+
+    //         // ✅ Store Order Items
+    //         foreach ($cartItems as $item) {
+    //             $lineIQD = $this->toMinor($item->final_price);
+    //             OrderItem::create([
+    //                 'order_id'     => $order->id,
+    //                 'product_id'   => $item->product_id,
+    //                 'quantity'     => $item->quantity,
+    //                 'product_name' => $item->product->productTranslation[0]->name,
+    //                 'price_usd'    => 0,
+    //                 'total_usd'    => 0,
+    //                 'price_iqd'    => $lineIQD,
+    //                 'total_iqd'    => $item->quantity * $lineIQD,
+    //             ]);
+    //         }
+    //         // ======================
+    //         // TENDER-SPECIFIC LOGIC
+    //         // ======================
+
+    //         // ✅ Cash On Delivery (offline)
+    //         if ((int)$paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
+    //             DB::commit();
+    //             CartItem::where('customer_id', $customer->id)->delete();
+    //             Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+    //         $this->sendBillToPhenix(app(PhenixApiService::class), $order, $cartItems);
+    //         try{
+    //             // Log::info('About to send Telegram', [
+    //             //     'order_id' => $order->id,
+    //             //     'chat_id'  => env('TELEGRAM_BOT_ORDER_GROUP_ID'),
+    //             // ]);
+    //             Notification::route('toTelegram', null)->notify(new TeleNotifyCustomerOrder(
+    //                 $order->id,
+    //                 $order->tracking_number,
+    //                 $customerP->first_name .' '. $customerP->last_name,
+    //                 $customerP->phone_number,
+    //                 $cartItems,
+    //                 $shippingMinor,
+    //                 $pureMinor
+    //             ));
+    //             $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
+    //             // Log::info("Telegram Notification Sent Successfully for Order ID: " . $order->id);
+    //         }  catch (\Exception $e) {
+    //             Log::error("Telegram Notification Error: " . $e->getMessage());
+    //         }
+
+    //             return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+    //         }
+
+    //         // ✅ Wallet (online=1 but special method)
+    //         if (strtolower($paymentMethod->name) === 'wallet') {
+    //             $wallet = $customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
+    //             $totalToPay = $order->total_minor ?? ($pureMinor + $shippingMinor);
+
+    //             if ($wallet->balance_minor < $totalToPay) {
+    //                 DB::rollBack();
+    //                 return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+    //                     ->withErrors(['wallet' => __('Insufficient wallet balance')]);
+    //             }
+
+    //             $payment = Payment::create([
+    //                 'order_id'           => $order->id,
+    //                 'customer_id'        => $customer->id,
+    //                 'amount_minor'       => $totalToPay,
+    //                 'currency'           => 'IQD',
+    //                 'method'             => 'Wallet',
+    //                 'status'             => 'successful',
+    //                 'provider'           => 'Wallet',
+    //                 'provider_payment_id'=> null,
+    //                 'idempotency_key'    => Str::uuid(),
+    //                 'type'               => 'order',
+    //                 'meta'               => [],
+    //             ]);
+
+    //             app(WalletService::class)->debit($wallet, $totalToPay, [
+    //                 'reason' => 'wallet_payment',
+    //                 'meta'   => [
+    //                     'order_id'  => $order->id,
+    //                     'tracking'  => $order->tracking_number,
+    //                     'payment_id'=> $payment->id,
+    //                 ],
+    //             ]);
+
+    //             $order->paid_minor     = ($order->paid_minor ?? 0) + $totalToPay;
+    //             $order->payment_status = 'successful';
+    //             $order->save();
+
+    //             DB::commit();
+    //             CartItem::where('customer_id', $customer->id)->delete();
+    //             Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+    //         $this->sendBillToPhenix(app(PhenixApiService::class), $order, $cartItems);
+    //         try{
+    //             // Log::info('About to send Telegram', [
+    //             //     'order_id' => $order->id,
+    //             //     'chat_id'  => env('TELEGRAM_BOT_ORDER_GROUP_ID'),
+    //             // ]);
+    //             Notification::route('toTelegram', null)->notify(new TeleNotifyCustomerOrder(
+    //                 $order->id,
+    //                 $order->tracking_number,
+    //                 $customerP->first_name .' '. $customerP->last_name,
+    //                 $customerP->phone_number,
+    //                 $cartItems,
+    //                 $shippingMinor,
+    //                 $pureMinor
+    //             ));
+    //             $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
+    //             // Log::info("Telegram Notification Sent Successfully for Order ID: " . $order->id);
+    //         }  catch (\Exception $e) {
+    //             Log::error("Telegram Notification Error: " . $e->getMessage());
+    //         }
+
+    //             return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+    //         }
+
+    //         // ✅ Online Gateways (FIB / ZainCash / Areeba / Stripe)
+    //         $totalToPay = $order->total_minor ?? ($pureMinor + $shippingMinor);
+
+    //         $payment = Payment::create([
+    //             'order_id'           => $order->id,
+    //             'customer_id'        => $customer->id,
+    //             'amount_minor'       => $totalToPay,
+    //             'currency'           => 'IQD',
+    //             'method'             => $paymentMethod->name,
+    //             'status'             => 'pending',
+    //             'provider'           => $paymentMethod->name,
+    //             'provider_payment_id'=> null,          // 👈 will be filled right after
+    //             'idempotency_key'    => Str::uuid(),
+    //             'type'               => 'order',
+    //             'meta'               => [],
+    //         ]);
+
+    //         $paymentResponse = PaymentServiceManager::getInstance()
+    //             ->setOrder($order)
+    //             ->setPaymentId($payment->id)
+    //             ->setPaymentMethod($paymentMethod->name)
+    //             ->setAmount($totalToPay)
+    //             ->setDelivery($shippingMinor)
+    //             ->processPayment();
+
+    //         if (!$paymentResponse || empty($paymentResponse['paymentId'])) {
+    //             Log::error("Gateway init failed");
+    //             DB::rollBack();
+    //             return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
+    //         }
+
+    //         // 🔑 store provider payment id (FIB paymentId)
+    //         $payment->update([
+    //             'provider_payment_id' => $paymentResponse['paymentId'],
+    //         ]);
+
+    //         DB::commit();
+    //         CartItem::where('customer_id', $customer->id)->delete();
+    //         Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+    //         $this->sendBillToPhenix(app(PhenixApiService::class), $order, $cartItems);
+    //         try{
+    //             // Log::info('About to send Telegram', [
+    //             //     'order_id' => $order->id,
+    //             //     'chat_id'  => env('TELEGRAM_BOT_ORDER_GROUP_ID'),
+    //             // ]);
+    //             Notification::route('toTelegram', null)->notify(new TeleNotifyCustomerOrder(
+    //                 $order->id,
+    //                 $order->tracking_number,
+    //                 $customerP->first_name .' '. $customerP->last_name,
+    //                 $customerP->phone_number,
+    //                 $cartItems,
+    //                 $shippingMinor,
+    //                 $pureMinor
+    //             ));
+    //             $this->dispatchBrowserEvent('alert', ['type' => 'success',  'message' => __('Notification Send Successfully')]);
+    //             // Log::info("Telegram Notification Sent Successfully for Order ID: " . $order->id);
+    //         }  catch (\Exception $e) {
+    //             Log::error("Telegram Notification Error: " . $e->getMessage());
+    //         }
+
+    //         return redirect()->route('payment.process', [
+    //             'locale'        => app()->getLocale(),
+    //             'orderId'       => $order->id,
+    //             'paymentId'     => $paymentResponse['paymentId'] ?? null,
+    //             'paymentMethod' => $paymentMethod->id,
+    //         ]);
+
+    //     } catch (\Throwable $e) {
+    //         DB::rollBack();
+    //         Log::error("Checkout Error: " . $e->getMessage());
+    //         return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+    //             ->withErrors(['error' => 'Payment processing failed.']);
+    //     }
+    // }
+
+
+    private function failCheckout(string $locale, array $errors = [])
+    {
+        return redirect()
+            ->route('business.checkout.failed', ['locale' => $locale])
+            ->withErrors($errors);
+    }
+
+    private function finalizeCheckoutSuccess($customer, $order)
+    {
+        CartItem::where('customer_id', $customer->id)->delete();
+        Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+    }
+
+    private function notifyExternalSystems($order, $customerP, $cartItems, $shippingMinor, $pureMinor)
+    {
+        $this->sendBillToPhenix(app(PhenixApiService::class), $order, $cartItems);
+
+        try {
+            Notification::route('toTelegram', null)->notify(new TeleNotifyCustomerOrder(
+                $order->id,
+                $order->tracking_number,
+                $customerP->first_name . ' ' . $customerP->last_name,
+                $customerP->phone_number,
+                $cartItems,
+                $shippingMinor,
+                $pureMinor
+            ));
+
+            $this->dispatchBrowserEvent('alert', [
+                'type' => 'success',
+                'message' => __('Notification Send Successfully')
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Telegram Notification Error: " . $e->getMessage());
+        }
     }
 
     public function checkoutChecker($locale, $digit, $nvxf, Request $request)
@@ -787,7 +1111,6 @@ class BusinessController extends Controller
         }
 
         try {
-            // ✅ Validate Request Data
             $validated = $request->validate([
                 'shipping_amount' => 'required|string|max:255',
                 'total_amount'    => 'required|string|max:255',
@@ -795,28 +1118,31 @@ class BusinessController extends Controller
                 'payment'         => 'required|integer|exists:payment_methods,id',
             ]);
 
-            // Normalize totals (IQD minor units)
             $shippingMinor = $this->toMinor($validated['shipping_amount']);
             $grandMinor    = $this->toMinor($validated['total_amount']);
-            $pureMinor     = $grandMinor - $shippingMinor; // items only
+            $pureMinor     = $grandMinor - $shippingMinor;
 
-            // ✅ Retrieve Active Payment Method
             $paymentMethod = PaymentMethods::where('id', $validated['payment'])
                 ->where('active', 1)
                 ->first();
 
             if (!$paymentMethod) {
-                return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
-                    ->withErrors(['payment' => 'Selected payment method is not available.']);
+                return $this->failCheckout(app()->getLocale(), [
+                    'payment' => 'Selected payment method is not available.',
+                ]);
             }
 
-            // ✅ Retrieve Customer Details
             $customerP = $customer->customer_profile;
             $customerA = $customer->customer_addresses->where('id', $validated['address'])->first();
             $trackingNumber = Str::random(6);
 
-            // ✅ Retrieve Cart Items & Apply Discounts
-            $cartItems = CartItem::with('product', 'product.variation', 'product.productTranslation', 'product.categories', 'product.subCategories')
+            $cartItems = CartItem::with(
+                    'product',
+                    'product.variation',
+                    'product.productTranslation',
+                    'product.categories',
+                    'product.subCategories'
+                )
                 ->where('customer_id', $customer->id)
                 ->get()
                 ->transform(function ($item) use ($customer) {
@@ -824,22 +1150,19 @@ class BusinessController extends Controller
 
                     $discountDetails = $this->calculateFinalPrice($product, $customer->id);
 
-                    $base  = $discountDetails['base_price']; // original
+                    $base  = $discountDetails['base_price'];
                     $final = $discountDetails['customer_discount_price']
                         ?? $discountDetails['discount_price']
                         ?? $discountDetails['base_price'];
 
-                    // store on item so Phenix mapping is accurate
                     $item->base_price  = $base;
                     $item->final_price = $final;
 
                     return $item;
                 });
 
-
             DB::beginTransaction();
 
-            // ✅ Create Order
             $order = Order::create([
                 'customer_id'      => $customer->id,
                 'first_name'       => $customerP->first_name,
@@ -871,9 +1194,9 @@ class BusinessController extends Controller
                 'currency'         => 'IQD',
             ]);
 
-            // ✅ Store Order Items
             foreach ($cartItems as $item) {
                 $lineIQD = $this->toMinor($item->final_price);
+
                 OrderItem::create([
                     'order_id'     => $order->id,
                     'product_id'   => $item->product_id,
@@ -885,52 +1208,49 @@ class BusinessController extends Controller
                     'total_iqd'    => $item->quantity * $lineIQD,
                 ]);
             }
-            $this->sendBillToPhenix(app(PhenixApiService::class), $order, $cartItems);
 
-            // ======================
-            // TENDER-SPECIFIC LOGIC
-            // ======================
-
-            // ✅ Cash On Delivery (offline)
-            if ((int)$paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
+            // ✅ COD
+            if ((int) $paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
                 DB::commit();
-                CartItem::where('customer_id', $customer->id)->delete();
-                Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+                $this->finalizeCheckoutSuccess($customer, $order);
+                $this->notifyExternalSystems($order, $customerP, $cartItems, $shippingMinor, $pureMinor);
 
                 return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
             }
 
-            // ✅ Wallet (online=1 but special method)
+            // ✅ Wallet
             if (strtolower($paymentMethod->name) === 'wallet') {
                 $wallet = $customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
                 $totalToPay = $order->total_minor ?? ($pureMinor + $shippingMinor);
 
                 if ($wallet->balance_minor < $totalToPay) {
                     DB::rollBack();
-                    return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
-                        ->withErrors(['wallet' => __('Insufficient wallet balance')]);
+                    return $this->failCheckout(app()->getLocale(), [
+                        'wallet' => __('Insufficient wallet balance'),
+                    ]);
                 }
 
                 $payment = Payment::create([
-                    'order_id'           => $order->id,
-                    'customer_id'        => $customer->id,
-                    'amount_minor'       => $totalToPay,
-                    'currency'           => 'IQD',
-                    'method'             => 'Wallet',
-                    'status'             => 'successful',
-                    'provider'           => 'Wallet',
-                    'provider_payment_id'=> null,
-                    'idempotency_key'    => Str::uuid(),
-                    'type'               => 'order',
-                    'meta'               => [],
+                    'order_id'            => $order->id,
+                    'customer_id'         => $customer->id,
+                    'amount_minor'        => $totalToPay,
+                    'currency'            => 'IQD',
+                    'method'              => 'Wallet',
+                    'status'              => 'successful',
+                    'provider'            => 'Wallet',
+                    'provider_payment_id' => null,
+                    'idempotency_key'     => Str::uuid(),
+                    'type'                => 'order',
+                    'meta'                => [],
                 ]);
 
                 app(WalletService::class)->debit($wallet, $totalToPay, [
                     'reason' => 'wallet_payment',
                     'meta'   => [
-                        'order_id'  => $order->id,
-                        'tracking'  => $order->tracking_number,
-                        'payment_id'=> $payment->id,
+                        'order_id'   => $order->id,
+                        'tracking'   => $order->tracking_number,
+                        'payment_id' => $payment->id,
                     ],
                 ]);
 
@@ -939,27 +1259,28 @@ class BusinessController extends Controller
                 $order->save();
 
                 DB::commit();
-                CartItem::where('customer_id', $customer->id)->delete();
-                Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+                $this->finalizeCheckoutSuccess($customer, $order);
+                $this->notifyExternalSystems($order, $customerP, $cartItems, $shippingMinor, $pureMinor);
 
                 return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
             }
 
-            // ✅ Online Gateways (FIB / ZainCash / Areeba / Stripe)
+            // ✅ Online gateways
             $totalToPay = $order->total_minor ?? ($pureMinor + $shippingMinor);
 
             $payment = Payment::create([
-                'order_id'           => $order->id,
-                'customer_id'        => $customer->id,
-                'amount_minor'       => $totalToPay,
-                'currency'           => 'IQD',
-                'method'             => $paymentMethod->name,
-                'status'             => 'pending',
-                'provider'           => $paymentMethod->name,
-                'provider_payment_id'=> null,          // 👈 will be filled right after
-                'idempotency_key'    => Str::uuid(),
-                'type'               => 'order',
-                'meta'               => [],
+                'order_id'            => $order->id,
+                'customer_id'         => $customer->id,
+                'amount_minor'        => $totalToPay,
+                'currency'            => 'IQD',
+                'method'              => $paymentMethod->name,
+                'status'              => 'pending',
+                'provider'            => $paymentMethod->name,
+                'provider_payment_id' => null,
+                'idempotency_key'     => Str::uuid(),
+                'type'                => 'order',
+                'meta'                => [],
             ]);
 
             $paymentResponse = PaymentServiceManager::getInstance()
@@ -976,14 +1297,14 @@ class BusinessController extends Controller
                 return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
             }
 
-            // 🔑 store provider payment id (FIB paymentId)
             $payment->update([
                 'provider_payment_id' => $paymentResponse['paymentId'],
             ]);
 
             DB::commit();
-            CartItem::where('customer_id', $customer->id)->delete();
-            Mail::to($order->customer->email)->queue(new EmailInvoiceActionMail($order));
+
+            $this->finalizeCheckoutSuccess($customer, $order);
+            $this->notifyExternalSystems($order, $customerP, $cartItems, $shippingMinor, $pureMinor);
 
             return redirect()->route('payment.process', [
                 'locale'        => app()->getLocale(),
@@ -995,9 +1316,17 @@ class BusinessController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Checkout Error: " . $e->getMessage());
+
             return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
                 ->withErrors(['error' => 'Payment processing failed.']);
         }
+    }
+
+    // ✅ Keep same logic — just cleaner
+
+    private function failCheckoutJson(string $message, int $code = 500)
+    {
+        return response()->json(['error' => $message], $code);
     }
 
     public function checkoutExistingOrder($locale, $digit, $orderId, $grandTotalUpdated, Request $request)
@@ -1015,7 +1344,7 @@ class BusinessController extends Controller
                 ->first();
 
             if (!$order) {
-                return response()->json(['error' => 'Order not found or already processed'], 404);
+                return $this->failCheckoutJson('Order not found or already processed', 404);
             }
 
             $paymentMethod = PaymentMethods::where('id', $digit)
@@ -1023,15 +1352,16 @@ class BusinessController extends Controller
                 ->first();
 
             if (!$paymentMethod) {
-                return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+                return redirect()
+                    ->route('business.checkout.failed', ['locale' => app()->getLocale()])
                     ->withErrors(['payment' => 'Selected payment method is not available.']);
             }
 
             DB::beginTransaction();
 
             // 🔢 ALWAYS trust the order totals from DB, not the URL param
-            $shippingMinor = (int) ($order->shipping_amount ?? 0);                  // already in IQD
-            $itemsMinor    = (int) ($order->total_amount_iqd ?? 0);                 // IQD
+            $shippingMinor = (int) ($order->shipping_amount ?? 0);
+            $itemsMinor    = (int) ($order->total_amount_iqd ?? 0);
             $grandMinor    = (int) ($order->total_minor ?: ($itemsMinor + $shippingMinor));
 
             // keep order in sync
@@ -1040,45 +1370,47 @@ class BusinessController extends Controller
             $order->touch();
             $order->save();
 
-            // COD again
-            if ((int)$paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
+            // ✅ COD again
+            if ((int) $paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
                 DB::commit();
                 CartItem::where('customer_id', $customer->id)->delete();
 
                 return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
             }
 
-            // Wallet re-pay
+            // ✅ Wallet re-pay
             if (strtolower($paymentMethod->name) === 'wallet') {
                 $wallet     = $customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
                 $totalToPay = $grandMinor;
 
                 if ($wallet->balance_minor < $totalToPay) {
                     DB::rollBack();
-                    return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+
+                    return redirect()
+                        ->route('business.checkout.failed', ['locale' => app()->getLocale()])
                         ->withErrors(['wallet' => __('Insufficient wallet balance')]);
                 }
 
                 $payment = Payment::create([
-                    'order_id'           => $order->id,
-                    'customer_id'        => $customer->id,
-                    'amount_minor'       => $totalToPay,
-                    'currency'           => 'IQD',
-                    'method'             => 'Wallet',
-                    'status'             => 'successful',
-                    'provider'           => 'Wallet',
-                    'provider_payment_id'=> null,
-                    'idempotency_key'    => Str::uuid(),
-                    'type'               => 'order',
-                    'meta'               => [],
+                    'order_id'            => $order->id,
+                    'customer_id'         => $customer->id,
+                    'amount_minor'        => $totalToPay,
+                    'currency'            => 'IQD',
+                    'method'              => 'Wallet',
+                    'status'              => 'successful',
+                    'provider'            => 'Wallet',
+                    'provider_payment_id' => null,
+                    'idempotency_key'     => Str::uuid(),
+                    'type'                => 'order',
+                    'meta'                => [],
                 ]);
 
                 app(WalletService::class)->debit($wallet, $totalToPay, [
                     'reason' => 'wallet_payment',
                     'meta'   => [
-                        'order_id'  => $order->id,
-                        'tracking'  => $order->tracking_number,
-                        'payment_id'=> $payment->id,
+                        'order_id'   => $order->id,
+                        'tracking'   => $order->tracking_number,
+                        'payment_id' => $payment->id,
                     ],
                 ]);
 
@@ -1096,24 +1428,24 @@ class BusinessController extends Controller
             $totalToPay = $grandMinor;
 
             $payment = Payment::create([
-                'order_id'           => $order->id,
-                'customer_id'        => $customer->id,
-                'amount_minor'       => $totalToPay,
-                'currency'           => 'IQD',
-                'method'             => $paymentMethod->name,
-                'status'             => 'pending',
-                'provider'           => $paymentMethod->name,
-                'provider_payment_id'=> null,
-                'idempotency_key'    => Str::uuid(),
-                'type'               => 'order',
-                'meta'               => [],
+                'order_id'            => $order->id,
+                'customer_id'         => $customer->id,
+                'amount_minor'        => $totalToPay,
+                'currency'            => 'IQD',
+                'method'              => $paymentMethod->name,
+                'status'              => 'pending',
+                'provider'            => $paymentMethod->name,
+                'provider_payment_id' => null,
+                'idempotency_key'     => Str::uuid(),
+                'type'                => 'order',
+                'meta'                => [],
             ]);
 
             $paymentResponse = PaymentServiceManager::getInstance()
                 ->setOrder($order)
                 ->setPaymentId($payment->id)
                 ->setPaymentMethod($paymentMethod->name)
-                ->setAmount($totalToPay)         // ✅ 60600 IQD here, not 43
+                ->setAmount($totalToPay)
                 ->setDelivery($shippingMinor)
                 ->processPayment();
 
@@ -1122,7 +1454,7 @@ class BusinessController extends Controller
                 return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
             }
 
-            // store FIB payment id so status endpoint can match
+            // store payment id so status endpoint can match
             $payment->update([
                 'provider_payment_id' => $paymentResponse['paymentId'],
             ]);
@@ -1139,9 +1471,154 @@ class BusinessController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Checkout Existing Order Error: " . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while processing the order'], 500);
+
+            return $this->failCheckoutJson('An error occurred while processing the order', 500);
         }
     }
+
+
+    // public function checkoutExistingOrder($locale, $digit, $orderId, $grandTotalUpdated, Request $request)
+    // {
+    //     if (!Auth::guard('customer')->check()) {
+    //         return response()->json(['error' => 'Unauthorized'], 403);
+    //     }
+
+    //     $customer = Auth::guard('customer')->user();
+
+    //     try {
+    //         $order = Order::where('id', $orderId)
+    //             ->where('customer_id', $customer->id)
+    //             ->whereIn('payment_status', ['pending', 'failed'])
+    //             ->first();
+
+    //         if (!$order) {
+    //             return response()->json(['error' => 'Order not found or already processed'], 404);
+    //         }
+
+    //         $paymentMethod = PaymentMethods::where('id', $digit)
+    //             ->where('active', 1)
+    //             ->first();
+
+    //         if (!$paymentMethod) {
+    //             return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+    //                 ->withErrors(['payment' => 'Selected payment method is not available.']);
+    //         }
+
+    //         DB::beginTransaction();
+
+    //         // 🔢 ALWAYS trust the order totals from DB, not the URL param
+    //         $shippingMinor = (int) ($order->shipping_amount ?? 0);                  // already in IQD
+    //         $itemsMinor    = (int) ($order->total_amount_iqd ?? 0);                 // IQD
+    //         $grandMinor    = (int) ($order->total_minor ?: ($itemsMinor + $shippingMinor));
+
+    //         // keep order in sync
+    //         $order->total_minor    = $grandMinor;
+    //         $order->payment_method = $paymentMethod->name;
+    //         $order->touch();
+    //         $order->save();
+
+    //         // COD again
+    //         if ((int)$paymentMethod->online === 0 && strtolower($paymentMethod->name) !== 'wallet') {
+    //             DB::commit();
+    //             CartItem::where('customer_id', $customer->id)->delete();
+
+    //             return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+    //         }
+
+    //         // Wallet re-pay
+    //         if (strtolower($paymentMethod->name) === 'wallet') {
+    //             $wallet     = $customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
+    //             $totalToPay = $grandMinor;
+
+    //             if ($wallet->balance_minor < $totalToPay) {
+    //                 DB::rollBack();
+    //                 return redirect()->route('business.checkout.failed', ['locale' => app()->getLocale()])
+    //                     ->withErrors(['wallet' => __('Insufficient wallet balance')]);
+    //             }
+
+    //             $payment = Payment::create([
+    //                 'order_id'           => $order->id,
+    //                 'customer_id'        => $customer->id,
+    //                 'amount_minor'       => $totalToPay,
+    //                 'currency'           => 'IQD',
+    //                 'method'             => 'Wallet',
+    //                 'status'             => 'successful',
+    //                 'provider'           => 'Wallet',
+    //                 'provider_payment_id'=> null,
+    //                 'idempotency_key'    => Str::uuid(),
+    //                 'type'               => 'order',
+    //                 'meta'               => [],
+    //             ]);
+
+    //             app(WalletService::class)->debit($wallet, $totalToPay, [
+    //                 'reason' => 'wallet_payment',
+    //                 'meta'   => [
+    //                     'order_id'  => $order->id,
+    //                     'tracking'  => $order->tracking_number,
+    //                     'payment_id'=> $payment->id,
+    //                 ],
+    //             ]);
+
+    //             $order->paid_minor     = ($order->paid_minor ?? 0) + $totalToPay;
+    //             $order->payment_status = 'successful';
+    //             $order->save();
+
+    //             DB::commit();
+    //             CartItem::where('customer_id', $customer->id)->delete();
+
+    //             return redirect()->route('business.checkout.success', ['locale' => app()->getLocale()]);
+    //         }
+
+    //         // 🔌 Online provider retry (FIB / Areeba / ZainCash / Stripe)
+    //         $totalToPay = $grandMinor;
+
+    //         $payment = Payment::create([
+    //             'order_id'           => $order->id,
+    //             'customer_id'        => $customer->id,
+    //             'amount_minor'       => $totalToPay,
+    //             'currency'           => 'IQD',
+    //             'method'             => $paymentMethod->name,
+    //             'status'             => 'pending',
+    //             'provider'           => $paymentMethod->name,
+    //             'provider_payment_id'=> null,
+    //             'idempotency_key'    => Str::uuid(),
+    //             'type'               => 'order',
+    //             'meta'               => [],
+    //         ]);
+
+    //         $paymentResponse = PaymentServiceManager::getInstance()
+    //             ->setOrder($order)
+    //             ->setPaymentId($payment->id)
+    //             ->setPaymentMethod($paymentMethod->name)
+    //             ->setAmount($totalToPay)         // ✅ 60600 IQD here, not 43
+    //             ->setDelivery($shippingMinor)
+    //             ->processPayment();
+
+    //         if (!$paymentResponse || empty($paymentResponse['paymentId'])) {
+    //             DB::rollBack();
+    //             return redirect()->route('digit.payment.error', ['locale' => app()->getLocale()]);
+    //         }
+
+    //         // store FIB payment id so status endpoint can match
+    //         $payment->update([
+    //             'provider_payment_id' => $paymentResponse['paymentId'],
+    //         ]);
+
+    //         DB::commit();
+
+    //         return redirect()->route('payment.process', [
+    //             'locale'        => app()->getLocale(),
+    //             'orderId'       => $order->id,
+    //             'paymentId'     => $paymentResponse['paymentId'],
+    //             'paymentMethod' => $digit,
+    //         ]);
+
+    //     } catch (\Throwable $e) {
+    //         DB::rollBack();
+    //         Log::error("Checkout Existing Order Error: " . $e->getMessage());
+    //         return response()->json(['error' => 'An error occurred while processing the order'], 500);
+    //     }
+    // }
 
     public function checkoutOrder($locale, $orderId)
     {

@@ -36,7 +36,7 @@ return [
     'standingtech' => [
         'base_url'  => env('STANDINGTECH_BASE_URL', 'https://gateway.standingtech.com'),
         'token'     => env('STANDINGTECH_TOKEN'),
-        'sender_id' => env('STANDINGTECH_SENDER_ID', 'MetIraq'),
+        'sender_id' => env('STANDINGTECH_SENDER_ID', 'ItalianCofe'),
     ],
     'phenix' => [
         'systems' => array_filter(array_map('trim', explode(',', env('PHENIX_SYSTEMS', '')))),

@@ -45,38 +45,35 @@ class TeleNotifyCustomerOrder extends Notification
 
     public function toTelegram($notifiable)
     {
-
         $order_url = env('APP_URL_LOCALE') . '/super-admin/order-management-viewer/' . $this->o_id;
-        // $order_url = 'http://127.0.0.1:8000/en' . '/super-admin/order-management-viewer/' . $this->o_id;
-        $registrationId = '#'.$this->tracking_number;
-        // $registration3Id = $this->tracking_number;
 
-        $content = "*" . 'NEW ORDER' . "*\n"
-        . "*" . '-----------------' . "*\n" 
-        . "*" . 'Order: ' . $registrationId . "*\n"
-        . "*" . 'Name: ' . $this->full_name . "*\n"
-        . "*" . 'Phone: ' . $this->phone . "*\n"
-        . "*" . '-----------------' . "*\n" 
-        . "*" . 'Cart Items' . "*\n" 
-        . "*" . '-----------------' . "*\n";
+        $registrationId = '#' . $this->tracking_number;
 
-    // Loop through each cart item with checks
-    foreach ($this->order_item as $index => $item) {
-        $productName = $item['product']['productTranslation'][0]['name'] ?? 'Unknown Product'; // Set a default value
-        $content .= "*" . $index + 1 . '- ' . $productName . "*\n";
+        $content = "*NEW ORDER*\n"
+            . "*-----------------*\n"
+            . "*Order: {$registrationId}*\n"
+            . "*Name: {$this->full_name}*\n"
+            . "*Phone: {$this->phone}*\n"
+            . "*-----------------*\n"
+            . "*Cart Items*\n"
+            . "*-----------------*\n";
+
+        foreach ($this->order_item as $index => $item) {
+            $productName = $item->product->productTranslation[0]->name ?? 'Unknown Product';
+            $content .= "*" . ($index + 1) . "- " . $productName . "*\n";
+        }
+
+        $content .= "*-----------------*\n"
+            . "*Shipping Cost: " . number_format($this->shipping_cost, 0) . " IQD*\n"
+            . "*Sub Total: " . number_format(($this->total_cost - $this->shipping_cost), 0) . " IQD*\n"
+            . "*Grand Total: " . number_format($this->total_cost, 0) . " IQD*\n";
+
+        return TelegramMessage::create()
+            ->to(env('TELEGRAM_BOT_ORDER_GROUP_ID'))
+            ->content($content)
+            ->button('Order View', $order_url);
     }
 
-    // Add shipping and total cost
-    $content .= "*" . '-----------------' . "*\n" 
-        . "*" . 'Shipping Cost: $' . number_format($this->shipping_cost) . "*\n"
-        . "*" . 'Sub sTotal: $' . number_format($this->total_cost - $this->shipping_cost) . "*\n"
-        . "*" . 'Grand Total: $' . number_format($this->total_cost) . "*\n";
-
-       return TelegramMessage::create()
-        ->to(env('TELEGRAM_BOT_ORDER_GROUP_ID') ?? '-4554031346')
-        ->content($content)
-        ->button('Order View', $order_url);
-    }
 
     public function toArray($notifiable)
     {

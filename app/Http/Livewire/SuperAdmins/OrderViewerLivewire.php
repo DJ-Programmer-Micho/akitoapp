@@ -2,40 +2,44 @@
 
 namespace App\Http\Livewire\SuperAdmins;
 
+use Livewire\Component;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
 use App\Models\User;
 use App\Models\Zone;
 use App\Models\Order;
-use Livewire\Component;
+use App\Models\Payment;
 use App\Models\Transaction;
-use Illuminate\Support\Str;
+
 use App\Services\WalletService;
+
 use App\Events\EventDriverUpdated;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Services\OrderRefundService;
-use Illuminate\Support\Facades\Mail;
 use App\Events\EventOrderStatusUpdated;
-use App\Notifications\NotifyDriverUpdate;
-use App\Mail\EmailInvoiceActionFailedMail;
 use App\Events\EventOrderPaymentStatusUpdated;
+
+use App\Notifications\NotifyDriverUpdate;
 use App\Notifications\NotifyOrderStatusChanged;
 use App\Notifications\NotifyOrderPaymentStatusChanged;
-use App\Models\Payment;       // your app Payments table (not gateway)
+
+use App\Mail\EmailInvoiceActionFailedMail;
 
 class OrderViewerLivewire extends Component
 {
     public $o_id;
 
-    public $searchTerm;
-    public $startDate;
-    public $endDate;
     public $statusPaymentFilter;
     public $statusFilter;
 
     public $driverList = [];
     public $selectedDriver;
-    public $carModel;
-    public $plateNumber;
+    public $carModel = 'N/A';
+    public $plateNumber = 'N/A';
+
+    /** Cached order to avoid heavy reload on every Livewire request */
+    public $orderData;
 
     protected $listeners = [
         'echo:AdminChannel,EventOrderStatusUpdated' => 'statusReload',
@@ -45,9 +49,202 @@ class OrderViewerLivewire extends Component
 
     public function mount($id)
     {
-        $this->o_id = $id;
-        $this->getList();
+        $this->o_id = (int) $id;
+
+        $this->loadOrder();     // load order once
+        $this->hydrateUiState(); // set selectedDriver/status filters
+        $this->buildDriverList(); // build list + dispatch select2 init
     }
+
+    /** -------------------------
+     *  Core loaders
+     *  ------------------------- */
+
+    private function loadOrder(): void
+    {
+        $this->orderData = Order::with([
+            'orderItems',
+            'orderItems.product.variation.images',
+            'customer.customer_profile',
+            'customer.wallet',
+        ])->find($this->o_id);
+    }
+
+    private function hydrateUiState(): void
+    {
+        if (!$this->orderData) return;
+
+        // status dropdowns
+        $this->statusFilter = $this->orderData->status;
+        $this->statusPaymentFilter = $this->orderData->payment_status;
+
+        // driver dropdown + driver vehicle info
+        $this->selectedDriver = $this->orderData->driver;
+        $this->driverDataInit();
+    }
+
+    private function refreshUi(): void
+    {
+        $this->loadOrder();
+        $this->hydrateUiState();
+        $this->buildDriverList(); // also dispatch select2 init
+        $this->emitSelf('$refresh');
+    }
+
+    /** -------------------------
+     *  Driver UI
+     *  ------------------------- */
+
+    public function driverDataInit(): void
+    {
+        if (!$this->selectedDriver) {
+            $this->carModel = 'N/A';
+            $this->plateNumber = 'N/A';
+            return;
+        }
+
+        $driverData = User::with('driver')->find($this->selectedDriver);
+
+        $this->carModel    = $driverData->driver->vehicle_model ?? 'N/A';
+        $this->plateNumber = $driverData->driver->plate_number ?? 'N/A';
+    }
+
+    public function driverData(): void
+    {
+        if (!$this->selectedDriver) {
+            $this->toast('error', __('Select a driver first'));
+            return;
+        }
+
+        $driverData = User::with('profile', 'driver')->find($this->selectedDriver);
+
+        if (!$driverData) {
+            $this->toast('error', __('Driver not found'));
+            return;
+        }
+
+        DB::beginTransaction();
+        try {
+            $order = Order::select('id', 'tracking_number')->find($this->o_id);
+
+            if (!$order) {
+                DB::rollBack();
+                $this->toast('error', __('Record Not Found'));
+                return;
+            }
+
+            // update order driver
+            Order::where('id', $this->o_id)->update(['driver' => $driverData->id]);
+
+            DB::commit();
+
+            // update UI props (fast)
+            $this->carModel    = $driverData->driver->vehicle_model ?? 'N/A';
+            $this->plateNumber = $driverData->driver->plate_number ?? 'N/A';
+
+            // notify admins/drivers
+            $this->notifyDriverChanged($order, $driverData);
+
+            // broadcast
+            try {
+                broadcast(new EventDriverUpdated(
+                    $order->tracking_number,
+                    ($driverData->profile->first_name ?? '') . ' ' . ($driverData->profile->last_name ?? '')
+                ))->toOthers();
+            } catch (\Throwable $e) {
+                $this->toast('info', __('Your Internet is Weak!: ') . $e->getMessage());
+            }
+
+            $this->toast('success', __('Driver Updated'));
+
+            // refresh UI state + select2 value
+            $this->refreshUi();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $this->toast('error', __('U-Error: ') . $e->getMessage());
+        }
+    }
+
+    private function notifyDriverChanged(Order $order, User $driverData): void
+    {
+        $adminUsers = User::whereHas('roles', function ($query) {
+            $query->whereIn('name', ['Administrator', 'Data Entry Specialist', 'Finance Manager', 'Order Processor']);
+        })->whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'Driver');
+        })->get();
+
+        foreach ($adminUsers as $admin) {
+            if (
+                !$admin->notifications()
+                    ->where('data->order_id', $order->tracking_number)
+                    ->where('data->driverId', $driverData->id)
+                    ->exists()
+            ) {
+                $admin->notify(new NotifyDriverUpdate(
+                    $order->tracking_number,
+                    $order->id,
+                    $driverData->id,
+                    "Order ID: [#{$order->tracking_number}] has been Transferred to {$driverData->profile->first_name} {$driverData->profile->last_name}"
+                ));
+            }
+        }
+
+        $driverData->notify(new NotifyDriverUpdate(
+            $order->tracking_number,
+            $order->id,
+            $driverData->id,
+            "Order ID: [#{$order->tracking_number}] has been Transferred to {$driverData->profile->first_name} {$driverData->profile->last_name}"
+        ));
+    }
+
+    /** Build driver list + dispatch select2 init */
+    private function buildDriverList(): void
+    {
+        if (!$this->orderData) return;
+
+        $latitude  = $this->orderData->latitude;
+        $longitude = $this->orderData->longitude;
+
+        $zones = Zone::where('status', 1)->get()
+            ->filter(fn($zone) => $this->isWithinZone($zone->coordinates, $latitude, $longitude));
+
+        $teamsInZone = $zones->pluck('delivery_team')->toArray();
+
+        $driversInZone = User::whereHas('roles', fn($q) => $q->where('roles.id', 8))
+            ->whereHas('driverTeam', fn($q) => $q->whereIn('driver_teams.id', $teamsInZone))
+            ->get();
+
+        $driversOutOfZone = User::whereHas('roles', fn($q) => $q->where('roles.id', 8))
+            ->whereDoesntHave('driverTeam', fn($q) => $q->whereIn('driver_teams.id', $teamsInZone))
+            ->get();
+
+        $this->driverList = [
+            [
+                "text" => "Drivers in the Zone",
+                "children" => $driversInZone->map(fn($d) => [
+                    "id" => $d->id,
+                    "driverName" => $d->profile->first_name ?? $d->username
+                ])->toArray()
+            ],
+            [
+                "text" => "Drivers outside the Zone",
+                "children" => $driversOutOfZone->map(fn($d) => [
+                    "id" => $d->id,
+                    "driverName" => $d->username
+                ])->toArray()
+            ]
+        ];
+
+        // Select2 sync
+        $this->dispatchBrowserEvent('driver-select2:init', [
+            'componentId' => $this->id,
+            'value' => $this->selectedDriver,
+        ]);
+    }
+
+    /** -------------------------
+     *  Payment status
+     *  ------------------------- */
 
     public function updatePaymentStatus(int $id)
     {
@@ -57,25 +254,24 @@ class OrderViewerLivewire extends Component
             $this->toast('error', __('Record Not Found'));
             return;
         }
+
         if (empty($this->statusPaymentFilter)) {
             $this->toast('error', __('Select a payment status first'));
             return;
         }
 
-        $new = $this->statusPaymentFilter;      // expected: pending|successful|failed|refunded|partially_refunded
+        $new = $this->statusPaymentFilter;
         $old = $order->payment_status;
 
         DB::beginTransaction();
         try {
             if ($new === 'refunded') {
-                $this->performRefund($order); // credit wallet, set payment_status=refunded, maybe status=refunded
+                $this->performRefund($order);
             } else {
-                // moving away from refunded? reverse wallet credit (if any)
                 if ($old === 'refunded') {
-                    $this->reverseRefund($order); // debit wallet, reduce refunded_minor
+                    $this->reverseRefund($order);
                 }
 
-                // set new payment status (must be valid enum)
                 $order->payment_status = $new;
                 $order->save();
             }
@@ -83,14 +279,15 @@ class OrderViewerLivewire extends Component
             DB::commit();
 
             $this->notifyPaymentStatus($order);
+
             try {
-                broadcast(new EventOrderPaymentStatusUpdated($order->tracking_number, $order->payment_status))
-                    ->toOthers();
+                broadcast(new EventOrderPaymentStatusUpdated($order->tracking_number, $order->payment_status))->toOthers();
             } catch (\Throwable $e) {
                 $this->toast('info', __('Your Internet is Weak!: ') . $e->getMessage());
             }
 
             $this->toast('success', __('Status Updated Successfully'));
+            $this->refreshUi();
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Admin Payment Status Update Error: ' . $e->getMessage(), ['order_id' => $order->id ?? null]);
@@ -98,10 +295,10 @@ class OrderViewerLivewire extends Component
         }
     }
 
-    /**
-     * SHIPPING STATUS UPDATE
-     * Supports: pending | shipping | delivered | cancelled | refunded
-     */
+    /** -------------------------
+     *  Shipping status
+     *  ------------------------- */
+
     public function updateStatus(int $id)
     {
         $order = Order::with('orderItems', 'customer.wallet')->find($id);
@@ -110,25 +307,24 @@ class OrderViewerLivewire extends Component
             $this->toast('error', __('Record Not Found'));
             return;
         }
+
         if (empty($this->statusFilter)) {
             $this->toast('error', __('Select a status first'));
             return;
         }
 
-        $new = $this->statusFilter; // pending|shipping|delivered|cancelled|refunded
+        $new = $this->statusFilter;
         $old = $order->status;
 
         DB::beginTransaction();
         try {
             if ($new === 'refunded') {
-                $this->performRefund($order); // also sets status=refunded
+                $this->performRefund($order);
             } else {
-                // leaving refunded while payment is refunded? reverse the refund
                 if ($old === 'refunded' || $order->payment_status === 'refunded') {
                     $this->reverseRefund($order);
                 }
 
-                // business rule: cancelled → payment_status=failed (if not already successful/refunded)
                 if ($new === 'cancelled' && !in_array($order->payment_status, ['successful', 'refunded'], true)) {
                     $order->payment_status = 'failed';
                     Mail::to($order->customer->email)->queue(new EmailInvoiceActionFailedMail($order));
@@ -141,6 +337,7 @@ class OrderViewerLivewire extends Component
             DB::commit();
 
             $this->notifyShippingStatus($order);
+
             try {
                 broadcast(new EventOrderStatusUpdated($order->tracking_number, $order->status))->toOthers();
             } catch (\Throwable $e) {
@@ -148,6 +345,7 @@ class OrderViewerLivewire extends Component
             }
 
             $this->toast('success', __('Status Updated Successfully'));
+            $this->refreshUi();
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Admin Shipping Status Update Error: ' . $e->getMessage(), ['order_id' => $order->id ?? null]);
@@ -155,16 +353,15 @@ class OrderViewerLivewire extends Component
         }
     }
 
-
     /** -------------------------
-     *  REFUND CORE (items + shipping only)
+     *  Refund core
      *  ------------------------- */
+
     private function performRefund(Order $order): void
     {
-        // amounts
-        $itemsSubtotal = (int) $order->orderItems->sum('total_iqd'); // minor IQD
+        $itemsSubtotal = (int) $order->orderItems->sum('total_iqd');
         $shipping      = (int) ($order->shipping_amount ?? 0);
-        $refundableBase = $itemsSubtotal + $shipping;                // exclude fees
+        $refundableBase = $itemsSubtotal + $shipping;
 
         $alreadyRefunded = (int) ($order->refunded_minor ?? 0);
         $paid            = (int) ($order->paid_minor ?? 0);
@@ -175,8 +372,8 @@ class OrderViewerLivewire extends Component
             throw new \RuntimeException(__('Nothing to refund'));
         }
 
-        // credit wallet
         $wallet = $order->customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
+
         app(WalletService::class)->credit($wallet, $toRefund, [
             'reason' => 'order_refund_excluding_fees',
             'meta'   => [
@@ -188,7 +385,6 @@ class OrderViewerLivewire extends Component
             ],
         ]);
 
-        // reflect in order
         $order->refunded_minor = $alreadyRefunded + $toRefund;
         $order->payment_status = 'refunded';
         if ($order->status !== 'delivered') {
@@ -196,16 +392,15 @@ class OrderViewerLivewire extends Component
         }
         $order->save();
 
-        // log refund as Payment + Transaction
         $payment = Payment::create([
-            'order_id'           => $order->id,
-            'amount_minor'       => $toRefund,
-            'currency'           => 'IQD',
-            'method'             => 'Wallet',
-            'status'             => 'successful',
-            'provider'           => 'Wallet',
-            'provider_payment_id'=> null,
-            'idempotency_key'    => Str::uuid(),
+            'order_id'            => $order->id,
+            'amount_minor'        => $toRefund,
+            'currency'            => 'IQD',
+            'method'              => 'Wallet',
+            'status'              => 'successful',
+            'provider'            => 'Wallet',
+            'provider_payment_id' => null,
+            'idempotency_key'     => Str::uuid(),
         ]);
 
         Transaction::create([
@@ -224,27 +419,18 @@ class OrderViewerLivewire extends Component
         ]);
     }
 
-    /** -------------------------
-     *  REVERSE REFUND (admin changed mind)
-     *  ------------------------- */
     private function reverseRefund(Order $order): void
     {
         $itemsSubtotal = (int) $order->orderItems->sum('total_iqd');
         $shipping      = (int) ($order->shipping_amount ?? 0);
         $refunded      = (int) ($order->refunded_minor ?? 0);
 
-        // attempt to reverse up to what was previously refundable (items+shipping),
-        // but never exceed refunded_minor
         $maxReversible = min($refunded, $itemsSubtotal + $shipping);
-        if ($maxReversible <= 0) {
-            // nothing to reverse
-            return;
-        }
+        if ($maxReversible <= 0) return;
 
         $wallet = $order->customer->wallet()->lockForUpdate()->firstOrCreate(['currency' => 'IQD']);
 
         if ($wallet->balance_minor < $maxReversible) {
-            // protect against accidental negative wallet
             throw new \RuntimeException(__('Cannot reverse refund: customer wallet balance (:bal) is less than refundable (:need)', [
                 'bal'  => number_format($wallet->balance_minor, 0),
                 'need' => number_format($maxReversible, 0),
@@ -260,19 +446,17 @@ class OrderViewerLivewire extends Component
         ]);
 
         $order->refunded_minor = $refunded - $maxReversible;
-        // do NOT set payment_status here; caller will set the new status (pending/successful/failed)
         $order->save();
 
-        // log reversal as Payment + Transaction
         $payment = Payment::create([
-            'order_id'           => $order->id,
-            'amount_minor'       => $maxReversible, // positive number; semantic = wallet debit
-            'currency'           => 'IQD',
-            'method'             => 'Wallet',
-            'status'             => 'successful',
-            'provider'           => 'Wallet',
-            'provider_payment_id'=> null,
-            'idempotency_key'    => Str::uuid(),
+            'order_id'            => $order->id,
+            'amount_minor'        => $maxReversible,
+            'currency'            => 'IQD',
+            'method'              => 'Wallet',
+            'status'              => 'successful',
+            'provider'            => 'Wallet',
+            'provider_payment_id' => null,
+            'idempotency_key'     => Str::uuid(),
         ]);
 
         Transaction::create([
@@ -292,24 +476,24 @@ class OrderViewerLivewire extends Component
     }
 
     /** -------------------------
-     *  NOTIFY/BROADCAST HELPERS
+     *  Notify helpers
      *  ------------------------- */
+
     private function notifyPaymentStatus(Order $order): void
     {
         $adminUsers = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Administrator')
-                ->orWhere('name', 'Data Entry Specialist')
-                ->orWhere('name', 'Finance Manager')
-                ->orWhere('name', 'Order Processor');
+            $query->whereIn('name', ['Administrator', 'Data Entry Specialist', 'Finance Manager', 'Order Processor']);
         })->whereDoesntHave('roles', function ($query) {
             $query->where('name', 'Driver');
         })->get();
 
         foreach ($adminUsers as $admin) {
-            if (!$admin->notifications()
-                ->where('data->order_id', $order->tracking_number)
-                ->where('data->status', $order->payment_status)
-                ->exists()) {
+            if (
+                !$admin->notifications()
+                    ->where('data->order_id', $order->tracking_number)
+                    ->where('data->status', $order->payment_status)
+                    ->exists()
+            ) {
                 $admin->notify(new NotifyOrderPaymentStatusChanged(
                     $order->tracking_number,
                     $order->id,
@@ -321,33 +505,30 @@ class OrderViewerLivewire extends Component
 
         if ($this->selectedDriver) {
             $driverUser = User::find($this->selectedDriver);
-            if ($driverUser) {
-                $driverUser->notify(new NotifyOrderPaymentStatusChanged(
-                    $order->tracking_number,
-                    $order->id,
-                    $order->payment_status,
-                    "Order ID [#{$order->tracking_number}] Payment has been updated to {$order->payment_status}!"
-                ));
-            }
+            $driverUser?->notify(new NotifyOrderPaymentStatusChanged(
+                $order->tracking_number,
+                $order->id,
+                $order->payment_status,
+                "Order ID [#{$order->tracking_number}] Payment has been updated to {$order->payment_status}!"
+            ));
         }
     }
 
     private function notifyShippingStatus(Order $order): void
     {
         $adminUsers = User::whereHas('roles', function ($query) {
-            $query->where('name', 'Administrator')
-                ->orWhere('name', 'Data Entry Specialist')
-                ->orWhere('name', 'Finance Manager')
-                ->orWhere('name', 'Order Processor');
+            $query->whereIn('name', ['Administrator', 'Data Entry Specialist', 'Finance Manager', 'Order Processor']);
         })->whereDoesntHave('roles', function ($query) {
             $query->where('name', 'Driver');
         })->get();
 
         foreach ($adminUsers as $admin) {
-            if (!$admin->notifications()
-                ->where('data->order_id', $order->tracking_number)
-                ->where('data->status', $order->status)
-                ->exists()) {
+            if (
+                !$admin->notifications()
+                    ->where('data->order_id', $order->tracking_number)
+                    ->where('data->status', $order->status)
+                    ->exists()
+            ) {
                 $admin->notify(new NotifyOrderStatusChanged(
                     $order->tracking_number,
                     $order->id,
@@ -359,205 +540,92 @@ class OrderViewerLivewire extends Component
 
         if ($this->selectedDriver) {
             $driverUser = User::find($this->selectedDriver);
-            if ($driverUser) {
-                $driverUser->notify(new NotifyOrderStatusChanged(
-                    $order->tracking_number,
-                    $order->id,
-                    $order->status,
-                    "Order ID {$order->tracking_number} has been updated to {$order->status}"
-                ));
-            }
+            $driverUser?->notify(new NotifyOrderStatusChanged(
+                $order->tracking_number,
+                $order->id,
+                $order->status,
+                "Order ID {$order->tracking_number} has been updated to {$order->status}"
+            ));
         }
     }
 
     /** -------------------------
-     *  UI / OTHER methods
+     *  Geometry
      *  ------------------------- */
-    private function toast($type, $message)
+
+    private function isWithinZone($zoneCoordinates, $latitude, $longitude): bool
     {
-        $this->dispatchBrowserEvent('alert', ['type' => $type, 'message' => $message]);
-    }
-
-    public function driverDataInit()
-    {
-        $driverData = User::where('id', $this->selectedDriver)->first();
-        $this->carModel    = $driverData->driver->vehicle_model ?? 'N/A';
-        $this->plateNumber = $driverData->driver->plate_number ?? 'N/A';
-    }
-
-    public function driverData()
-    {
-        $driverData = User::where('id', $this->selectedDriver)->first();
-        $this->carModel    = $driverData->driver->vehicle_model ?? 'N/A';
-        $this->plateNumber = $driverData->driver->plate_number ?? 'N/A';
-
-        try {
-            $order = Order::where('id', $this->o_id)->first(['id','tracking_number']);
-
-            Order::where('id', $this->o_id)->update(['driver' => $driverData->id]);
-
-            $adminUsers = User::whereHas('roles', function ($query) {
-                $query->where('name', 'Administrator')
-                    ->orWhere('name', 'Data Entry Specialist')
-                    ->orWhere('name', 'Finance Manager')
-                    ->orWhere('name', 'Order Processor');
-            })->whereDoesntHave('roles', function ($query) {
-                $query->where('name', 'Driver');
-            })->get();
-
-            foreach ($adminUsers as $admin) {
-                if (!$admin->notifications()
-                    ->where('data->order_id', $order->tracking_number)
-                    ->where('data->driverId', $driverData->id)->exists()) {
-                    $admin->notify(new NotifyDriverUpdate(
-                        $order->tracking_number,
-                        $order->id,
-                        $driverData->id,
-                        "Order ID: [#{$order->tracking_number}] has been Transferred to {$driverData->profile->first_name} {$driverData->profile->last_name}"
-                    ));
-                }
-            }
-
-            if ($this->selectedDriver) {
-                $driverUser = User::find($this->selectedDriver);
-                $driverUser?->notify(new NotifyDriverUpdate(
-                    $order->tracking_number,
-                    $order->id,
-                    $driverData->id,
-                    "Order ID: [#{$order->tracking_number}] has been Transferred to {$driverData->profile->first_name} {$driverData->profile->last_name}"
-                ));
-            }
-
-            try {
-                broadcast(new EventDriverUpdated($order->tracking_number, $driverData->profile->first_name .' '. $driverData->profile->last_name))->toOthers();
-            } catch (\Exception $e) {
-                $this->toast('info', __('Your Internet is Weak!: ' . $e->getMessage()));
-            }
-            $this->toast('success', __('Driver Updated'));
-        } catch (\Exception $e) {
-            $this->toast('error', __('U-Error: ' . $e->getMessage()));
-        }
-    }
-
-    private function getList()
-    {
-        $orderLocation = Order::where('id', $this->o_id)->first(['latitude', 'longitude','driver']);
-        if (!$orderLocation) return [];
-
-        if ($orderLocation->driver) {
-            $this->selectedDriver = $orderLocation->driver;
-            $this->driverDataInit();
-        }
-
-        $latitude  = $orderLocation->latitude;
-        $longitude = $orderLocation->longitude;
-
-        $zones = Zone::where('status', 1)->get()
-            ->filter(fn($zone) => $this->isWithinZone($zone->coordinates, $latitude, $longitude));
-
-        $teamsInZone = $zones->pluck('delivery_team')->toArray();
-
-        $driversInZone = User::whereHas('roles', fn($q) => $q->where('roles.id', 8))
-            ->whereHas('driverTeam', fn($q) => $q->whereIn('driver_teams.id', $teamsInZone))
-            ->get();
-
-        $driversOutOfZone = User::whereHas('roles', fn($q) => $q->where('roles.id', 8))
-            ->whereDoesntHave('driverTeam', fn($q) => $q->whereIn('driver_teams.id', $teamsInZone))
-            ->get();
-
-        $this->driverList = [
-            [
-                "text" => "Drivers in the Zone",
-                "children" => $driversInZone->map(fn($d) => ["id" => $d->id, "driverName" => $d->profile->first_name])->toArray()
-            ],
-            [
-                "text" => "Drivers outside the Zone",
-                "children" => $driversOutOfZone->map(fn($d) => ["id" => $d->id, "driverName" => $d->username])->toArray()
-            ]
-        ];
-    }
-
-    private function isWithinZone($zoneCoordinates, $latitude, $longitude)
-    {
-        Log::info('Raw coordinates: ', ['zoneCoordinates' => $zoneCoordinates]);
         $coordinates = json_decode($zoneCoordinates, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            Log::error('JSON decode error: ' . json_last_error_msg());
-            throw new \Exception("Invalid coordinates format");
+
+        if (!is_array($coordinates) || count($coordinates) < 3) return false;
+
+        foreach ($coordinates as $p) {
+            if (!isset($p['lat'], $p['lng'])) return false;
         }
-        if (!is_array($coordinates) || count($coordinates) < 3) {
-            throw new \Exception("Invalid coordinates format");
-        }
-        foreach ($coordinates as $coordinate) {
-            if (!isset($coordinate['lat'], $coordinate['lng'])) {
-                throw new \Exception("Coordinate must contain 'lat' and 'lng' keys");
-            }
-            if ($this->isCoordinateInsidePolygon($coordinates, $latitude, $longitude)) {
-                return true;
-            }
-        }
-        return false;
+
+        return $this->isCoordinateInsidePolygon($coordinates, $latitude, $longitude);
     }
 
-    private function isCoordinateInsidePolygon($coordinates, $lat, $lng)
+    private function isCoordinateInsidePolygon(array $coordinates, $lat, $lng): bool
     {
         $inside = false;
         $num = count($coordinates);
+
         for ($i = 0, $j = $num - 1; $i < $num; $j = $i++) {
             $v1 = $coordinates[$i];
             $v2 = $coordinates[$j];
-            if (!isset($v1['lat'], $v1['lng']) || !isset($v2['lat'], $v2['lng'])) {
-                throw new \Exception("Invalid coordinate points in polygon");
-            }
+
             if (($v1['lat'] > $lat) != ($v2['lat'] > $lat) &&
                 ($lng < ($v2['lng'] - $v1['lng']) * ($lat - $v1['lat']) / ($v2['lat'] - $v1['lat']) + $v1['lng'])) {
                 $inside = !$inside;
             }
         }
+
         return $inside;
+    }
+
+    /** -------------------------
+     *  Broadcast reload handlers
+     *  ------------------------- */
+
+    public function driverReload(): void
+    {
+        // only refresh UI (do NOT update DB)
+        $this->refreshUi();
+        $this->emit('notificationSound');
+    }
+
+    public function statusReload(): void
+    {
+        $this->refreshUi();
+        $this->emit('notificationSound');
+    }
+
+    public function paymentReload(): void
+    {
+        $this->refreshUi();
+        $this->emit('notificationSound');
+    }
+
+    /** -------------------------
+     *  UI helpers
+     *  ------------------------- */
+
+    private function toast($type, $message): void
+    {
+        $this->dispatchBrowserEvent('alert', ['type' => $type, 'message' => $message]);
     }
 
     public function render()
     {
-        $sum = 0;
-        $order = Order::with('orderItems','orderItems.product.variation.images', 'customer.customer_profile')->find($this->o_id);
-        foreach($order->orderItems as $item) {
-            $sum += $item->total_iqd;
-        }
+        // no DB here now — use cached orderData
+        $order = $this->orderData;
+
+        $sum = $order ? (int) $order->orderItems->sum('total_iqd') : 0;
+
         return view('super-admins.pages.orderviewer.order-viewer', [
             'orderData' => $order,
             'subTotal'  => $sum,
         ]);
-    }
-
-    public function driverReload()
-    {
-        $orderLocation = Order::where('id', $this->o_id)->first(['latitude', 'longitude','driver']);
-        if (!$orderLocation) return [];
-        if ($orderLocation->driver) {
-            $this->selectedDriver = $orderLocation->driver;
-            $this->driverData();
-        }
-        $this->emit('notificationSound');
-    }
-
-    public function statusReload()
-    {
-        $orderLocation = Order::where('id', $this->o_id)->first(['status']);
-        if (!$orderLocation) return [];
-        if ($orderLocation->status) {
-            $this->statusFilter = $orderLocation->status;
-        }
-        $this->emit('notificationSound');
-    }
-
-    public function paymentReload()
-    {
-        $orderLocation = Order::where('id', $this->o_id)->first(['payment_status']);
-        if (!$orderLocation) return [];
-        if ($orderLocation->payment_status) {
-            $this->statusPaymentFilter = $orderLocation->payment_status;
-        }
-        $this->emit('notificationSound');
     }
 }

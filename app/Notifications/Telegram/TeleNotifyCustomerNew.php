@@ -59,7 +59,7 @@ class TeleNotifyCustomerNew extends Notification
         }
 
        return TelegramMessage::create()
-        ->to(env('TELEGRAM_BOT_CUSTOMER_GROUP_ID') ?? '-5194057178')
+        ->to(env('TELEGRAM_BOT_CUSTOMER_GROUP_ID') ?? '-1003782684239')
         ->content($content)
         ->button('Customer View', $customer_url);
     }

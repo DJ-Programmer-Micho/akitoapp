@@ -326,16 +326,18 @@
                             <p class="text-muted mb-0">Payment Mode: {{ $orderData->payment_method }}</p>
                             @if (hasRole([1, 4]))
                             <label class="fs-16 mt-2">Select Driver</label>                        
-                            <select class="js-basic-single form-select" name="selectedDriver" wire:model="selectedDriver" wire:change="driverData">
-                                <option value="" disabled selected>Select a Driver</option> <!-- Placeholder -->
-                                @foreach($driverList as $group)
-                                    <optgroup label="{{ $group['text'] }}">
-                                        @foreach($group['children'] as $driver)
-                                            <option value="{{ $driver['id'] }}">{{ $driver['driverName'] }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
+                            <div wire:ignore>
+                                <select id="driverSelect-{{ $this->id }}" class="form-select">
+                                    <option value=""></option>
+                                    @foreach($driverList as $group)
+                                        <optgroup label="{{ $group['text'] }}">
+                                            @foreach($group['children'] as $driver)
+                                                <option value="{{ $driver['id'] }}">{{ $driver['driverName'] }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endforeach
+                                </select>
+                            </div>
                             @endif
                         </div>
                     </div>
@@ -531,45 +533,45 @@
     </div><!-- container-fluid -->
 </div><!-- End Page-content -->
 @push('cProductScripts')
-<script src="https://code.jquery.com/jquery-3.7.1.slim.js" integrity="sha256-UgvvN8vBkgO0luPSUl2s8TIlOSYRoGFAX4jlCIm9Adc=" crossorigin="anonymous"></script>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <link rel="stylesheet" href="{{ asset('dashboard/css/select2.css') }}">
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Initialize Select2 with placeholder and allowClear option
-        $('.js-basic-single').select2({
+    function initDriverSelect2(componentId, value) {
+        const selector = '#driverSelect-' + componentId;
+        const $el = $(selector);
+
+        if (!$el.length) return;
+
+        if ($el.hasClass('select2-hidden-accessible')) {
+            $el.select2('destroy');
+        }
+
+        $el.select2({
             placeholder: 'Select a Driver',
-            allowClear: true // Allows clearing the selection
+            allowClear: true,
+            width: '100%'
         });
 
-        // Update Livewire when Select2 selection changes
-        $('.js-basic-single').on('change', function (e) {
-            var selectedDriver = $(this).val();
-            @this.set('selectedDriver', selectedDriver); // This updates the Livewire property
-            @this.driverData(); // Call the driverData function in Livewire
+        // set current selection
+        $el.val(value ?? '').trigger('change.select2');
+
+        // bind change once
+        $el.off('change.driver').on('change.driver', function () {
+            const v = $(this).val() || null;
+            Livewire.find(componentId).set('selectedDriver', v);
+            Livewire.find(componentId).call('driverData');
         });
+    }
+
+    window.addEventListener('driver-select2:init', function (e) {
+        initDriverSelect2(e.detail.componentId, e.detail.value);
     });
-    
-    var selectedDriver = @json($selectedDriver);
-    $('.js-basic-single').val(selectedDriver).trigger('change');
-    console.log(selectedDriver)
-    
 
-    // Reinitialize Select2 after Livewire re-renders the component
     document.addEventListener('livewire:load', function () {
-        Livewire.hook('message.processed', (message, component) => {
-            $('.js-basic-single').select2({
-                placeholder: 'Select a Driver',
-                allowClear: true // Re-apply the allowClear option
-            });
-
-            // Re-trigger the placeholder
-            if ($('.js-basic-single').val() === '') {
-                $('.js-basic-single').select2('val', null); // Clear selection to show placeholder
-            }
-        });
+        // first init (in case event didn't fire yet)
+        initDriverSelect2(@json($this->id), @json($selectedDriver));
     });
 </script>
 @endpush

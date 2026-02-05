@@ -104,7 +104,7 @@
                                                 <input class="form-check-input" type="checkbox" name="checkAll" value="option1">
                                             </div>
                                         </th> --}}
-                                        <td class="id"><a href="apps-ecommerce-order-details.html" class="fw-medium link-primary">#{{$order->tracking_number}}</a></td>
+                                        <td class="id"><a href="{{ route('super.orderManagementsViewer', ['locale' => app()->getLocale(), 'id' => $order->id]) }}" class="fw-medium link-primary">#{{$order->tracking_number}}</a></td>
                                         <td class="customer_name">{{$order->first_name}} {{$order->last_name}}</td>
                                         {{-- <td class="product_name">Puma Tshirt</td> --}}
                                         <td class="date">{{$order->created_at}}</td>

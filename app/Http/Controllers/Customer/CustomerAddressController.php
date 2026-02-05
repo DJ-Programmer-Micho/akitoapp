@@ -82,7 +82,12 @@ class CustomerAddressController extends Controller
             'message' => 'Address added successfully.'
         ]);
         } catch (\Exception $e) {
-            dd('input form',$e);
+            return back()
+                ->withInput() // Keeps the user's form data so they don't have to re-type
+                ->with('alert', [
+                    'type' => 'error', 
+                    'message' => 'Error: ' . $e->getMessage()
+                ]);
         }
     }
     

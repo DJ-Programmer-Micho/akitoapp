@@ -1,4 +1,4 @@
-{{-- resources/views/mains/components/livewire/cart/checkout-list-one.blade.php --}}
+{{-- resources/views/mains/components/livewire/cart/checkout-list-one.blade.php (NEW ORDER)--}}
 <div class="checkout">
     <div class="container">
         <style>
